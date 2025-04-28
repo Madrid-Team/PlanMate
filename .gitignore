@@ -60,5 +60,3 @@ test.output
 kotlin-ide/
 .kotlin/
 .idea/AndroidProjectSystem.xml
-
-.gitkeep
