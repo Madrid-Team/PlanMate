@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.1.20"
     kotlin("plugin.serialization") version "2.1.20"
+    id("jacoco")
 }
 
 group = "org.madrid"
@@ -21,7 +22,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
     // TRUTH
-    testImplementation ("com.google.truth:truth:1.4.4")
+    testImplementation("com.google.truth:truth:1.4.4")
     // MOCKK
     testImplementation("io.mockk:mockk:1.14.0")
     // JSON
@@ -35,4 +36,26 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(23)
+}
+
+jacoco {
+    toolVersion = "0.8.10"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.8".toBigDecimal()
+            }
+        }
+    }
 }
