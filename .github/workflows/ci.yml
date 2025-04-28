@@ -88,29 +88,31 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           title: "📊 Code Coverage Report"
-          pass-emoji: "✅"
-          fail-emoji: "❌"
-          layout: |
-            ## 📊 Code Coverage Report
-            
-            ### 📈 Overall Coverage
-            ${{ env.coverage-overall }}
-            
-            ### 🔄 Changed Files Coverage
-            ${{ env.coverage-changed }}
-            
-            <details>
-              <summary>📋 Detailed Coverage Report</summary>
-            
-              #### 📦 Coverage by Package
-              ${{ env.coverage-packages }}
-            
-              #### 📝 Coverage by File
-              ${{ env.coverage-details }}
-            </details>
-            
-            ### ✨ Status
-            ${{ env.coverage-status }}
+          update-comment: false
+          debug-mode: false
+#          pass-emoji: "✅"
+#          fail-emoji: "❌"
+#          layout: |
+#            ## 📊 Code Coverage Report
+#
+#            ### 📈 Overall Coverage
+#            ${{ env.coverage-overall }}
+#
+#            ### 🔄 Changed Files Coverage
+#            ${{ env.coverage-changed }}
+#
+#            <details>
+#              <summary>📋 Detailed Coverage Report</summary>
+#
+#              #### 📦 Coverage by Package
+#              ${{ env.coverage-packages }}
+#
+#              #### 📝 Coverage by File
+#              ${{ env.coverage-details }}
+#            </details>
+#
+#            ### ✨ Status
+#            ${{ env.coverage-status }}
       - name: 🚨 Check Coverage Verification
         run: ./gradlew jacocoTestCoverageVerification
 
