@@ -5,10 +5,12 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+
 permissions:
   checks: write
   pull-requests: write
   contents: read
+
 jobs:
   build:
     name: 🏗️ Build & Test
@@ -27,12 +29,6 @@ jobs:
       - name: ⚙️ Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: 🔑 Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: 🏗️ Build with Gradle
-        run: ./gradlew build -x test
-
       - name: 📦 Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -42,6 +38,13 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: 🔑 Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🏗️ Build with Gradle (without tests)
+        run: ./gradlew build -x test
+
   test:
     name: 🧪 Test & Coverage Analysis
     needs: build
@@ -63,8 +66,7 @@ jobs:
       - name: 🔑 Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🧪 Run Tests with Coverage
-        continue-on-error: true
+      - name: 🧪 Run Tests and Generate Jacoco Report
         run: ./gradlew test jacocoTestReport
 
       - name: 📊 Upload Coverage Report
@@ -90,29 +92,7 @@ jobs:
           title: "📊 Code Coverage Report"
           update-comment: false
           debug-mode: false
-#          pass-emoji: "✅"
-#          fail-emoji: "❌"
-#          layout: |
-#            ## 📊 Code Coverage Report
-#
-#            ### 📈 Overall Coverage
-#            ${{ env.coverage-overall }}
-#
-#            ### 🔄 Changed Files Coverage
-#            ${{ env.coverage-changed }}
-#
-#            <details>
-#              <summary>📋 Detailed Coverage Report</summary>
-#
-#              #### 📦 Coverage by Package
-#              ${{ env.coverage-packages }}
-#
-#              #### 📝 Coverage by File
-#              ${{ env.coverage-details }}
-#            </details>
-#
-#            ### ✨ Status
-#            ${{ env.coverage-status }}
+
       - name: 🚨 Check Coverage Verification
         run: ./gradlew jacocoTestCoverageVerification
 
@@ -127,6 +107,7 @@ jobs:
               repo: context.repo.repo,
               body: '❌ Test or Coverage checks failed! Please check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
             })
+
   notify:
     name: 📢 Notification
     needs: [build, test]
