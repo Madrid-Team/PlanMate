@@ -16,4 +16,8 @@ class ProjectRepositoryImpl(
         TODO()
     }
 
+    override fun editProject(project: Project) {
+        TODO("Not yet implemented")
+    }
+
 }

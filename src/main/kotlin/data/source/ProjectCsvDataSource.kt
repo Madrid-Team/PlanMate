@@ -12,4 +12,8 @@ class ProjectCsvDataSource(
     override fun deleteProject(projectId: String): Result<Unit> {
         TODO()
     }
+
+    override fun editProject(project: Project): Result<Unit> {
+        TODO("Not yet implemented")
+    }
 }
