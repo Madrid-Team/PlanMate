@@ -9,11 +9,11 @@ import kotlin.test.Test
 
 class ConsoleInputReaderTest {
 
-    private lateinit var consoleInputReader: ConsoleInputReader
+    private lateinit var reader: InputReader
 
     @BeforeEach
     fun setup() {
-        consoleInputReader = ConsoleInputReader()
+        reader = ConsoleInputReader()
     }
 
 
@@ -25,7 +25,7 @@ class ConsoleInputReaderTest {
         System.setIn(inputStream)
 
         // when
-        val result = consoleInputReader.readInput("enter your name")
+        val result = reader.readInput("enter your name")
 
         // then
         assertThat(result).isEqualTo(input)
@@ -39,7 +39,7 @@ class ConsoleInputReaderTest {
         System.setIn(inputStream)
 
         // when
-        val result = consoleInputReader.readInput("enter your name")
+        val result = reader.readInput("enter your name")
 
         // then
         assertThat(result).isEqualTo("")
@@ -56,7 +56,7 @@ class ConsoleInputReaderTest {
         System.setOut(PrintStream(outputStream))
 
         // when
-        consoleInputReader.readInput(hint)
+        reader.readInput(hint)
 
         // then
         assertThat(outputStream.toString()).contains(hint)
@@ -73,7 +73,7 @@ class ConsoleInputReaderTest {
         System.setOut(PrintStream(outputStream))
 
         // when
-        consoleInputReader.readInput(hint)
+        reader.readInput(hint)
 
         // then
         assertThat(outputStream.toString()).isEmpty()
