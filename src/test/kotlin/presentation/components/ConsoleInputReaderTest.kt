@@ -43,5 +43,17 @@ class ConsoleInputReaderTest {
         assertThat(result).isEqualTo("")
     }
 
+    @Test
+    fun `should return empty string when input special characters`() {
+        // given
+        val input = "!@#%^&*()"
+        System.setIn(ByteArrayInputStream(input.toByteArray()))
+
+        // when
+        val result = consoleInputReader.readInput("enter your name")
+
+        // then
+        assertThat(result).isEqualTo("")
+    }
 
 }
