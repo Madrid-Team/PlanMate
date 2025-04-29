@@ -15,7 +15,7 @@ class TaskCsvDataSource : TaskDataSource {
         TODO("Not yet implemented")
     }
 
-    override fun getAllTasks(): Result<Unit> {
+    override fun getAllTasks(): Result<Task> {
         TODO("Not yet implemented")
     }
 
