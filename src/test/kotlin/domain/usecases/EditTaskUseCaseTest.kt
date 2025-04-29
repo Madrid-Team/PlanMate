@@ -1,14 +1,18 @@
 package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
+import createTask
 import domain.models.task.Task
 import domain.models.task.TaskState
 import domain.repository.TaskRepository
+import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import kotlin.test.Test
 
 class EditTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
@@ -57,5 +61,18 @@ class EditTaskUseCaseTest {
 
         //then
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `should return throw exception when id is not found`() {
+        //given
+        val task = createTask(
+            id = "12",
+            title = "title"
+        )
+
+        assertThrows<TaskNotFoundException> {
+            editTaskUseCase.editTask(task)
+        }
     }
 }
