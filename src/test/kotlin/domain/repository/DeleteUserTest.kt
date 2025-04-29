@@ -84,4 +84,26 @@ class DeleteUserTest {
         // When && Then
         assertThrows <UserException.NotFoundUser> { deleteUser.invoke("2", mate.id) }
     }
+
+    @Test
+    fun `Shouldn't delete user When user is blank`() {
+        // Given
+        val admin = User(id = "1","ADMIN","PASSWORD_HASH_1", UserRole.ADMIN)
+
+        fakeUser.addUser(admin)
+
+        // When && Then
+        assertThrows <UserException.NotFoundUser> { deleteUser.invoke(admin.id, " ") }
+    }
+
+    @Test
+    fun `Shouldn't delete user When admin is blank`() {
+        // Given
+        val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.ADMIN)
+
+        fakeUser.addUser(mate)
+
+        // When && Then
+        assertThrows <UserException.NotFoundUser> { deleteUser.invoke(" ", mate.id) }
+    }
 }
