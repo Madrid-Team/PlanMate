@@ -1,6 +1,6 @@
 package domain.repository
 
-import FakeUser
+import FakeUserRepository
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.usecases.DeleteUser
@@ -17,7 +17,7 @@ class DeleteUserTest {
 
     @BeforeTest
     fun setUp() {
-        fakeUser = FakeUser()
+        fakeUser = FakeUserRepository()
         deleteUser = DeleteUser(fakeUser)
     }
 

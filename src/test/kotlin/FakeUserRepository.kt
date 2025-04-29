@@ -1,7 +1,7 @@
 import domain.models.authentication.User
 import domain.repository.UserRepository
 
-class FakeUser : UserRepository {
+class FakeUserRepository : UserRepository {
 
     val allUsers = mutableMapOf<String, User>()
 
