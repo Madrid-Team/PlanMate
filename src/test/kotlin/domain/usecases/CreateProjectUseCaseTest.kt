@@ -1,7 +1,9 @@
 package domain.usecases
 
 import domain.repository.ProjectRepository
+import domain.utlis.ProjectDescriptionInvalidException
 import domain.utlis.ProjectNameExistException
+import domain.utlis.ProjectNameInvalidException
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,9 +22,9 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `createProject should return a success result when project added successfully`() {
+    fun `createProject should return true when project added successfully`() {
         //Given
-        val project =  createProject(
+        val project = createProject(
             name = "Test Project",
         )
 
@@ -37,7 +39,7 @@ class CreateProjectUseCaseTest {
     @Test
     fun `createProject should throw ProjectNameExistException when project name already exists`() {
         //Given
-        val project =  createProject(
+        val project = createProject(
             name = "Test Project",
         )
 
@@ -46,9 +48,50 @@ class CreateProjectUseCaseTest {
             createProjectUseCase.createProject(project)
         }
 
-
-
     }
+
+    @Test
+    fun `createProject should throw ProjectNameInvalidException when project name is invalid string`() {
+        //Given
+        val project = createProject(
+            name = "123 #$",
+        )
+
+        //When & Then
+        assertThrows<ProjectNameInvalidException> {
+            createProjectUseCase.createProject(project)
+        }
+    }
+
+    @Test
+    fun `createProject should throw ProjectDescriptionInvalidException when project description is invalid string`() {
+        //Given
+        val project = createProject(
+            name = "Test Project",
+            description = ""
+        )
+
+        //When & Then
+        assertThrows<ProjectDescriptionInvalidException> {
+            createProjectUseCase.createProject(project)
+        }
+    }
+
+
+    @Test
+    fun `createProject should throw ProjectDescriptionInvalidException when project description is empty`() {
+        //Given
+        val project = createProject(
+            name = "Test Project",
+            description = ""
+        )
+
+        //When & Then
+        assertThrows<ProjectDescriptionInvalidException> {
+            createProjectUseCase.createProject(project)
+        }
+    }
+
 
 
 }
