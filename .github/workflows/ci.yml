@@ -5,10 +5,12 @@ on:
     branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+
 permissions:
   checks: write
   pull-requests: write
   contents: read
+
 jobs:
   build:
     name: 🏗️ Build & Test
@@ -18,20 +20,14 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v3
 
-      - name: 🛠️ Set up JDK 19
+      - name: 🛠️ Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '19'
+          java-version: '21'
           distribution: 'corretto'
 
       - name: ⚙️ Setup Gradle
         uses: gradle/gradle-build-action@v2
-
-      - name: 🔑 Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: 🏗️ Build with Gradle
-        run: ./gradlew build -x test
 
       - name: 📦 Cache Gradle packages
         uses: actions/cache@v3
@@ -42,6 +38,13 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
+      - name: 🔑 Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: 🏗️ Build with Gradle (without tests)
+        run: ./gradlew build -x test
+
   test:
     name: 🧪 Test & Coverage Analysis
     needs: build
@@ -51,10 +54,10 @@ jobs:
       - name: 📥 Checkout Code
         uses: actions/checkout@v3
 
-      - name: 🛠️ Set up JDK 19
+      - name: 🛠️ Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '19'
+          java-version: '21'
           distribution: 'corretto'
 
       - name: ⚙️ Setup Gradle
@@ -63,8 +66,7 @@ jobs:
       - name: 🔑 Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: 🧪 Run Tests with Coverage
-        continue-on-error: true
+      - name: 🧪 Run Tests and Generate Jacoco Report
         run: ./gradlew test jacocoTestReport
 
       - name: 📊 Upload Coverage Report
@@ -88,29 +90,9 @@ jobs:
           min-coverage-overall: 80
           min-coverage-changed-files: 80
           title: "📊 Code Coverage Report"
-          pass-emoji: "✅"
-          fail-emoji: "❌"
-          layout: |
-            ## 📊 Code Coverage Report
-            
-            ### 📈 Overall Coverage
-            ${{ env.coverage-overall }}
-            
-            ### 🔄 Changed Files Coverage
-            ${{ env.coverage-changed }}
-            
-            <details>
-              <summary>📋 Detailed Coverage Report</summary>
-            
-              #### 📦 Coverage by Package
-              ${{ env.coverage-packages }}
-            
-              #### 📝 Coverage by File
-              ${{ env.coverage-details }}
-            </details>
-            
-            ### ✨ Status
-            ${{ env.coverage-status }}
+          update-comment: false
+          debug-mode: false
+
       - name: 🚨 Check Coverage Verification
         run: ./gradlew jacocoTestCoverageVerification
 
@@ -125,6 +107,7 @@ jobs:
               repo: context.repo.repo,
               body: '❌ Test or Coverage checks failed! Please check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.'
             })
+
   notify:
     name: 📢 Notification
     needs: [build, test]
@@ -141,3 +124,44 @@ jobs:
         run: |
           echo "❌ Build or tests failed!"
           exit 1
+
+
+      - name: 📨 Send Slack Notification
+        if: always()  # This will run no matter the result of previous steps
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*:white_check_mark: GitHub Actions Build & Test Status*"
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Commit*\n<${{ github.event.head_commit.url }}|${{ github.sha }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Status*\n${{ job.status }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Build Logs*\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Logs>"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
