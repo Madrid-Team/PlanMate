@@ -68,7 +68,7 @@ class CreateProjectUseCaseTest {
         //Given
         val project = createProject(
             name = "Test Project",
-            description = ""
+            description = "123 #$"
         )
 
         //When & Then
