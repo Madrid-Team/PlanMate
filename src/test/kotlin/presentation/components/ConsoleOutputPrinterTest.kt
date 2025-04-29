@@ -57,5 +57,18 @@ class ConsoleOutputPrinterTest {
         assertThat(printed).isEqualTo(messageWithNewLines)
     }
 
+    @Test
+    fun `should print empty error message to console`() {
+        // given
+        val error = "something error"
+
+        // when
+        outputPrinter.printError(error)
+
+        // then
+        val printed = outputStream.toString().trim()
+        assertThat(printed).isEqualTo("[ERROR]: $error")
+    }
+
 
 }
