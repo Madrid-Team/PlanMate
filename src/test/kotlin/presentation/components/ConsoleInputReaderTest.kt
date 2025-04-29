@@ -30,6 +30,18 @@ class ConsoleInputReaderTest {
     }
 
 
+    @Test
+    fun `should return empty string when input is null`() {
+        // given
+        val inputStream = ByteArrayInputStream(byteArrayOf())
+        System.setIn(inputStream)
+
+        // when
+        val result = consoleInputReader.readInput("enter your name")
+
+        // then
+        assertThat(result).isEqualTo("")
+    }
 
 
 }
