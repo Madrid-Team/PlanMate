@@ -1,6 +1,6 @@
-package domain.models.task
+package data.dto.task
 
-import domain.models.logs.AuditLog
+import data.dto.logs.AuditLog
 import java.util.UUID
 
 
