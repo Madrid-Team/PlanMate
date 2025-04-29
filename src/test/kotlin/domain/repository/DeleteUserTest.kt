@@ -93,7 +93,7 @@ class DeleteUserTest {
         fakeUser.addUser(admin)
 
         // When && Then
-        assertThrows <UserException.NotFoundUser> { deleteUser.invoke(admin.id, " ") }
+        assertThrows <UserException.InvalidInput> { deleteUser.invoke(admin.id, " ") }
     }
 
     @Test
@@ -104,6 +104,6 @@ class DeleteUserTest {
         fakeUser.addUser(mate)
 
         // When && Then
-        assertThrows <UserException.NotFoundUser> { deleteUser.invoke(" ", mate.id) }
+        assertThrows <UserException.InvalidInput> { deleteUser.invoke(" ", mate.id) }
     }
 }
