@@ -8,4 +8,8 @@ class ProjectCsvDataSource(
     override fun createProject(project: Project): Result<Unit> {
         TODO()
     }
+
+    override fun deleteProject(projectId: String): Result<Unit> {
+        TODO()
+    }
 }
