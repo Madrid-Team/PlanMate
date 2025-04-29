@@ -9,7 +9,7 @@ data class Task(
     val projectId: String,
     val title: String,
     val description: String,
-    val state: TaskState,
+    val state: String,
     val createdBy: String,
     val logs: List<AuditLog>,
 )
