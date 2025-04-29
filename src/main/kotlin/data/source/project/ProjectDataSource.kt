@@ -1,6 +1,6 @@
-package data.source
+package data.source.project
 
-import domain.models.project.Project
+import data.dto.project.Project
 
 interface ProjectDataSource {
 

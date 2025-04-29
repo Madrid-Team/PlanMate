@@ -1,6 +1,6 @@
 package domain.repository
 
-import domain.models.project.Project
+import data.dto.project.Project
 
 interface ProjectRepository {
 
