@@ -2,10 +2,10 @@ package presentation.components
 
 class ConsoleOutputPrinter : OutputPrinter {
     override fun printMessage(message: String) {
-        println(message)
+        print(message)
     }
 
     override fun printError(errorMessage: String) {
-        println(errorMessage)
+        print("[ERROR]: $errorMessage")
     }
 }
