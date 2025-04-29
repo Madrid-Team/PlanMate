@@ -6,4 +6,9 @@ import presentation.components.OutputPrinter
 class PlanMateConsoleUI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter
-)
+){
+    fun start(){
+        outputPrinter.printMessage("Welcome to PlanMate!")
+
+    }
+}
