@@ -18,7 +18,7 @@ data class AuditLog(
     val newValue: String?,
     val timestamp: LocalDateTime = LocalDateTime.now()
 ){
-    fun toLog():String{
+   override fun toString(): String {
         return "user $username $changeType $entityType $entityName from $oldValue to $newValue at ${timestamp.convertDateIntoReadableDate()}"
     }
 
