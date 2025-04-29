@@ -12,7 +12,7 @@ class TaskRepositoryImpl : TaskRepository {
         TODO("Not yet implemented")
     }
 
-    override fun createTask(task: Task) {
+    override fun createTask(task: Task): Boolean {
         TODO("Not yet implemented")
     }
 
