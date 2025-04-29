@@ -127,7 +127,7 @@ jobs:
             })
   notify:
     name: 📢 Notification
-    needs: [build, test]
+    needs: [ build, test ]
     runs-on: ubuntu-latest
     if: always()
 
@@ -141,3 +141,32 @@ jobs:
         run: |
           echo "❌ Build or tests failed!"
           exit 1
+
+      - name: 🔍 Set status output
+        id: status
+        run: |
+          if [ "${{ needs.build.result }}" = "success" ] && [ "${{ needs.test.result }}" = "success" ]; then
+            echo "status=✅ Success" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Failed" >> $GITHUB_OUTPUT
+          fi
+
+
+      - name: 📣 Send Slack Notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🔔 *GitHub Workflow Notification*",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*📦 Repository:* `${{ github.repository }}`\n*🌿 Branch:* `${{ github.ref_name }}`\n*✍️ Author:* `${{ github.event.pull_request.user.login || github.actor }}`\n*📝 PR Title:* `${{ github.event.pull_request.title || 'N/A' }}`\n*📊 Status:* `${{ needs.build.result == 'success' && needs.test.result == 'success' && '✅ Success' || '❌ Failed' }}`\n\n🔗 <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
