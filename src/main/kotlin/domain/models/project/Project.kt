@@ -9,4 +9,6 @@ data class Project(
     val description: String,
     val createdBy: String,
     val projectLogs: List<AuditLog>,
+    val projectState: String,
+    val taskStates: List<String>,
 )
