@@ -16,4 +16,9 @@ class FakeUser : UserRepository {
     override fun getUser(userId: String): User? {
         return allUsers[userId]
     }
+
+    override fun loginUser(userName: String, passwordHash: String): Boolean {
+        return allUsers.filter { user -> user.value.username == userName && user.value.passwordHash == passwordHash }.isNotEmpty()
+    }
+
 }
