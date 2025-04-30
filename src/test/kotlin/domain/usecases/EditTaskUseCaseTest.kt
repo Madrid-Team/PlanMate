@@ -3,7 +3,6 @@ package domain.usecases
 import com.google.common.truth.Truth.assertThat
 import createTask
 import domain.models.task.Task
-import domain.models.task.TaskState
 import domain.repository.TaskRepository
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
@@ -42,7 +41,7 @@ class EditTaskUseCaseTest {
             projectId = "11",
             title = "title",
             description = "description",
-            state = TaskState.TODO,
+            state = "TO Do" ,
             createdBy = "created by",
             logs = listOf()
         )
@@ -70,6 +69,7 @@ class EditTaskUseCaseTest {
             id = "12",
             title = "title"
         )
+        every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
         assertThrows<TaskNotFoundException> {
             editTaskUseCase.editTask(task)
