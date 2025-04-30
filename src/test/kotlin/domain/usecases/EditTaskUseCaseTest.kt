@@ -7,6 +7,7 @@ import domain.repository.TaskRepository
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -41,7 +42,7 @@ class EditTaskUseCaseTest {
             projectId = "11",
             title = "title",
             description = "description",
-            state = "TO Do" ,
+            state = "TO Do",
             createdBy = "created by",
             logs = listOf()
         )
@@ -52,10 +53,13 @@ class EditTaskUseCaseTest {
             createdBy = createdBy.ifBlank { oldTask.createdBy }
         )
         every { taskRepository.getAllTasks() } returns listOf(oldTask)
+        every { taskRepository.editTask(any(), any()) } returns Unit
+
 
         //when
         val result = editTaskUseCase.editTask(
-            task = newTask
+            oldTaskId = oldTask.id,
+            updatedTask = newTask
         )
 
         //then
@@ -72,7 +76,7 @@ class EditTaskUseCaseTest {
         every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
         assertThrows<TaskNotFoundException> {
-            editTaskUseCase.editTask(task)
+            editTaskUseCase.editTask(task.id, task)
         }
     }
 }
