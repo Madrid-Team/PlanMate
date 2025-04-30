@@ -16,4 +16,12 @@ class FakeUserRepository : UserRepository {
     override fun getUser(userId: String): User? {
         return allUsers[userId]
     }
+
+    override fun getAllUsers(): List<User> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserByName(userName: String): User? {
+        TODO("Not yet implemented")
+    }
 }
