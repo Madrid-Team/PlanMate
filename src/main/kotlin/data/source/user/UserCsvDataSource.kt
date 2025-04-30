@@ -20,4 +20,12 @@ class UserCsvDataSource(
     override fun getUser(userId: String): Result<User?> {
         TODO("Not yet implemented")
     }
+
+    override fun getAllUsers(): Result<List<User>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserByName(userName: String): Result<User?> {
+        TODO("Not yet implemented")
+    }
 }
