@@ -1,5 +1,7 @@
+
 import domain.models.authentication.User
 import domain.repository.UserRepository
+
 
 class FakeUser : UserRepository {
 
@@ -17,8 +19,12 @@ class FakeUser : UserRepository {
         return allUsers[userId]
     }
 
-    override fun loginUser(userName: String, passwordHash: String): Boolean {
-        return allUsers.filter { user -> user.value.username == userName && user.value.passwordHash == passwordHash }.isNotEmpty()
+    override fun getALLUser(): MutableMap<String, User> {
+        return allUsers
+    }
+
+    override fun loginUser(userName: String, password: String): Boolean {
+        return allUsers.filter { user -> user.value.username == userName && user.value.passwordHash == password }.isNotEmpty()
     }
 
 }
