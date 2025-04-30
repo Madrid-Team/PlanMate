@@ -11,9 +11,7 @@ class ProjectCsvDataSource(
 ) : ProjectDataSource {
 
     override fun createProject(project: Project): Result<Unit> {
-        val projectRow = projectCsvParser.parseProjectToString(project)
-        fileCsvWriter.writeProjectToCsvFile(projectRow)
-        return Result.success(Unit)
+        TODO()
     }
 
     override fun deleteProject(projectId: String): Result<Unit> {

@@ -11,5 +11,5 @@ data class Task(
     val description: String,
     val state: String,
     val createdBy: String,
-    val logs: List<AuditLog>,
+    val logs: List<String>,
 )
