@@ -1,7 +1,7 @@
 package data.repository
 
-import data.source.ProjectDataSource
-import domain.models.project.Project
+import data.source.project.ProjectDataSource
+import data.dto.project.Project
 import domain.repository.ProjectRepository
 
 class ProjectRepositoryImpl(

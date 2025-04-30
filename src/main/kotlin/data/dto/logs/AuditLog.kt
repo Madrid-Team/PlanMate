@@ -1,4 +1,4 @@
-package domain.models.logs
+package data.dto.logs
 
 import domain.utlis.convertDateIntoReadableDate
 import java.time.LocalDateTime
