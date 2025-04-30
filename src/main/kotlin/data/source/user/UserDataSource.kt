@@ -6,4 +6,6 @@ interface UserDataSource {
     fun createUser(user: User):Result<Unit>
     fun deleteUser(userId: String):Result<Unit>
     fun getUser(userId: String):Result<User?>
+    fun getAllUsers():Result<List<User>>
+    fun getUserByName(userName: String): Result<User?>
 }
