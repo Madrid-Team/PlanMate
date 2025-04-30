@@ -1,16 +1,14 @@
-package presentation.feature.user
+package presentation.feature.projects
 
+import domain.usecases.EditProjectUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
-class UserCLI(
+class EditProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val createUserCLI: CreateUserCLI,
-    private val deleteUserCLI: DeleteUserCLI
+    private val useCase: EditProjectUseCase,
 ) {
     fun show() {
-
     }
-
 }

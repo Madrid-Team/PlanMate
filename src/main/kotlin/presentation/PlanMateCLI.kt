@@ -17,7 +17,7 @@ class PlanMateCLI(
     private val projectCLI: ProjectCLI,
     private val userCLI: UserCLI,
     private val auditLogCLI: TaskAuditLogCLI,
-    private val projectAuditLogCLI: ProjectAuditLogCLI
+    private val projectAuditLogCLI: ProjectAuditLogCLI,
 ) {
     fun start() {
         outputPrinter.printMessage("Welcome to PlanMate!")
