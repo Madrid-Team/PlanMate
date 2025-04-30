@@ -7,14 +7,14 @@ import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_LOGS
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_NAME
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATES
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_TASKS_STATES
-import data.dto.project.Project
+import data.dto.project.ProjectDto
 
 class ProjectCsvParser() {
 
 
-    fun parseOneRowToProject(row: String): Project {
+    fun parseOneRowToProject(row: String): ProjectDto {
         val result = row.split(",")
-        return Project(
+        return ProjectDto(
             id = result[PROJECT_ID],
             name = result[PROJECT_NAME],
             description = result[PROJECT_DESCRIPTION],
@@ -25,7 +25,7 @@ class ProjectCsvParser() {
         )
     }
 
-    fun parseProjectToString(project: Project): String {
+    fun parseProjectToString(project: ProjectDto): String {
         val projectCsvLine = listOf(
             project.id,
             project.name,
