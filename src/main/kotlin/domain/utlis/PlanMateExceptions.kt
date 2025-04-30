@@ -1,7 +1,11 @@
 package domain.utlis
 
-open class PlanMateExceptions(message:String):Exception(message) {
-}
+sealed class PlanMateExceptions : Exception() {
+    data object UserIsNullException : PlanMateExceptions()
+    data object UserAlreadyExistsException : PlanMateExceptions() {
+        private fun readResolve(): Any = UserAlreadyExistsException
+    }
 
-class ProjectNameExistException: PlanMateExceptions("Project name already exists")
-class ProjectNotFoundException: PlanMateExceptions("Project not found")
+    data object PasswordIsTooWeakException : PlanMateExceptions()
+    data object UserDoesNotHavePermissionException : PlanMateExceptions()
+}
