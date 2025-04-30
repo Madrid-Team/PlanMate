@@ -4,7 +4,7 @@ import domain.models.task.Task
 import domain.repository.TaskRepository
 
 class TaskRepositoryImpl : TaskRepository {
-    override fun editTask(task: Task) {
+    override fun editTask(taskId: String, updatedTask: Task) {
         TODO("Not yet implemented")
     }
 
