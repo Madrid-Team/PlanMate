@@ -1,6 +1,7 @@
 package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
+import createTask
 import domain.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -61,5 +62,44 @@ class DisplayAllTasksUseCaseTest {
 """.trimIndent()
         assertThat(result).isEqualTo(expectedOutput)
     }
+
+    @Test
+    fun `should return formatted swimlanes when project and tasks exist`() {
+        // Given
+        val projectId = "p1"
+        val project = createProject(
+            id = projectId,
+            name = "My Project",
+            taskStates = listOf("TODO", "In Progress", "Done")
+        )
+
+        val tasks = listOf(
+            createTask(id = "t1", title = "Task 1", state = "TODO", projectId = projectId),
+            createTask(id = "t2", title = "Task 2", state = "In Progress", projectId = projectId),
+            createTask(id = "t3", title = "Task 3", state = "Done", projectId = projectId)
+        )
+
+        every { projectRepository.getProjectById(projectId) } returns project
+        every { taskRepository.getTasksByProjectId(projectId) } returns tasks
+
+        // When
+        val result = displayAllTasksUseCase.display(projectId)
+
+        // Then
+        verify { projectRepository.getProjectById(projectId) }
+        verify { taskRepository.getTasksByProjectId(projectId) }
+        val expectedOutput = """
+    TODO:
+    - Task 1
+
+    In Progress:
+    - Task 2
+
+    Done:
+    - Task 3
+""".trimIndent()
+        assertThat(result).isEqualTo(expectedOutput)
+    }
+
 
 }
