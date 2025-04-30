@@ -1,4 +1,4 @@
 package presentation.feature
 
-class AuditUI {
+class AuthenticationCLI {
 }

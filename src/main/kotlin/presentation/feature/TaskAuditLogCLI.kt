@@ -1,4 +1,4 @@
 package presentation.feature
 
-class TaskUI {
+class TaskAuditLogCLI {
 }
