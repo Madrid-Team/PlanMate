@@ -1,6 +1,5 @@
 package domain.usecases
 
-import domain.models.project.Project
 import domain.models.task.Task
 import domain.repository.TaskRepository
 
