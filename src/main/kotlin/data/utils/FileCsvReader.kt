@@ -1,12 +1,12 @@
 package data.utils
 
 import java.io.FileNotFoundException
-import java.io.IOException
+
 
 class FileCsvReader(
     private val fileValidator: FileValidator
 ) {
-    fun readProjectCsvFile(): List<String> {
+    fun readCsvFile(): List<String> {
         return try {
             fileValidator.getFile().readLines().dropHeader()
         } catch (e: FileNotFoundException){
