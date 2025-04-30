@@ -38,7 +38,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When requested is not admin`() {
+    fun `should throw PermissionDenied exception when requested is not admin`() {
         // Given
         val mate1 = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE)
         val mate2 = User(id = "2","MATE_2","PASSWORD_HASH_2", UserRole.MATE)
@@ -51,7 +51,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When admin want to delete admin`() {
+    fun `should throw PermissionDenied exception when admin want to delete another admin`() {
         // Given
         val admin1 = User(id = "1","ADMIN_1","PASSWORD_HASH_1", UserRole.ADMIN)
         val admin2 = User(id = "2","ADMIN_2","PASSWORD_HASH_2", UserRole.ADMIN)
@@ -64,7 +64,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When user does not exist`() {
+    fun `should throw NotFoundUser exception when user does not exist`() {
         // Given
         val admin = User(id = "1","ADMIN","PASSWORD_HASH_1", UserRole.ADMIN)
 
@@ -75,7 +75,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When admin does not exist`() {
+    fun `should throw NotFoundUser exception when admin does not exist`() {
         // Given
         val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.ADMIN)
 
@@ -86,7 +86,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When user is blank`() {
+    fun `should throw InvalidInput exception when user is blank`() {
         // Given
         val admin = User(id = "1","ADMIN","PASSWORD_HASH_1", UserRole.ADMIN)
 
@@ -97,7 +97,7 @@ class DeleteUserTest {
     }
 
     @Test
-    fun `Shouldn't delete user When admin is blank`() {
+    fun `should throw InvalidInput exception when admin is blank`() {
         // Given
         val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.ADMIN)
 
