@@ -1,7 +1,12 @@
 package domain.repository
 
-import data.dto.task.Task
+
+import domain.models.task.Task
 
 interface TaskRepository {
+    fun editTask(task: Task)
+    fun deleteTask(taskId: String)
+    fun createTask(task: Task): Boolean
+    fun getAllTasks(): List<Task>
     fun getTasksByProjectId(projectId: String): List<Task>
 }
