@@ -32,5 +32,7 @@ class DisplayAllTasksUseCaseTest {
         // Then
         assertThat(result).isEqualTo("Project not found.")
     }
+    @Test
+    fun `should return empty swimlanes when no tasks exist`() {}
 
     }
