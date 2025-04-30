@@ -1,6 +1,5 @@
 package domain.models.task
 
-import domain.models.logs.AuditLog
 import java.util.UUID
 
 

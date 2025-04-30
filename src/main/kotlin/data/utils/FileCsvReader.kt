@@ -2,7 +2,6 @@ package data.utils
 
 import java.io.FileNotFoundException
 
-
 class FileCsvReader(
     private val fileValidator: FileValidator
 ) {
