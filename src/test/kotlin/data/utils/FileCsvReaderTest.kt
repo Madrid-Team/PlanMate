@@ -29,7 +29,7 @@ class FileCsvReaderTest {
 
         mockFile.writeText(line)
 
-        val result = fileCsvReader.readProjectCsvFile()
+        val result = fileCsvReader.readCsvFile()
         assertThat(result[0]).contains(expectedRow)
 
 
@@ -41,7 +41,7 @@ class FileCsvReaderTest {
         mockFile.delete()
 
         assertThrows<FileNotFoundException> {
-            fileCsvReader.readProjectCsvFile()
+            fileCsvReader.readCsvFile()
         }
 
     }
