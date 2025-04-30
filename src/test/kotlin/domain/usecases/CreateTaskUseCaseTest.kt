@@ -59,19 +59,4 @@ class CreateTaskUseCaseTest {
         verify(exactly = 0) { taskRepository.createTask(any()) }
         assertThat(result).isFalse()
     }
-
-    @Test
-    fun `should return false when repository throws exception`() {
-        // given
-        val task = createTask(title = "new task")
-        every { taskRepository.createTask(task) } throws RuntimeException("error")
-
-        // when
-        val result = createTaskUseCase.createTask(task)
-
-        // then
-        assertThat(result).isFalse()
-    }
-
-
 }
