@@ -1,4 +1,10 @@
 package domain.usecases
 
-class DisplayAllTasksUseCase {
+import domain.repository.ProjectRepository
+import domain.repository.TaskRepository
+
+class DisplayAllTasksUseCase(private val projectRepository: ProjectRepository,
+                             private val taskRepository: TaskRepository
+)
+{
 }
