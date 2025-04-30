@@ -1,9 +1,11 @@
 package domain.repository
 
-import domain.models.project.Project
+import data.dto.project.ProjectDto
 
 interface ProjectRepository {
 
-    fun createProject(project: Project)
+    fun getAllProjects(): List<ProjectDto>
+    fun createProject(project: ProjectDto)
     fun deleteProject(projectId: String)
+    fun editProject(project: ProjectDto)
 }

@@ -1,10 +1,9 @@
-package domain.models.task
+package data.dto.task
 
-import domain.models.logs.AuditLog
 import java.util.UUID
 
 
-data class Task(
+data class TaskDto(
     val id: String = UUID.randomUUID().toString(),
     val projectId: String,
     val title: String,
