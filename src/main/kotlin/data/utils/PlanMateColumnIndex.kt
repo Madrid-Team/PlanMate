@@ -23,19 +23,4 @@ object PlanMateColumnIndex {
         const val TASK_LOGS = 6
     }
 
-
-    object AuditLogColumnsIndex{
-        const val AUDIT_LOG_ID = 0
-        const val AUDIT_LOG_ENTITY_ID = 1
-        const val AUDIT_LOG_ENTITY_NAME= 2
-        const val AUDIT_LOG_ENTITY_TYPE = 3
-        const val AUDIT_LOG_USER_ID = 4
-        const val AUDIT_LOG_USER_NAME = 5
-        const val AUDIT_LOG_CHANGE_TYPE = 6
-        const val AUDIT_LOG_FIELD_NAME = 7
-        const val AUDIT_LOG_OLD_VALUE= 8
-        const val AUDIT_LOG_NEW_VALUE = 9
-        const val AUDIT_LOG_TIME_STAMP = 10
-    }
-
 }

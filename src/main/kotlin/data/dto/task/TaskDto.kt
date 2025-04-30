@@ -1,10 +1,9 @@
 package data.dto.task
 
-import data.dto.logs.AuditLog
 import java.util.UUID
 
 
-data class Task(
+data class TaskDto(
     val id: String = UUID.randomUUID().toString(),
     val projectId: String,
     val title: String,
