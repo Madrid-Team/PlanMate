@@ -7,7 +7,7 @@ import domain.repository.ProjectRepository
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource
 ):ProjectRepository {
-    override fun getAllProjects(): List<Project> {
+    override fun getAllProjects(): List<ProjectDto> {
         TODO("Not yet implemented")
     }
 
