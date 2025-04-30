@@ -1,8 +1,12 @@
 package data.source
 
+import data.utils.FileCsvWriter
 import domain.models.task.Task
 
-class TaskCsvDataSource : TaskDataSource {
+class TaskCsvDataSource(
+    private val taskCsvParser: TaskCsvParser,
+    private val fileCsvWriter: FileCsvWriter
+) : TaskDataSource {
     override fun editTask(task: Task): Result<Unit> {
         TODO("Not yet implemented")
     }
@@ -12,7 +16,9 @@ class TaskCsvDataSource : TaskDataSource {
     }
 
     override fun createTask(task: Task): Result<Unit> {
-        TODO("Not yet implemented")
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeProjectToCsvFile(taskRow)
+        return Result.success(Unit)
     }
 
     override fun getAllTasks(): Result<Task> {
