@@ -1,20 +1,56 @@
 package data.source.user
 
+import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.User
+import data.dto.authentication.UserRole
+import org.junit.jupiter.api.Test
 import kotlin.test.BeforeTest
 
 class UserCsvParserTest {
 
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var user: User
-
+    private lateinit var row: String
+    private val rowTest = "1,User Name,shci58392nwsuss9203asdx,ADMIN"
+    private val userTest = User(
+        id = "1",
+        username = "User Name",
+        passwordHash = "shci58392nwsuss9203asdx",
+        role = UserRole.ADMIN,
+    )
 
     @BeforeTest
     fun setUp() {
         userCsvParser = UserCsvParser()
-        val row = "1,User Name,Password hash,ADMIN"
-        user = userCsvParser.parseRowToUser(row)
+        row = userCsvParser.parseUserToRow(userTest)
+        user = userCsvParser.parseRowToUser(rowTest)
     }
 
+
+
+    @Test
+    fun `parseRowToUser should parse user id correctly`() {
+        assertThat(user.id).contains("1")
+    }
+
+    @Test
+    fun `parseRowToUser should parse user name correctly`() {
+        assertThat(user.username).contains("User Name")
+    }
+
+    @Test
+    fun `parseRowToUser should parse user password hash correctly`() {
+        assertThat(user.passwordHash).contains("shci58392nwsuss9203asdx")
+    }
+
+    @Test
+    fun `parseRowToUser should parse user role correctly`() {
+       assertThat(user.role.name).contains("ADMIN")
+    }
+
+    @Test
+    fun `parseUserToRow should parse user to row correctly`() {
+        assertThat(row).isEqualTo(rowTest)
+    }
 
 }
