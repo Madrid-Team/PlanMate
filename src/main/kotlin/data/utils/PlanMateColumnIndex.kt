@@ -38,4 +38,11 @@ object PlanMateColumnIndex {
         const val AUDIT_LOG_TIME_STAMP = 10
     }
 
+    object UserColumnsIndex {
+        const val USER_ID = 0
+        const val USER_NAME = 1
+        const val USER_PASSWORD_HASH = 2
+        const val USER_ROLE = 3
+    }
+
 }
