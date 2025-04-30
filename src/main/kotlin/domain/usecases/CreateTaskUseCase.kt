@@ -7,6 +7,7 @@ class CreateTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
     fun createTask(task: Task): Boolean {
-        return false
+        if (task.title.isBlank()) return false
+        return taskRepository.createTask(task)
     }
 }
