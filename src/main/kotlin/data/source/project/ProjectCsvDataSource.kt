@@ -2,7 +2,7 @@ package data.source.project
 
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import data.dto.project.Project
+import data.dto.project.ProjectDto
 
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -10,7 +10,7 @@ class ProjectCsvDataSource(
     private val projectCsvParser: ProjectCsvParser
 ) : ProjectDataSource {
 
-    override fun createProject(project: Project): Result<Unit> {
+    override fun createProject(project: ProjectDto): Result<Unit> {
         TODO()
     }
 
@@ -18,7 +18,7 @@ class ProjectCsvDataSource(
         TODO()
     }
 
-    override fun editProject(project: Project): Result<Unit> {
+    override fun editProject(project: ProjectDto): Result<Unit> {
         TODO("Not yet implemented")
     }
 }

@@ -1,6 +1,6 @@
 package data.dto.logs
 
-enum class ChangeType {
+enum class ChangeTypeDto {
     CREATION,
     UPDATE,
     DELETION,
