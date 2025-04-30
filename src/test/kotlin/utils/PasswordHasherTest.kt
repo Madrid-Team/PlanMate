@@ -1,5 +1,6 @@
 package utils
 
+import data.utils.PasswordHasher
 import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
