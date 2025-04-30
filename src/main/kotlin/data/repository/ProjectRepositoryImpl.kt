@@ -20,4 +20,8 @@ class ProjectRepositoryImpl(
         TODO("Not yet implemented")
     }
 
+    override fun getProjectById(id: String): Project? {
+        TODO("Not yet implemented")
+    }
+
 }
