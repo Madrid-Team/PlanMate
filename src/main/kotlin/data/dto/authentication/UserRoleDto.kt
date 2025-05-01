@@ -1,6 +1,6 @@
 package data.dto.authentication
 
-enum class UserRole {
+enum class UserRoleDto {
     ADMIN,
     MATE
 }

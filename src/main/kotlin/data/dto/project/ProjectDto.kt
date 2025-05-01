@@ -2,7 +2,7 @@ package data.dto.project
 
 import java.util.*
 
-data class Project(
+data class ProjectDto(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,
@@ -10,4 +10,5 @@ data class Project(
     val projectLogs: List<String>,
     val projectState: String,
     val taskStates: List<String>,
+    val projectStates: List<String>,
 )

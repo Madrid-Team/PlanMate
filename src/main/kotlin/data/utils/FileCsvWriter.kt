@@ -7,12 +7,18 @@ import java.io.IOException
 class FileCsvWriter(
     private val fileValidator: FileValidator
 ) {
-    fun writeToCsvFile(row:String) {
+    fun writeToCsvFile(row: String) {
         try {
-            fileValidator.getFile().appendText(row)
-        }catch (e: FileNotFoundException) {
-            throw e
-        }catch (e: Exception) {
+            fileValidator.checkFile().appendText(row)
+        }  catch (e: Exception) {
+            throw IOException("Error writing to CSV file: ${e.message}", e)
+        }
+    }
+
+    fun updateCsvFile(content: String) {
+        try {
+            fileValidator.checkFile().writeText(content)
+        }  catch (e: Exception) {
             throw IOException("Error writing to CSV file: ${e.message}", e)
         }
     }
