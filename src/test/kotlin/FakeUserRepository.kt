@@ -1,7 +1,5 @@
-
 import domain.models.authentication.User
 import domain.repository.UserRepository
-
 
 class FakeUser : UserRepository {
 
