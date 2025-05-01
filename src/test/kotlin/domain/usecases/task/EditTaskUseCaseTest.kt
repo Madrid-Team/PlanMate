@@ -51,7 +51,7 @@ class EditTaskUseCaseTest {
             createdBy = createdBy.ifBlank { oldTask.createdBy }
         )
         every { taskRepository.getAllTasks() } returns listOf(oldTask)
-        every { taskRepository.editTask(any(), any()) } returns Unit
+        every { taskRepository.editTask(any()) } returns true
 
 
         //when
