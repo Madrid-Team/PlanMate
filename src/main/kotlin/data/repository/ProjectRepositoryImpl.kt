@@ -2,7 +2,6 @@ package data.repository
 
 import data.source.project.ProjectDataSource
 import data.dto.project.ProjectDto
-import data.source.project.ProjectDataSource
 import domain.mapper.toDomain
 import domain.mapper.toDto
 import domain.models.project.Project
@@ -79,30 +78,23 @@ class ProjectRepositoryImpl(
     }
 
     override fun editProject(project: Project): Result<Unit> {
-        TODO("Not yet implemented")
-    }
+        val oldProject = projects.find { it.id == project.id }
 
-    override fun editProject(project: ProjectDto): Result<Unit> {
-        val updatedProject = projects.find { it.id == project.id }
-        val indexOfUpdatedProject = projects.indexOf(updatedProject)
+        return if (oldProject != null) {
+            val indexOfUpdatedProject = projects.indexOf(oldProject)
+            projects.add(index = indexOfUpdatedProject, project)
 
-        return if (updatedProject != null) {
-            try {
-                projects.add(index = indexOfUpdatedProject, updatedProject )
+            val result = projectDataSource.editProject(projects.map { it.toDto() })
 
-                val result = projectDataSource.editProject(projects)
-
-                if (result.isSuccess) {
-                    Result.success(Unit)
-                } else {
-                    Result.failure(result.exceptionOrNull() ?: Exception("Failed to delete project"))
-                }
-            } catch (e: Exception) {
-                Result.failure(e)
+            if (result.isSuccess) {
+                Result.success(Unit)
+            } else {
+                Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
             }
         } else {
-            Result.failure(PlanMateExceptions("Project with ID $updatedProject.id not found"))
+            Result.failure(PlanMateExceptions("Project with ID $project.id not found"))
         }
+    }
     override fun getProjectLogsById(id: String): Result<List<String>> {
         TODO("Not yet implemented")
     }
