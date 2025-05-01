@@ -22,7 +22,13 @@ class UserCsvDataSource(
     }
 
     override fun getAllUsers(): Result<List<UserDto>> {
-        TODO("Not yet implemented")
+        return try {
+            val rows = fileCsvReader.readCsvFile()
+            val users = rows.map { userCsvParser.parseRowToUser(it)}
+            return Result.success(users)
+        } catch (_ : Exception) {
+            Result.failure(Exception("Something went wrong in csv file"))
+        }
     }
 
     override fun getUserByName(userName: String): Result<UserDto?> {
