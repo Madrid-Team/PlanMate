@@ -60,4 +60,8 @@ class ProjectRepositoryImpl(
         TODO("Not yet implemented")
     }
 
+    override fun getProjectLogsById(id: String): Result<List<String>> {
+        TODO("Not yet implemented")
+    }
+
 }

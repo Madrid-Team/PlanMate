@@ -8,4 +8,5 @@ interface ProjectRepository {
     fun createProject(project: ProjectDto): Result<Unit>
     fun deleteProject(projectId: String): Result<Unit>
     fun editProject(project: ProjectDto): Result<Unit>
+    fun getProjectLogsById(id: String): Result<List<String>>
 }
