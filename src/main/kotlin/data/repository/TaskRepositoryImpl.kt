@@ -8,18 +8,18 @@ class TaskRepositoryImpl(
     private val taskDataSource: TaskDataSource
 ) : TaskRepository {
     override fun editTask(task: Task): Boolean {
-        TODO("Not yet implemented")
+        return taskDataSource.editTask(task)
     }
 
     override fun deleteTask(taskId: String): Boolean {
-        TODO("Not yet implemented")
+        return taskDataSource.deleteTask(taskId)
     }
 
     override fun createTask(task: Task): Boolean {
-        TODO("Not yet implemented")
+        return taskDataSource.createTask(task)
     }
 
     override fun getAllTasks(): List<Task> {
-        TODO("Not yet implemented")
+        return taskDataSource.getAllTasks()
     }
 }
