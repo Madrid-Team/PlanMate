@@ -7,6 +7,11 @@ class CreateTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
     fun createTask(task: Task): Boolean {
-        return false
+        try {
+            taskRepository.createTask(task)
+        } catch (e: Exception) {
+            println("Can't create task")
+        }
+        return true
     }
 }
