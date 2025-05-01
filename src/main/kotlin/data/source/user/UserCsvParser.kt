@@ -1,24 +1,24 @@
 package data.source.user
 
-import data.dto.authentication.User
-import data.dto.authentication.UserRole
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import data.utils.PlanMateColumnIndex.UserColumnsIndex
 
 
 class UserCsvParser {
     val userColumnsIndex = UserColumnsIndex
 
-    fun parseRowToUser(row: String): User {
+    fun parseRowToUser(row: String): UserDto {
         val result = row.split(",")
-        return User(
+        return UserDto(
             id = result[userColumnsIndex.USER_ID],
             username = result[userColumnsIndex.USER_NAME],
             passwordHash = result[userColumnsIndex.USER_PASSWORD_HASH],
-            role = UserRole.valueOf(result[userColumnsIndex.USER_ROLE]),
+            role = UserRoleDto.valueOf(result[userColumnsIndex.USER_ROLE]),
         )
     }
 
-    fun parseUserToRow(user: User): String {
+    fun parseUserToRow(user: UserDto): String {
         val userCsvLine = listOf(
             user.id,
             user.username,

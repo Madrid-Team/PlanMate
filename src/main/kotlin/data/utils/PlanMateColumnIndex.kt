@@ -24,8 +24,6 @@ object PlanMateColumnIndex {
         const val TASK_LOGS = 6
     }
 
-}
-
     object UserColumnsIndex {
         const val USER_ID = 0
         const val USER_NAME = 1

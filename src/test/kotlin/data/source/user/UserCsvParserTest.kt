@@ -1,22 +1,22 @@
 package data.source.user
 
 import com.google.common.truth.Truth.assertThat
-import data.dto.authentication.User
-import data.dto.authentication.UserRole
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import org.junit.jupiter.api.Test
 import kotlin.test.BeforeTest
 
 class UserCsvParserTest {
 
     private lateinit var userCsvParser: UserCsvParser
-    private lateinit var user: User
+    private lateinit var user: UserDto
     private lateinit var row: String
     private val rowTest = "1,User Name,shci58392nwsuss9203asdx,ADMIN"
-    private val userTest = User(
+    private val userTest = UserDto(
         id = "1",
         username = "User Name",
         passwordHash = "shci58392nwsuss9203asdx",
-        role = UserRole.ADMIN,
+        role = UserRoleDto.ADMIN,
     )
 
     @BeforeTest
