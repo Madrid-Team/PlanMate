@@ -8,6 +8,7 @@ import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_NAME
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATES
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_TASKS_STATES
 import data.dto.project.ProjectDto
+import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATE
 
 class ProjectCsvParser() {
 
@@ -20,8 +21,9 @@ class ProjectCsvParser() {
             description = result[PROJECT_DESCRIPTION],
             createdBy = result[PROJECT_CREATED_BY],
             projectLogs = result[PROJECT_LOGS].split("|"),
-            projectState = result[PROJECT_STATES],
+            projectState = result[PROJECT_STATE],
             taskStates = result[PROJECT_TASKS_STATES].split("|"),
+            projectStates = result[PROJECT_STATES].split("|"),
         )
     }
 
@@ -33,7 +35,8 @@ class ProjectCsvParser() {
             project.createdBy,
             project.projectLogs.joinToString("|"),
             project.projectState,
-            project.taskStates.joinToString("|")
+            project.taskStates.joinToString("|"),
+            project.projectStates.joinToString("|"),
         ).joinToString(",")
 
         return projectCsvLine
