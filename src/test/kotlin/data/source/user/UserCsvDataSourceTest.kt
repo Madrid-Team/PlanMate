@@ -5,10 +5,13 @@ import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+
+
 
 class UserCsvDataSourceTest {
 
@@ -29,6 +32,41 @@ class UserCsvDataSourceTest {
         userCsvParser = mockk()
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
+
+
+    @Test
+    fun `Should create user Successfully When user does not exist`() {
+        val user3 = UserDto(
+            id = "3",
+            username = "username3",
+            passwordHash = "passwordhash3",
+            role = UserRoleDto.MATE,
+        )
+        val userRow = listOf("3", "username3", "passwordhash3", "MATE")
+        every { userCsvParser.parseUserToRow(user3) } returns userRow.toString()
+        every { fileCsvWriter.writeToCsvFile(userRow.toString()) } returns Unit
+        val result = dataSource.createUser(user3)
+        assertThat(
+            result.isSuccess
+        ).isTrue()
+    }
+
+
+    @Test
+    fun `Should fail to create user when username already exists`() {
+        val existingUser = UserDto("3", "username3", "hash", UserRoleDto.MATE)
+        val newUser = UserDto("4", "username3", "newHash", UserRoleDto.MATE)
+        val csvLine = listOf("3", "username3", "hash", "MATE").toString()
+
+        every { fileCsvReader.readCsvFile() } returns listOf(csvLine)
+        every { userCsvParser.parseRowToUser(csvLine) } returns existingUser
+        val result = dataSource.createUser(newUser)
+
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
+
+    }
+
 
     // region getAllUsersTest
     @Test
@@ -96,6 +134,7 @@ class UserCsvDataSourceTest {
         // When & Then
         assertThat(result.isFailure).isTrue()
     }
+
     // endregion
     // region getUserByNameTest
     @Test
