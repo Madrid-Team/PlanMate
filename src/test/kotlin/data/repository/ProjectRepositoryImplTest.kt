@@ -1,6 +1,7 @@
 package data.repository
 
 import data.createProject
+import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
 import io.mockk.every
 import io.mockk.mockk
@@ -16,6 +17,22 @@ class ProjectRepositoryImplTest {
     fun setup() {
         projectDataSource = mockk(relaxed = true)
         repository = ProjectRepositoryImpl(projectDataSource)
+    }
+
+        @Test
+    fun `getAllProjects returns list of projects when list is not empty `() {
+        // Given
+        val projects = listOf(
+            createProject(id = "1", name = "test"),
+            createProject(id = "2", name = "test2")
+        )
+        every { projectDataSource.getAllProjects() } returns projects
+
+        // When
+        val result = repository.getAllProjects()
+
+        // Then
+        assertEquals(projects, result)
     }
 
     @Test
