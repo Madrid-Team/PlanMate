@@ -23,12 +23,11 @@ class TaskCsvDataSourceTest {
         taskCsvParser = mockk()
         fileCsvWriter = mockk()
         fileCsvReader = mockk()
-        taskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter)
+        taskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter,fileCsvReader)
     }
 
     @Test
     fun `should edit task return true when edit task successfully`() {
-
         val result = taskDataSource.editTask(task)
 
         assertThat(result).isEqualTo(true)
