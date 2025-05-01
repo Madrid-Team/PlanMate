@@ -1,7 +1,6 @@
 package domain.models.task
 
-import domain.models.logs.AuditLog
-import java.util.UUID
+import java.util.*
 
 
 data class Task(
@@ -9,7 +8,7 @@ data class Task(
     val projectId: String,
     val title: String,
     val description: String,
-    val state: TaskState,
+    val state: String,
     val createdBy: String,
-    val logs: List<AuditLog>,
+    val logs: List<String>,
 )
