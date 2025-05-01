@@ -15,7 +15,7 @@ import org.junit.jupiter.api.assertThrows
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
     private lateinit var fileCsvWriter: FileCsvWriter
-    private lateinit var taskCsvDataSource: TaskCsvDataSource
+    private lateinit var taskDataSource: TaskDataSource
     private lateinit var fileCsvReader: FileCsvReader
 
     @BeforeEach
@@ -23,13 +23,13 @@ class TaskCsvDataSourceTest {
         taskCsvParser = mockk()
         fileCsvWriter = mockk()
         fileCsvReader = mockk()
-        taskCsvDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter, fileCsvReader)
+        taskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter)
     }
 
     @Test
     fun `should edit task return true when edit task successfully`() {
 
-        val result = taskCsvDataSource.editTask(task)
+        val result = taskDataSource.editTask(task)
 
         assertThat(result).isEqualTo(true)
     }
@@ -37,34 +37,34 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should edit task throw exception when failed to edit the task`() {
         assertThrows<TaskCannotEditException> {
-            taskCsvDataSource.editTask(task)
+            taskDataSource.editTask(task)
         }
     }
 
     @Test
     fun `should delete task return true when task id is found`() {
-        val result = taskCsvDataSource.deleteTask(task.id)
+        val result = taskDataSource.deleteTask(task.id)
         assertThat(result).isEqualTo(true)
     }
 
     @Test
     fun `should delete task throw exception when task id is not found`() {
         assertThrows<TaskNotFoundException> {
-            taskCsvDataSource.deleteTask(task.id)
+            taskDataSource.deleteTask(task.id)
         }
     }
 
 
     @Test
     fun `should create task return true when creating task successfully`() {
-        val result = taskCsvDataSource.createTask(task)
+        val result = taskDataSource.createTask(task)
         assertThat(result).isEqualTo(true)
     }
 
     @Test
     fun `should create task throw exception when creating task is failed`() {
         assertThrows<CannotCreateTaskException> {
-            taskCsvDataSource.createTask(task)
+            taskDataSource.createTask(task)
         }
     }
 
@@ -72,7 +72,7 @@ class TaskCsvDataSourceTest {
     fun `should get all tasks return list of tasks`() {
         val tasks = listOf(task, task)
 
-        assertThat(taskCsvDataSource.getAllTasks()).isEqualTo(tasks)
+        assertThat(taskDataSource.getAllTasks()).isEqualTo(tasks)
     }
 
 
