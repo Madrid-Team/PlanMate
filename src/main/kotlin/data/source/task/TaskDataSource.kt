@@ -6,5 +6,5 @@ interface TaskDataSource {
     fun editTask(task: Task): Result<Unit>
     fun deleteTask(taskId: String): Result<Unit>
     fun createTask(task: Task): Result<Unit>
-    fun getAllTasks(): Result<Task>
+    fun getAllTasks(): List<Task>
 }
