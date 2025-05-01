@@ -11,16 +11,17 @@ class ProjectRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override fun createProject(project: ProjectDto) {
-        TODO()
-    }
-
-    override fun deleteProject(projectId: String) {
-        TODO()
-    }
-
-    override fun editProject(project: ProjectDto) {
+    override fun createProject(project: ProjectDto): Result<Unit> {
         TODO("Not yet implemented")
     }
+
+    override fun deleteProject(projectId: String): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun editProject(project: ProjectDto): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
 
 }
