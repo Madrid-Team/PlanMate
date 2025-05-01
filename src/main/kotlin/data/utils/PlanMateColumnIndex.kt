@@ -9,8 +9,9 @@ object PlanMateColumnIndex {
         const val PROJECT_DESCRIPTION = 2
         const val PROJECT_CREATED_BY = 3
         const val PROJECT_LOGS = 4
-        const val PROJECT_STATES = 5
+        const val PROJECT_STATE = 5
         const val PROJECT_TASKS_STATES = 6
+        const val PROJECT_STATES = 7
     }
 
     object TaskColumnsIndex {

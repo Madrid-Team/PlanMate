@@ -10,6 +10,7 @@ fun createProject(
     createdBy:String = "",
     projectState:String = "",
     taskStates: List<String> = listOf(),
+    projectStates: List<String> = listOf(),
     ) = Project(
         id = id,
         name = name,
@@ -17,5 +18,6 @@ fun createProject(
         createdBy = createdBy,
         projectLogs = emptyList(),
         projectState =projectState,
-        taskStates = taskStates
+        taskStates = taskStates,
+        projectStates = projectStates,
     )

@@ -10,4 +10,5 @@ data class ProjectDto(
     val projectLogs: List<String>,
     val projectState: String,
     val taskStates: List<String>,
+    val projectStates: List<String>,
 )
