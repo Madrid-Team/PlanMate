@@ -9,12 +9,34 @@ class ProjectCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val projectCsvParser: ProjectCsvParser
 ) : ProjectDataSource {
-    override fun getAllProjects(): List<ProjectDto> {
-        TODO("Not yet implemented")
+    override fun getProjects(): Result<List<ProjectDto>> {
+
+        val projects = mutableListOf<ProjectDto>()
+
+        return try {
+
+            fileCsvReader.readCsvFile().forEach { row ->
+                projects.add(projectCsvParser.parseOneRowToProject(row))
+            }
+
+            Result.success(projects)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
     }
 
     override fun createProject(project: ProjectDto): Result<Unit> {
-        TODO()
+        return try {
+
+            val row = projectCsvParser.parseProjectToString(project)
+            fileCsvWriter.writeToCsvFile(row)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     override fun deleteProject(projectId: String): Result<Unit> {

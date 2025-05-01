@@ -1,6 +1,5 @@
-package domain.usecases
+package domain.usecases.project
 
-import domain.models.project.Project
 import domain.repository.ProjectRepository
 
 class DeleteProjectUseCase(
