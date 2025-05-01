@@ -8,6 +8,6 @@ class TaskAuditLogCLI(
     private val outputPrinter: OutputPrinter,
 //    private val getTaskAuditLogsUseCase: GetTaskAuditLogsUseCase
 ) {
-    fun start() {
+    fun show() {
     }
 }

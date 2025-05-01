@@ -8,6 +8,6 @@ class ProjectAuditLogCLI(
     private val printer: OutputPrinter,
 //    private val getProjectAuditLogsUseCase: GetProjectAuditLogsUseCase
 ) {
-    fun start() {
+    fun show() {
     }
 }

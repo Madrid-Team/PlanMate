@@ -11,4 +11,7 @@ class CreateUserCLI(
 ) {
     fun show() {
     }
+    fun showCreatedUser() {
+
+    }
 }

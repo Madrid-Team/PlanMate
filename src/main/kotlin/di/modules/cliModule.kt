@@ -22,7 +22,7 @@ val cliModule = module {
     single { TaskView() }
     single { ProjectAuditLogCLI(get(), get()) }
     single { TaskAuditLogCLI(get(), get()) }
-    single { AuthenticationCLI(get(), get()) }
+    single { AuthenticationCLI(get(), get(), get()) }
     single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
 
 
