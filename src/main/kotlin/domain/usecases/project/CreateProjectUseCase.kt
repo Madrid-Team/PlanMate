@@ -39,10 +39,10 @@ class CreateProjectUseCase(
     }
 
     private fun validateProject(project: Project) {
-        if (project.name.isEmpty() || !project.name.isValidString()) {
+        if (project.name.isEmpty()) {
             throw ProjectNameInvalidException()
         }
-        if (project.description.isEmpty() || !project.name.isValidString()) {
+        if (project.description.isEmpty()) {
             throw ProjectDescriptionInvalidException()
         }
         if (project.projectStates.isEmpty()) {

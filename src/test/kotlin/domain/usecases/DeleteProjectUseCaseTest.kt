@@ -1,6 +1,7 @@
 package domain.usecases
 
 import domain.repository.ProjectRepository
+import domain.usecases.project.DeleteProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk

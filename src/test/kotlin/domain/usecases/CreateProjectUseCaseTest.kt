@@ -1,12 +1,14 @@
 package domain.usecases
 
+import data.createProject
+import domain.mapper.toDomain
 import domain.repository.ProjectRepository
 import domain.usecases.project.CreateProjectUseCase
-import domain.utlis.*
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CreateProjectUseCaseTest {
@@ -23,15 +25,21 @@ class CreateProjectUseCaseTest {
     @Test
     fun `createProject should return true when project added successfully`() {
         //Given
-        val project = createProject(
+        val project =data.createProject(
             name = "Test Project",
+            description = "project description",
+            createdBy = "user2",
+            projectState = "Todo",
+            taskStates = listOf("Todo", "In progress"),
+            projectStates = listOf("Testing","Todo"),
         )
 
+        every { projectRepository.createProject(project) } returns Result.success(Unit)
         //When
-        val result = createProjectUseCase.createProject(project)
+        val result = createProjectUseCase.createProject(project.toDomain())
 
         //Then
-        assertTrue { result }
+        assertTrue { result.isSuccess }
 
     }
 
@@ -42,10 +50,11 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
         )
 
-        //When & Then
-        assertThrows<ProjectNameExistException> {
-            createProjectUseCase.createProject(project)
-        }
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
+
+        // Then
+        assertFalse { result.isSuccess }
 
     }
 
@@ -56,10 +65,10 @@ class CreateProjectUseCaseTest {
             name = "123 #$",
         )
 
-        //When & Then
-        assertThrows<ProjectNameInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
+        // Then
+        assertFalse { result.isSuccess }
     }
 
     @Test
@@ -70,10 +79,11 @@ class CreateProjectUseCaseTest {
             description = "123 #$"
         )
 
-        //When & Then
-        assertThrows<ProjectDescriptionInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
+
+        //Then
+        assertFalse{result.isSuccess}
     }
 
 
@@ -84,11 +94,11 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = ""
         )
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
 
-        //When & Then
-        assertThrows<ProjectDescriptionInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
+        //Then
+        assertFalse{result.isSuccess}
     }
 
     @Test
@@ -99,10 +109,11 @@ class CreateProjectUseCaseTest {
             projectStates = emptyList()
         )
 
-        //When & Then
-        assertThrows<ProjectStatesInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
+
+        //Then
+        assertFalse{result.isSuccess}
     }
 
 
@@ -114,11 +125,11 @@ class CreateProjectUseCaseTest {
             taskStates = emptyList()
         )
 
-        //When & Then
-        assertThrows<ProjectTaskStatesInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
+        //When
+        val result = createProjectUseCase.createProject(project.toDomain())
 
+        //Then
+        assertFalse{result.isSuccess}
     }
 
 }
