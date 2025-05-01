@@ -1,6 +1,7 @@
 package data.source.task
 
 import com.google.common.truth.Truth.assertThat
+import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.usecases.task.createTask
 import domain.utlis.CannotCreateTaskException
@@ -15,12 +16,14 @@ class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
     private lateinit var fileCsvWriter: FileCsvWriter
     private lateinit var taskCsvDataSource: TaskCsvDataSource
+    private lateinit var fileCsvReader: FileCsvReader
 
     @BeforeEach
     fun setup() {
         taskCsvParser = mockk()
         fileCsvWriter = mockk()
-        taskCsvDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter)
+        fileCsvReader = mockk()
+        taskCsvDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter, fileCsvReader)
     }
 
     @Test
