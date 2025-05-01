@@ -1,7 +1,9 @@
 package data.repository
 
-import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
+import domain.mapper.toDomain
+import domain.mapper.toDto
+import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectsFileNotExistsException
@@ -13,7 +15,7 @@ class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource
 ) : ProjectRepository {
 
-    private lateinit var projects: MutableList<ProjectDto>
+    private lateinit var projects: MutableList<Project>
 
     init {
         initProjects()
@@ -22,22 +24,22 @@ class ProjectRepositoryImpl(
     private fun initProjects() {
         val result = projectDataSource.getProjects()
         projects = if (result.isSuccess) {
-            result.getOrThrow().toMutableList()
+            result.getOrThrow().map { it.toDomain() }.toMutableList()
         } else {
             mutableListOf()
         }
     }
 
-    override fun getAllProjects(): List<ProjectDto> {
+    override fun getAllProjects(): List<Project> {
         return projects.ifEmpty {
             throw PlanMateExceptions("You haven't any projects yet")
         }
     }
 
 
-    override fun createProject(project: ProjectDto): Result<Unit> {
+    override fun createProject(project: Project): Result<Unit> {
 
-        val result = projectDataSource.createProject(project)
+        val result = projectDataSource.createProject(project.toDto())
 
         return if (result.isSuccess) {
             projects.add(project)
@@ -62,7 +64,7 @@ class ProjectRepositoryImpl(
             try {
                 projects.remove(projectToRemove)
 
-                val result = projectDataSource.deleteProject(projects)
+                val result = projectDataSource.deleteProject(projects.map { it.toDto() })
 
                 if (result.isSuccess) {
                     Result.success(Unit)
@@ -79,7 +81,7 @@ class ProjectRepositoryImpl(
         }
     }
 
-    override fun editProject(project: ProjectDto): Result<Unit> {
+    override fun editProject(project: Project): Result<Unit> {
         TODO("Not yet implemented")
     }
 
