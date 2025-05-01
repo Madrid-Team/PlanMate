@@ -1,23 +1,27 @@
 package data.repository
 
 import data.source.project.ProjectDataSource
-import data.dto.project.Project
+import data.dto.project.ProjectDto
 import domain.repository.ProjectRepository
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource
 ):ProjectRepository {
-
-    override fun createProject(project: Project) {
-        TODO()
-    }
-
-    override fun deleteProject(projectId: String) {
-        TODO()
-    }
-
-    override fun editProject(project: Project) {
+    override fun getAllProjects(): List<ProjectDto> {
         TODO("Not yet implemented")
     }
+
+    override fun createProject(project: ProjectDto): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteProject(projectId: String): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override fun editProject(project: ProjectDto): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
 
 }

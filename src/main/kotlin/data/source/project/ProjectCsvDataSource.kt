@@ -2,25 +2,26 @@ package data.source.project
 
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import data.dto.project.Project
+import data.dto.project.ProjectDto
 
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val projectCsvParser: ProjectCsvParser
 ) : ProjectDataSource {
+    override fun getAllProjects(): List<ProjectDto> {
+        TODO("Not yet implemented")
+    }
 
-    override fun createProject(project: Project): Result<Unit> {
-        val projectRow = projectCsvParser.parseProjectToString(project)
-        fileCsvWriter.writeProjectToCsvFile(projectRow)
-        return Result.success(Unit)
+    override fun createProject(project: ProjectDto): Result<Unit> {
+        TODO()
     }
 
     override fun deleteProject(projectId: String): Result<Unit> {
         TODO()
     }
 
-    override fun editProject(project: Project): Result<Unit> {
+    override fun editProject(project: ProjectDto): Result<Unit> {
         TODO("Not yet implemented")
     }
 }
