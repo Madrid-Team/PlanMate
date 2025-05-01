@@ -43,6 +43,7 @@ class UserCsvDataSourceTest {
             role = UserRoleDto.MATE,
         )
         val userRow = listOf("3", "username3", "passwordhash3", "MATE")
+//        every { fileCsvReader.readCsvFile() } returns emptyList()
         every { userCsvParser.parseUserToRow(user3) } returns userRow.toString()
         every { fileCsvWriter.writeToCsvFile(userRow.toString()) } returns Unit
         val result = dataSource.createUser(user3)
