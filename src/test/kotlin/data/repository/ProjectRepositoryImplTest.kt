@@ -1,7 +1,9 @@
 package data.repository
 
+import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.source.project.ProjectDataSource
+import domain.mapper.toDomain
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
@@ -18,20 +20,22 @@ class ProjectRepositoryImplTest {
         repository = ProjectRepositoryImpl(projectDataSource)
     }
 
-        @Test
+    @Test
     fun `getAllProjects returns list of projects when list is not empty `() {
         // Given
         val projects = listOf(
             createProject(id = "1", name = "test"),
             createProject(id = "2", name = "test2")
         )
-        every { projectDataSource.getAllProjects() } returns projects
+        every { projectDataSource.getProjects() } returns Result.success(projects)
+
+        repository = ProjectRepositoryImpl(projectDataSource)
 
         // When
         val result = repository.getAllProjects()
 
         // Then
-        assertEquals(projects, result)
+        assertThat(result).containsExactlyElementsIn(projects.map { it.toDomain() })
     }
 
     @Test
@@ -41,7 +45,7 @@ class ProjectRepositoryImplTest {
         every { projectDataSource.createProject(project) } returns Result.success(Unit)
 
         // When
-        val result = repository.createProject(project)
+        val result = repository.createProject(project.toDomain())
 
         // Then
         assertTrue(result.isSuccess)
@@ -51,7 +55,13 @@ class ProjectRepositoryImplTest {
     fun `deleteProject returns success when data source return success`() {
         // Given
         val projectId = "1"
-        every { projectDataSource.deleteProject(projectId) } returns Result.success(Unit)
+        val projects = listOf(
+            createProject(id = "1", name = "test"),
+            createProject(id = "2", name = "test2")
+        )
+        every { projectDataSource.getProjects() } returns Result.success(projects)
+
+        repository = ProjectRepositoryImpl(projectDataSource)
 
         // When
         val result = repository.deleteProject(projectId)
@@ -66,7 +76,7 @@ class ProjectRepositoryImplTest {
         val updatedProject = createProject(id = "1", name = "Updated Name")
         every { projectDataSource.editProject(updatedProject) } returns Result.success(Unit)
 
-        val result = repository.editProject(updatedProject)
+        val result = repository.editProject(updatedProject.toDomain())
 
         assertTrue(result.isSuccess)
     }
