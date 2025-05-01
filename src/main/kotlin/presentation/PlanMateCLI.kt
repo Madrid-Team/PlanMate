@@ -27,14 +27,11 @@ class PlanMateCLI(
         while (true) {
             outputPrinter.printMessage("=== === Main Menu === ===")
             outputPrinter.printMessage("1. Log in")
-            outputPrinter.printMessage("2. Create an account")
             outputPrinter.printMessage("0. Exit")
 
 
             when (inputReader.readInput("Select an option: ")) {
-                "1" -> TODO("login")
-
-                "2" -> authenticationCLI.createUser()
+                "1" ->  authenticationCLI.login()
 
                 "0" -> {
                     outputPrinter.printMessage("Goodbye!")
@@ -46,12 +43,12 @@ class PlanMateCLI(
         }
     }
 
-    private fun showMenuFor(user: User) {
+    private fun showMenuForUser(user: User) {
         outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
 
         when (user.role) {
             UserRole.ADMIN -> showAdminMenu()
-            UserRole.MATE -> showMemberMenu()
+            UserRole.MATE -> showMateMenu()
         }
     }
 
@@ -61,7 +58,7 @@ class PlanMateCLI(
             outputPrinter.printMessage("1. Manage tasks")
             outputPrinter.printMessage("2. Manage projects")
             outputPrinter.printMessage("3. Manage users")
-            outputPrinter.printMessage("4. Administrative tools")
+            outputPrinter.printMessage("4. Admin tools")
             outputPrinter.printMessage("0. Log out")
 
             when (inputReader.readInput("Select an option: ")) {
@@ -78,9 +75,9 @@ class PlanMateCLI(
         }
     }
 
-    private fun showMemberMenu() {
+    private fun showMateMenu() {
         while (true) {
-            outputPrinter.printMessage("=== Member Menu ===")
+            outputPrinter.printMessage("=== Mate Menu ===")
             outputPrinter.printMessage("1. View my tasks")
             outputPrinter.printMessage("2. View projects")
             outputPrinter.printMessage("3. Update my information")
