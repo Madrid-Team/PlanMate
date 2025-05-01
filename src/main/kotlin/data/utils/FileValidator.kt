@@ -1,15 +1,33 @@
 package data.utils
 
 import java.io.File
-import java.io.FileNotFoundException
+import java.io.IOException
 
 class FileValidator(
-     private val file: File
+    val file: File
 ) {
-    fun getFile(): File {
-        if (file.exists()) {
-            return file
+    fun checkFile(): File {
+        return if (file.exists()) {
+            file
         } else
-            throw FileNotFoundException("Project file does not exist")
+            createCsvFileWithHeader()
     }
+
+    fun createCsvFileWithHeader(): File {
+        try {
+
+            if (!file.parentFile.exists()) {
+                file.parentFile.mkdirs()
+            }
+
+            file.createNewFile()
+
+            file.name.appendHeader(file)
+
+            return file
+        } catch (e: Exception) {
+            throw IOException("Error creating CSV file: ${e.message}", e)
+        }
+    }
+
 }
