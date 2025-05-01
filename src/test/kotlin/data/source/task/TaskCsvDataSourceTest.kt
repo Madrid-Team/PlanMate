@@ -65,6 +65,13 @@ class TaskCsvDataSourceTest {
         }
     }
 
+    @Test
+    fun `should get all tasks return list of tasks`() {
+        val tasks = listOf(task, task)
+
+        assertThat(taskCsvDataSource.getAllTasks()).isEqualTo(tasks)
+    }
+
 
     companion object {
         val task = createTask(id = "12", title = "task")
