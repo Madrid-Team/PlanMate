@@ -1,27 +1,27 @@
-package data.repository
+package data.source.project
 
-import data.source.project.ProjectDataSource
+import data.utils.FileCsvReader
+import data.utils.FileCsvWriter
 import data.dto.project.ProjectDto
-import domain.repository.ProjectRepository
 
-class ProjectRepositoryImpl(
-    private val projectDataSource: ProjectDataSource
-):ProjectRepository {
+class ProjectCsvDataSource(
+    private val fileCsvReader: FileCsvReader,
+    private val fileCsvWriter: FileCsvWriter,
+    private val projectCsvParser: ProjectCsvParser
+) : ProjectDataSource {
     override fun getAllProjects(): List<ProjectDto> {
         TODO("Not yet implemented")
     }
 
     override fun createProject(project: ProjectDto): Result<Unit> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun deleteProject(projectId: String): Result<Unit> {
-        TODO("Not yet implemented")
+        TODO()
     }
 
     override fun editProject(project: ProjectDto): Result<Unit> {
         TODO("Not yet implemented")
     }
-
-
 }

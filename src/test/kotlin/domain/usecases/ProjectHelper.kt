@@ -8,10 +8,17 @@ fun createProject(
     description: String = "",
     id: String = UUID.randomUUID().toString(),
     createdBy:String = "",
+    projectState:String = "",
+    taskStates: List<String> = listOf(),
+    projectLogs:List<String> = emptyList(),
+    projectStates:List<String> = emptyList()
     ) = Project(
-        id = id,
-        name = name,
-        description = description,
-        createdBy = createdBy,
-        projectLogs = emptyList(),
-    )
+    id = id,
+    name = name,
+    description = description,
+    createdBy = createdBy,
+    projectLogs = projectLogs,
+    projectState = projectState,
+    taskStates = taskStates,
+    projectStates = projectStates
+)

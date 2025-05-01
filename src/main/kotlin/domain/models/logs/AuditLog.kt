@@ -2,11 +2,9 @@ package domain.models.logs
 
 import domain.utlis.convertDateIntoReadableDate
 import java.time.LocalDateTime
-import java.util.*
 
 
 data class AuditLog(
-    val id: String = UUID.randomUUID().toString(),
     val entityId: String,
     val entityName: String,
     val entityType: EntityType,
