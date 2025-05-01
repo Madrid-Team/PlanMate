@@ -1,9 +1,8 @@
-package domain.models.project
+package data.dto.project
 
-import domain.models.logs.AuditLog
 import java.util.*
 
-data class Project(
+data class ProjectDto(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,

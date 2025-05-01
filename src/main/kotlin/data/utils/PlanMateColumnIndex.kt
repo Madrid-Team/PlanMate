@@ -11,6 +11,9 @@ object PlanMateColumnIndex {
         const val PROJECT_LOGS = 4
         const val PROJECT_STATES = 5
         const val PROJECT_TASKS_STATES = 6
+        const val PROJECT_STATE = 5
+        const val PROJECT_TASKS_STATES = 6
+        const val PROJECT_STATES = 7
     }
 
     object TaskColumnsIndex {
@@ -37,5 +40,4 @@ object PlanMateColumnIndex {
         const val AUDIT_LOG_NEW_VALUE = 9
         const val AUDIT_LOG_TIME_STAMP = 10
     }
-
 }
