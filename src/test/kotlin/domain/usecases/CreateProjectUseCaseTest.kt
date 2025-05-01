@@ -1,9 +1,7 @@
 package domain.usecases
 
 import domain.repository.ProjectRepository
-import domain.utlis.ProjectDescriptionInvalidException
-import domain.utlis.ProjectNameExistException
-import domain.utlis.ProjectNameInvalidException
+import domain.utlis.*
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -92,6 +90,34 @@ class CreateProjectUseCaseTest {
         }
     }
 
+    @Test
+    fun `createProject should throw ProjectStatesInvalidException when project states list is empty`() {
+        //Given
+        val project = createProject(
+            name = "Test Project",
+            projectStates = emptyList()
+        )
 
+        //When & Then
+        assertThrows<ProjectStatesInvalidException> {
+            createProjectUseCase.createProject(project)
+        }
+    }
+
+
+    @Test
+    fun `createProject should throw ProjectStatesInvalidException when task states list is empty`() {
+        //Given
+        val project = createProject(
+            name = "Test Project",
+            taskStates = emptyList()
+        )
+
+        //When & Then
+        assertThrows<ProjectTaskStatesInvalidException> {
+            createProjectUseCase.createProject(project)
+        }
+
+    }
 
 }
