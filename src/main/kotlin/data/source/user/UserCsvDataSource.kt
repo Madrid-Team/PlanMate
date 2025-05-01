@@ -18,7 +18,12 @@ class UserCsvDataSource(
     }
 
     override fun getUser(userId: String): Result<UserDto?> {
-        TODO("Not yet implemented")
+        return try {
+            val user = getAllUsers().getOrThrow().firstOrNull { userId == it.id }
+            Result.success(user)
+        } catch (_: Exception) {
+            Result.failure(Exception("Something went wrong"))
+        }
     }
 
     override fun getAllUsers(): Result<List<UserDto>> {
@@ -32,6 +37,11 @@ class UserCsvDataSource(
     }
 
     override fun getUserByName(userName: String): Result<UserDto?> {
-        TODO("Not yet implemented")
+        return try {
+            val user = getAllUsers().getOrThrow().firstOrNull { userName == it.username }
+            Result.success(user)
+        } catch (_: Exception) {
+            Result.failure(Exception("Something went wrong"))
+        }
     }
 }
