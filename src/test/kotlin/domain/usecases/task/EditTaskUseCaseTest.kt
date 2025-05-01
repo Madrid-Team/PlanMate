@@ -1,13 +1,11 @@
-package domain.usecases
+package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
-import createTask
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest

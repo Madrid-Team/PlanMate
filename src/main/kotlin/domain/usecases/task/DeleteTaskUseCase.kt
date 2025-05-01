@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository

@@ -1,7 +1,6 @@
-package domain.usecases
+package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
-import createTask
 import domain.repository.TaskRepository
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
