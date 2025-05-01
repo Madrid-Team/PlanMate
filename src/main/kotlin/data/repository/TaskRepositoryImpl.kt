@@ -16,7 +16,11 @@ class TaskRepositoryImpl : TaskRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getAllTasks(): List<Task> {
+        override fun getAllTasks(): List<Task> {
+            TODO("Not yet implemented")
+        }
+
+    override fun getTasksByProjectId(projectId: String): List<Task> {
         TODO("Not yet implemented")
     }
 }
