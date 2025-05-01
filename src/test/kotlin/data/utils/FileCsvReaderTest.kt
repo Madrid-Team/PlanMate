@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import java.io.File
 import java.io.FileNotFoundException
+import java.io.IOException
 import kotlin.test.Test
 
 class FileCsvReaderTest {
@@ -36,11 +37,11 @@ class FileCsvReaderTest {
     }
 
     @Test
-    fun `readProjectCsvFile function should return FileNotFoundException if file not found`() {
+    fun `readProjectCsvFile function should return IOException if file not found`() {
 
         mockFile.delete()
 
-        assertThrows<FileNotFoundException> {
+        assertThrows<IOException> {
             fileCsvReader.readCsvFile()
         }
 

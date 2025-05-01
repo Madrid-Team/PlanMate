@@ -1,7 +1,9 @@
-package domain.usecases
+package data
 
+import data.dto.project.ProjectDto
 import domain.models.project.Project
 import java.util.*
+
 
 fun createProject(
     name: String = "",
@@ -10,15 +12,15 @@ fun createProject(
     createdBy:String = "",
     projectState:String = "",
     taskStates: List<String> = listOf(),
-    projectLogs:List<String> = emptyList(),
-    projectStates:List<String> = emptyList()
-    ) = Project(
+    projectLogs:List<String> = listOf(),
+    projectStates: List<String> = emptyList(),
+) = ProjectDto(
     id = id,
     name = name,
     description = description,
     createdBy = createdBy,
     projectLogs = projectLogs,
-    projectState = projectState,
+    projectState =projectState,
     taskStates = taskStates,
-    projectStates = projectStates
+    projectStates = projectStates,
 )
