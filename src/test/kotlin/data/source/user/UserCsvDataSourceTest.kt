@@ -17,18 +17,8 @@ class UserCsvDataSourceTest {
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var dataSource: UserCsvDataSource
 
-    private val user1 = UserDto(
-        id = "1",
-        username = "username1",
-        passwordHash = "passwordhash1",
-        role = UserRoleDto.ADMIN,
-    )
-    private val user2 = UserDto(
-        id = "2",
-        username = "username2",
-        passwordHash = "passwordhash2",
-        role = UserRoleDto.MATE,
-    )
+    private val user1 = UserDto("1", "username1", "passwordhash1", UserRoleDto.ADMIN)
+    private val user2 = UserDto("2", "username2", "passwordhash2", UserRoleDto.MATE)
     private val row1 = "1,username1,passwordhash1,ADMIN"
     private val row2 = "2,username2,passwordhash2,MATE"
 
@@ -40,6 +30,7 @@ class UserCsvDataSourceTest {
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
 
+    // region getAllUsersTest
     @Test
     fun `getAllUsers should return all users when result is success`() {
         // Given
@@ -78,5 +69,59 @@ class UserCsvDataSourceTest {
         // When & Then
         assertThat(result.isFailure).isTrue()
     }
+
+    // endregion
+    // region getUserByNameTest
+    @Test
+    fun `getUserByName should return user when username is exists`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+
+        // When
+        val result = dataSource.getUserByName("username1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(user1)
+    }
+
+    @Test
+    fun `getUserByName should throws exception when file read fails`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } throws Exception()
+
+        // When
+        val result = dataSource.getUserByName("username1")
+        // When & Then
+        assertThat(result.isFailure).isTrue()
+    }
+    // endregion
+    // region getUserByNameTest
+    @Test
+    fun `getUser should return user when id is exist`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+
+        // When
+        val result = dataSource.getUser("1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(user1)
+    }
+
+    @Test
+    fun `getUser should throws exception when file read fails`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } throws Exception()
+
+        // When
+        val result = dataSource.getUserByName("1")
+        // When & Then
+        assertThat(result.isFailure).isTrue()
+    }
+    // endregion
 
 }
