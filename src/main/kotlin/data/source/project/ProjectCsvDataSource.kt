@@ -9,6 +9,9 @@ class ProjectCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val projectCsvParser: ProjectCsvParser
 ) : ProjectDataSource {
+    override fun getAllProjects(): List<ProjectDto> {
+        TODO("Not yet implemented")
+    }
 
     override fun createProject(project: ProjectDto): Result<Unit> {
         TODO()
