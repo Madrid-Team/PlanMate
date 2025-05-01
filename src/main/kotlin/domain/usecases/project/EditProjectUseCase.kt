@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.project
 
 import data.dto.project.ProjectDto
 import domain.models.project.Project

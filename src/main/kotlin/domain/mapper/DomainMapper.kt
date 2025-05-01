@@ -22,6 +22,21 @@ fun UserRoleDto.toDomain() = when (this) {
     UserRoleDto.MATE -> UserRole.MATE
 }
 
+fun User.toDto() =
+    UserDto(
+        id = id,
+        username = username,
+        passwordHash = passwordHash,
+        role = role.toDto(),
+    )
+
+
+fun UserRole.toDto() = when (this) {
+    UserRole.ADMIN -> UserRoleDto.ADMIN
+    UserRole.MATE -> UserRoleDto.MATE
+}
+
+
 fun ProjectDto.toDomain() =
     Project(
         id = id,
@@ -34,8 +49,33 @@ fun ProjectDto.toDomain() =
         projectStates = projectStates,
     )
 
+fun Project.toDto() =
+    ProjectDto(
+        id = id,
+        name = name,
+        description = description,
+        createdBy = createdBy,
+        projectLogs = projectLogs,
+        projectState = projectState,
+        taskStates = taskStates,
+        projectStates = projectStates,
+    )
+
+
 fun TaskDto.toDomain() =
     Task(
+        id = id,
+        projectId = projectId,
+        description = description,
+        createdBy = createdBy,
+        logs = logs,
+        state = state,
+        title = title,
+    )
+
+
+fun Task.toDto() =
+    TaskDto(
         id = id,
         projectId = projectId,
         description = description,

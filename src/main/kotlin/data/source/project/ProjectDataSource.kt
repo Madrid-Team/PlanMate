@@ -6,6 +6,6 @@ interface ProjectDataSource {
 
     fun getProjects(): Result<List<ProjectDto>>
     fun createProject(project: ProjectDto):Result<Unit>
-    fun deleteProject(projectId: String):Result<Unit>
-    fun editProject(projects: List<ProjectDto>): Result<Unit>
+    fun deleteProject(projects: List<ProjectDto>):Result<Unit>
+    fun editProject(project: ProjectDto): Result<Unit>
 }
