@@ -17,7 +17,7 @@ class EditTaskUseCase(
             createdBy = updatedTask.state.ifBlank { oldTask.createdBy },
             logs = updatedTask.logs.ifEmpty { oldTask.logs }
         )
-        taskRepository.editTask(oldTaskId, newTask)
+        taskRepository.editTask(newTask)
         return true
     }
 

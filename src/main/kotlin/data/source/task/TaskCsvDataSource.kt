@@ -7,18 +7,16 @@ class TaskCsvDataSource(
     private val taskCsvParser: TaskCsvParser,
     private val fileCsvWriter: FileCsvWriter
 ) : TaskDataSource {
-    override fun editTask(task: Task): Result<Unit> {
+    override fun editTask(task: Task): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun deleteTask(taskId: String): Result<Unit> {
+    override fun deleteTask(taskId: String): Boolean {
         TODO("Not yet implemented")
     }
 
-    override fun createTask(task: Task): Result<Unit> {
-        val taskRow = taskCsvParser.parseTaskToString(task)
-        fileCsvWriter.writeProjectToCsvFile(taskRow)
-        return Result.success(Unit)
+    override fun createTask(task: Task): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun getAllTasks(): List<Task> {
