@@ -7,4 +7,6 @@ interface TaskDataSource {
     fun deleteTask(taskId: String): Boolean
     fun createTask(task: Task): Boolean
     fun getAllTasks(): List<Task>
+    fun getListWithDeletedTask(taskId: String): List<Task>
+    fun getListOfUpdatedList(task: Task): List<Task>
 }

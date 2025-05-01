@@ -13,8 +13,9 @@ class TaskCsvDataSource(
 ) : TaskDataSource {
     override fun editTask(task: Task): Boolean {
         return try {
-            val rowOfString = getListOfUpdatedList(task).let { taskCsvParser.parseTaskToString(task) }
-            fileCsvWriter.updateCsvFile(rowOfString)
+            val updatedTasks = getListOfUpdatedList(task)
+            val csvContent = updatedTasks.joinToString("\n") { taskCsvParser.parseTaskToString(it) }
+            fileCsvWriter.updateCsvFile(csvContent)
             true
         } catch (e: Exception) {
             throw TaskNotFoundException(e.message)
@@ -48,7 +49,7 @@ class TaskCsvDataSource(
         return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it) }
     }
 
-    private fun getListWithDeletedTask(taskId: String): List<Task> {
+    override fun getListWithDeletedTask(taskId: String): List<Task> {
         return getAllTasks().let { tasks ->
             tasks.indexOfFirst { it.id == taskId }.let { taskIndex ->
                 (tasks.subList(0, taskIndex) + tasks.subList(taskIndex + 1, tasks.size))
@@ -56,7 +57,7 @@ class TaskCsvDataSource(
         }
     }
 
-    private fun getListOfUpdatedList(task: Task): List<Task> {
+    override fun getListOfUpdatedList(task: Task): List<Task> {
         return getAllTasks().let { tasks ->
             tasks.indexOfFirst { task.id == it.id }.let { taskIndex ->
                 (tasks.subList(0, taskIndex) + task + tasks.subList((taskIndex + 1), tasks.size))

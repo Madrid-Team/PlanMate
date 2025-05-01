@@ -7,10 +7,14 @@ import domain.usecases.task.createTask
 import domain.utlis.CannotCreateTaskException
 import domain.utlis.TaskCannotEditException
 import domain.utlis.TaskNotFoundException
+import io.mockk.InternalPlatformDsl.toStr
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.concurrent.timerTask
 
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
@@ -23,14 +27,27 @@ class TaskCsvDataSourceTest {
         taskCsvParser = mockk()
         fileCsvWriter = mockk()
         fileCsvReader = mockk()
-        taskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter,fileCsvReader)
+        taskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter, fileCsvReader)
     }
 
     @Test
     fun `should edit task return true when edit task successfully`() {
-        val result = taskDataSource.editTask(task)
+        val existingTask = createTask(
+            id = "121",
+            title = "title",
+        )
+        val updatedTask = existingTask.copy(title = "new title")
+        val tasksList = listOf(existingTask)
+        val csvString = "121,p1"
 
-        assertThat(result).isEqualTo(true)
+        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
+        every { taskCsvParser.parseTaskToString(updatedTask) } returns csvString
+        every { fileCsvWriter.updateCsvFile(csvString) } returns Unit
+
+        val result = taskDataSource.editTask(updatedTask)
+
+        assertThat(result).isTrue()
+        verify { fileCsvWriter.updateCsvFile(csvString) }
     }
 
     @Test
