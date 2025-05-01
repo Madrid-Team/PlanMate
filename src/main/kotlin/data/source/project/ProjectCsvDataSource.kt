@@ -1,8 +1,8 @@
 package data.source.project
 
+import data.dto.project.ProjectDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import data.dto.project.ProjectDto
 
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -39,8 +39,18 @@ class ProjectCsvDataSource(
         }
     }
 
-    override fun deleteProject(projectId: String): Result<Unit> {
-        TODO()
+    override fun deleteProject(projects: List<ProjectDto>): Result<Unit> {
+        return try {
+            var projectFileContentAfterDeletion = ""
+            projects.forEach {
+                val projectAsString = projectCsvParser.parseProjectToString(it) + "\n"
+                projectFileContentAfterDeletion += projectAsString
+             }
+            fileCsvWriter.updateCsvFile(projectFileContentAfterDeletion)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     override fun editProject(project: ProjectDto): Result<Unit> {

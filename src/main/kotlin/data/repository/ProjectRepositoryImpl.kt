@@ -34,6 +34,7 @@ class ProjectRepositoryImpl(
         }
     }
 
+
     override fun createProject(project: ProjectDto): Result<Unit> {
 
         val result = projectDataSource.createProject(project)
@@ -53,7 +54,29 @@ class ProjectRepositoryImpl(
     }
 
     override fun deleteProject(projectId: String): Result<Unit> {
-        TODO()
+
+        val projectToRemove = projects.find { it.id == projectId }
+
+
+        return if (projectToRemove != null) {
+            try {
+                projects.remove(projectToRemove)
+
+                val result = projectDataSource.deleteProject(projects)
+
+                if (result.isSuccess) {
+                    Result.success(Unit)
+                } else {
+                    projects.add(projectToRemove)
+                    Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
+                }
+            } catch (e: Exception) {
+                projects.add(projectToRemove)
+                Result.failure(e)
+            }
+        } else {
+            Result.failure(PlanMateExceptions("Project with ID $projectId not found"))
+        }
     }
 
     override fun editProject(project: ProjectDto): Result<Unit> {
