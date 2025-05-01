@@ -8,7 +8,7 @@ class CreateTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val taskView: TaskView,
-    private val useCase: CreateTaskUseCase
+    private val createTaskUseCase: CreateTaskUseCase
 ) {
     fun show() {
     }

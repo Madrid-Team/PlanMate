@@ -5,7 +5,7 @@ import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
 class CreateUserCLI(
-    private val useCase: CreateUserUseCase,
+    private val createUserUseCase: CreateUserUseCase,
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter
 ) {

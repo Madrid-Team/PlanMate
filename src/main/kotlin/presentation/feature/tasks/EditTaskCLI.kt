@@ -8,7 +8,7 @@ class EditTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val taskView: TaskView,
-    private val useCase: EditTaskUseCase
+    private val editTaskUseCase: EditTaskUseCase
 ) {
     fun show() {
     }

@@ -54,7 +54,7 @@ class PlanMateCLI(
 
     private fun showAdminMenu() {
         while (true) {
-            outputPrinter.printMessage("=== Administrator Menu ===")
+            outputPrinter.printMessage("=== Admin Menu ===")
             outputPrinter.printMessage("1. Manage tasks")
             outputPrinter.printMessage("2. Manage projects")
             outputPrinter.printMessage("3. Manage users")
