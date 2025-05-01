@@ -1,5 +1,6 @@
 package data.repository
 
+import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
 import domain.mapper.toDomain
 import domain.mapper.toDto
@@ -15,7 +16,7 @@ class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource
 ) : ProjectRepository {
 
-    private lateinit var projects: MutableList<Project>
+    private var projects: MutableList<Project> = mutableListOf()
 
     init {
         initProjects()
@@ -24,16 +25,15 @@ class ProjectRepositoryImpl(
     private fun initProjects() {
         val result = projectDataSource.getProjects()
         projects = if (result.isSuccess) {
-            result.getOrThrow().map { it.toDomain() }.toMutableList()
+            val dtoList = result.getOrNull() as? List<ProjectDto> ?: emptyList()
+            dtoList.map { it.toDomain() }.toMutableList()
         } else {
             mutableListOf()
         }
     }
 
     override fun getAllProjects(): List<Project> {
-        return projects.ifEmpty {
-            throw PlanMateExceptions("You haven't any projects yet")
-        }
+        return projects
     }
 
 
@@ -61,21 +61,17 @@ class ProjectRepositoryImpl(
 
 
         return if (projectToRemove != null) {
-            try {
-                projects.remove(projectToRemove)
+            projects.remove(projectToRemove)
 
-                val result = projectDataSource.deleteProject(projects.map { it.toDto() })
+            val result = projectDataSource.deleteProject(projects.map { it.toDto() })
 
-                if (result.isSuccess) {
-                    Result.success(Unit)
-                } else {
-                    projects.add(projectToRemove)
-                    Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
-                }
-            } catch (e: Exception) {
+            if (result.isSuccess) {
+                Result.success(Unit)
+            } else {
                 projects.add(projectToRemove)
-                Result.failure(e)
+                Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
             }
+
         } else {
             Result.failure(PlanMateExceptions("Project with ID $projectId not found"))
         }

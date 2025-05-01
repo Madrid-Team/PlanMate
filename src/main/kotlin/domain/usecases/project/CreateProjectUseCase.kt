@@ -14,18 +14,7 @@ class CreateProjectUseCase(
 
             validateProject(project)
 
-            val newProject = ProjectDto(
-                id = project.id,
-                name = project.name,
-                description = project.description,
-                createdBy = project.createdBy,
-                projectStates = project.projectStates,
-                projectLogs = project.projectLogs,
-                projectState = project.projectState,
-                taskStates = project.taskStates
-            )
-
-            val result = projectRepository.createProject(newProject)
+            val result = projectRepository.createProject(project)
 
             return if (result.isSuccess) {
                 Result.success(Unit)

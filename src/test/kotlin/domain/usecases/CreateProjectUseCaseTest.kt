@@ -1,7 +1,5 @@
 package domain.usecases
 
-import data.createProject
-import domain.mapper.toDomain
 import domain.repository.ProjectRepository
 import domain.usecases.project.CreateProjectUseCase
 import io.mockk.every
@@ -25,18 +23,18 @@ class CreateProjectUseCaseTest {
     @Test
     fun `createProject should return true when project added successfully`() {
         //Given
-        val project =data.createProject(
+        val project = createProject(
             name = "Test Project",
             description = "project description",
             createdBy = "user2",
             projectState = "Todo",
             taskStates = listOf("Todo", "In progress"),
-            projectStates = listOf("Testing","Todo"),
+            projectStates = listOf("Testing", "Todo"),
         )
 
         every { projectRepository.createProject(project) } returns Result.success(Unit)
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         //Then
         assertTrue { result.isSuccess }
@@ -51,7 +49,7 @@ class CreateProjectUseCaseTest {
         )
 
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         // Then
         assertFalse { result.isSuccess }
@@ -66,7 +64,7 @@ class CreateProjectUseCaseTest {
         )
 
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
         // Then
         assertFalse { result.isSuccess }
     }
@@ -80,10 +78,10 @@ class CreateProjectUseCaseTest {
         )
 
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         //Then
-        assertFalse{result.isSuccess}
+        assertFalse { result.isSuccess }
     }
 
 
@@ -95,10 +93,10 @@ class CreateProjectUseCaseTest {
             description = ""
         )
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         //Then
-        assertFalse{result.isSuccess}
+        assertFalse { result.isSuccess }
     }
 
     @Test
@@ -110,10 +108,10 @@ class CreateProjectUseCaseTest {
         )
 
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         //Then
-        assertFalse{result.isSuccess}
+        assertFalse { result.isSuccess }
     }
 
 
@@ -126,10 +124,10 @@ class CreateProjectUseCaseTest {
         )
 
         //When
-        val result = createProjectUseCase.createProject(project.toDomain())
+        val result = createProjectUseCase.createProject(project)
 
         //Then
-        assertFalse{result.isSuccess}
+        assertFalse { result.isSuccess }
     }
 
 }
