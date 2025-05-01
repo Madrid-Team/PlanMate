@@ -73,7 +73,7 @@ class UserCsvDataSourceTest {
     // endregion
     // region getUserByNameTest
     @Test
-    fun `getUserByName should return user when result is success`() {
+    fun `getUserByName should return user when username is exists`() {
         // Given
         every { fileCsvReader.readCsvFile() } returns listOf(row1)
         every { userCsvParser.parseRowToUser(row1) } returns user1
@@ -93,6 +93,32 @@ class UserCsvDataSourceTest {
 
         // When
         val result = dataSource.getUserByName("username1")
+        // When & Then
+        assertThat(result.isFailure).isTrue()
+    }
+    // endregion
+    // region getUserByNameTest
+    @Test
+    fun `getUser should return user when id is exist`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+
+        // When
+        val result = dataSource.getUser("1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(user1)
+    }
+
+    @Test
+    fun `getUser should throws exception when file read fails`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } throws Exception()
+
+        // When
+        val result = dataSource.getUserByName("1")
         // When & Then
         assertThat(result.isFailure).isTrue()
     }
