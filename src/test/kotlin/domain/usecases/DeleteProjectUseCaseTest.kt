@@ -1,12 +1,13 @@
 package domain.usecases
 
 import domain.repository.ProjectRepository
-import domain.utlis.ProjectNotFoundException
+import domain.utlis.PlanMateExceptions
+import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class DeleteProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -22,24 +23,27 @@ class DeleteProjectUseCaseTest {
     fun `deleteProject should return a success result when project deleted successfully`() {
         //Given
         val projectId = 1
+        every { projectRepository.deleteProject(projectId.toString()) } returns Result.success(Unit)
 
         //When
         val result = deleteProjectUseCase.deleteProject(projectId.toString())
 
         //Then
-        assertTrue { result }
+        assertTrue { result.isSuccess }
 
     }
 
     @Test
-    fun `deleteProject should throw ProjectNotFoundException when project not exists`() {
+    fun `deleteProject should return a failure result when project not deleted successfully`() {
         //Given
         val projectId = 1
+        every { projectRepository.deleteProject(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
 
-        //When & Then
-        assertThrows<ProjectNotFoundException> {
-            deleteProjectUseCase.deleteProject(projectId.toString())
-        }
+        //When
+        val result = deleteProjectUseCase.deleteProject(projectId.toString())
+
+        //Then
+        assertFalse { result.isSuccess }
 
 
     }
