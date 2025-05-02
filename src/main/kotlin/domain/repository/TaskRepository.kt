@@ -7,4 +7,5 @@ interface TaskRepository {
     fun deleteTask(taskId: String): Boolean
     fun createTask(task: Task): Boolean
     fun getAllTasks(): List<Task>
+    fun getTasksByProjectId(projectId: String): List<Task>
 }
