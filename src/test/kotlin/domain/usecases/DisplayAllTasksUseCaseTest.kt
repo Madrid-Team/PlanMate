@@ -1,12 +1,12 @@
 package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
-import createTask
 import domain.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import domain.repository.ProjectRepository
+import domain.usecases.task.createTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

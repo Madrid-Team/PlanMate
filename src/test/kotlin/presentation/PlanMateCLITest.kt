@@ -1,8 +1,8 @@
 package presentation
 
 import com.google.common.truth.Truth.assertThat
-import domain.models.authentication.User
-import domain.models.authentication.UserRole
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -76,7 +76,7 @@ class PlanMateCLITest {
 
     @Test
     fun `should show task menu when admin selects manage tasks`() {
-        val adminUser = User(id = "1", username = "admin", role = UserRole.ADMIN, passwordHash = "")
+        val adminUser = UserDto(id = "1", username = "admin", role = UserRoleDto.ADMIN, passwordHash = "")
         every { authenticationCLI.getCurrentUser() } returns adminUser
         every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
@@ -87,7 +87,7 @@ class PlanMateCLITest {
 
     @Test
     fun `should show project menu when member selects view projects`() {
-        val memberUser = User(id = "2", username = "user", role = UserRole.ADMIN, passwordHash = "")
+        val memberUser = UserDto(id = "2", username = "user", role = UserRoleDto.ADMIN, passwordHash = "")
         every { authenticationCLI.getCurrentUser() } returns memberUser
         every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
