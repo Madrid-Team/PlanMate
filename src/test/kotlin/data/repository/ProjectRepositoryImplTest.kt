@@ -72,11 +72,16 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `editProject returns success when data source return success`() {
+        // Given
+        val project = createProject(id = "1", name = "test")
+        val projects = listOf(
+            createProject(id = "1", name = "test"),
+            createProject(id = "2", name = "test2")
+        )
+        every { projectDataSource.getProjects() } returns Result.success(projects)
+        repository = ProjectRepositoryImpl(projectDataSource)
 
-        val updatedProject = createProject(id = "1", name = "Updated Name")
-        every { projectDataSource.editProject(updatedProject) } returns Result.success(Unit)
-
-        val result = repository.editProject(updatedProject.toDomain())
+        val result = repository.editProject(project.toDomain())
 
         assertTrue(result.isSuccess)
     }
