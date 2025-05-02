@@ -3,6 +3,7 @@ package data.source.project
 import data.dto.project.ProjectDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import data.utils.projectHeader
 
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -41,9 +42,9 @@ class ProjectCsvDataSource(
 
     override fun deleteProject(projects: List<ProjectDto>): Result<Unit> {
         return try {
-            var projectFileContentAfterDeletion = ""
+            var projectFileContentAfterDeletion = String.projectHeader
             projects.forEach {
-                val projectAsString = projectCsvParser.parseProjectToString(it) + "\n"
+                val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectFileContentAfterDeletion += projectAsString
              }
             fileCsvWriter.updateCsvFile(projectFileContentAfterDeletion)
@@ -55,9 +56,9 @@ class ProjectCsvDataSource(
 
     override fun editProject(projects: List<ProjectDto>): Result<Unit> {
         return try {
-            var projectAfterUpdate = ""
+            var projectAfterUpdate = String.projectHeader
             projects.forEach {
-                val projectAsString = projectCsvParser.parseProjectToString(it) + "\n"
+                val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectAfterUpdate += projectAsString
             }
             fileCsvWriter.updateCsvFile(projectAfterUpdate)
