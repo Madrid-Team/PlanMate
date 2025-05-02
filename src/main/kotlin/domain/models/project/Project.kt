@@ -1,6 +1,5 @@
 package domain.models.project
 
-import domain.models.logs.AuditLog
 import java.util.*
 
 data class Project(

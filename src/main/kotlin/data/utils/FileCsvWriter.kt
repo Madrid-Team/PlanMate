@@ -1,12 +1,14 @@
 package data.utils
 
-import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
 
 class FileCsvWriter(
     private val fileValidator: FileValidator
 ) {
+    fun writeProjectToCsvFile(row: String) {
+        return fileValidator.checkFile().appendText(row)
+    }
+
     fun writeToCsvFile(row: String) {
         try {
             fileValidator.checkFile().appendText(row)

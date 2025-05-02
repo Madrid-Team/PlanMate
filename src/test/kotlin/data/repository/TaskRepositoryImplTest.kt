@@ -1,0 +1,189 @@
+package data.repository
+
+import com.google.common.truth.Truth
+import data.source.task.TaskDataSource
+import domain.models.task.Task
+import domain.repository.TaskRepository
+import domain.usecases.task.createTask
+import domain.utlis.NoLogsFoundException
+import domain.utlis.TaskNotFoundException
+import io.mockk.every
+import io.mockk.mockk
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+
+class TaskRepositoryImplTest {
+    private lateinit var taskDataSource: TaskDataSource
+    private lateinit var taskRepository: TaskRepository
+
+
+    @BeforeEach
+    fun setup() {
+        taskDataSource = mockk(relaxed = true)
+        taskRepository = TaskRepositoryImpl(taskDataSource)
+    }
+
+    @Test
+    fun `get all task should return list of tasks when data source is not empty`() {
+        val tasks = listOf(createTask(), createTask())
+        every { taskDataSource.getAllTasks() } returns tasks
+
+        val result = taskRepository.getAllTasks()
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `get all task should return empty list when data source is empty`() {
+        val tasks = emptyList<Task>()
+        every { taskDataSource.getAllTasks() } returns tasks
+
+        val result = taskRepository.getAllTasks()
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `get all task should throw exception when data source throw exception`() {
+        every { taskDataSource.getAllTasks() } throws Exception()
+
+        assertThrows<Exception> {
+            taskRepository.getAllTasks()
+        }
+    }
+
+    @Test
+    fun `getTasksByProjectId should return list of tasks when date source is not empty`() {
+        val tasks = listOf(createTask(), createTask())
+        val projectId = tasks[0].projectId
+        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+
+        val result = taskRepository.getTasksByProjectId(projectId)
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `getTasksByProjectId should return empty list when date source is empty`() {
+        val tasks = emptyList<Task>()
+        val projectId = "12"
+        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+
+        val result = taskRepository.getTasksByProjectId(projectId)
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `getTasksByProjectId should throw exception when date source throw exception`() {
+        val projectId = "12"
+        every { taskDataSource.getTasksByProjectId(projectId) } throws TaskNotFoundException()
+
+        assertThrows<TaskNotFoundException> {
+            taskRepository.getTasksByProjectId(projectId)
+        }
+    }
+
+    @Test
+    fun `create task should return true when data source return true`() {
+        val task = createTask(id = "1231", title = "task")
+        every { taskDataSource.createTask(task) } returns true
+
+        val result = taskRepository.createTask(task)
+
+        Truth.assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `create task should throw exception when data source throw exception`() {
+        val task = createTask(id = "1231", title = "task")
+        every { taskDataSource.createTask(task) } throws Exception()
+
+        assertThrows<Exception> {
+            taskRepository.createTask(task)
+        }
+    }
+
+
+    @Test
+    fun `delete task should return true when data source return true`() {
+        val taskId = "1313"
+        every { taskDataSource.deleteTask(taskId) } returns true
+
+        val result = taskRepository.deleteTask(taskId)
+
+        Truth.assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `delete task should throw exception when data source throw exception`() {
+        val taskId = "1313"
+        every { taskDataSource.deleteTask(taskId) } throws Exception()
+
+        assertThrows<Exception> {
+            taskRepository.deleteTask(taskId)
+        }
+    }
+
+    @Test
+    fun `edit task should return true when data source return true`() {
+        val task = createTask(id = "1231", title = "task")
+        every { taskDataSource.editTask(task) } returns true
+
+        val result = taskRepository.editTask(task)
+
+        Truth.assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `edit task should throw exception when data source throw exception`() {
+        val task = createTask(id = "1231", title = "task")
+        every { taskDataSource.editTask(task) } throws Exception()
+
+        assertThrows<Exception> {
+            taskRepository.editTask(task)
+        }
+    }
+
+    @Test
+    fun `get task logs should return list of task logs the same the data source returns it`() {
+
+
+        val logs = listOf(
+            "Ahmed Added a file",
+            "Ahmed deleted a file"
+
+        )
+
+
+        every { taskDataSource.getLogsByTaskId("100") } returns logs
+
+        val result = taskRepository.getTaskLogsByID("100")
+
+        Truth.assertThat(result).isEqualTo(logs)
+
+
+    }
+
+    @Test
+    fun `get task logs should throw exception when the data source returns exception that the task does exist and logs is empty`() {
+        every { taskDataSource.getLogsByTaskId("200") } throws NoLogsFoundException()
+
+        assertThrows<NoLogsFoundException> {
+            taskRepository.getTaskLogsByID("200")
+        }
+
+    }
+    @Test
+    fun `get task logs should throw exception when the data source returns exception that the task is not found`() {
+        every { taskDataSource.getLogsByTaskId("300") } throws TaskNotFoundException()
+
+        assertThrows<TaskNotFoundException> {
+            taskRepository.getTaskLogsByID("300")
+        }
+
+    }
+
+
+}
