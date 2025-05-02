@@ -1,0 +1,47 @@
+package presentation.feature.projects
+
+import domain.usecases.project.CreateProjectUseCase
+import domain.utlis.PlanMateExceptions
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
+import presentation.components.InputReader
+import presentation.components.OutputPrinter
+import kotlin.test.Test
+
+class EditProjectCLITest {
+    private lateinit var inputReader: InputReader
+    private lateinit var outputPrinter: OutputPrinter
+    private val useCase = mockk<CreateProjectUseCase>()
+    private lateinit var createProjectCLI: CreateProjectCLI
+
+    @BeforeEach
+    fun setUp() {
+        inputReader = mockk()
+        outputPrinter = mockk(relaxed = true)
+        createProjectCLI = CreateProjectCLI(inputReader, outputPrinter, useCase)
+    }
+
+    @Test
+    fun `should edit project successfully when call create project`() {
+        val project = helperProject(name = "project", description = "description")
+        every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
+        every { useCase.createProject(project) } returns Result.success(Unit)
+
+        createProjectCLI.show()
+
+        verify { outputPrinter.printMessage("Project edited successfully.") }
+    }
+
+    @Test
+    fun `should show error message when editing fails`() {
+        val project = helperProject(name = "project", description = "description")
+        every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
+        every { useCase.createProject(project) } returns Result.failure(PlanMateExceptions("edit failed"))
+
+        createProjectCLI.show()
+
+        verify { outputPrinter.printMessage("edit failed") }
+    }
+}
