@@ -40,7 +40,7 @@ object UpdatedLogFormatter : AuditLogFormatter {
         newValue: String?,
         timestamp: String
     ): String {
-        return "User $username update ${entityType.name} $entityName $fieldName changed from $oldValue' to '$newValue' at $timestamp"
+        return "User $username update ${entityType.name} $entityName $fieldName from $oldValue' to '$newValue' at $timestamp"
     }
 }
 
