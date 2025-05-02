@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import domain.usecases.DeleteTaskUseCase
+import domain.usecases.task.DeleteTaskUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
