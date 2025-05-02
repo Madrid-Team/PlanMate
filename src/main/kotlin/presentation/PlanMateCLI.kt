@@ -1,7 +1,5 @@
 package presentation
 
-import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
@@ -9,8 +7,7 @@ import presentation.feature.tasks.TaskCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import presentation.feature.ProjectAuditLogCLI
-import presentation.feature.TaskAuditLogCLI
+import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.ProjectCLI
 import presentation.feature.user.UserCLI
 
@@ -21,8 +18,7 @@ class PlanMateCLI(
     private val taskCLI: TaskCLI,
     private val projectCLI: ProjectCLI,
     private val userCLI: UserCLI,
-    private val auditLogCLI: TaskAuditLogCLI,
-    private val projectAuditLogCLI: ProjectAuditLogCLI,
+    private val adminCLI: AdminCLI
 ) {
     fun start() {
         outputPrinter.printMessage("=== Welcome to PlanMate ===")
@@ -72,10 +68,7 @@ class PlanMateCLI(
                 "1" -> taskCLI.show()
                 "2" -> projectCLI.show()
                 "3" -> userCLI.show()
-                "4" -> {
-                    projectAuditLogCLI.show()
-                    auditLogCLI.show()
-                }
+                "4" -> adminCLI.showAdminMenu()
                 "0" -> return
                 else -> outputPrinter.printError("Invalid option.")
             }

@@ -1,5 +1,6 @@
 package presentation.feature.projects
 
+import domain.usecases.project.GetAllProjectsUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,7 +16,9 @@ class ProjectCLITest {
     private lateinit var deleteProjectCLI: DeleteProjectCLI
     private lateinit var editProjectCLI: EditProjectCLI
     private lateinit var projectCLI: ProjectCLI
+    private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
     private lateinit var projectView: ProjectView
+
 
     @BeforeEach
     fun setup() {
@@ -25,7 +28,7 @@ class ProjectCLITest {
         deleteProjectCLI = mockk(relaxed = true)
         editProjectCLI = mockk(relaxed = true)
         projectView = mockk(relaxed = true)
-        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI,projectView)
+        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI,projectView, getAllProjectsUseCase)
     }
 
     @Test

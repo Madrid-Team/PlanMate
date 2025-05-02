@@ -1,9 +1,8 @@
-package domain.repository
+package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
-import data.repository.UserRepositoryImpl
 import data.source.user.UserCsvDataSource
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
