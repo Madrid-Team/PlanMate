@@ -119,6 +119,10 @@ class ProjectRepositoryImpl(
         }
     }
 
+    override fun getProjectById(id: String): Project? {
+        TODO("Not yet implemented")
+    }
+
 
     private fun createLogsForUpdatedFields(oldProject: Project, updatedProject: Project): List<String> {
         val logs = mutableListOf<String>()
