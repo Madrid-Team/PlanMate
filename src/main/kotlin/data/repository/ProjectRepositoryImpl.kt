@@ -1,15 +1,15 @@
 package data.repository
 
-import data.source.project.ProjectDataSource
 import data.dto.project.ProjectDto
+import data.source.project.ProjectDataSource
 import domain.mapper.toDomain
 import domain.mapper.toDto
 import domain.models.logs.CreatedLogFormatter
-import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
+import domain.utlis.ProjectNotFoundException
 import domain.utlis.ProjectsFileNotExistsException
 import domain.utlis.ProjectsReadWriteException
 import java.io.FileNotFoundException
@@ -49,7 +49,7 @@ class ProjectRepositoryImpl(
             val log = CreatedLogFormatter.format(
                 entityName = project.name,
                 entityType = EntityType.PROJECT,
-                username = CurrentUser.getCurrentUser().username,
+                username = project.createdBy,
             )
             projects.add(project.copy(projectLogs = listOf(log)))
             result
@@ -104,8 +104,14 @@ class ProjectRepositoryImpl(
             Result.failure(PlanMateExceptions("Project with ID $project.id not found"))
         }
     }
+
     override fun getProjectLogsById(id: String): Result<List<String>> {
-        TODO("Not yet implemented")
+        val project = projects.find { it.id == id }
+        return if (project != null) {
+            Result.success(project.projectLogs)
+        } else {
+            Result.failure(ProjectNotFoundException())
+        }
     }
 
 }
