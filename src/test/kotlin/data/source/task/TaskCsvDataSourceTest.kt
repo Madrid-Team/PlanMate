@@ -100,10 +100,32 @@ class TaskCsvDataSourceTest {
         assertThat(result).isEqualTo(listOf(task, task))
     }
 
+    @Test
+    fun `getTaskByProjectId should return list of tasks when id is found`() {
+        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = projectId)
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = projectId)
+
+        val result = taskDataSource.getTasksByProjectId(projectId)
+
+        assertThat(result).containsExactly(task.copy(projectId = projectId), task.copy(projectId = projectId))
+    }
+
+    @Test
+    fun `getTaskByProjectId should return empty list when id is not found`() {
+        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = "id1")
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = "id2")
+
+        val result = taskDataSource.getTasksByProjectId(projectId)
+
+        assertThat(result).isEmpty()
+    }
 
     companion object {
         val task = createTask(id = "12", title = "task")
         const val csvRow = "12,task"
         val taskId = task.id
+        val projectId = "12"
     }
 }
