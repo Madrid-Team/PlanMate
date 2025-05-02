@@ -11,7 +11,7 @@ class EditProjectCLI(
     private val editProjectUseCase: EditProjectUseCase
 ) {
     fun show() {
-        fun show() {
+
             outputPrinter.printMessage("=== Edit Project ===")
             val id = inputReader.readInput("Enter the ID of the project to edit:")
             val newName = inputReader.readInput("Enter the new name:")
@@ -31,7 +31,7 @@ class EditProjectCLI(
             val result = editProjectUseCase.editProject(updatedProject)
             result.onSuccess { outputPrinter.printMessage("Project edited successfully.") }
             result.onFailure { outputPrinter.printMessage("Failed to edit project: ${result.exceptionOrNull()?.message}") }
-        }
+
 
     }
 }
