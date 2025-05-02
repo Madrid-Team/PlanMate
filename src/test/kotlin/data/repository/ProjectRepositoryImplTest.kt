@@ -34,7 +34,7 @@ class ProjectRepositoryImplTest {
         repository = ProjectRepositoryImpl(projectDataSource)
 
         // When
-        val result = repository.getAllProjects()
+        val result = repository.getAllProjects().getOrNull()
 
         // Then
         assertThat(result).containsExactlyElementsIn(projects.map { it.toDomain() })
@@ -119,7 +119,8 @@ class ProjectRepositoryImplTest {
         repository = ProjectRepositoryImpl(projectDataSource)
 
         assertThrows<ProjectNotFoundException> {
-            repository.getProjectLogsById("5")
+            val result = repository.getProjectLogsById("5")
+            result.getOrThrow()
         }
     }
 
