@@ -5,10 +5,13 @@ import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 
 
@@ -31,6 +34,7 @@ class UserCsvDataSourceTest {
         userCsvParser = mockk()
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
+
     @Test
     fun `Should create user successfully`() {
         // Given
@@ -61,7 +65,6 @@ class UserCsvDataSourceTest {
         assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
         assertThat(result.exceptionOrNull()?.message).isEqualTo("File write failed")
     }
-
 
 
     // region getAllUsersTest
@@ -159,4 +162,74 @@ class UserCsvDataSourceTest {
     }
     // endregion
 
+    // region deleteUserTest
+    @Test
+    fun `deleteUser should complete successfully when user is deleted`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1, row2)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+        every { userCsvParser.parseRowToUser(row2) } returns user2
+        every { userCsvParser.parseUserToRow(user2) } returns row2
+        every { fileCsvWriter.updateCsvFile(row2) } returns Unit
+
+        // When
+        val result = dataSource.deleteUser("1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        verify(exactly = 1) { fileCsvWriter.updateCsvFile(row2) }
+    }
+
+    @Test
+    fun `deleteUser should throw exception when file write fails`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1, row2)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+        every { userCsvParser.parseRowToUser(row2) } returns user2
+        every { userCsvParser.parseUserToRow(user2) } returns row2
+        every { fileCsvWriter.updateCsvFile(row2) } throws IOException("File write failed")
+
+        // When
+        assertThrows<IOException> { dataSource.deleteUser("1") }
+    }
+
+    @Test
+    fun `deleteUser should throw exception when file read fails`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } throws IOException("File read failed")
+
+        // When & Then
+        assertThrows<Exception> { dataSource.deleteUser("1") }
+    }
+
+    @Test
+    fun `deleteUser should throw exception when user id does not exist`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1, row2)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+        every { userCsvParser.parseRowToUser(row2) } returns user2
+
+        // When
+        val result = dataSource.deleteUser("3")
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isEqualTo(UserException.UserNotFoundException)
+    }
+
+    @Test
+    fun `deleteUser should handle empty user list after deletion`() {
+        // Given
+        every { fileCsvReader.readCsvFile() } returns listOf(row1)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+        every { fileCsvWriter.updateCsvFile("") } returns Unit
+
+        // When
+        val result = dataSource.deleteUser("1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        verify(exactly = 1) { fileCsvWriter.updateCsvFile("") }
+    }
+    // endregion
 }

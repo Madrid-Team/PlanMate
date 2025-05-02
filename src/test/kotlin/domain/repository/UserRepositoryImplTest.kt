@@ -11,6 +11,7 @@ import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
+import kotlin.jvm.java
 import kotlin.test.Test
 
 class UserRepositoryImplTest {
@@ -59,5 +60,30 @@ class UserRepositoryImplTest {
         assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
     }
 
+    @Test
+    fun `Should delete user successfully`() {
+        // Given
+        val userId = "1"
+        every { userDataSource.deleteUser(userId) } returns Result.success(Unit)
 
+        // When
+        val result = userRepositoryImpl.deleteUser(userId)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `Should fail to delete user when datasource fails`() {
+        // Given
+        val userId = "2"
+        every { userDataSource.deleteUser(userId) } returns Result.failure(UserException.NotFoundUser("User not found"))
+
+        // When
+        val result = userRepositoryImpl.deleteUser(userId)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.NotFoundUser::class.java)
+    }
 }
