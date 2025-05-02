@@ -9,4 +9,5 @@ interface TaskDataSource {
     fun getAllTasks(): List<Task>
     fun getListWithDeletedTask(taskId: String): List<Task>
     fun getListOfUpdatedList(task: Task): List<Task>
+    fun getLogsByTaskId(taskId: String): List<String>
 }
