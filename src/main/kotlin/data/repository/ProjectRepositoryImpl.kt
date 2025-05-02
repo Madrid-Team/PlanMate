@@ -94,7 +94,8 @@ class ProjectRepositoryImpl(
         return if (oldProject != null) {
             val indexOfUpdatedProject = projects.indexOf(oldProject)
             val logsForUpdates = createLogsForUpdatedFields(oldProject = oldProject , updatedProject = project)
-            projects.add(index = indexOfUpdatedProject, project.copy(projectLogs = project.projectLogs + logsForUpdates))
+            projects.remove(oldProject)
+            projects.add(index = indexOfUpdatedProject, project.copy(projectLogs = project.projectLogs + logsForUpdates , projectState = oldProject.projectState))
 
             val result = projectDataSource.editProject(projects.map { it.toDto() })
 
@@ -119,7 +120,7 @@ class ProjectRepositoryImpl(
     }
 
     override fun getProjectById(id: String): Project? {
-        TODO("Not yet implemented")
+        return projects.find { it.id == id }
     }
 
 

@@ -1,5 +1,6 @@
 package presentation.feature.projects
 
+import domain.models.logs.CurrentUser
 import domain.models.project.Project
 import domain.usecases.project.EditProjectUseCase
 import presentation.components.InputReader
@@ -21,7 +22,7 @@ class EditProjectCLI(
                 id = id,
                 name = newName,
                 description = newDescription,
-                createdBy = "",
+                createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",
                 projectLogs = emptyList(),
                 projectState = "",
                 taskStates = emptyList(),
