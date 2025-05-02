@@ -13,6 +13,7 @@ import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.ProjectAuditLogCLI
 import presentation.feature.TaskAuditLogCLI
+import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.TaskCLI
 import presentation.feature.user.UserCLI
@@ -25,7 +26,7 @@ class PlanMateCLITest {
     private lateinit var taskCLI: TaskCLI
     private lateinit var projectCLI: ProjectCLI
     private lateinit var userCLI: UserCLI
-    private lateinit var auditLogCLI: TaskAuditLogCLI
+    private lateinit var adminCLI: AdminCLI
     private lateinit var projectAuditLogCLI: ProjectAuditLogCLI
     private lateinit var planMateCLI: PlanMateCLI
     private val outputStream = ByteArrayOutputStream()
@@ -38,7 +39,7 @@ class PlanMateCLITest {
         taskCLI = mockk(relaxed = true)
         projectCLI = mockk(relaxed = true)
         userCLI = mockk(relaxed = true)
-        auditLogCLI = mockk(relaxed = true)
+        adminCLI = mockk(relaxed = true)
         projectAuditLogCLI = mockk(relaxed = true)
 
         planMateCLI = PlanMateCLI(
@@ -48,8 +49,7 @@ class PlanMateCLITest {
             taskCLI,
             projectCLI,
             userCLI,
-            auditLogCLI,
-            projectAuditLogCLI
+            adminCLI
         )
     }
 
