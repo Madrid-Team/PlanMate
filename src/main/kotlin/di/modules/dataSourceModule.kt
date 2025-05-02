@@ -6,10 +6,11 @@ import data.source.task.TaskCsvDataSource
 import data.source.task.TaskDataSource
 import data.source.user.UserCsvDataSource
 import data.source.user.UserDataSource
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dataSourceModule = module {
-    single<ProjectDataSource> { ProjectCsvDataSource(get(), get(), get()) }
-    single<TaskDataSource> { TaskCsvDataSource(get(), get(), get()) }
-    single<UserDataSource> { UserCsvDataSource(get(), get(), get()) }
+    single<ProjectDataSource> { ProjectCsvDataSource(get(named("projectReader")), get(named("projectWriter")), get()) }
+    single<UserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
+    single<TaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader"))) }
 }
