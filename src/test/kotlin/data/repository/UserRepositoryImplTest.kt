@@ -16,16 +16,14 @@ import kotlin.test.Test
 class UserRepositoryImplTest {
 
     private lateinit var userDataSource: UserDataSource
-    private lateinit var userCsvDataSource: UserCsvDataSource
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var userRepositoryImpl: UserRepositoryImpl
 
     @BeforeEach
     fun setUp() {
         userDataSource = mockk()
-        userCsvDataSource = mockk()
         userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvDataSource,userCsvParser)
+        userRepositoryImpl = UserRepositoryImpl(userDataSource,userCsvParser)
     }
     @Test
     fun `Should add user successfully`() {
@@ -64,7 +62,7 @@ class UserRepositoryImplTest {
         // Given
         val user = UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE)
 
-        every { userCsvDataSource.getUser("1") } returns Result.success(user)
+        every { userDataSource.getUser("1") } returns Result.success(user)
 
         // When
         val result = userRepositoryImpl.getUser("1")
