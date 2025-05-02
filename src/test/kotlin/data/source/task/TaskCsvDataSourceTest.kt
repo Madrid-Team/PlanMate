@@ -4,17 +4,14 @@ import com.google.common.truth.Truth.assertThat
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.usecases.task.createTask
-import domain.utlis.CannotCreateTaskException
-import domain.utlis.TaskCannotEditException
 import domain.utlis.TaskNotFoundException
-import io.mockk.InternalPlatformDsl.toStr
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import kotlin.concurrent.timerTask
+import java.io.IOException
 
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
@@ -32,35 +29,38 @@ class TaskCsvDataSourceTest {
 
     @Test
     fun `should edit task return true when edit task successfully`() {
-        val existingTask = createTask(
-            id = "121",
-            title = "title",
-        )
+        val existingTask = task
         val updatedTask = existingTask.copy(title = "new title")
-        val tasksList = listOf(existingTask)
-        val csvString = "121,p1"
 
-        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseTaskToString(updatedTask) } returns csvString
-        every { fileCsvWriter.updateCsvFile(csvString) } returns Unit
+        every { fileCsvReader.readCsvFile() } returns listOf("row1")
+        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask
+        every { taskCsvParser.parseTaskToString(updatedTask) } returns csvRow
+        every { fileCsvWriter.updateCsvFile(csvRow) } returns Unit
 
         val result = taskDataSource.editTask(updatedTask)
 
         assertThat(result).isTrue()
-        verify { fileCsvWriter.updateCsvFile(csvString) }
+        verify { fileCsvWriter.updateCsvFile(csvRow) }
     }
 
     @Test
     fun `should edit task throw exception when failed to edit the task`() {
-        assertThrows<TaskCannotEditException> {
+        assertThrows<TaskNotFoundException> {
             taskDataSource.editTask(task)
         }
     }
 
     @Test
     fun `should delete task return true when task id is found`() {
-        val result = taskDataSource.deleteTask(task.id)
-        assertThat(result).isEqualTo(true)
+        every { fileCsvReader.readCsvFile() } returns listOf("task1")
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task
+        every { taskCsvParser.parseTaskToString(task) } returns csvRow
+        every { fileCsvWriter.updateCsvFile(any()) } returns Unit  // why any
+
+        val result = taskDataSource.deleteTask(taskId)
+
+        assertThat(result).isTrue()
+        verify { fileCsvWriter.updateCsvFile(any()) }  //why any
     }
 
     @Test
@@ -73,26 +73,37 @@ class TaskCsvDataSourceTest {
 
     @Test
     fun `should create task return true when creating task successfully`() {
+        every { taskCsvParser.parseTaskToString(task) } returns "task"
+        every { fileCsvWriter.writeToCsvFile("task") } returns Unit
+
         val result = taskDataSource.createTask(task)
-        assertThat(result).isEqualTo(true)
+
+        assertThat(result).isTrue()
+        verify { fileCsvWriter.writeToCsvFile("task") }
     }
 
     @Test
     fun `should create task throw exception when creating task is failed`() {
-        assertThrows<CannotCreateTaskException> {
+        assertThrows<IOException> {
             taskDataSource.createTask(task)
         }
     }
 
     @Test
     fun `should get all tasks return list of tasks`() {
-        val tasks = listOf(task, task)
+        every { fileCsvReader.readCsvFile() } returns listOf("task", "task2")
+        every { taskCsvParser.parseOneRowToTask("task") } returns task
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task
 
-        assertThat(taskDataSource.getAllTasks()).isEqualTo(tasks)
+        val result = taskDataSource.getAllTasks()
+
+        assertThat(result).isEqualTo(listOf(task, task))
     }
 
 
     companion object {
         val task = createTask(id = "12", title = "task")
+        const val csvRow = "12,task"
+        val taskId = task.id
     }
 }
