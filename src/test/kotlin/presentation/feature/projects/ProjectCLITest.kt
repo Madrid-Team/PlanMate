@@ -15,6 +15,7 @@ class ProjectCLITest {
     private lateinit var deleteProjectCLI: DeleteProjectCLI
     private lateinit var editProjectCLI: EditProjectCLI
     private lateinit var projectCLI: ProjectCLI
+    private lateinit var projectView: ProjectView
 
     @BeforeEach
     fun setup() {
@@ -23,7 +24,8 @@ class ProjectCLITest {
         createProjectCLI = mockk(relaxed = true)
         deleteProjectCLI = mockk(relaxed = true)
         editProjectCLI = mockk(relaxed = true)
-        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI)
+        projectView = mockk(relaxed = true)
+        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI,projectView)
     }
 
     @Test
