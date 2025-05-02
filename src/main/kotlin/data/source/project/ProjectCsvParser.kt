@@ -37,6 +37,8 @@ class ProjectCsvParser() {
             project.projectState,
             project.taskStates.joinToString("|"),
             project.projectStates.joinToString("|"),
+            "\n"
+
         ).joinToString(",")
 
         return projectCsvLine
