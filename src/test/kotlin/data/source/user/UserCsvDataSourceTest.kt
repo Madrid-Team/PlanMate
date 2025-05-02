@@ -153,7 +153,7 @@ class UserCsvDataSourceTest {
         every { fileCsvReader.readCsvFile() } throws Exception()
 
         // When
-        val result = dataSource.getUserByName("1")
+        val result = dataSource.getUser("1")
         // When & Then
         assertThat(result.isFailure).isTrue()
     }

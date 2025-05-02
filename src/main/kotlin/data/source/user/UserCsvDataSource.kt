@@ -20,7 +20,7 @@ class UserCsvDataSource(
 
     }
 
-    override fun deleteUser(userId: String): Result<Unit> {
+    override fun deleteUser(userId: String): Result<Boolean> {
         TODO("Not yet implemented")
     }
 

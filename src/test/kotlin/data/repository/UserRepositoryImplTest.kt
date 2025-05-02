@@ -3,7 +3,6 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
-import data.repository.UserRepositoryImpl
 import data.source.user.UserCsvDataSource
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
@@ -25,8 +24,9 @@ class UserRepositoryImplTest {
         userDataSource = mockk()
         userCsvDataSource = mockk()
         userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvDataSource,userCsvParser)
+        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvDataSource, userCsvParser)
     }
+
     @Test
     fun `Should add user successfully`() {
         // Given
@@ -42,6 +42,7 @@ class UserRepositoryImplTest {
         // Then
         assertThat(result.isSuccess).isTrue()
     }
+
     @Test
     fun `Should fail to add user when datasource fails`() {
         // Given
@@ -57,6 +58,54 @@ class UserRepositoryImplTest {
         // Then
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
+    }
+
+    @Test
+    fun `getUser should return user when found`() {
+        // Given
+        val user = UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE)
+
+        every { userCsvDataSource.getUser("1") } returns Result.success(user)
+
+        // When
+        val result = userRepositoryImpl.getUser("1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(user)
+    }
+
+    @Test
+    fun `getAllUsers should return user when found`() {
+        // Given
+        val users = listOf(
+            UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE),
+            UserDto("2", "username2", "passwordhash2", UserRoleDto.MATE)
+        )
+
+        every { userDataSource.getAllUsers() } returns Result.success(users)
+
+        // When
+        val result = userRepositoryImpl.getAllUsers()
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).containsExactlyElementsIn(users)
+    }
+
+    @Test
+    fun `getUserByName should return user when found`() {
+        // Given
+        val user = UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE)
+
+        every { userDataSource.getUserByName("username1") } returns Result.success(user)
+
+        // When
+        val result = userRepositoryImpl.getUserByName("username1")
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrNull()).isEqualTo(user)
     }
 
 
