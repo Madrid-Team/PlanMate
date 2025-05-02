@@ -6,14 +6,13 @@ import domain.mapper.toDomain
 import domain.mapper.toDto
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
+import domain.models.logs.UpdatedLogFormatter
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectNotFoundException
-import domain.utlis.ProjectsFileNotExistsException
-import domain.utlis.ProjectsReadWriteException
+import domain.utlis.*
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.time.LocalDateTime
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource
@@ -36,9 +35,9 @@ class ProjectRepositoryImpl(
     }
 
     override fun getAllProjects(): Result<List<Project>> {
-        return if(projects.isNotEmpty()){
+        return if (projects.isNotEmpty()) {
             Result.success(projects)
-        }else{
+        } else {
             Result.failure(PlanMateExceptions("You haven't any projects yet"))
         }
     }
@@ -95,13 +94,15 @@ class ProjectRepositoryImpl(
 
         return if (oldProject != null) {
             val indexOfUpdatedProject = projects.indexOf(oldProject)
-            projects.add(index = indexOfUpdatedProject, project)
+            val logsForUpdates = createLogsForUpdatedFields(oldProject = oldProject , updatedProject = project)
+            projects.add(index = indexOfUpdatedProject, project.copy(projectLogs = project.projectLogs + logsForUpdates))
 
             val result = projectDataSource.editProject(projects.map { it.toDto() })
 
             if (result.isSuccess) {
                 Result.success(Unit)
             } else {
+                projects[indexOfUpdatedProject] = oldProject
                 Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
             }
         } else {
@@ -119,4 +120,54 @@ class ProjectRepositoryImpl(
     }
 
 
+    private fun createLogsForUpdatedFields(oldProject: Project, updatedProject: Project): List<String> {
+        val logs = mutableListOf<String>()
+        val timestamp = LocalDateTime.now().convertDateIntoReadableDate()
+        if (oldProject.name != updatedProject.name) {
+            logs.add(
+                //create log message contains the update on project name
+                UpdatedLogFormatter.format(
+                    entityName = oldProject.name,
+                    entityType = EntityType.PROJECT,
+                    username = oldProject.createdBy,
+                    fieldName = "name",
+                    oldValue = oldProject.name,
+                    newValue = updatedProject.name,
+                    timestamp = timestamp
+                )
+            )
+        }
+
+        if (oldProject.projectState != updatedProject.projectState) {
+            logs.add(
+                //create log message contains the update on project name
+                UpdatedLogFormatter.format(
+                    entityName = oldProject.name,
+                    entityType = EntityType.PROJECT,
+                    username = oldProject.createdBy,
+                    fieldName = "state",
+                    oldValue = oldProject.projectState,
+                    newValue = updatedProject.projectState,
+                    timestamp = timestamp
+                )
+            )
+        }
+
+        if (oldProject.description != updatedProject.description) {
+            logs.add(
+                //create log message contains the update on project name
+                UpdatedLogFormatter.format(
+                    entityName = oldProject.name,
+                    entityType = EntityType.PROJECT,
+                    username = oldProject.createdBy,
+                    fieldName = "description",
+                    oldValue = oldProject.description,
+                    newValue = updatedProject.description,
+                    timestamp = timestamp
+                )
+            )
+        }
+
+        return logs
+    }
 }
