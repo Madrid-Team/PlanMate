@@ -11,7 +11,7 @@ class FileCsvWriter(
 
     fun writeToCsvFile(row: String) {
         try {
-            fileValidator.checkFile().appendText(row)
+            fileValidator.checkFile().appendText("$row \n")
         }  catch (e: Exception) {
             throw IOException("Error writing to CSV file: ${e.message}", e)
         }
