@@ -55,12 +55,12 @@ class TaskCsvDataSourceTest {
         every { fileCsvReader.readCsvFile() } returns listOf("task1")
         every { taskCsvParser.parseOneRowToTask("task1") } returns task
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
-        every { fileCsvWriter.updateCsvFile(any()) } returns Unit  // why any
+        every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
         val result = taskDataSource.deleteTask(taskId)
 
         assertThat(result).isTrue()
-        verify { fileCsvWriter.updateCsvFile(any()) }  //why any
+        verify { fileCsvWriter.updateCsvFile(any()) }
     }
 
     @Test
