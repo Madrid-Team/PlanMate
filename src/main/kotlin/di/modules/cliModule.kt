@@ -9,10 +9,7 @@ import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.ProjectAuditLogCLI
 import presentation.feature.TaskAuditLogCLI
-import presentation.feature.projects.CreateProjectCLI
-import presentation.feature.projects.DeleteProjectCLI
-import presentation.feature.projects.EditProjectCLI
-import presentation.feature.projects.ProjectCLI
+import presentation.feature.projects.*
 import presentation.feature.tasks.*
 import presentation.feature.user.CreateUserCLI
 import presentation.feature.user.DeleteUserCLI
@@ -25,17 +22,18 @@ val cliModule = module {
     single { CreateTaskCLI(get(), get(), get(), get()) }
     single { DeleteTaskCLI(get(), get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get(), get()) }
-    single { TaskCLI(get(), get(), get(), get()) }
+    single { TaskCLI(get(), get(), get(), get(), get(), get()) }
     single { TaskView() }
     single { ProjectAuditLogCLI(get(), get()) }
     single { TaskAuditLogCLI(get(), get(), get()) }
     single { AuthenticationCLI(get(), get(), get()) }
     single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { ProjectCLI(get(), get(), get(), get(), get()) }
+    single { ProjectCLI(get(), get(), get(), get(), get(),get()) }
     single { CreateProjectCLI(get(), get(), get()) }
     single { DeleteProjectCLI(get(), get(), get()) }
     single { EditProjectCLI(get(), get(), get()) }
     single { UserCLI(get(), get(), get(), get()) }
     single { CreateUserCLI(get(), get(), get()) }
     single { DeleteUserCLI(get(), get(), get()) }
+    single { ProjectView() }
 }

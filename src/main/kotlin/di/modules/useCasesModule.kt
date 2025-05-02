@@ -1,7 +1,7 @@
 package di.modules
 
 import domain.usecases.CreateUserUseCase
-import domain.usecases.DeleteUser
+import domain.usecases.DeleteUserUseCase
 import domain.usecases.DisplayAllTasksUseCase
 import domain.usecases.LoginUserUseCase
 import domain.usecases.project.*
@@ -16,7 +16,7 @@ val useCasesModule = module {
     single { GetProjectLogsByIdUseCase(get()) }
 
     single { CreateUserUseCase(get()) }
-    single { DeleteUser(get()) }
+    single { DeleteUserUseCase(get()) }
     single { LoginUserUseCase(get()) }
 
     single { DeleteTaskUseCase(get()) }
