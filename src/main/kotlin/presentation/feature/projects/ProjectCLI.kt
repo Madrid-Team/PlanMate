@@ -10,6 +10,7 @@ class ProjectCLI(
     private val createProjectCLI: CreateProjectCLI,
     private val deleteProjectCLI: DeleteProjectCLI,
     private val editProjectCLI: EditProjectCLI,
+    private val projectAuditLogCLI: ProjectAuditLogCLI,
     private val projectView: ProjectView,
     private val getAllProjectsUseCase: GetAllProjectsUseCase
 ) {
@@ -17,9 +18,10 @@ class ProjectCLI(
         while (true) {
             outputPrinter.printMessage("=== Project Menu ===")
             outputPrinter.printMessage("1. Show Projects")
-            outputPrinter.printMessage("2. Edit Project")
-            outputPrinter.printMessage("3. Delete Project")
-            outputPrinter.printMessage("4. Create Project")
+            outputPrinter.printMessage("2. Create Project")
+            outputPrinter.printMessage("3. Edit Project")
+            outputPrinter.printMessage("4. Delete Project")
+            outputPrinter.printMessage("5. Show Project Logs By ID")
             outputPrinter.printMessage("0. Back")
 
             when (inputReader.readInput("Select an option:")) {
@@ -27,6 +29,7 @@ class ProjectCLI(
                 "2" -> createProjectCLI.show()
                 "3" -> editProjectCLI.show()
                 "4" -> deleteProjectCLI.show()
+                "5" -> projectAuditLogCLI.show()
                 "0" -> return
                 else -> outputPrinter.printMessage("Invalid option. Please try again.")
             }

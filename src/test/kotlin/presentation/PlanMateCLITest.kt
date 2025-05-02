@@ -1,8 +1,6 @@
 package presentation
 
 import com.google.common.truth.Truth.assertThat
-import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
@@ -14,8 +12,7 @@ import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import presentation.feature.ProjectAuditLogCLI
-import presentation.feature.TaskAuditLogCLI
+import presentation.feature.projects.ProjectAuditLogCLI
 import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.TaskCLI

@@ -9,20 +9,23 @@ class ProjectView(private val outputPrinter: OutputPrinter) {
             outputPrinter.printMessage("No projects to display.")
             return
         }
-
         outputPrinter.printMessage("=== Projects List ===")
-        outputPrinter.printMessage("+------+----------------------+---------------------+")
-        outputPrinter.printMessage("| ID   |         Name         |        State        |")
-        outputPrinter.printMessage("+------+----------------------+---------------------+")
 
+// Data Rows
         projects.forEach { project ->
             outputPrinter.printMessage(
-                "| ${project.id.take(4).padEnd(5)}" +
-                        " | ${project.name.take(20).padEnd(20)}" +
-                        " | ${project.projectState.take(19).padEnd(19)} |"
+                "ID : ${project.id}\n" +
+                        "Name : ${project.name}\n" +
+                        "Description : ${project.description}\n" +
+                        "Project State : ${project.projectState}\n" +
+                        "Created By : ${project.createdBy}\n" +
+                        "Project Logs : ${project.projectLogs}\n" +
+                        "Project States : ${project.projectStates.joinToString(", ")}\n" +
+                        "Task States : ${project.taskStates.joinToString(", ")}\n"
             )
+
+            outputPrinter.printMessage("+--------------------------------------+")
         }
 
-        outputPrinter.printMessage("+------+----------------------+---------------------+")
     }
 }

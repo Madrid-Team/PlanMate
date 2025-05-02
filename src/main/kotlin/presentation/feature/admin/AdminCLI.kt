@@ -1,6 +1,6 @@
 package presentation.feature.admin
 
-import presentation.feature.ProjectAuditLogCLI
+import presentation.feature.projects.ProjectAuditLogCLI
 import presentation.feature.TaskAuditLogCLI
 
 class AdminCLI(private val projectAuditLogCLI: ProjectAuditLogCLI, private val taskAuditLogCLI: TaskAuditLogCLI) {

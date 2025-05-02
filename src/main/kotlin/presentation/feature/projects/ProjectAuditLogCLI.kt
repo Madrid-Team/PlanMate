@@ -1,4 +1,4 @@
-package presentation.feature
+package presentation.feature.projects
 
 import domain.usecases.project.GetProjectLogsByIdUseCase
 import presentation.components.InputReader
