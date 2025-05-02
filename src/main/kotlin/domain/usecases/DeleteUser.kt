@@ -1,7 +1,7 @@
 package domain.usecases
 
-import domain.models.authentication.User
-import domain.models.authentication.UserRole
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import domain.repository.UserRepository
 import domain.utlis.UserException
 
@@ -12,14 +12,13 @@ class DeleteUser(
 
         idsIsValid(userRequestId, userToDeleteId)
 
-        val requiredUser = getUserOrThrowException(userRequestId)
+        val requiredUser = getUserOrThrowException(userRequestId).getOrThrow()
         requiredUserIsValid(requiredUser)
 
-        val userToDelete = getUserOrThrowException(userToDeleteId)
+        val userToDelete = getUserOrThrowException(userToDeleteId).getOrThrow()
         userToDeleteIsValid(userToDelete)
 
-        userRepository.deleteUser(userToDeleteId)
-        return true
+        return userRepository.deleteUser(userToDeleteId)
     }
 
 
@@ -29,18 +28,19 @@ class DeleteUser(
         }
     }
 
-    private fun getUserOrThrowException(userId: String): User {
-        return userRepository.getUser(userId)
-            ?: throw UserException.NotFoundUser("User not found")
+    private fun getUserOrThrowException(userId: String): Result<UserDto> {
+        return userRepository.getUser(userId).map {
+            it ?: throw UserException.NotFoundUser("User with id $userId not found")
+        }
     }
 
-    private fun requiredUserIsValid(user: User) {
-        if (user.role != UserRole.ADMIN)
+    private fun requiredUserIsValid(user: UserDto) {
+        if (user.role != UserRoleDto.ADMIN)
             throw UserException.PermissionDenied("This user Not allowed to delete another user")
     }
 
-    private fun userToDeleteIsValid(user: User) {
-        if (user.role == UserRole.ADMIN)
+    private fun userToDeleteIsValid(user: UserDto) {
+        if (user.role == UserRoleDto.ADMIN)
             throw UserException.PermissionDenied("Admin can't delete another admin")
     }
 
