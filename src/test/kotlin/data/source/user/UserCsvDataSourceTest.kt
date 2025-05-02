@@ -5,12 +5,11 @@ import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-
+import java.io.IOException
 
 
 class UserCsvDataSourceTest {
@@ -32,41 +31,37 @@ class UserCsvDataSourceTest {
         userCsvParser = mockk()
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
-
-
     @Test
-    fun `Should create user Successfully When user does not exist`() {
-        val user3 = UserDto(
-            id = "3",
-            username = "username3",
-            passwordHash = "passwordhash3",
-            role = UserRoleDto.MATE,
-        )
-        val userRow = listOf("3", "username3", "passwordhash3", "MATE")
-//        every { fileCsvReader.readCsvFile() } returns emptyList()
-        every { userCsvParser.parseUserToRow(user3) } returns userRow.toString()
-        every { fileCsvWriter.writeToCsvFile(userRow.toString()) } returns Unit
-        val result = dataSource.createUser(user3)
-        assertThat(
-            result.isSuccess
-        ).isTrue()
+    fun `Should create user successfully`() {
+        // Given
+        val row = "1,username1,password1,ADMIN"
+
+        every { fileCsvWriter.writeToCsvFile(row) } returns Unit
+
+        // When
+        val result = dataSource.createUser(row)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
     }
 
-
     @Test
-    fun `Should fail to create user when username already exists`() {
-        val existingUser = UserDto("3", "username3", "hash", UserRoleDto.MATE)
-        val newUser = UserDto("4", "username3", "newHash", UserRoleDto.MATE)
-        val csvLine = listOf("3", "username3", "hash", "MATE").toString()
+    fun `Should fail to create user when writer throws IOException`() {
+        // Given
+        val row = "2,username2,password2,MATE"
+        val exception = IOException("File write failed")
 
-        every { fileCsvReader.readCsvFile() } returns listOf(csvLine)
-        every { userCsvParser.parseRowToUser(csvLine) } returns existingUser
-        val result = dataSource.createUser(newUser)
+        every { fileCsvWriter.writeToCsvFile(row) } throws exception
 
+        // When
+        val result = dataSource.createUser(row)
+
+        // Then
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
-
+        assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
+        assertThat(result.exceptionOrNull()?.message).isEqualTo("File write failed")
     }
+
 
 
     // region getAllUsersTest
