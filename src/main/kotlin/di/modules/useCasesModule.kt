@@ -1,23 +1,28 @@
 package di.modules
 
-import domain.usecases.*
-import domain.usecases.project.CreateProjectUseCase
-import domain.usecases.project.DeleteProjectUseCase
-import domain.usecases.project.EditProjectUseCase
+import domain.usecases.CreateUserUseCase
+import domain.usecases.DeleteUser
+import domain.usecases.DisplayAllTasksUseCase
+import domain.usecases.LoginUserUseCase
+import domain.usecases.project.*
+import domain.usecases.task.*
 import org.koin.dsl.module
 
 val useCasesModule = module {
     single { CreateProjectUseCase(get()) }
     single { DeleteProjectUseCase(get()) }
     single { EditProjectUseCase(get()) }
+    single { GetAllProjectsUseCase(get()) }
+    single { GetProjectLogsByIdUseCase(get()) }
 
-    single { CreateUserUseCase() }
+    single { CreateUserUseCase(get()) }
     single { DeleteUser(get()) }
-    single { LoginUserUseCase(get(), get()) }
+    single { LoginUserUseCase(get()) }
 
     single { DeleteTaskUseCase(get()) }
     single { CreateTaskUseCase(get()) }
     single { DisplayAllTasksUseCase(get(), get()) }
     single { EditTaskUseCase(get()) }
-
+    single { GetLogsUseCase(get()) }
+    single { GetTasksByProjectIdUseCase(get()) }
 }

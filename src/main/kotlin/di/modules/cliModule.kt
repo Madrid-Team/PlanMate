@@ -9,7 +9,14 @@ import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.ProjectAuditLogCLI
 import presentation.feature.TaskAuditLogCLI
+import presentation.feature.projects.CreateProjectCLI
+import presentation.feature.projects.DeleteProjectCLI
+import presentation.feature.projects.EditProjectCLI
+import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.*
+import presentation.feature.user.CreateUserCLI
+import presentation.feature.user.DeleteUserCLI
+import presentation.feature.user.UserCLI
 
 val cliModule = module {
     single<InputReader> { ConsoleInputReader() }
@@ -24,6 +31,11 @@ val cliModule = module {
     single { TaskAuditLogCLI(get(), get(), get()) }
     single { AuthenticationCLI(get(), get(), get()) }
     single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
-
-
+    single { ProjectCLI(get(), get(), get(), get(), get()) }
+    single { CreateProjectCLI(get(), get(), get()) }
+    single { DeleteProjectCLI(get(), get(), get()) }
+    single { EditProjectCLI(get(), get(), get()) }
+    single { UserCLI(get(), get(), get(), get()) }
+    single { CreateUserCLI(get(), get(), get()) }
+    single { DeleteUserCLI(get(), get(), get()) }
 }
