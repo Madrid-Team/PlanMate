@@ -1,5 +1,7 @@
 package presentation
 
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import presentation.feature.tasks.TaskCLI
@@ -40,15 +42,19 @@ class PlanMateCLI(
 
                 else -> outputPrinter.printError("Invalid option.")
             }
+            val user = authenticationCLI.getCurrentUser()
+            if (user != null) {
+                showMenuForUser(user)
+            }
         }
     }
 
-    private fun showMenuForUser(user: User) {
+    private fun showMenuForUser(user: UserDto) {
         outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
 
         when (user.role) {
-            UserRole.ADMIN -> showAdminMenu()
-            UserRole.MATE -> showMateMenu()
+            UserRoleDto.ADMIN -> showAdminMenu()
+            UserRoleDto.MATE -> showMateMenu()
         }
     }
 
