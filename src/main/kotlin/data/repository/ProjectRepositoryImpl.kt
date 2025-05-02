@@ -4,6 +4,9 @@ import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
 import domain.mapper.toDomain
 import domain.mapper.toDto
+import domain.models.logs.CreatedLogFormatter
+import domain.models.logs.CurrentUser
+import domain.models.logs.EntityType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
@@ -42,7 +45,13 @@ class ProjectRepositoryImpl(
         val result = projectDataSource.createProject(project.toDto())
 
         return if (result.isSuccess) {
-            projects.add(project)
+
+            val log = CreatedLogFormatter.format(
+                entityName = project.name,
+                entityType = EntityType.PROJECT,
+                username = CurrentUser.getCurrentUser().username,
+            )
+            projects.add(project.copy(projectLogs = listOf(log)))
             result
         } else {
             when (val exception = result.exceptionOrNull()) {
