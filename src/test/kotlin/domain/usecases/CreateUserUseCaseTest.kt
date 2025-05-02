@@ -1,91 +1,86 @@
 package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
-import domain.models.authentication.User
-import domain.utlis.PlanMateExceptions
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
+import domain.repository.UserRepository
+import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
-class CreateUserUseCaseTest {
-    private lateinit var useCase: CreateUserUseCase
+class CreateUserUseCaseTest  {
+    private lateinit var userRepository: UserRepository
+    private lateinit var createUserUseCase: CreateUserUseCase
 
     @BeforeEach
-    fun setup() {
-        useCase = mockk()
-    }
-
-    @Test
-    fun `should throw exception when the user exists already`() {
-        val user = mockk<User>()
-
-        every { useCase.invoke(user) } throws PlanMateExceptions.UserAlreadyExistsException
-
-        assertThrows<PlanMateExceptions.UserAlreadyExistsException> {
-            useCase.invoke(user)
-        }
-
-        verify {
-            useCase.invoke(user)
-        }
+    fun setUp() {
+        userRepository = mockk()
+        createUserUseCase = CreateUserUseCase(userRepository)
     }
 
 
     @Test
-    fun `should throw exception when the password is too weak`() {
+    fun ` Should Create user successfully When User dose not exists before `() {
+        //Given
+         val user3 = UserDto("3", "username3", "passwordhash3"
+             , UserRoleDto.ADMIN)
 
-        val user = mockk<User>()
-        every { useCase.invoke(user) } throws PlanMateExceptions.PasswordIsTooWeakException
+        //When
+        every { userRepository.getUserByName("username3") } returns Result.failure(UserException.UserExist())
+        every { userRepository.addUser(user3) } returns Result.success(Unit)
+        val result =createUserUseCase.createUser(user3)
 
-        assertThrows<PlanMateExceptions.PasswordIsTooWeakException> {
-            useCase.invoke(user)
-        }
+        //Then
+        assertThat(
+            result.isSuccess
+        ).isTrue()
 
-        verify {
-            useCase.invoke(user)
-        }
-    }
-
-
-    @Test
-    fun `should create user successfully when the user does not exist and the password is strong`() {
-        val user = mockk<User>()
-        every { useCase.invoke(user) } returns true
-
-        useCase.invoke(user)
-
-        assertThat(useCase.invoke(user)).isTrue()
-    }
-
-
-    @Test
-    fun `should throw exception when the user is null`() {
-        every { useCase.invoke(null) } throws PlanMateExceptions.UserIsNullException
-
-        assertThrows<PlanMateExceptions.UserIsNullException> {
-            useCase.invoke(null)
-        }
-
-        verify {
-            useCase.invoke(null)
-        }
     }
 
     @Test
-    fun `should throw exception when the user doesn't have permission to create`(){
-        val user = mockk<User>()
-        every { useCase.invoke(user) } throws PlanMateExceptions.UserDoesNotHavePermissionException
+    fun `Should fail to create user when user already exists`() {
+        // Given
+        val existingUser = UserDto("1", "username1", "passwordhash1", UserRoleDto.ADMIN)
 
-        assertThrows<PlanMateExceptions.UserDoesNotHavePermissionException> {
-            useCase.invoke(user)
-        }
+        every { userRepository.getUserByName("username1") } returns Result.success(existingUser)
 
-        verify {
-            useCase.invoke(user)
-        }
+        // When
+        val result = createUserUseCase.createUser(existingUser)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
     }
+    @Test
+    fun `Should not create user When  wrong formed user from repository`() {
+        // Given
+        val malformedUser = UserDto(id = "", username = "username7", passwordHash = "", role = UserRoleDto.ADMIN)
 
+        every { userRepository.getUserByName("username7") } returns Result.success(malformedUser)
+
+        // When
+        val result = createUserUseCase.createUser(malformedUser)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+
+    }
+    @Test
+    fun `Should call addUser once when user does not exist`() {
+        // Given
+        val user = UserDto("5", "username5", "passwordhash5", UserRoleDto.MATE)
+
+        every { userRepository.getUserByName("username5") } returns Result.success(null)
+        every { userRepository.addUser(user) } returns Result.success(Unit)
+
+        // When
+        val result = createUserUseCase.createUser(user)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+        verify(exactly = 1) { userRepository.addUser(user) }
+    }
 }
