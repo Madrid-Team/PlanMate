@@ -5,6 +5,7 @@ import data.source.task.TaskDataSource
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
+import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -48,6 +49,38 @@ class TaskRepositoryImplTest {
 
         assertThrows<Exception> {
             taskRepository.getAllTasks()
+        }
+    }
+
+    @Test
+    fun `getTasksByProjectId should return list of tasks when date source is not empty`() {
+        val tasks = listOf(createTask(), createTask())
+        val projectId = tasks[0].projectId
+        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+
+        val result = taskRepository.getTasksByProjectId(projectId)
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `getTasksByProjectId should return empty list when date source is empty`() {
+        val tasks = emptyList<Task>()
+        val projectId = "12"
+        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+
+        val result = taskRepository.getTasksByProjectId(projectId)
+
+        Truth.assertThat(result).isEqualTo(tasks)
+    }
+
+    @Test
+    fun `getTasksByProjectId should throw exception when date source throw exception`() {
+        val projectId = "12"
+        every { taskDataSource.getTasksByProjectId(projectId) } throws TaskNotFoundException()
+
+        assertThrows<TaskNotFoundException> {
+            taskRepository.getTasksByProjectId(projectId)
         }
     }
 
