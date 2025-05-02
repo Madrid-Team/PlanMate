@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import domain.models.task.Task
-import domain.usecases.CreateTaskUseCase
+import domain.usecases.task.CreateTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
