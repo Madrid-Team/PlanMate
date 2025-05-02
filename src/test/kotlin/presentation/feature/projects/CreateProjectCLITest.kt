@@ -1,4 +1,4 @@
-package presentation.feature.tasks
+package presentation.feature.projects
 
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
@@ -9,10 +9,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.feature.projects.CreateProjectCLI
-import presentation.feature.projects.helperProject
 
-class CreateTaskCLITest {
+class CreateProjectCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val useCase = mockk<CreateProjectUseCase>()
