@@ -1,7 +1,7 @@
 package data.repository
 
-import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
+import data.dto.project.ProjectDto
 import domain.mapper.toDomain
 import domain.mapper.toDto
 import domain.models.logs.CreatedLogFormatter
@@ -87,9 +87,23 @@ class ProjectRepositoryImpl(
     }
 
     override fun editProject(project: Project): Result<Unit> {
-        TODO("Not yet implemented")
-    }
+        val oldProject = projects.find { it.id == project.id }
 
+        return if (oldProject != null) {
+            val indexOfUpdatedProject = projects.indexOf(oldProject)
+            projects.add(index = indexOfUpdatedProject, project)
+
+            val result = projectDataSource.editProject(projects.map { it.toDto() })
+
+            if (result.isSuccess) {
+                Result.success(Unit)
+            } else {
+                Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
+            }
+        } else {
+            Result.failure(PlanMateExceptions("Project with ID $project.id not found"))
+        }
+    }
     override fun getProjectLogsById(id: String): Result<List<String>> {
         TODO("Not yet implemented")
     }

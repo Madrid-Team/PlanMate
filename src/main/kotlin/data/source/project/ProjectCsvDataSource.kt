@@ -53,7 +53,17 @@ class ProjectCsvDataSource(
         }
     }
 
-    override fun editProject(project: ProjectDto): Result<Unit> {
-        TODO("Not yet implemented")
+    override fun editProject(projects: List<ProjectDto>): Result<Unit> {
+        return try {
+            var projectAfterUpdate = ""
+            projects.forEach {
+                val projectAsString = projectCsvParser.parseProjectToString(it) + "\n"
+                projectAfterUpdate += projectAsString
+            }
+            fileCsvWriter.updateCsvFile(projectAfterUpdate)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
