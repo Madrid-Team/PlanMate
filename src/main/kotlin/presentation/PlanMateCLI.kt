@@ -86,13 +86,11 @@ class PlanMateCLI(
             outputPrinter.printMessage("=== Mate Menu ===")
             outputPrinter.printMessage("1. View my tasks")
             outputPrinter.printMessage("2. View projects")
-            outputPrinter.printMessage("3. Update my information")
             outputPrinter.printMessage("0. Log out")
 
             when (inputReader.readInput("Select an option: ")) {
                 "1" -> taskCLI.show()
-                "2" -> projectCLI.show()
-                "3" -> userCLI.show()
+                "2" -> projectCLI.showProjects()
                 "0" -> return
                 else -> outputPrinter.printError("Invalid option.")
             }

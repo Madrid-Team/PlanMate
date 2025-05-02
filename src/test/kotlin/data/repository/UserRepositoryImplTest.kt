@@ -1,8 +1,9 @@
-package data.repository
+package domain.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
+import data.repository.UserRepositoryImpl
 import data.source.user.UserCsvDataSource
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
@@ -24,9 +25,8 @@ class UserRepositoryImplTest {
         userDataSource = mockk()
         userCsvDataSource = mockk()
         userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvDataSource, userCsvParser)
+        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvDataSource,userCsvParser)
     }
-
     @Test
     fun `Should add user successfully`() {
         // Given
@@ -42,7 +42,6 @@ class UserRepositoryImplTest {
         // Then
         assertThat(result.isSuccess).isTrue()
     }
-
     @Test
     fun `Should fail to add user when datasource fails`() {
         // Given
@@ -108,5 +107,30 @@ class UserRepositoryImplTest {
         assertThat(result.getOrNull()).isEqualTo(user)
     }
 
+    @Test
+    fun `Should delete user successfully`() {
+        // Given
+        val userId = "1"
+        every { userDataSource.deleteUser(userId) } returns Result.success(Unit)
 
+        // When
+        val result = userRepositoryImpl.deleteUser(userId)
+
+        // Then
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `Should fail to delete user when datasource fails`() {
+        // Given
+        val userId = "2"
+        every { userDataSource.deleteUser(userId) } returns Result.failure(UserException.NotFoundUser("User not found"))
+
+        // When
+        val result = userRepositoryImpl.deleteUser(userId)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.NotFoundUser::class.java)
+    }
 }

@@ -11,8 +11,8 @@ class UserRepositoryImpl(
     private val userCsvDataSource: UserCsvDataSource,
     private val userCsvParser: UserCsvParser,
 ): UserRepository  {
-    override fun deleteUser(userId: String): Boolean {
-        TODO("Not yet implemented")
+    override fun deleteUser(userId: String): Result<Unit> {
+        return userDataSource.deleteUser(userId)
     }
 
     override fun addUser(user: UserDto): Result<Unit> {

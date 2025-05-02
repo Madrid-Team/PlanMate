@@ -3,6 +3,7 @@ package data.source.user
 import data.dto.authentication.UserDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.utlis.UserException
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -16,12 +17,21 @@ class UserCsvDataSource(
         } catch (e: Exception) {
             return Result.failure(e)
         }
-
-
     }
 
-    override fun deleteUser(userId: String): Result<Boolean> {
-        TODO("Not yet implemented")
+    override fun deleteUser(userId: String): Result<Unit> {
+        val allUsers = getAllUsers().getOrThrow()
+        val updatedUsers = allUsers.filter { it.id != userId }
+
+        if (allUsers.size == updatedUsers.size) return Result.failure(UserException.UserNotFoundException)
+
+        val userRows = updatedUsers.map { user ->
+            userCsvParser.parseUserToRow(user)
+        }
+
+
+        fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
+        return Result.success(Unit)
     }
 
     override fun getUser(userId: String): Result<UserDto?> {

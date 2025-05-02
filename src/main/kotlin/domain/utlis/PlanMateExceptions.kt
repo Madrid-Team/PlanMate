@@ -1,10 +1,12 @@
 package domain.utlis
 
-open class PlanMateExceptions(message:String):Exception(message) {
+open class PlanMateExceptions(message: String) : Exception(message) {
 }
 
+class ProjectNotFoundException : PlanMateExceptions("Project not found")
+data object PasswordIsTooWeakException : PlanMateExceptions("Password is too weak")
+
 class ProjectNameExistException: PlanMateExceptions("Project name already exists")
-class ProjectNotFoundException: PlanMateExceptions("Project not found")
 class ProjectNameInvalidException: PlanMateExceptions("Project name invalid,please enter a valid name")
 class ProjectDescriptionInvalidException: PlanMateExceptions("Project description invalid,please enter a valid description")
 class ProjectStatesInvalidException: PlanMateExceptions("Project states shouldn't be empty ")
