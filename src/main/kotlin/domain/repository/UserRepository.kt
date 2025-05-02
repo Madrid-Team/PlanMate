@@ -3,7 +3,7 @@ package domain.repository
 import data.dto.authentication.UserDto
 
 interface UserRepository {
-    fun deleteUser(userId: String)
+    fun deleteUser(userId: String): Boolean
     fun addUser(user: UserDto): Result<Unit>
     fun getUser(userId: String): Result<UserDto?>
     fun getAllUsers(): Result<List<UserDto>>
