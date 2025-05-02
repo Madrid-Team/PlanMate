@@ -6,6 +6,7 @@ import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
 import domain.models.task.Task
+import domain.utlis.NoLogsFoundException
 import domain.utlis.TaskNotFoundException
 import domain.utlis.convertDateIntoReadableDate
 import java.io.IOException
@@ -142,6 +143,11 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        return getAllTasks().find { it.id == taskId }?.logs ?: throw TaskNotFoundException()
+        val task = getAllTasks().find { it.id == taskId }?: throw TaskNotFoundException()
+        val taskLogs = task.logs
+        if (taskLogs.isEmpty())
+            throw NoLogsFoundException()
+        return taskLogs
     }
+
 }
