@@ -8,21 +8,20 @@ import domain.repository.UserRepository
 
 class UserRepositoryImpl(
     private val userDataSource: UserDataSource,
-    private val userCsvDataSource: UserCsvDataSource,
     private val userCsvParser: UserCsvParser,
-): UserRepository  {
+) : UserRepository {
     override fun deleteUser(userId: String): Result<Unit> {
         return userDataSource.deleteUser(userId)
     }
 
     override fun addUser(user: UserDto): Result<Unit> {
-        val row: String =userCsvParser.parseUserToRow(user)
+        val row: String = userCsvParser.parseUserToRow(user)
         return userDataSource.createUser(row)
 
     }
 
     override fun getUser(userId: String): Result<UserDto?> {
-      return userCsvDataSource.getUser(userId)
+        return userDataSource.getUser(userId)
 
     }
 
@@ -30,7 +29,7 @@ class UserRepositoryImpl(
         return userDataSource.getAllUsers()
     }
 
-    override fun getUserByName(userName: String):  Result<UserDto?>{
+    override fun getUserByName(userName: String): Result<UserDto?> {
         return userDataSource.getUserByName(userName)
     }
 }

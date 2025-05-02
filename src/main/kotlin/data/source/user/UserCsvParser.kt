@@ -2,7 +2,7 @@ package data.source.user
 
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
-import data.utils.PlanMateColumnIndex.UserColumnsIndex
+import data.utils.UserColumnsIndex
 
 
 class UserCsvParser {
