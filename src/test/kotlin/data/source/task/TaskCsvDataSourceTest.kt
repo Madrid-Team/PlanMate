@@ -3,10 +3,13 @@ package data.source.task
 import com.google.common.truth.Truth.assertThat
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.models.logs.CreatedLogFormatter
+import domain.models.logs.EntityType
 import domain.usecases.task.createTask
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,13 +76,32 @@ class TaskCsvDataSourceTest {
 
     @Test
     fun `should create task return true when creating task successfully`() {
-        every { taskCsvParser.parseTaskToString(task) } returns "task"
-        every { fileCsvWriter.writeToCsvFile("task") } returns Unit
+        val formattedLog = "User create Task at 2025/05/02 8:25 AM"
+        val copiedTaskWithLog = task.copy(logs = listOf(formattedLog))
+
+        every { taskCsvParser.parseTaskToString(copiedTaskWithLog) } returns csvRow
+        every { fileCsvWriter.writeToCsvFile(csvRow) } returns Unit
+        mockkObject(CreatedLogFormatter)
+        every {
+            CreatedLogFormatter.format(
+                entityName = task.title,
+                entityType = EntityType.TASK,
+                username = task.createdBy
+            )
+        } returns formattedLog
 
         val result = taskDataSource.createTask(task)
 
         assertThat(result).isTrue()
-        verify { fileCsvWriter.writeToCsvFile("task") }
+        verify { taskCsvParser.parseTaskToString(copiedTaskWithLog) }
+        verify { fileCsvWriter.writeToCsvFile(csvRow) }
+        verify {
+            CreatedLogFormatter.format(
+                entityName = task.title,
+                entityType = EntityType.TASK,
+                username = task.createdBy
+            )
+        }
     }
 
     @Test
