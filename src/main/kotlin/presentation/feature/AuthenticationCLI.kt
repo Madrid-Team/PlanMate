@@ -1,6 +1,5 @@
 package presentation.feature
 
-import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
 import domain.mapper.toDomain
 import domain.models.logs.CurrentUser
@@ -13,7 +12,6 @@ class AuthenticationCLI(
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-    private var currentUser: UserDto? = null
 
     fun login() {
         outputPrinter.printMessage("=== Login ===")
@@ -26,7 +24,6 @@ class AuthenticationCLI(
             val success = loginUserUseCase.invoke(userName, passwordHash)
             outputPrinter.printMessage("Login Success")
             CurrentUser.setCurrentUser(success!!.toDomain())
-            currentUser = success
         } catch (e: Exception) {
             outputPrinter.printMessage(e.message.toString())
             outputPrinter.printMessage("Login error:(")
@@ -35,6 +32,4 @@ class AuthenticationCLI(
             if (userOption == "1") login()
         }
     }
-
-    fun getCurrentUser(): UserDto? = currentUser
 }
