@@ -1,6 +1,6 @@
 package presentation.feature.projects
 
-import domain.usecases.project.CreateProjectUseCase
+import domain.usecases.project.EditProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
@@ -13,35 +13,38 @@ import kotlin.test.Test
 class EditProjectCLITest {
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
-    private val useCase = mockk<CreateProjectUseCase>()
-    private lateinit var createProjectCLI: CreateProjectCLI
+    private lateinit var useCase: EditProjectUseCase
+    private lateinit var cli: EditProjectCLI
 
     @BeforeEach
     fun setUp() {
         inputReader = mockk()
         outputPrinter = mockk(relaxed = true)
-        createProjectCLI = CreateProjectCLI(inputReader, outputPrinter, useCase)
+        cli = EditProjectCLI(inputReader, outputPrinter, useCase)
     }
 
     @Test
     fun `should edit project successfully when call create project`() {
-        val project = helperProject(name = "project", description = "description")
-        every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
-        every { useCase.createProject(project) } returns Result.success(Unit)
+        every { inputReader.readInput(any()) } returnsMany listOf("1", "project", "description")
+        val project = helperProject(id = "1", name = "project", description = "description")
 
-        createProjectCLI.show()
+        every { useCase.editProject(project) } returns Result.success(Unit)
+
+        cli.show()
 
         verify { outputPrinter.printMessage("Project edited successfully.") }
+
     }
 
     @Test
     fun `should show error message when editing fails`() {
-        val project = helperProject(name = "project", description = "description")
-        every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
-        every { useCase.createProject(project) } returns Result.failure(PlanMateExceptions("edit failed"))
+        every { inputReader.readInput(any()) } returnsMany listOf("1", "project", "description")
+        val project = helperProject(id = "1", name = "project", description = "description")
 
-        createProjectCLI.show()
+        every { useCase.editProject(project) } returns Result.failure(PlanMateExceptions("edit failed"))
 
-        verify { outputPrinter.printMessage("edit failed") }
+        cli.show()
+
+        verify { outputPrinter.printMessage("Failed to edit project: Edit failed") }
     }
 }
