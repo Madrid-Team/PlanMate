@@ -1,0 +1,64 @@
+package presentation.feature.user
+
+import domain.usecases.CreateUserUseCase
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import presentation.components.InputReader
+import presentation.components.OutputPrinter
+
+class CreateUserCLITest {
+    private val inputReader = mockk<InputReader>()
+    private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
+    private val useCase = mockk<CreateUserUseCase>()
+    private lateinit var cli: CreateUserCLI
+
+    @BeforeEach
+    fun setUp() {
+        cli = CreateUserCLI(useCase, inputReader, outputPrinter)
+    }
+
+    @Test
+    fun `should create user success when user name and password is correct`() {
+        // Given
+        val username = "username"
+        val password = "password"
+
+        every { inputReader.readInput() } returnsMany listOf(username, password)
+        every { useCase.createUser(any()) } returns Result.success(Unit)
+        // When
+        cli.show()
+
+        // Then
+        verify {
+            outputPrinter.printMessage("=== Create user started ===")
+            outputPrinter.printMessage("Enter user name:")
+            outputPrinter.printMessage("Enter password:")
+            outputPrinter.printMessage("Login Success")
+        }
+        verify(exactly = 0) { outputPrinter.printMessage("Creating User Failed") }
+    }
+
+    @Test
+    fun `should show error message when user name and password is incorrect`() {
+        // Given
+        val username = "username"
+        val password = "password"
+
+        every { inputReader.readInput() } returnsMany listOf(username, password, "z")
+        every { useCase.createUser(any()) } throws Exception()
+        // When
+        cli.show()
+
+        // Then
+        verify {
+            outputPrinter.printMessage("=== Create user started ===")
+            outputPrinter.printMessage("Enter user name:")
+            outputPrinter.printMessage("Enter password:")
+            outputPrinter.printMessage("Creating User Failed")
+            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+        }
+    }
+}

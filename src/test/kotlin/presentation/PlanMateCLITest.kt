@@ -3,6 +3,9 @@ package presentation
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
+import domain.models.authentication.User
+import domain.models.authentication.UserRole
+import domain.models.logs.CurrentUser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -66,7 +69,7 @@ class PlanMateCLITest {
     @Test
     fun `should call authenticationCLI login when user selects login`() {
         every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
-        every { authenticationCLI.getCurrentUser() } returns null
+        every { CurrentUser.getCurrentUser() } returns null
 
         planMateCLI.start()
 
@@ -76,8 +79,8 @@ class PlanMateCLITest {
 
     @Test
     fun `should show task menu when admin selects manage tasks`() {
-        val adminUser = UserDto(id = "1", username = "admin", role = UserRoleDto.ADMIN, passwordHash = "")
-        every { authenticationCLI.getCurrentUser() } returns adminUser
+        val adminUser = User(id = "1", username = "admin", role = UserRole.ADMIN, passwordHash = "")
+        every { CurrentUser.getCurrentUser() } returns adminUser
         every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
         planMateCLI.start()
@@ -87,8 +90,8 @@ class PlanMateCLITest {
 
     @Test
     fun `should show project menu when member selects view projects`() {
-        val memberUser = UserDto(id = "2", username = "user", role = UserRoleDto.ADMIN, passwordHash = "")
-        every { authenticationCLI.getCurrentUser() } returns memberUser
+        val memberUser = User(id = "2", username = "user", role = UserRole.ADMIN, passwordHash = "")
+        every { CurrentUser.getCurrentUser() } returns memberUser
         every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
         planMateCLI.start()
@@ -99,7 +102,7 @@ class PlanMateCLITest {
     @Test
     fun `should print invalid option when user enters wrong input`() {
         every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
-        every { authenticationCLI.getCurrentUser() } returns null
+        every { CurrentUser.getCurrentUser() } returns null
 
         planMateCLI.start()
 

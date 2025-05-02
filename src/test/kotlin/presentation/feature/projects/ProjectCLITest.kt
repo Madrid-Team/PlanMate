@@ -27,6 +27,7 @@ class ProjectCLITest {
         createProjectCLI = mockk(relaxed = true)
         deleteProjectCLI = mockk(relaxed = true)
         editProjectCLI = mockk(relaxed = true)
+        projectView = mockk(relaxed = true)
         projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI,projectView, getAllProjectsUseCase)
     }
 

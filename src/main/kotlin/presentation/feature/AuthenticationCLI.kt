@@ -1,7 +1,8 @@
 package presentation.feature
 
-import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
+import domain.mapper.toDomain
+import domain.models.logs.CurrentUser
 import domain.usecases.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -11,7 +12,6 @@ class AuthenticationCLI(
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-    private var currentUser: UserDto? = null
 
     fun login() {
         outputPrinter.printMessage("=== Login ===")
@@ -23,14 +23,13 @@ class AuthenticationCLI(
         try {
             val success = loginUserUseCase.invoke(userName, passwordHash)
             outputPrinter.printMessage("Login Success")
-            currentUser = success
-        } catch (_: Exception) {
+            CurrentUser.setCurrentUser(success!!.toDomain())
+        } catch (e: Exception) {
+            outputPrinter.printMessage(e.message.toString())
             outputPrinter.printMessage("Login error:(")
             outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
             val userOption = inputReader.readInput()
             if (userOption == "1") login()
         }
     }
-
-    fun getCurrentUser(): UserDto? = currentUser
 }

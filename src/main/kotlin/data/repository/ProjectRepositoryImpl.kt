@@ -44,16 +44,15 @@ class ProjectRepositoryImpl(
 
 
     override fun createProject(project: Project): Result<Unit> {
-
-        val result = projectDataSource.createProject(project.toDto())
+        val log = CreatedLogFormatter.format(
+            entityName = project.name,
+            entityType = EntityType.PROJECT,
+            username = project.createdBy,
+        )
+        val result = projectDataSource.createProject(project.toDto().copy(projectLogs = listOf(log)))
 
         return if (result.isSuccess) {
 
-            val log = CreatedLogFormatter.format(
-                entityName = project.name,
-                entityType = EntityType.PROJECT,
-                username = project.createdBy,
-            )
             projects.add(project.copy(projectLogs = listOf(log)))
             result
         } else {
