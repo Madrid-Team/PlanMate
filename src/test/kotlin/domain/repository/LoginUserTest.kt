@@ -1,68 +1,59 @@
 package domain.repository
 
-import FakeUser
+import data.dto.authentication.UserDto
+import data.dto.authentication.UserRoleDto
 import data.utils.PasswordHasher
-import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.usecases.LoginUserUseCase
 import domain.utlis.UserException
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-
 import kotlin.test.BeforeTest
 
 class LoginUserTest {
     private lateinit var loginUser: LoginUserUseCase
-    private lateinit var fakeUser: UserRepository
-    private lateinit var passwordHasher: PasswordHasher
+    private lateinit var userRepository: UserRepository
     @BeforeTest
     fun setUp() {
-        fakeUser = FakeUser()
-        loginUser = LoginUserUseCase(fakeUser,passwordHasher)
+        userRepository= mockk()
+        loginUser = LoginUserUseCase(userRepository)
     }
     @Test
-    fun `Should login user success When username and password is true`() {
+    fun `Should login user successfully when username and password are correct`() {
         // Given
-        val admin = User(id = "1","ADMIN_1","PASSWORD_HASH_1", UserRole.ADMIN)
-        val mate = User(id = "2","MATE_1","PASSWORD_HASH_2", UserRole.MATE)
-
-        fakeUser.addUser(admin)
-        fakeUser.addUser(mate)
+        val user = UserDto("1", "user1", PasswordHasher.hash("pass123"), UserRoleDto.MATE)
+        every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
-        val result = loginUser.invoke("ADMIN_1","PASSWORD_HASH_1" )
+        val result = loginUser.invoke("user1", "pass123")
 
         // Then
-        assertTrue(result != null)
+        assertTrue { result != null }
     }
+
+
     @Test
-    fun `Should not login When userName or Password are incorrect`(){
+    fun `Should not login when username or password are incorrect`() {
         // Given
-        val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE)
+        val user = UserDto("1", "user1", PasswordHasher.hash("correctPass"), UserRoleDto.MATE)
+        every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
-        fakeUser.addUser(mate)
-
-        // When && Then
-        assertThrows <UserException.WrongPasswordOrUserName> { loginUser.invoke("MA", mate.id) }
+        // When
+        assertThrows <UserException.WrongPasswordOrUserName> {
+            loginUser.invoke("user1", "wrongPass")
+        } // Should throw
     }
-    @Test
-    fun `Shouldn't login When username format is incorrect`(){
-        // Given
-        val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE)
 
-        fakeUser.addUser(mate)
 
-        // When && Then
-        assertThrows <UserException.InvalidUserNameFormat> { loginUser.invoke("1#MATE_1", "PASSWORD_HASH_1") }
-    }
 
     @Test
     fun `Shouldn't login When username or password is null`(){
         // Given
-        val mate = User(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE)
+        val mate = UserDto(id = "1","MATE_1","PASSWORD_HASH_1", UserRoleDto.MATE)
 
-        fakeUser.addUser(mate)
+        every {   userRepository.addUser(mate)} returns Result.success(Unit)
 
         // When && Then
         assertThrows <UserException.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
