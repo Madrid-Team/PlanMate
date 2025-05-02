@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import domain.models.task.Task
-import domain.usecases.EditTaskUseCase
+import domain.usecases.task.EditTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -29,7 +29,7 @@ class EditTaskCLI(
             logs = listOf()
         )
 
-        val result = editTaskUseCase.editTask(updatedTask)
+        val result = editTaskUseCase.editTask(taskId, updatedTask)
 
         if (result) {
             outputPrinter.printMessage("Task updated successfully")

@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import domain.usecases.EditTaskUseCase
+import domain.usecases.task.EditTaskUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -33,13 +33,15 @@ class EditTaskCLITest {
             "1",
             "123",
             "New Title",
-            "New Description")
+            "New Description"
+        )
         val updatedTask = helperTask(
             projectId = "1",
             id = "123",
             title = "New Title",
-            description = "New Description")
-        every { editTaskUseCase.editTask(updatedTask) } returns true
+            description = "New Description"
+        )
+        every { editTaskUseCase.editTask("1", updatedTask) } returns true
 
         // When
         editTaskCLI.show()
@@ -63,7 +65,7 @@ class EditTaskCLITest {
             title = "New Title",
             description = "New Description"
         )
-        every { editTaskUseCase.editTask(updatedTask) } returns false
+        every { editTaskUseCase.editTask("wrong_id", updatedTask) } returns false
 
         // When
         editTaskCLI.show()
