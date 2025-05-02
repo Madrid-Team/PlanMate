@@ -16,7 +16,7 @@ import org.koin.dsl.module
 import java.io.File
 
 val repositoryModule = module {
-    single { File("") }
+    single { File("user.csv") }
     single { FileValidator(get()) }
     single { FileCsvReader(get()) }
     single { FileCsvWriter(get()) }
