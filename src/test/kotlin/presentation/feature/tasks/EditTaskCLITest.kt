@@ -29,8 +29,16 @@ class EditTaskCLITest {
     fun `should edit task successfully when call edit task`() {
 
         // Given
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "123", "New Title", "New Description")
-        val updatedTask = helperTask(projectId = "1", id = "123", title = "New Title", description = "New Description")
+        every { inputReader.readInput(any()) } returnsMany listOf(
+            "1",
+            "123",
+            "New Title",
+            "New Description")
+        val updatedTask = helperTask(
+            projectId = "1",
+            id = "123",
+            title = "New Title",
+            description = "New Description")
         every { editTaskUseCase.editTask(updatedTask) } returns true
 
         // When
@@ -38,5 +46,30 @@ class EditTaskCLITest {
 
         // Then
         verify { outputPrinter.printMessage("Task updated successfully") }
+    }
+
+    @Test
+    fun `should show error message when task update fails`() {
+        // Given
+        every { inputReader.readInput(any()) } returnsMany listOf(
+            "invalid_project",
+            "wrong_id",
+            "New Title",
+            "New Description"
+        )
+        val updatedTask = helperTask(
+            projectId = "invalid_project",
+            id = "wrong_id",
+            title = "New Title",
+            description = "New Description"
+        )
+        every { editTaskUseCase.editTask(updatedTask) } returns false
+
+        // When
+        editTaskCLI.show()
+
+        // Then
+        verify { outputPrinter.printMessage("Failed to update task") }
+
     }
 }
