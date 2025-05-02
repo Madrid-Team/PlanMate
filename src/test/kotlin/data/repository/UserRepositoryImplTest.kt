@@ -1,4 +1,4 @@
-package domain.repository
+package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto

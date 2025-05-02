@@ -1,9 +1,9 @@
-package domain.repository
+package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.dto.authentication.UserRoleDto
-import domain.usecases.DeleteUser
+import domain.repository.UserRepository
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
