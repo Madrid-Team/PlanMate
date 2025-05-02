@@ -1,6 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.CreateProjectUseCase
+import domain.usecases.project.EditProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
@@ -13,23 +14,23 @@ import kotlin.test.Test
 class EditProjectCLITest {
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
-    private val useCase = mockk<CreateProjectUseCase>()
-    private lateinit var createProjectCLI: CreateProjectCLI
+    private val useCase = mockk<EditProjectUseCase>()
+    private lateinit var editProjectCLI: EditProjectCLI
 
     @BeforeEach
     fun setUp() {
         inputReader = mockk()
         outputPrinter = mockk(relaxed = true)
-        createProjectCLI = CreateProjectCLI(inputReader, outputPrinter, useCase)
+        editProjectCLI = EditProjectCLI(inputReader, outputPrinter, useCase)
     }
 
     @Test
     fun `should edit project successfully when call create project`() {
         val project = helperProject(name = "project", description = "description")
         every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
-        every { useCase.createProject(project) } returns Result.success(Unit)
+        every { useCase.editProject(project) } returns Result.success(Unit)
 
-        createProjectCLI.show()
+        editProjectCLI.show()
 
         verify { outputPrinter.printMessage("Project edited successfully.") }
     }
@@ -38,9 +39,9 @@ class EditProjectCLITest {
     fun `should show error message when editing fails`() {
         val project = helperProject(name = "project", description = "description")
         every { inputReader.readInput(any()) } returnsMany listOf("project", "description")
-        every { useCase.createProject(project) } returns Result.failure(PlanMateExceptions("edit failed"))
+        every { useCase.editProject(project) } returns Result.failure(PlanMateExceptions("edit failed"))
 
-        createProjectCLI.show()
+        editProjectCLI.show()
 
         verify { outputPrinter.printMessage("edit failed") }
     }
