@@ -9,7 +9,7 @@ object CurrentUser {
         this.user = user
     }
 
-    fun getCurrentUser():User {
+    fun getCurrentUser():User? {
         return user
     }
 
