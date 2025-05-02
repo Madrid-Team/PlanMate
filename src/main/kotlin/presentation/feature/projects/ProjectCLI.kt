@@ -9,6 +9,7 @@ class ProjectCLI(
     private val createProjectCLI: CreateProjectCLI,
     private val deleteProjectCLI: DeleteProjectCLI,
     private val editProjectCLI: EditProjectCLI,
+    private val projectView: ProjectView
 ) {
     fun show() {
         while (true) {
@@ -22,10 +23,15 @@ class ProjectCLI(
                 "1" -> createProjectCLI.show()
                 "2" -> editProjectCLI.show()
                 "3" -> deleteProjectCLI.show()
+                "4" -> showProjects()
                 "0" -> return
                 else -> outputPrinter.printMessage("Invalid option. Please try again.")
             }
         }
+    }
+
+    fun showProjects(){
+        projectView.projectList()
     }
 
 }
