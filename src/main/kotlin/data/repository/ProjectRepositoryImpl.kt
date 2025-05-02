@@ -35,8 +35,12 @@ class ProjectRepositoryImpl(
         }
     }
 
-    override fun getAllProjects(): List<Project> {
-        return projects
+    override fun getAllProjects(): Result<List<Project>> {
+        return if(projects.isNotEmpty()){
+            Result.success(projects)
+        }else{
+            Result.failure(PlanMateExceptions("You haven't any projects yet"))
+        }
     }
 
 
@@ -113,5 +117,6 @@ class ProjectRepositoryImpl(
             Result.failure(ProjectNotFoundException())
         }
     }
+
 
 }
