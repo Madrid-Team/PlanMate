@@ -4,11 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.source.project.ProjectDataSource
 import domain.mapper.toDomain
+import domain.utlis.ProjectNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ProjectRepositoryImplTest {
     private lateinit var projectDataSource: ProjectDataSource
@@ -85,5 +87,41 @@ class ProjectRepositoryImplTest {
 
         assertTrue(result.isSuccess)
     }
+
+
+    @Test
+    fun `getProjectLogsById returns project's logs when it exists in projects list`() {
+
+        val projects = listOf(
+            createProject(id = "1", name = "test1", projectLogs = listOf("project created", "project updated")),
+            createProject(id = "2", name = "test2", projectLogs = listOf("project created", "project updated"))
+        )
+        every { projectDataSource.getProjects() } returns Result.success(projects)
+
+        repository = ProjectRepositoryImpl(projectDataSource)
+
+        val result = repository.getProjectLogsById("1")
+
+
+        assertTrue(result.isSuccess)
+    }
+
+
+    @Test
+    fun `getProjectLogsById throw ProjectNotFoundException when project not exists in projects list`() {
+
+        val projects = listOf(
+            createProject(id = "1", name = "test1", projectLogs = listOf("project created", "project updated")),
+            createProject(id = "2", name = "test2", projectLogs = listOf("project created", "project updated"))
+        )
+        every { projectDataSource.getProjects() } returns Result.success(projects)
+
+        repository = ProjectRepositoryImpl(projectDataSource)
+
+        assertThrows<ProjectNotFoundException> {
+            repository.getProjectLogsById("5")
+        }
+    }
+
 
 }
