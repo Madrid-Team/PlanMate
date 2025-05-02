@@ -24,12 +24,30 @@ class CreateTaskCLITest() {
 
     @Test
     fun `should create task successfully when valid input is provided`() {
+        // Given
         every { inputReader.readInput(any()) } returnsMany listOf("1", "title", "description")
         val project = helperProject(id = "1")
         val task = helperTask(projectId = project.id, title = "title", description = "description")
-
         every { useCase.createTask(task) } returns true
+
+        // When
         cli.show()
+
+        // Then
         verify { outputPrinter.printMessage("Task created successfully") }
+    }
+
+    @Test
+    fun `should show error message when project ID is not found and not create task`() {
+        // Given
+        every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
+        val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
+        every { useCase.createTask(task) } returns false
+
+        // When
+        cli.show()
+
+        // Then
+        verify { outputPrinter.printMessage("Failed to create task") }
     }
 }
