@@ -90,7 +90,7 @@ class ProjectCsvParserTest {
         )
 
         val newRow = projectCsvParser.parseProjectToString(newProject)
-        val exceptedRow = "2,PlanMate,project description,user2,project created,Todo,Todo|In progress,Testing|Todo"
+        val exceptedRow = "2,PlanMate,project description,user2,project created,Todo,Todo|In progress,Testing|Todo,\n"
 
         assertThat(newRow).isEqualTo(exceptedRow)
     }
