@@ -32,7 +32,7 @@ class CreateProjectCLITest {
 
         cli.show()
 
-        verify { outputPrinter.printMessage("Project created successfully with ID: 1") }
+        verify { outputPrinter.printMessage("Project created successfully") }
     }
 
     @Test
