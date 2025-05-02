@@ -8,4 +8,5 @@ interface TaskRepository {
     fun createTask(task: Task): Boolean
     fun getAllTasks(): List<Task>
     fun getTasksByProjectId(projectId: String): List<Task>
+    fun getTaskLogsByID(taskId: String) : List<String>
 }

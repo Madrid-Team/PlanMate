@@ -5,6 +5,7 @@ import data.source.task.TaskDataSource
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
+import domain.utlis.NoLogsFoundException
 import domain.utlis.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
@@ -144,4 +145,45 @@ class TaskRepositoryImplTest {
             taskRepository.editTask(task)
         }
     }
+
+    @Test
+    fun `get task logs should return list of task logs the same the data source returns it`() {
+
+
+        val logs = listOf(
+            "Ahmed Added a file",
+            "Ahmed deleted a file"
+
+        )
+
+
+        every { taskDataSource.getLogsByTaskId("100") } returns logs
+
+        val result = taskRepository.getTaskLogsByID("100")
+
+        Truth.assertThat(result).isEqualTo(logs)
+
+
+    }
+
+    @Test
+    fun `get task logs should throw exception when the data source returns exception that the task does exist and logs is empty`() {
+        every { taskDataSource.getLogsByTaskId("200") } throws NoLogsFoundException()
+
+        assertThrows<NoLogsFoundException> {
+            taskRepository.getTaskLogsByID("200")
+        }
+
+    }
+    @Test
+    fun `get task logs should throw exception when the data source returns exception that the task is not found`() {
+        every { taskDataSource.getLogsByTaskId("300") } throws TaskNotFoundException()
+
+        assertThrows<TaskNotFoundException> {
+            taskRepository.getTaskLogsByID("300")
+        }
+
+    }
+
+
 }
