@@ -1,9 +1,7 @@
-
 import domain.models.authentication.User
 import domain.repository.UserRepository
 
-
-class FakeUser : UserRepository {
+class FakeUserRepository : UserRepository {
 
     val allUsers = mutableMapOf<String, User>()
 
@@ -19,12 +17,11 @@ class FakeUser : UserRepository {
         return allUsers[userId]
     }
 
-    override fun getALLUser(): MutableMap<String, User> {
-        return allUsers
+    override fun getAllUsers(): List<User> {
+        TODO("Not yet implemented")
     }
 
-    override fun loginUser(userName: String, password: String): Boolean {
-        return allUsers.filter { user -> user.value.username == userName && user.value.passwordHash == password }.isNotEmpty()
+    override fun getUserByName(userName: String): User? {
+        TODO("Not yet implemented")
     }
-
 }
