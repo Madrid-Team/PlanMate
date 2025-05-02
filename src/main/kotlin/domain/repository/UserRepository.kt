@@ -1,11 +1,11 @@
 package domain.repository
 
-import domain.models.authentication.User
+import data.dto.authentication.UserDto
 
 interface UserRepository {
     fun deleteUser(userId: String)
-    fun addUser(user: User)
-    fun getUser(userId: String): User?
-    fun getAllUsers(): List<User>
-    fun getUserByName(userName: String): User?
+    fun addUser(user: UserDto): Result<Unit>
+    fun getUser(userId: String): Result<UserDto?>
+    fun getAllUsers(): Result<List<UserDto>>
+    fun getUserByName(userName: String):  Result<UserDto?>
 }

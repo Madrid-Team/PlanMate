@@ -3,28 +3,20 @@ package data.source.user
 import data.dto.authentication.UserDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import domain.utlis.UserException
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
-): UserDataSource {
-    override fun createUser(user: UserDto): Result<Unit> {
-
-        val users : List<UserDto>? =getAllUsers().getOrNull() ?: emptyList()
-        val userFound=  users?.find {  it.username == user.username }
-
-
-        return  if(userFound != null) {
-            Result.failure(UserException.UserExist("User already Exist"))
-
+) : UserDataSource {
+    override fun createUser(userAsRow: String): Result<Unit> {
+        try {
+            fileCsvWriter.writeToCsvFile(userAsRow)
+            return Result.success(Unit)
+        } catch (e: Exception) {
+            return Result.failure(e)
         }
-        else {
-            val row = userCsvParser.parseUserToRow(user)
-            fileCsvWriter.writeToCsvFile(row)
-            Result.success(Unit)
-        }
+
 
     }
 
@@ -44,9 +36,9 @@ class UserCsvDataSource(
     override fun getAllUsers(): Result<List<UserDto>> {
         return try {
             val rows = fileCsvReader.readCsvFile()
-            val users = rows.map { userCsvParser.parseRowToUser(it)}
+            val users = rows.map { userCsvParser.parseRowToUser(it) }
             return Result.success(users)
-        } catch (_ : Exception) {
+        } catch (_: Exception) {
             Result.failure(Exception("Something went wrong in csv file"))
         }
     }
