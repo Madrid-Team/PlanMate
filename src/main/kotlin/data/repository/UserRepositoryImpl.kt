@@ -10,7 +10,7 @@ class UserRepositoryImpl(
     private val userDataSource: UserDataSource,
     private val userCsvParser: UserCsvParser,
 ) : UserRepository {
-    override fun deleteUser(userId: String): Result<Unit> {
+    override fun deleteUser(userId: String){
         return userDataSource.deleteUser(userId)
     }
 
