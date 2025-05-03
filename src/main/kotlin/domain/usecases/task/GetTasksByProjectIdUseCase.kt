@@ -16,7 +16,7 @@ class GetTasksByProjectIdUseCase(
                 if (!tasks.isNullOrEmpty()) {
                     Result.success(tasks)
                 } else {
-                    Result.failure(TaskNotFoundException("No tasks found for this project."))
+                    Result.failure(TaskExceptions.TaskNotFoundException("No tasks found for this project."))
                 }
             } else {
                 Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))

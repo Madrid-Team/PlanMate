@@ -7,7 +7,6 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
-import domain.utlis.ProjectNotFoundException
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
