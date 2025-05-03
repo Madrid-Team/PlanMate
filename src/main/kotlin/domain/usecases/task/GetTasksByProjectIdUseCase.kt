@@ -7,6 +7,22 @@ import domain.utlis.TaskExceptions
 class GetTasksByProjectIdUseCase(
     private val taskRepository: TaskRepository
 ) {
-    operator fun invoke(projectId: String): List<Task> =
-        taskRepository.getTasksByProjectId(projectId).takeIf { it.isNotEmpty() } ?: throw TaskExceptions.TaskNotFoundException()
+    operator fun invoke(projectId: String): Result<List<Task>> {
+        return try {
+            val result = taskRepository.getTasksByProjectId(projectId)
+
+            if (result.isSuccess) {
+                val tasks = result.getOrNull()
+                if (!tasks.isNullOrEmpty()) {
+                    Result.success(tasks)
+                } else {
+                    Result.failure(TaskNotFoundException("No tasks found for this project."))
+                }
+            } else {
+                Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

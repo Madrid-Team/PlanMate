@@ -1,5 +1,6 @@
 package data.source.task
 
+import data.dto.task.TaskDto
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.utils.FileCsvReader
@@ -12,7 +13,6 @@ import domain.models.task.Task
 import domain.utlis.TaskExceptions
 
 import domain.utlis.convertDateIntoReadableDate
-import java.io.IOException
 import java.time.LocalDateTime
 
 class TaskCsvDataSource(
@@ -44,24 +44,9 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun createTask(task: Task): Boolean {
-        return try {
-            val taskRow = taskCsvParser.parseTaskToString(
-                task.toDto().copy(
-                    logs = listOf(
-                        CreatedLogFormatter.format(
-                            entityName = task.title,
-                            entityType = EntityType.TASK,
-                            username = task.createdBy,
-                        )
-                    )
-                )
-            )
-            fileCsvWriter.writeToCsvFile(taskRow)
-            true
-        } catch (e: Exception) {
-            throw IOException(e)
-        }
+    override fun createTask(task: TaskDto) {
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeToCsvFile(taskRow)
     }
 
     override fun getAllTasks(): List<Task> {
@@ -90,8 +75,8 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun getTasksByProjectId(projectId: String): List<Task> {
-        return getAllTasks().filter { it.projectId == projectId }
+    override fun getTasksByProjectId(projectId: String): Result<List<Task>> {
+        return Result.success(getAllTasks().filter { it.projectId == projectId })
     }
 
 
@@ -146,7 +131,7 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskExceptions.TaskNotFoundException()
+        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskNotFoundException()
         val taskLogs = task.logs
         if (taskLogs.isEmpty())
             throw TaskExceptions.NoLogsFoundException()

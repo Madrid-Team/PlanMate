@@ -7,7 +7,7 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
-import domain.utlis.ProjectExceptions
+import domain.utlis.ProjectNotFoundException
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -15,7 +15,6 @@ import java.util.*
 class CreateTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val taskView: TaskView,
     private val createTaskUseCase: CreateTaskUseCase,
     private val createLogUseCase: CreateLogUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
@@ -23,24 +22,21 @@ class CreateTaskCLI(
 ) {
     fun show() {
         outputPrinter.printMessage("=== Create Task ===")
-
-        val task = readTaskInput()
-
-        val result = createTaskUseCase.createTask(task)
-
-        printResult(result)
+        try {
+            val task = readTaskInput()
+            createTaskUseCase.createTask(task)
+            outputPrinter.printMessage("Task created successfully")
+        } catch (exception: Exception) {
+            outputPrinter.printMessage(exception.message.toString())
+            outputPrinter.printMessage("Failed to create task")
+        }
     }
 
     private fun readTaskInput(): Task {
-        val projectId = inputReader.readInput("Enter project ID: \n")
+        val projectId = inputReader.readInput("Enter project ID: ")
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
-        val result = getProjectByIdUseCase.invoke(projectId)
-
-        if (result.isFailure) {
-            throw ProjectExceptions.ProjectNotFoundException()
-        }
-        val project = result.getOrThrow()
+        val project = getProjectByIdUseCase.invoke(projectId).getOrThrow()
 
         outputPrinter.printMessage("Available task states:")
         project.taskStates.forEachIndexed { index, state ->
@@ -55,8 +51,8 @@ class CreateTaskCLI(
             title = title,
             description = description,
             taskState = selectedState,
-            createdBy = CurrentUser.getCurrentUser()?.username?: "Unknown",
-            logs =  listOf(
+            createdBy = CurrentUser.getCurrentUser()?.username ?: "Unknown",
+            logs = listOf(
                 createLogUseCase.invoke(
                     operationType = OperationType.CREATE,
                     entityName = title,
@@ -67,13 +63,4 @@ class CreateTaskCLI(
             id = UUID.randomUUID()
         )
     }
-
-    private fun printResult(result: Boolean) {
-        if (result) {
-            outputPrinter.printMessage("Task created successfully")
-        } else {
-            outputPrinter.printMessage("Failed to create task")
-        }
-    }
-
 }
