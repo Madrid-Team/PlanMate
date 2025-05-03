@@ -5,7 +5,9 @@ import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
+import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import domain.utlis.ProjectNotFoundException
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -15,7 +17,9 @@ class CreateTaskCLI(
     private val outputPrinter: OutputPrinter,
     private val taskView: TaskView,
     private val createTaskUseCase: CreateTaskUseCase,
-    private val createLogUseCase: CreateLogUseCase
+    private val createLogUseCase: CreateLogUseCase,
+    private val getProjectByIdUseCase: GetProjectByIdUseCase
+
 ) {
     fun show() {
         outputPrinter.printMessage("=== Create Task ===")
@@ -28,15 +32,29 @@ class CreateTaskCLI(
     }
 
     private fun readTaskInput(): Task {
-        val projectId = inputReader.readInput("Enter project ID: ")
+        val projectId = inputReader.readInput("Enter project ID: \n")
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
+        val result = getProjectByIdUseCase.invoke(projectId)
+
+        if (result.isFailure) {
+            throw ProjectNotFoundException()
+        }
+        val project = result.getOrThrow()
+
+        outputPrinter.printMessage("Available task states:")
+        project.taskStates.forEachIndexed { index, state ->
+            outputPrinter.printMessage("${index + 1}. $state")
+        }
+
+        val selectIndex = inputReader.readInput("Select task state: ").toIntOrNull() ?: 1
+        val selectedState = project.taskStates.getOrElse(selectIndex - 1) { project.taskStates.first() }
 
         return Task(
             projectId = projectId,
             title = title,
             description = description,
-            taskState = "",
+            taskState = selectedState,
             createdBy = "",
             logs =  listOf(
                 createLogUseCase.invoke(
