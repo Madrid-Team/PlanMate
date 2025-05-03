@@ -1,6 +1,6 @@
 package presentation.feature.user
 
-import domain.usecases.CreateUserUseCase
+import domain.usecases.user.CreateUserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

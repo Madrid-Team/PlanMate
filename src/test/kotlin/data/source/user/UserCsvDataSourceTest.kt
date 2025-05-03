@@ -43,7 +43,7 @@ class UserCsvDataSourceTest {
         every { fileCsvWriter.writeToCsvFile(row) } returns Unit
 
         // When
-        val result = dataSource.createUser(row)
+        val result = dataSource.createNewUser(row)
 
         // Then
         assertThat(result.isSuccess).isTrue()
@@ -58,7 +58,7 @@ class UserCsvDataSourceTest {
         every { fileCsvWriter.writeToCsvFile(row) } throws exception
 
         // When
-        val result = dataSource.createUser(row)
+        val result = dataSource.createNewUser(row)
 
         // Then
         assertThat(result.isFailure).isTrue()
@@ -143,7 +143,7 @@ class UserCsvDataSourceTest {
         every { userCsvParser.parseRowToUser(row1) } returns user1
 
         // When
-        val result = dataSource.getUser("1")
+        val result = dataSource.getUserById("1")
 
         // Then
         assertThat(result.isSuccess).isTrue()
@@ -156,7 +156,7 @@ class UserCsvDataSourceTest {
         every { fileCsvReader.readCsvFile() } throws Exception()
 
         // When
-        val result = dataSource.getUser("1")
+        val result = dataSource.getUserById("1")
         // When & Then
         assertThat(result.isFailure).isTrue()
     }

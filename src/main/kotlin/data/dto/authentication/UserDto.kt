@@ -1,7 +1,5 @@
 package data.dto.authentication
 
-import java.util.*
-
 data class UserDto(
     val id: String,
     val username: String,

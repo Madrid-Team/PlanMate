@@ -1,10 +1,9 @@
 package presentation.feature.user
 
-import data.mapper.toDto
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
-import domain.usecases.CreateUserUseCase
+import domain.usecases.user.CreateUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -26,7 +25,7 @@ class CreateUserCLI(
                 username = userName, passwordHash = passwordHash, role = UserRole.MATE.name,
                 id = UUID.randomUUID()
             )
-            createUserUseCase.createUser(user.toDto())
+            createUserUseCase.createUser(user)
             outputPrinter.printMessage("Login Success")
         } catch (_: Exception) {
             outputPrinter.printMessage("Creating User Failed")

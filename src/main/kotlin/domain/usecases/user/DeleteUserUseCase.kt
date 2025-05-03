@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.user
 
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
@@ -8,7 +8,7 @@ class DeleteUserUseCase(
 ) {
     fun invoke(userRequestId: String, userToDeleteId: String): Result<Unit> {
         return try {
-            val user = userRepository.getUser(userRequestId)
+            val user = userRepository.getUserById(userRequestId)
             val userResponse = user.fold(
                 onSuccess = { it },
                 onFailure = { return Result.failure(it) }

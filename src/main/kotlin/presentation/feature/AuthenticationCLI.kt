@@ -1,9 +1,8 @@
 package presentation.feature
 
 import data.utils.PasswordHasher
-import data.mapper.toDomain
 import domain.models.logs.CurrentUser
-import domain.usecases.LoginUserUseCase
+import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -23,7 +22,7 @@ class AuthenticationCLI(
         try {
             val success = loginUserUseCase.invoke(userName, passwordHash)
             outputPrinter.printMessage("Login Success")
-            CurrentUser.setCurrentUser(success!!.toDomain())
+            CurrentUser.setCurrentUser(success)
         } catch (e: Exception) {
             outputPrinter.printMessage(e.message.toString())
             outputPrinter.printMessage("Login error:(")

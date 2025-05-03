@@ -1,9 +1,9 @@
 package data.repository
 
-import data.dto.authentication.UserDto
-import data.source.user.UserCsvDataSource
+import data.mapper.toDto
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
+import domain.models.authentication.User
 import domain.repository.UserRepository
 
 class UserRepositoryImpl(
@@ -14,22 +14,20 @@ class UserRepositoryImpl(
         return userDataSource.deleteUser(userId)
     }
 
-    override fun addUser(user: UserDto): Result<Unit> {
-        val row: String = userCsvParser.parseUserToRow(user)
-        return userDataSource.createUser(row)
-
+    override fun createNewUser(user: User): Result<Unit> {
+        val row: String = userCsvParser.parseUserToRow(user.toDto())
+        return userDataSource.createNewUser(row)
     }
 
-    override fun getUser(userId: String): Result<UserDto?> {
-        return userDataSource.getUser(userId)
-
+    override fun getUserById(userId: String): Result<User?> {
+        return userDataSource.getUserById(userId)
     }
 
-    override fun getAllUsers(): Result<List<UserDto>> {
+    override fun getAllUsers(): Result<List<User>> {
         return userDataSource.getAllUsers()
     }
 
-    override fun getUserByName(userName: String): Result<UserDto?> {
+    override fun getUserByName(userName: String): Result<User?> {
         return userDataSource.getUserByName(userName)
     }
 }

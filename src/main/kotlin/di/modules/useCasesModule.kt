@@ -1,9 +1,9 @@
 package di.modules
 
-import domain.usecases.CreateUserUseCase
-import domain.usecases.DeleteUserUseCase
+import domain.usecases.user.CreateUserUseCase
+import domain.usecases.user.DeleteUserUseCase
 import domain.usecases.DisplayAllTasksUseCase
-import domain.usecases.LoginUserUseCase
+import domain.usecases.user.LoginUserUseCase
 import domain.usecases.project.*
 import domain.usecases.task.*
 import org.koin.dsl.module

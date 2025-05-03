@@ -2,7 +2,7 @@ package presentation.feature.user
 
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
-import domain.usecases.DeleteUserUseCase
+import domain.usecases.user.DeleteUserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
