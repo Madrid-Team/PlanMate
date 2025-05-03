@@ -5,6 +5,7 @@ import data.mapper.toDomain
 import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import data.utils.taskHeader
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
@@ -20,14 +21,17 @@ class TaskCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val fileCsvReader: FileCsvReader
 ) : TaskDataSource {
-    override fun editTask(task: Task): Boolean {
+    override fun editTask(tasks: List<TaskDto>): Result<Unit> {
         return try {
-            val updatedTasks = getListOfUpdatedList(task)
-            val csvContent = updatedTasks.joinToString("\n") { taskCsvParser.parseTaskToString(it.toDto()) }
-            fileCsvWriter.updateCsvFile(csvContent)
-            true
+            var tasksAfterUpdate = String.taskHeader
+            tasks.forEach {
+                val taskAsString = taskCsvParser.parseTaskToString(it)
+                tasksAfterUpdate += taskAsString
+            }
+            fileCsvWriter.updateCsvFile(tasksAfterUpdate)
+            Result.success(Unit)
         } catch (e: Exception) {
-            throw TaskNotFoundException(e.message)
+            Result.failure(e)
         }
     }
 
@@ -65,7 +69,7 @@ class TaskCsvDataSource(
     }
 
     override fun getAllTasks(): List<Task> {
-        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain()}
+        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain() }
     }
 
     override fun getListWithDeletedTask(taskId: String): List<Task> {
@@ -146,7 +150,7 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id.toString() == taskId }?: throw TaskNotFoundException()
+        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskNotFoundException()
         val taskLogs = task.logs
         if (taskLogs.isEmpty())
             throw NoLogsFoundException()

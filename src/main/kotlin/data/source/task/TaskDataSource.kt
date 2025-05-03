@@ -1,9 +1,11 @@
 package data.source.task
 
+import data.dto.task.TaskDto
 import domain.models.task.Task
 
 interface TaskDataSource {
-    fun editTask(task: Task): Boolean
+    fun editTask(tasks: List<TaskDto>): Result<Unit>
+
     fun deleteTask(taskId: String): Boolean
     fun createTask(task: Task): Boolean
     fun getAllTasks(): List<Task>
