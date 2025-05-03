@@ -55,7 +55,7 @@ class CreateTaskCLI(
             title = title,
             description = description,
             taskState = selectedState,
-            createdBy = "",
+            createdBy = CurrentUser.getCurrentUser()?.username?: "Unknown",
             logs =  listOf(
                 createLogUseCase.invoke(
                     operationType = OperationType.CREATE,
