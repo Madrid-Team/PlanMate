@@ -1,7 +1,6 @@
 package domain.models.task
 
 import java.util.*
-import kotlin.collections.List
 
 
 data class Task(
