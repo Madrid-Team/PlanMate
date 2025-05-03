@@ -12,6 +12,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.verify
+import org.checkerframework.checker.units.qual.t
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -37,72 +38,54 @@ class TaskCsvDataSourceTest {
         val updatedTask = existingTask.copy(title = "new title")
 
         every { fileCsvReader.readCsvFile() } returns listOf("row1")
-        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask.toDto()
-        every { taskCsvParser.parseTaskToString(updatedTask.toDto()) } returns csvRow
+        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask
+        every { taskCsvParser.parseTaskToString(updatedTask) } returns csvRow
         every { fileCsvWriter.updateCsvFile(csvRow) } returns Unit
 
-        val result = taskDataSource.editTask(updatedTask)
+        val result = taskDataSource.editTask(taskList)
 
-        assertThat(result).isTrue()
+        assertThat(result.isSuccess).isTrue()
         verify { fileCsvWriter.updateCsvFile(csvRow) }
     }
 
     @Test
     fun `should edit task throw exception when failed to edit the task`() {
         assertThrows<TaskNotFoundException> {
-            taskDataSource.editTask(task)
+            taskDataSource.editTask(taskList)
         }
     }
 
     @Test
     fun `should delete task return true when task id is found`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task1")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto()
-        every { taskCsvParser.parseTaskToString(task.toDto()) } returns csvRow
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task
+        every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
-        val result = taskDataSource.deleteTask(taskId.toString())
+        val result = taskDataSource.deleteTask(taskList)
 
-        assertThat(result).isTrue()
+        assertThat(result.isSuccess).isTrue()
         verify { fileCsvWriter.updateCsvFile(any()) }
     }
 
     @Test
     fun `should delete task throw exception when task id is not found`() {
         assertThrows<TaskNotFoundException> {
-            taskDataSource.deleteTask(task.id.toString())
+            taskDataSource.deleteTask(taskList)
         }
     }
 
 
     @Test
     fun `should create task return true when creating task successfully`() {
-        val formattedLog = "User create Task at 2025/05/02 8:25 AM"
-        val copiedTaskWithLog = task.copy(logs = listOf(formattedLog))
-
-        every { taskCsvParser.parseTaskToString(copiedTaskWithLog.toDto()) } returns csvRow
+        every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.writeToCsvFile(csvRow) } returns Unit
-        mockkObject(CreatedLogFormatter)
-        every {
-            CreatedLogFormatter.format(
-                entityName = task.title,
-                entityType = EntityType.TASK,
-                username = task.createdBy
-            )
-        } returns formattedLog
 
         val result = taskDataSource.createTask(task)
 
-        assertThat(result).isTrue()
-        verify { taskCsvParser.parseTaskToString(copiedTaskWithLog.toDto()) }
+        assertThat(result.isSuccess).isTrue()
+        verify { taskCsvParser.parseTaskToString(task) }
         verify { fileCsvWriter.writeToCsvFile(csvRow) }
-        verify {
-            CreatedLogFormatter.format(
-                entityName = task.title,
-                entityType = EntityType.TASK,
-                username = task.createdBy
-            )
-        }
     }
 
     @Test
@@ -115,40 +98,46 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should get all tasks return list of tasks`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task", "task2")
-        every { taskCsvParser.parseOneRowToTask("task") } returns task.toDto()
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto()
+        every { taskCsvParser.parseOneRowToTask("task") } returns task
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task
 
         val result = taskDataSource.getAllTasks()
 
         assertThat(result).isEqualTo(listOf(task, task))
     }
 
-    @Test
-    fun `getTaskByProjectId should return list of tasks when id is found`() {
-        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = projectId)
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = projectId)
+//    @Test
+//    fun `getTaskByProjectId should return list of tasks when id is found`() {
+//        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
+//        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = projectId)
+//        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = projectId)
+//
+//        val result = taskDataSource.getTasksByProjectId(projectId)
+//
+//        assertThat(result).containsExactly(task.copy(projectId = projectId), task.copy(projectId = projectId))
+//    }
 
-        val result = taskDataSource.getTasksByProjectId(projectId)
-
-        assertThat(result).containsExactly(task.copy(projectId = projectId), task.copy(projectId = projectId))
-    }
-
-    @Test
-    fun `getTaskByProjectId should return empty list when id is not found`() {
-        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = "id1")
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = "id2")
-
-        val result = taskDataSource.getTasksByProjectId(projectId)
-
-        assertThat(result).isEmpty()
-    }
+//    @Test
+//    fun `getTaskByProjectId should return empty list when id is not found`() {
+//        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
+//        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = "id1")
+//        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = "id2")
+//
+//        val result = taskDataSource.getTasksByProjectId(projectId)
+//
+//        assertThat(result).isEmpty()
+//    }
 
     companion object {
         val task = createTask(id = "12", title = "task")
         const val csvRow = "12,task"
         val taskId = task.id
         val projectId = "12"
+        val taskList = listOf(
+            createTask(id = "12", title = "task"),
+            createTask(id = "13", title = "task"),
+            createTask(id = "14", title = "task"),
+        )
     }
+
 }
