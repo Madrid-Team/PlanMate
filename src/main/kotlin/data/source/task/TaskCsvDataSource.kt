@@ -74,8 +74,8 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun getTasksByProjectId(projectId: String): List<Task> {
-        return getAllTasks().filter { it.projectId == projectId }
+    override fun getTasksByProjectId(projectId: String): Result<List<Task>> {
+        return Result.success(getAllTasks().filter { it.projectId == projectId })
     }
 
 

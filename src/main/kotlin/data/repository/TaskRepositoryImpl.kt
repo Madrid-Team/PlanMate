@@ -25,8 +25,8 @@ class TaskRepositoryImpl(
         return taskDataSource.getAllTasks()
     }
 
-    override fun getTasksByProjectId(projectId: String): List<Task> {
-        return taskDataSource.getTasksByProjectId(projectId)
+    override fun getTasksByProjectId(projectId: String): Result<List<Task>> {
+         return taskDataSource.getTasksByProjectId(projectId)
     }
 
     override fun getTaskLogsByID(taskId: String): List<String> {
