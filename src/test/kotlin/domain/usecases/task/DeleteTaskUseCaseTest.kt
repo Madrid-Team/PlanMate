@@ -24,8 +24,8 @@ class DeleteTaskUseCaseTest {
     fun `should delete task when id is found`() {
         //given
         val taskId = UUID.randomUUID().toString()
-        every { taskRepository.getAllTasks() } returns listOf(createTask(id = taskId))
-        every { taskRepository.deleteTask(taskId) } returns true
+        every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
+        every { taskRepository.deleteTask(taskId) } returns Result.success(Unit)
 
         //when
         val result = deleteTaskUseCase.deleteTask(taskId)

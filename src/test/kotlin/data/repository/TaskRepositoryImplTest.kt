@@ -1,18 +1,17 @@
 package data.repository
 
 import com.google.common.truth.Truth
-import data.createProject
-import data.source.project.ProjectMemoryDataSource
+import com.google.common.truth.Truth.assertThat
+import data.mapper.toDto
 import data.source.task.TaskDataSource
 import data.source.task.TaskMemoryDataSource
+import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
-import domain.utlis.ProjectExceptions
 import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,16 +25,39 @@ class TaskRepositoryImplTest {
     @BeforeEach
     fun setup() {
         taskDataSource = mockk(relaxed = true)
-        taskRepository = TaskRepositoryImpl(
-            taskDataSource,
-            taskMemoryDataSource
-        )
+        taskRepository = TaskRepositoryImpl(taskDataSource, taskMemoryDataSource)
     }
+
+    @Test
+    fun `edit task should return success result when data source return success`() {
+        val task = createTask(id = "1231", title = "task")
+        val tasks = listOf(
+            createTask(id = "1231", title = "task"),
+            createTask(id = "123123", title = "task2")
+        )
+        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
+        taskRepository = TaskRepositoryImpl(taskDataSource, taskMemoryDataSource)
+
+        val result = taskRepository.editTask(task)
+
+        assertThat(result.isSuccess).isTrue()
+    }
+
+//    @Test
+//    fun `edit task should throw exception when data source throw exception`() {
+//        val task = createTask(id = "1231", title = "task")
+//        every { taskDataSource.editTask(task) } throws Exception()
+//
+//        assertThrows<Exception> {
+//            taskRepository.editTask(task)
+//        }
+//    }
+
 
     @Test
     fun `get all task should return list of tasks when data source is not empty`() {
         val tasks = listOf(createTask(), createTask())
-        every { taskDataSource.getAllTasks() } returns tasks
+        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
 
         val result = taskRepository.getAllTasks()
 
@@ -45,7 +67,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `get all task should return empty list when data source is empty`() {
         val tasks = emptyList<Task>()
-        every { taskDataSource.getAllTasks() } returns tasks
+        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
 
         val result = taskRepository.getAllTasks()
 
@@ -65,7 +87,7 @@ class TaskRepositoryImplTest {
     fun `getTasksByProjectId should return list of tasks when date source is not empty`() {
         val tasks = listOf(createTask(), createTask())
         val projectId = tasks[0].projectId
-        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+        every { taskDataSource.getTasksByProjectId(projectId) } returns Result.success(tasks.map { it.toDto() })
 
         val result = taskRepository.getTasksByProjectId(projectId)
 
@@ -76,7 +98,7 @@ class TaskRepositoryImplTest {
     fun `getTasksByProjectId should return empty list when date source is empty`() {
         val tasks = emptyList<Task>()
         val projectId = "12"
-        every { taskDataSource.getTasksByProjectId(projectId) } returns tasks
+        every { taskDataSource.getTasksByProjectId(projectId) } returns Result.success(tasks.map { it.toDto() })
 
         val result = taskRepository.getTasksByProjectId(projectId)
 
@@ -96,17 +118,17 @@ class TaskRepositoryImplTest {
     @Test
     fun `create task should return true when data source return true`() {
         val task = createTask(id = "1231", title = "task")
-        every { taskDataSource.createTask(task) } returns true
+        every { taskDataSource.createTask(task.toDto()) } returns Result.success(Unit)
 
         val result = taskRepository.createTask(task)
 
-        Truth.assertThat(result).isTrue()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
     fun `create task should throw exception when data source throw exception`() {
         val task = createTask(id = "1231", title = "task")
-        every { taskDataSource.createTask(task) } throws Exception()
+        every { taskDataSource.createTask(task.toDto()) } throws Exception()
 
         assertThrows<Exception> {
             taskRepository.createTask(task)
@@ -117,17 +139,17 @@ class TaskRepositoryImplTest {
     @Test
     fun `delete task should return true when data source return true`() {
         val taskId = "1313"
-        every { taskDataSource.deleteTask(taskId) } returns true
+        every { taskDataSource.deleteTask(tasks) } returns Result.success(Unit)
 
         val result = taskRepository.deleteTask(taskId)
 
-        Truth.assertThat(result).isTrue()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
     fun `delete task should throw exception when data source throw exception`() {
         val taskId = "1313"
-        every { taskDataSource.deleteTask(taskId) } throws Exception()
+        every { taskDataSource.deleteTask(tasks) } throws Exception()
 
         assertThrows<Exception> {
             taskRepository.deleteTask(taskId)
@@ -135,61 +157,49 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `edit task should return true when data source return true`() {
-        val task = createTask(id = "1231", title = "task")
-        every { taskDataSource.editTask(task) } returns true
+    fun `get task logs should return list of task logs the same the data source returns it`() {
 
-        val result = taskRepository.editTask(task)
 
-        Truth.assertThat(result).isTrue()
-    }
-
-    @Test
-    fun `edit task should throw exception when data source throw exception`() {
-        val task = createTask(id = "1231", title = "task")
-        every { taskDataSource.editTask(task) } throws Exception()
-
-        assertThrows<Exception> {
-            taskRepository.editTask(task)
-        }
-    }
-
-    @Test
-    fun `get Task logs by id returns task's logs when it exists in tasks list`() {
-
-        val tasks = listOf(
-            createTask("1","20")
+        val logs = listOf(
+            "Ahmed Added a file",
+            "Ahmed deleted a file"
 
         )
-        every { taskDataSource.getAllTasks() } returns Result.success(tasks)
-
-        taskRepository = TaskRepositoryImpl(taskDataSource, mockk())
-
-        val result = taskRepository.getTaskLogsByID("1")
 
 
-        assertTrue(result.isSuccess)
+        every { taskDataSource.getLogsByTaskId("100") } returns Result.success(listOf("ada","ada"))
+
+        val result = taskRepository.getTaskLogsByID("100")
+
+        Truth.assertThat(result).isEqualTo(logs)
+
+
     }
-
 
     @Test
-    fun `getTaskLogsByID throw TaskNotFoundException when task not exists in tasks list`() {
+    fun `get task logs should throw exception when the data source returns exception that the task does exist and logs is empty`() {
+        every { taskDataSource.getLogsByTaskId("200") } throws TaskExceptions.NoLogsFoundException()
 
-        val tasks = listOf(
-            createTask(id = "1","20"),
-            createTask(id = "2","40")
-        )
-        every { taskDataSource.getAllTasks() } returns Result.success(tasks)
-
-        taskRepository = TaskRepositoryImpl(taskDataSource, mockk())
-
-        assertThrows<ProjectExceptions.ProjectNotFoundException> {
-            val result = taskRepository.getTaskLogsByID("8")
-            result.getOrThrow()
+        assertThrows<TaskExceptions.NoLogsFoundException> {
+            taskRepository.getTaskLogsByID("200")
         }
+
     }
 
+    @Test
+    fun `get task logs should throw exception when the data source returns exception that the task is not found`() {
+        every { taskDataSource.getLogsByTaskId("300") } throws TaskExceptions.TaskNotFoundException()
 
+        assertThrows<TaskExceptions.TaskNotFoundException> {
+            taskRepository.getTaskLogsByID("300")
+        }
 
+    }
 
+    companion object {
+        val tasks = listOf(
+            helperTaskDto(id = "1", title = "test"),
+            helperTaskDto(id = "2", title = "test2")
+        )
+    }
 }

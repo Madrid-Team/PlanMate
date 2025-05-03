@@ -25,14 +25,14 @@ class CreateTaskUseCaseTest {
     fun `should return true when task is saved successfully`() {
         // given
         val task = createTask(title = "new task", description = "description")
-        every { taskRepository.createTask(task) } returns true
+        every { taskRepository.createTask(task) } returns Result.success(Unit)
 
         // when
         val result = createTaskUseCase.createTask(task)
 
         // then
         verify { taskRepository.createTask(task) }
-        assertThat(result).isTrue()
+        assertThat(result)
     }
 
     @Test

@@ -105,9 +105,14 @@ class TaskCsvDataSource(
         }
     }
 
+    override fun getLogsByTaskId(taskId: String): Result<List<String>> {
 
-
-
+        val task = getAllTasks().getOrNull()?.find { it.id.toString() == taskId } ?: throw TaskExceptions.TaskNotFoundException()
+        val taskLogs = task.logs
+        if (taskLogs.isEmpty())
+            throw TaskExceptions.NoLogsFoundException()
+        return Result.success(taskLogs)
+    }
     private fun createLogsForUpdatedFields(oldTask: Task, updatedTask: Task): List<String> {
         val logs = mutableListOf<String>()
         val timestamp = LocalDateTime.now().convertDateIntoReadableDate()

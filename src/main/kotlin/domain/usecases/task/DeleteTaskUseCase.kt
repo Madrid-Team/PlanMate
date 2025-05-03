@@ -14,6 +14,6 @@ class DeleteTaskUseCase(
     }
 
     private fun getTaskById(taskId: String): Task? {
-        return taskRepository.getAllTasks().find { it.id.toString() == taskId }
+        return taskRepository.getAllTasks().getOrNull()?.find { it.id.toString() == taskId }
     }
 }

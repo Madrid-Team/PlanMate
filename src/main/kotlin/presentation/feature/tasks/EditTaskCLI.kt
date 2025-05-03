@@ -30,9 +30,9 @@ class EditTaskCLI(
             logs = listOf()
         )
 
-        val result = editTaskUseCase.editTask(taskId, updatedTask)
+        val result = editTaskUseCase.editTask(updatedTask)
 
-        if (result) {
+        if (result.isSuccess) {
             outputPrinter.printMessage("Task updated successfully")
         } else {
             outputPrinter.printMessage("Failed to update task")
