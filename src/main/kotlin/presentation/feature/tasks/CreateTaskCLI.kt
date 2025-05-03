@@ -1,12 +1,10 @@
 package presentation.feature.tasks
 
 import domain.models.logs.CurrentUser
-import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.CreateTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import java.util.*
 import java.util.*
 
 class CreateTaskCLI(
