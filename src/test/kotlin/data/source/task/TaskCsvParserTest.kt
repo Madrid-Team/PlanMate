@@ -36,7 +36,7 @@ class TaskCsvParserTest {
 
     @Test
     fun `parseOneRowToTask function should parse task state correctly`() {
-        assertThat(task.state).isEqualTo("state")
+        assertThat(task.taskState).isEqualTo("state")
     }
 
     @Test
@@ -66,7 +66,7 @@ class TaskCsvParserTest {
             task.projectId,
             task.description,
             task.createdBy,
-            task.state,
+            task.taskState,
             task.title,
             task.logs.joinToString("|")
         ).joinToString(",")

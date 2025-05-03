@@ -13,8 +13,8 @@ class EditTaskUseCase(
             projectId = updatedTask.projectId.ifBlank { oldTask.projectId },
             title = updatedTask.title.ifBlank { oldTask.title },
             description = updatedTask.title.ifBlank { oldTask.description },
-            state = updatedTask.state.ifBlank { oldTask.state },
-            createdBy = updatedTask.state.ifBlank { oldTask.createdBy },
+            taskState = updatedTask.taskState.ifBlank { oldTask.taskState },
+            createdBy = updatedTask.taskState.ifBlank { oldTask.createdBy },
             logs = updatedTask.logs.ifEmpty { oldTask.logs }
         )
         taskRepository.editTask(newTask)

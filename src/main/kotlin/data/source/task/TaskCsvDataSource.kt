@@ -127,7 +127,7 @@ class TaskCsvDataSource(
             )
         }
 
-        if (oldTask.state != updatedTask.state) {
+        if (oldTask.taskState != updatedTask.taskState) {
             logs.add(
                 //create log message contains the update on project name
                 UpdatedLogFormatter.format(
@@ -135,8 +135,8 @@ class TaskCsvDataSource(
                     entityType = EntityType.TASK,
                     username = oldTask.createdBy,
                     fieldName = "state",
-                    oldValue = oldTask.state,
-                    newValue = updatedTask.state,
+                    oldValue = oldTask.taskState,
+                    newValue = updatedTask.taskState,
                     timestamp = timestamp
                 )
             )

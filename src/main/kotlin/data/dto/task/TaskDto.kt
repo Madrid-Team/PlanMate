@@ -8,7 +8,7 @@ data class TaskDto(
     val projectId: String,
     val title: String,
     val description: String,
-    val state: String,
+    val taskState: String,
     val createdBy: String,
     val logs: List<String>,
 )

@@ -1,6 +1,7 @@
 package presentation.feature.tasks
 
 import domain.models.logs.CurrentUser
+import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.CreateTaskUseCase
 import presentation.components.InputReader
@@ -33,7 +34,7 @@ class CreateTaskCLI(
             projectId = projectId,
             title = title,
             description = description,
-            state = "",
+            taskState = "",
             createdBy = CurrentUser.getCurrentUser()?.username ?: "Unknown",
             logs = listOf(),
             id = UUID.randomUUID()

@@ -41,7 +41,7 @@ class EditTaskUseCaseTest {
             projectId = "11",
             title = "title",
             description = "description",
-            state = "TO Do",
+            taskState = "TO Do",
             createdBy = "created by",
             logs = listOf()
         )
