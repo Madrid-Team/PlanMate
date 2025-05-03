@@ -1,14 +1,13 @@
 package presentation.feature.tasks
 
-import domain.usecases.DisplayAllTasksUseCase
+import domain.usecases.task.DisplayAllTasksUseCase
+import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import org.junit.jupiter.api.Test
-import io.mockk.verify
-import io.mockk.every
 
 
 class TaskViewTest(){

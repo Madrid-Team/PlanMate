@@ -19,7 +19,7 @@ class CreateProjectCLITest {
 
     @BeforeEach
     fun setUp() {
-        cli = CreateProjectCLI(inputReader, outputPrinter, useCase)
+        cli = CreateProjectCLI(inputReader, outputPrinter, useCase, mockk())
     }
 
 

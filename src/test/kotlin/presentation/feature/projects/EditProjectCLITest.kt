@@ -20,7 +20,7 @@ class EditProjectCLITest {
     fun setUp() {
         inputReader = mockk()
         outputPrinter = mockk(relaxed = true)
-        cli = EditProjectCLI(inputReader, outputPrinter, useCase)
+        cli = EditProjectCLI(inputReader, outputPrinter, useCase, mockk(), mockk())
     }
 
     @Test

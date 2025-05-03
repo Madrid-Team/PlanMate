@@ -17,7 +17,9 @@ class ProjectCsvDataSource(
         return try {
 
             fileCsvReader.readCsvFile().forEach { row ->
-                projects.add(projectCsvParser.parseOneRowToProject(row))
+                if (row.isNotEmpty()) {
+                    projects.add(projectCsvParser.parseOneRowToProject(row))
+                }
             }
 
             Result.success(projects)
@@ -46,7 +48,7 @@ class ProjectCsvDataSource(
             projects.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectFileContentAfterDeletion += projectAsString
-             }
+            }
             fileCsvWriter.updateCsvFile(projectFileContentAfterDeletion)
             Result.success(Unit)
         } catch (e: Exception) {

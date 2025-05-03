@@ -4,6 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.source.project.ProjectDataSource
 import data.mapper.toDomain
+import data.source.project.ProjectMemoryDataSource
+import domain.models.project.Project
 import domain.utlis.ProjectNotFoundException
 import io.mockk.every
 import io.mockk.mockk
@@ -15,11 +17,15 @@ import org.junit.jupiter.api.assertThrows
 class ProjectRepositoryImplTest {
     private lateinit var projectDataSource: ProjectDataSource
     private lateinit var repository: ProjectRepositoryImpl
+    private val projectMemoryDataSource: ProjectMemoryDataSource = mockk()
 
     @BeforeEach
     fun setup() {
         projectDataSource = mockk(relaxed = true)
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(
+            projectDataSource,
+            projectMemoryDataSource = projectMemoryDataSource
+        )
     }
 
     @Test
@@ -31,7 +37,7 @@ class ProjectRepositoryImplTest {
         )
         every { projectDataSource.getProjects() } returns Result.success(projects)
 
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
         // When
         val result = repository.getAllProjects().getOrNull()
@@ -63,7 +69,7 @@ class ProjectRepositoryImplTest {
         )
         every { projectDataSource.getProjects() } returns Result.success(projects)
 
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
         // When
         val result = repository.deleteProject(projectId)
@@ -81,7 +87,7 @@ class ProjectRepositoryImplTest {
             createProject(id = "2", name = "test2")
         )
         every { projectDataSource.getProjects() } returns Result.success(projects)
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
         val result = repository.editProject(project.toDomain())
 
@@ -98,7 +104,7 @@ class ProjectRepositoryImplTest {
         )
         every { projectDataSource.getProjects() } returns Result.success(projects)
 
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
         val result = repository.getProjectLogsById("1")
 
@@ -116,7 +122,7 @@ class ProjectRepositoryImplTest {
         )
         every { projectDataSource.getProjects() } returns Result.success(projects)
 
-        repository = ProjectRepositoryImpl(projectDataSource)
+        repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
         assertThrows<ProjectNotFoundException> {
             val result = repository.getProjectLogsById("5")

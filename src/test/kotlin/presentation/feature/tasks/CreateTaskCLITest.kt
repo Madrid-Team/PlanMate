@@ -19,7 +19,7 @@ class CreateTaskCLITest() {
 
     @BeforeEach
     fun setUp() {
-        cli = CreateTaskCLI(inputReader, outputPrinter, taskView, useCase)
+        cli = CreateTaskCLI(inputReader, outputPrinter, taskView, useCase, mockk())
     }
 
     @Test

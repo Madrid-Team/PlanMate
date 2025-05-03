@@ -24,7 +24,7 @@ class ProjectMemoryDataSource {
     }
 
     fun editProject(project: Project):List<Project> {
-        val updatedIndex = projects.indexOf(project)
+        val updatedIndex = projects.indexOfFirst { it.id == project.id }
         projects[updatedIndex] = project
         return projects
     }
