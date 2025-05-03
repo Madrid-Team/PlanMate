@@ -1,5 +1,7 @@
 package presentation.feature.tasks
 
+import domain.usecases.logs.CreateLogUseCase
+import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -13,13 +15,22 @@ import presentation.feature.projects.helperProject
 class CreateTaskCLITest() {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
-    private val useCase = mockk<CreateTaskUseCase>()
+    private val createTaskUseCase = mockk<CreateTaskUseCase>()
+    private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>()
+    private val createLogUseCase = mockk<CreateLogUseCase>()
     private val taskView = mockk<TaskView>()
     private lateinit var cli: CreateTaskCLI
 
     @BeforeEach
     fun setUp() {
-        cli = CreateTaskCLI(inputReader, outputPrinter, taskView, useCase, mockk())
+        cli = CreateTaskCLI(
+            inputReader,
+            outputPrinter,
+            taskView,
+            createTaskUseCase,
+            createLogUseCase,
+            getProjectByIdUseCase
+        )
     }
 
     @Test
@@ -28,7 +39,7 @@ class CreateTaskCLITest() {
         every { inputReader.readInput(any()) } returnsMany listOf("1", "title", "description")
         val project = helperProject(id = "1")
         val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-        every { useCase.createTask(task) } returns true
+        every { createTaskUseCase.createTask(task) } returns true
 
         // When
         cli.show()
@@ -42,7 +53,7 @@ class CreateTaskCLITest() {
         // Given
         every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
         val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-        every { useCase.createTask(task) } returns false
+        every { createTaskUseCase.createTask(task) } returns false
 
         // When
         cli.show()
