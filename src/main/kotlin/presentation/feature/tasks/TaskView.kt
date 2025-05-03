@@ -17,7 +17,10 @@ class TaskView(
         val projectId = inputReader.readInput("Enter project ID: ")
 
         val result = displayAllTasksUseCase.display(projectId)
-        outputPrinter.printMessage(result)
+
+        result
+            .onSuccess { outputPrinter.printMessage(it) }
+            .onFailure { outputPrinter.printMessage("Error: ${it.message}") }
     }
 
 }

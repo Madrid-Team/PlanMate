@@ -6,12 +6,12 @@ import domain.repository.TaskRepository
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun createTask(task: Task): Boolean {
-        try {
+    fun createTask(task: Task): Result<Unit> {
+        return try {
             taskRepository.createTask(task)
+            Result.success(Unit)
         } catch (e: Exception) {
-            println("Can't create task")
+            Result.failure(e)
         }
-        return true
     }
 }

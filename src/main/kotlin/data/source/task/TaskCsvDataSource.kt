@@ -1,19 +1,15 @@
 package data.source.task
 
 import data.dto.task.TaskDto
-import data.mapper.toDomain
-import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
-import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
 import domain.models.task.Task
 import domain.utlis.NoLogsFoundException
 import domain.utlis.TaskNotFoundException
 import domain.utlis.convertDateIntoReadableDate
-import java.io.IOException
 import java.time.LocalDateTime
 
 class TaskCsvDataSource(
@@ -21,84 +17,103 @@ class TaskCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val fileCsvReader: FileCsvReader
 ) : TaskDataSource {
+//    override fun editTask(task: Task): Boolean {
+//        return try {
+//            val updatedTasks = getListOfUpdatedList(task)
+//            val csvContent = updatedTasks.joinToString("\n") { taskCsvParser.parseTaskToString(it.toDto()) }
+//            fileCsvWriter.updateCsvFile(csvContent)
+//            true
+//        } catch (e: Exception) {
+//            throw TaskNotFoundException(e.message)
+//        }
+//    }
+//
+//    override fun deleteTask(taskId: String): Boolean {
+//        return try {
+//            val listOfUpdatedTasks = getListWithDeletedTask(taskId)
+//            val csvContent = listOfUpdatedTasks.joinToString("\n") {
+//                taskCsvParser.parseTaskToString(it.toDto())
+//            }
+//            fileCsvWriter.updateCsvFile(csvContent)
+//            true
+//        } catch (e: Exception) {
+//            throw TaskNotFoundException(e.message)
+//        }
+//    }
+
     override fun editTask(tasks: List<TaskDto>): Result<Unit> {
         return try {
-            var tasksAfterUpdate = String.taskHeader
+            var taskAfterUpdate = String.taskHeader
             tasks.forEach {
-                val taskAsString = taskCsvParser.parseTaskToString(it)
-                tasksAfterUpdate += taskAsString
+                val projectAsString = taskCsvParser.parseTaskToString(it)
+                taskAfterUpdate += projectAsString
             }
-            fileCsvWriter.updateCsvFile(tasksAfterUpdate)
+            fileCsvWriter.updateCsvFile(taskAfterUpdate)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override fun deleteTask(taskId: String): Boolean {
+    override fun deleteTask(task: List<TaskDto>): Result<Unit> {
         return try {
-            val listOfUpdatedTasks = getListWithDeletedTask(taskId)
-            val csvContent = listOfUpdatedTasks.joinToString("\n") {
-                taskCsvParser.parseTaskToString(it.toDto())
+            var tasksFileContentAfterDeletion = String.taskHeader
+            task.forEach {
+                val projectAsString = taskCsvParser.parseTaskToString(it)
+                tasksFileContentAfterDeletion += projectAsString
             }
-            fileCsvWriter.updateCsvFile(csvContent)
-            true
+            fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
+            Result.success(Unit)
         } catch (e: Exception) {
-            throw TaskNotFoundException(e.message)
+            Result.failure(e)
         }
     }
 
-    override fun createTask(task: Task): Boolean {
+    override fun createTask(task: TaskDto): Result<Unit> {
         return try {
-            val taskRow = taskCsvParser.parseTaskToString(
-                task.toDto().copy(
-                    logs = listOf(
-                        CreatedLogFormatter.format(
-                            entityName = task.title,
-                            entityType = EntityType.TASK,
-                            username = task.createdBy,
-                        )
-                    )
-                )
-            )
+            val taskRow = taskCsvParser.parseTaskToString(task)
             fileCsvWriter.writeToCsvFile(taskRow)
-            true
+            Result.success(Unit)
         } catch (e: Exception) {
-            throw IOException(e)
+            Result.failure(e)
         }
     }
 
-    override fun getAllTasks(): List<Task> {
-        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain() }
-    }
+    override fun getAllTasks(): Result<List<TaskDto>> {
+        val tasks = mutableListOf<TaskDto>()
 
-    override fun getListWithDeletedTask(taskId: String): List<Task> {
-        return getAllTasks().let { tasks ->
-            tasks.indexOfFirst { it.id.toString() == taskId }.let { taskIndex ->
-                (tasks.subList(0, taskIndex) + tasks.subList(taskIndex + 1, tasks.size))
+        return try {
+
+            fileCsvReader.readCsvFile().forEach { row ->
+                if (row.isNotEmpty()) {
+                    tasks.add(taskCsvParser.parseOneRowToTask(row))
+                }
             }
+
+            Result.success(tasks)
+
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
-    override fun getListOfUpdatedList(task: Task): List<Task> {
-        return getAllTasks().let { tasks ->
-            tasks.indexOfFirst { task.id == it.id }.let { taskIndex ->
-                (tasks.subList(0, taskIndex) + task
-//                    .copy(
-//                    logs = task.logs + createLogsForUpdatedFields(
-//                        oldTask =,
-//                        updatedTask = task
-//                    ))
-                        + tasks.subList((taskIndex + 1), tasks.size))
-            }
+    override fun getTasksByProjectId(projectId: String): Result<List<TaskDto>> {
+        val allTasks = getAllTasks().getOrNull()
+        return if (!allTasks.isNullOrEmpty()) {
+            Result.success(allTasks)
+        } else {
+            Result.failure(TaskNotFoundException("Tasks not found"))
         }
     }
 
-    override fun getTasksByProjectId(projectId: String): List<Task> {
-        return getAllTasks().filter { it.projectId == projectId }
+    override fun getLogsByTaskId(taskId: String): Result<List<String>> {
+
+        val task = getAllTasks().getOrNull()?.find { it.id.toString() == taskId } ?: throw TaskNotFoundException()
+        val taskLogs = task.logs
+        if (taskLogs.isEmpty())
+            throw NoLogsFoundException()
+        return Result.success(taskLogs)
     }
-
-
     private fun createLogsForUpdatedFields(oldTask: Task, updatedTask: Task): List<String> {
         val logs = mutableListOf<String>()
         val timestamp = LocalDateTime.now().convertDateIntoReadableDate()
@@ -147,14 +162,6 @@ class TaskCsvDataSource(
         }
 
         return logs
-    }
-
-    override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskNotFoundException()
-        val taskLogs = task.logs
-        if (taskLogs.isEmpty())
-            throw NoLogsFoundException()
-        return taskLogs
     }
 
 }

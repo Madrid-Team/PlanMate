@@ -2,12 +2,30 @@ package data.source.task
 
 import domain.models.task.Task
 
-interface TaskMemoryDataSource {
-    fun initializeTasks(tasks: List<Task>)
-    fun getTasksFromMemory(): List<Task>
-    fun addTaskToMemory(task: Task)
-    fun removeTaskFromMemory(taskId: String): List<Task>
-    fun editTask(task: Task): List<Task>
+class TaskMemoryDataSource {
 
-    fun findTaskInMemory(taskId: String): Task?
+    private val tasks = mutableListOf<Task>()
+
+    fun getTasks(): List<Task> {
+        return tasks.toList()
+    }
+
+    fun setTasks(tasks: List<Task>) {
+        this.tasks.addAll(tasks)
+    }
+
+    fun addTask(task: Task) {
+        tasks.add(task)
+    }
+
+    fun deleteTask(taskId: String): List<Task> {
+        tasks.removeIf { it.id.toString() == taskId }
+        return tasks
+    }
+
+    fun editTask(task: Task): List<Task> {
+        val updatedIndex = tasks.indexOfFirst { it.id == task.id }
+        tasks[updatedIndex] = task
+        return tasks
+    }
 }

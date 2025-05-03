@@ -5,7 +5,6 @@ import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.User
-import domain.utlis.UserException
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -21,19 +20,13 @@ class UserCsvDataSource(
         }
     }
 
-    override fun deleteUser(userId: String): Result<Unit> {
+    override fun deleteUser(userId: String){
         val allUsers = getAllUsers().getOrThrow()
         val updatedUsers = allUsers.filter { it.id.toString() != userId }
-
-        if (allUsers.size == updatedUsers.size) return Result.failure(UserException.UserNotFoundException)
-
         val userRows = updatedUsers.map { user ->
             userCsvParser.parseUserToRow(user.toDto())
         }
-
-
         fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
-        return Result.success(Unit)
     }
 
     override fun getUserById(userId: String): Result<User?> {

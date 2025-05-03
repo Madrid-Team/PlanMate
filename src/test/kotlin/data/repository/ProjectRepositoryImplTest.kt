@@ -2,14 +2,13 @@ package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.createProject
-import data.source.project.ProjectDataSource
 import data.mapper.toDomain
+import data.source.project.ProjectDataSource
 import data.source.project.ProjectMemoryDataSource
-import domain.models.project.Project
-import domain.utlis.ProjectNotFoundException
+import domain.utlis.ProjectExceptions
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -124,7 +123,7 @@ class ProjectRepositoryImplTest {
 
         repository = ProjectRepositoryImpl(projectDataSource, mockk())
 
-        assertThrows<ProjectNotFoundException> {
+        assertThrows<ProjectExceptions.ProjectNotFoundException> {
             val result = repository.getProjectLogsById("5")
             result.getOrThrow()
         }

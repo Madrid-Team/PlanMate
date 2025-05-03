@@ -2,6 +2,7 @@ package domain.usecases.user
 
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.utlis.UserExceptions
 
 class DeleteUserUseCase(
     private val userRepository: UserRepository
@@ -13,6 +14,13 @@ class DeleteUserUseCase(
                 onSuccess = { it },
                 onFailure = { return Result.failure(it) }
             )
+           userRepository.getUserById(userToDeleteId).fold(
+                onSuccess = {it},
+                onFailure = {
+                    return Result.failure(UserExceptions.UserNotFoundException())
+                }
+            )
+
             if (userResponse?.role == UserRole.ADMIN.name) {
                 userRepository.deleteUser(userToDeleteId)
             } else {

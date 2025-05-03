@@ -1,10 +1,8 @@
 package domain.usecases.user
 
 import com.google.common.truth.Truth.assertThat
-import data.utils.PasswordHasher.verify
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserException
 import domain.validation.ValidateUser
 import io.mockk.every
 import io.mockk.mockk

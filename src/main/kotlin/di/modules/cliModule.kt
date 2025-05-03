@@ -20,7 +20,7 @@ val cliModule = module {
     single<InputReader> { ConsoleInputReader() }
     single<OutputPrinter> { ConsoleOutputPrinter() }
 
-    single { CreateTaskCLI(get(), get(), get(), get(),get(), get()) }
+    single { CreateTaskCLI(get(), get(), get(), get(),get()) }
     single { DeleteTaskCLI(get(), get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get()) }

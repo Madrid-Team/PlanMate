@@ -26,13 +26,20 @@ class DeleteUserUseCaseTest {
     @Test
     fun `invoke should delete user when requestor is admin`() {
         // Given
-        val adminId = "admin-id"
-        val userToDeleteId = "user-to-delete-id"
+        val adminId = UUID.randomUUID().toString()
+        val userToDeleteId = UUID.randomUUID().toString()
         val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
 
-
         every { userRepository.getUserById(adminId) } returns Result.success(adminUser)
-        every { userRepository.deleteUser(userToDeleteId) } returns Result.success(Unit)
+        every { userRepository.getUserById(userToDeleteId) } returns Result.success(
+            User(
+                id = UUID.randomUUID(),
+                "userToDelete",
+                "hash",
+                "MATE"
+            )
+        )
+        every { userRepository.deleteUser(userToDeleteId) } returns Unit
 
         // When
         val result = deleteUserUseCase.invoke(adminId, userToDeleteId)
@@ -40,19 +47,27 @@ class DeleteUserUseCaseTest {
         // Then
         assertTrue(result.isSuccess)
         verify(exactly = 1) { userRepository.getUserById(adminId) }
+        verify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
         verify(exactly = 1) { userRepository.deleteUser(userToDeleteId) }
     }
 
     @Test
     fun `invoke should fail when requestor is not admin`() {
         // Given
-        val mateId = "mate-id"
-        val userToDeleteId = "user-to-delete-id"
+        val mateId = UUID.randomUUID().toString()
+        val userToDeleteId = UUID.randomUUID().toString()
 
         val mateUser = User(id = UUID.randomUUID(), "mate", "hash", "MATE")
 
-
         every { userRepository.getUserById(mateId) } returns Result.success(mateUser)
+        every { userRepository.getUserById(userToDeleteId) } returns Result.success(
+            User(
+                id = UUID.randomUUID(),
+                "userToDelete",
+                "hash",
+                "MATE"
+            )
+        )
 
         // When
         val result = deleteUserUseCase.invoke(mateId, userToDeleteId)
@@ -61,6 +76,7 @@ class DeleteUserUseCaseTest {
         assertTrue(result.isFailure)
         assertEquals("User is not an admin", result.exceptionOrNull()?.message)
         verify(exactly = 1) { userRepository.getUserById(mateId) }
+        verify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
         verify(exactly = 0) { userRepository.deleteUser(any()) }
     }
 
@@ -93,6 +109,14 @@ class DeleteUserUseCaseTest {
         val exception = Exception("Database error")
 
         every { userRepository.getUserById(adminId) } returns Result.success(adminUser)
+        every { userRepository.getUserById(userToDeleteId) } returns Result.success(
+            User(
+                id = UUID.randomUUID(),
+                "userToDelete",
+                "hash",
+                "MATE"
+            )
+        )
         every { userRepository.deleteUser(userToDeleteId) } throws exception
 
         // When

@@ -2,6 +2,7 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
+import domain.utlis.TaskNotFoundException
 
 class EditTaskUseCase(
     private val taskRepository: TaskRepository

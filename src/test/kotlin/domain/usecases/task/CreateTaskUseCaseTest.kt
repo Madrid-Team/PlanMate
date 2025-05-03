@@ -2,8 +2,8 @@ package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import domain.utlis.CannotCreateTaskException
-import domain.utlis.TaskTitleIsEmptyException
+import domain.utlis.TaskExceptions.CannotCreateTaskException
+import domain.utlis.TaskExceptions.TaskTitleIsEmptyException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
