@@ -1,6 +1,10 @@
 package presentation.feature.tasks
 
+import domain.models.logs.CurrentUser
+import domain.models.logs.EntityType
+import domain.models.logs.OperationType
 import domain.models.task.Task
+import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.task.CreateTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -10,7 +14,8 @@ class CreateTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val taskView: TaskView,
-    private val createTaskUseCase: CreateTaskUseCase
+    private val createTaskUseCase: CreateTaskUseCase,
+    private val createLogUseCase: CreateLogUseCase
 ) {
     fun show() {
         outputPrinter.printMessage("=== Create Task ===")
@@ -33,7 +38,14 @@ class CreateTaskCLI(
             description = description,
             taskState = "",
             createdBy = "",
-            logs = listOf(),
+            logs =  listOf(
+                createLogUseCase.invoke(
+                    operationType = OperationType.CREATE,
+                    entityName = title,
+                    entityType = EntityType.TASK,
+                    username = CurrentUser.getCurrentUser()!!.username,
+                )
+            ),
             id = UUID.randomUUID()
         )
     }

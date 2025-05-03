@@ -1,7 +1,7 @@
 package presentation.feature.user
 
 import domain.models.logs.CurrentUser
-import domain.usecases.DeleteUserUseCase
+import domain.usecases.user.DeleteUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 

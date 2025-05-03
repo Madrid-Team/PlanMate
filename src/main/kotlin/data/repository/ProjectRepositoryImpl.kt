@@ -44,16 +44,12 @@ class ProjectRepositoryImpl(
 
 
     override fun createProject(project: Project): Result<Unit> {
-        val log = CreatedLogFormatter.format(
-            entityName = project.name,
-            entityType = EntityType.PROJECT,
-            username = project.createdBy,
-        )
-        val result = projectDataSource.createProject(project.toDto().copy(projectLogs = listOf(log)))
+
+        val result = projectDataSource.createProject(project.toDto())
 
         return if (result.isSuccess) {
 
-            projects.add(project.copy(projectLogs = listOf(log)))
+            projects.add(project)
             result
         } else {
             when (val exception = result.exceptionOrNull()) {
@@ -93,9 +89,8 @@ class ProjectRepositoryImpl(
 
         return if (oldProject != null) {
             val indexOfUpdatedProject = projects.indexOf(oldProject)
-            val logsForUpdates = createLogsForUpdatedFields(oldProject = oldProject , updatedProject = project)
             projects.remove(oldProject)
-            projects.add(index = indexOfUpdatedProject, project.copy(projectLogs = project.projectLogs + logsForUpdates , projectState = oldProject.projectState))
+            projects.add(index = indexOfUpdatedProject, project)
 
             val result = projectDataSource.editProject(projects.map { it.toDto() })
 
@@ -123,55 +118,4 @@ class ProjectRepositoryImpl(
         return projects.find { it.id.toString() == id }
     }
 
-
-    private fun createLogsForUpdatedFields(oldProject: Project, updatedProject: Project): List<String> {
-        val logs = mutableListOf<String>()
-        val timestamp = LocalDateTime.now().convertDateIntoReadableDate()
-        if (oldProject.name != updatedProject.name) {
-            logs.add(
-                //create log message contains the update on project name
-                UpdatedLogFormatter.format(
-                    entityName = oldProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = oldProject.createdBy,
-                    fieldName = "name",
-                    oldValue = oldProject.name,
-                    newValue = updatedProject.name,
-                    timestamp = timestamp
-                )
-            )
-        }
-
-        if (oldProject.projectState != updatedProject.projectState) {
-            logs.add(
-                //create log message contains the update on project name
-                UpdatedLogFormatter.format(
-                    entityName = oldProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = oldProject.createdBy,
-                    fieldName = "state",
-                    oldValue = oldProject.projectState,
-                    newValue = updatedProject.projectState,
-                    timestamp = timestamp
-                )
-            )
-        }
-
-        if (oldProject.description != updatedProject.description) {
-            logs.add(
-                //create log message contains the update on project name
-                UpdatedLogFormatter.format(
-                    entityName = oldProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = oldProject.createdBy,
-                    fieldName = "description",
-                    oldValue = oldProject.description,
-                    newValue = updatedProject.description,
-                    timestamp = timestamp
-                )
-            )
-        }
-
-        return logs
-    }
 }

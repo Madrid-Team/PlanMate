@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.usecases.user.CreateUserUseCase
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk

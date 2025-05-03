@@ -3,6 +3,7 @@ package domain.usecases
 import data.dto.authentication.UserDto
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.usecases.user.DeleteUserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

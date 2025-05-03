@@ -3,7 +3,7 @@ package presentation.feature
 import data.utils.PasswordHasher
 import data.mapper.toDomain
 import domain.models.logs.CurrentUser
-import domain.usecases.LoginUserUseCase
+import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
