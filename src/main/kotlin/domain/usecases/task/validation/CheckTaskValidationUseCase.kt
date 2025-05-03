@@ -3,15 +3,15 @@ package domain.usecases.task.validation
 import domain.models.task.Task
 
 class CheckTaskValidationUseCase(
-    private val checkProjectIdUseCase: CheckProjectIdUseCase,
-    private val checkTaskDescriptionUseCase: CheckTaskDescriptionUseCase,
-    private val checkTaskStateUseCase: CheckTaskStateUseCase,
-    private val checkTaskTitleUseCase: CheckTaskTitleUseCase
+    private val checkProjectIdValidationUseCase: CheckProjectIdValidationUseCase,
+    private val checkTaskDescriptionValidationUseCase: CheckTaskDescriptionValidationUseCase,
+    private val checkTaskStateValidationUseCase: CheckTaskStateValidationUseCase,
+    private val checkTaskTitleValidationUseCase: CheckTaskTitleValidationUseCase
 ) {
     operator fun invoke(task: Task) {
-        checkProjectIdUseCase(task.projectId)
-        checkTaskDescriptionUseCase(task.description)
-        checkTaskStateUseCase(task.taskState)
-        checkTaskTitleUseCase(task.title)
+        checkProjectIdValidationUseCase(task.projectId)
+        checkTaskDescriptionValidationUseCase(task.description)
+        checkTaskStateValidationUseCase(task.taskState)
+        checkTaskTitleValidationUseCase(task.title)
     }
 }

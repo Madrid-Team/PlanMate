@@ -2,7 +2,7 @@ package domain.usecases.task.validation
 
 import domain.utlis.TaskDescriptionIsEmptyException
 
-class CheckTaskDescriptionUseCase {
+class CheckTaskDescriptionValidationUseCase {
     operator fun invoke(taskDescription: String) {
         if (taskDescription.isEmpty()) {
             throw TaskDescriptionIsEmptyException()

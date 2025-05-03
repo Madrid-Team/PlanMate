@@ -4,8 +4,7 @@ import domain.repository.TaskRepository
 import domain.utlis.TaskCannotDeleteException
 
 class DeleteTaskUseCase(
-    private val taskRepository: TaskRepository,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase
+    private val taskRepository: TaskRepository
 ) {
     fun deleteTask(taskId: String): Result<Unit> {
         try {

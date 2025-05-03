@@ -2,27 +2,24 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utlis.TaskNotFoundException
+import domain.usecases.task.validation.CheckTaskTitleValidationUseCase
+import domain.utlis.TaskTitleInvalidException
 
 class EditTaskUseCase(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val taskTitleValidationUseCase: CheckTaskTitleValidationUseCase
 ) {
-    fun editTask(oldTaskId: String, updatedTask: Task): Boolean {
-        val oldTask = getTaskById(oldTaskId) ?: throw TaskNotFoundException()
-        val newTask = oldTask.copy(
-            projectId = updatedTask.projectId.ifBlank { oldTask.projectId },
-            title = updatedTask.title.ifBlank { oldTask.title },
-            description = updatedTask.title.ifBlank { oldTask.description },
-            taskState = updatedTask.taskState.ifBlank { oldTask.taskState },
-            createdBy = updatedTask.taskState.ifBlank { oldTask.createdBy },
-            logs = updatedTask.logs.ifEmpty { oldTask.logs }
-        )
-        taskRepository.editTask(newTask)
-        return true
-    }
-
-
-    private fun getTaskById(taskId: String): Task? {
-        return taskRepository.getAllTasks().find { it.id.toString() == taskId }
+    fun editTask(task: Task): Result<Unit> {
+        try {
+            taskTitleValidationUseCase(task.title)
+            val result = taskRepository.editTask(task)
+            return if (result.isSuccess) {
+                Result.success(Unit)
+            } else {
+                Result.failure(result.exceptionOrNull()!!)
+            }
+        } catch (e: TaskTitleInvalidException) {
+            return Result.failure(e)
+        }
     }
 }

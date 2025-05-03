@@ -11,3 +11,4 @@ class ProjectIdIsEmptyException(error: String = "Project Id is Empty") : Excepti
 class TaskTitleIsEmptyException(error: String = "Task title is Empty") : Exception(error)
 class TaskDescriptionIsEmptyException(error: String = "Task description is Empty") : Exception(error)
 class TaskStateIsEmptyException(error: String = "Task state is Empty") : Exception(error)
+class TaskTitleInvalidException(error: String = "Task name Invalid") : Exception(error)
