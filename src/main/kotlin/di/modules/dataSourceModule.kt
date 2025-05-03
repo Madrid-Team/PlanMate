@@ -43,5 +43,5 @@ val dataSourceModule = module {
     single<UserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
     single<TaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader"))) }
 
-    single<TaskMemoryDataSource> { TaskMemoryDataSourceImpl() }
+    single { TaskMemoryDataSource() }
 }

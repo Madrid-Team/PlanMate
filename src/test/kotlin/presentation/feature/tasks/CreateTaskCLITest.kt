@@ -26,7 +26,7 @@ class CreateTaskCLITest() {
         cli = CreateTaskCLI(
             inputReader,
             outputPrinter,
-            taskView,
+//            taskView,
             createTaskUseCase,
             createLogUseCase,
             getProjectByIdUseCase
@@ -39,7 +39,7 @@ class CreateTaskCLITest() {
         every { inputReader.readInput(any()) } returnsMany listOf("1", "title", "description")
         val project = helperProject(id = "1")
         val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-        every { createTaskUseCase.createTask(task) } returns true
+        every { createTaskUseCase.createTask(task) } returns Result.success(Unit)
 
         // When
         cli.show()
@@ -53,7 +53,7 @@ class CreateTaskCLITest() {
         // Given
         every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
         val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-        every { createTaskUseCase.createTask(task) } returns false
+        every { createTaskUseCase.createTask(task) } returns Result.success(Unit)
 
         // When
         cli.show()

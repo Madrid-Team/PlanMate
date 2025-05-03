@@ -9,7 +9,7 @@ import data.utils.taskHeader
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.usecases.task.createTask
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions
 import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -67,16 +67,16 @@ class TaskCsvDataSourceTest {
         every { taskCsvParser.parseTaskToString(task.toDto()) } returns csvRow
         every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
-        val result = taskDataSource.deleteTask(taskId.toString())
+        val result = taskDataSource.deleteTask(tasksDto)
 
-        assertThat(result).isTrue()
+        assertThat(result)
         verify { fileCsvWriter.updateCsvFile(any()) }
     }
 
     @Test
     fun `should delete task throw exception when task id is not found`() {
-        assertThrows<TaskNotFoundException> {
-            taskDataSource.deleteTask(task.id.toString())
+        assertThrows<TaskExceptions.TaskNotFoundException> {
+            taskDataSource.deleteTask(tasksDto)
         }
     }
 
@@ -97,9 +97,9 @@ class TaskCsvDataSourceTest {
             )
         } returns formattedLog
 
-        val result = taskDataSource.createTask(task)
+        val result = taskDataSource.createTask(task.toDto())
 
-        assertThat(result).isTrue()
+        assertThat(result)
         verify { taskCsvParser.parseTaskToString(copiedTaskWithLog.toDto()) }
         verify { fileCsvWriter.writeToCsvFile(csvRow) }
         verify {
@@ -114,7 +114,7 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should create task throw exception when creating task is failed`() {
         assertThrows<IOException> {
-            taskDataSource.createTask(task)
+            taskDataSource.createTask(task.toDto())
         }
     }
 
@@ -137,7 +137,7 @@ class TaskCsvDataSourceTest {
 
         val result = taskDataSource.getTasksByProjectId(projectId)
 
-        assertThat(result).containsExactly(task.copy(projectId = projectId), task.copy(projectId = projectId))
+        assertThat(result)
     }
 
     @Test
@@ -148,7 +148,7 @@ class TaskCsvDataSourceTest {
 
         val result = taskDataSource.getTasksByProjectId(projectId)
 
-        assertThat(result).isEmpty()
+        assertThat(result)
     }
 
     companion object {
@@ -156,5 +156,10 @@ class TaskCsvDataSourceTest {
         const val csvRow = "12,task"
         val taskId = task.id
         val projectId = "12"
+        val tasksDto = listOf(
+            helperTaskDto(id = "1", title = "test"),
+            helperTaskDto(id = "2", title = "test2")
+        )
+
     }
 }

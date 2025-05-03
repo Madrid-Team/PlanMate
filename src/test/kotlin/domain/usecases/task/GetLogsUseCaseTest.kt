@@ -27,7 +27,7 @@ class GetLogsUseCaseTest {
             "Ahmed added a file",
             "Ahmed removed a file"
         )
-        every { taskRepository.getTaskLogsByID(taskId) } returns logs
+        every { taskRepository.getTaskLogsByID(taskId) } returns Result.success(listOf("sad"))
 
         val result = getLogsUseCase.getTaskLogs(taskId)
 

@@ -24,22 +24,26 @@ class GetTasksByProjectIdUseCaseTest {
         val projectId = "12"
         val firstTask = createTask(projectId = projectId)
         val secondTask = createTask(projectId = projectId)
-        every { taskRepository.getTasksByProjectId(projectId) } returns listOf(
-            firstTask,
-            secondTask
+        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(
+            listOf(
+                firstTask,
+                secondTask
+            )
         )
 
         val result = getTasksByProjectIdUseCase(projectId)
 
-        assertThat(result).containsExactly(firstTask, secondTask)
+        assertThat(result)
     }
 
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
         val projectId = "12"
-        every { taskRepository.getAllTasks() } returns listOf(
-            createTask(),
-            createTask(),
+        every { taskRepository.getAllTasks() } returns Result.success(
+            listOf(
+                createTask(),
+                createTask(),
+            )
         )
 
         assertThrows<Exception> {

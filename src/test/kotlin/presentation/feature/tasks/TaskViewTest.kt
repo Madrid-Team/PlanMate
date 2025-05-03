@@ -28,7 +28,7 @@ class TaskViewTest(){
         // Given
         val projectId = "non_existing_project"
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns "Project not found."
+        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Project not found.")
 
         // When
         taskView.show()
@@ -52,7 +52,7 @@ class TaskViewTest(){
         """.trimIndent()
 
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns expectedOutput
+        every { displayAllTasksUseCase.display(projectId) } returns Result.success(expectedOutput)
 
         // When
         taskView.show()

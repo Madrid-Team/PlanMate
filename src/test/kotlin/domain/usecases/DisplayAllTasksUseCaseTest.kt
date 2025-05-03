@@ -47,7 +47,7 @@ class DisplayAllTasksUseCaseTest {
         )
 
         every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
+        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(emptyList())
 
         // When
         val result = displayAllTasksUseCase.display(projectId)
@@ -81,7 +81,7 @@ class DisplayAllTasksUseCaseTest {
         )
 
         every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns tasks
+        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(tasks)
 
         // When
         val result = displayAllTasksUseCase.display(projectId)

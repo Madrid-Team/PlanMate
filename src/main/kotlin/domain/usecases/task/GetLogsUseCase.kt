@@ -5,8 +5,8 @@ import domain.repository.TaskRepository
 class GetLogsUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun getTaskLogs(taskId : String) : List<String>{
-        return taskRepository.getTaskLogsByID(taskId)
+    fun getTaskLogs(taskId : String) : List<String>?{
+        return taskRepository.getTaskLogsByID(taskId).getOrNull()
     }
 
 }
