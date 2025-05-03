@@ -1,31 +1,18 @@
 package domain.usecases.user
 
 
-import data.dto.authentication.UserDto
+import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserException
-
+import domain.validation.ValidateUser
 
 class LoginUserUseCase(private val userRepository: UserRepository) {
 
-    fun invoke(userName: String?, passwordHash: String?): UserDto? {
+    fun invoke(userName: String?, passwordHash: String?): User? {
         return if (userName.isNullOrEmpty() || passwordHash.isNullOrEmpty()) {
             throw UserException.NotFoundUser("Not found user or wrong username")
-
         } else {
-            validateUser(userRepository.getAllUsers().getOrNull(), userName, passwordHash)
+            ValidateUser(userRepository).validateUserToLogin(userRepository.getAllUsers().getOrNull(), userName, passwordHash)
         }
-    }
-
-    private fun validateUser(users: List<UserDto>?, username: String, passwordHash: String): UserDto {
-        if (users == null || users.isEmpty()) {
-            throw UserException.NotFoundUser("Not found user or wrong username")
-        }
-        val user = users.find { it.username == username }
-            ?: throw UserException.NotFoundUser("Not found user or wrong username")
-        if (user.passwordHash != passwordHash) {
-            throw UserException.WrongPasswordOrUserName("Wrong  password")
-        }
-        return user
     }
 }

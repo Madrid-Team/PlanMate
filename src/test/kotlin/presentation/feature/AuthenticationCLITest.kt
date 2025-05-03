@@ -1,8 +1,7 @@
 package presentation.feature
 
-import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
-import domain.models.authentication.UserRole
+import domain.models.authentication.User
 import domain.usecases.user.LoginUserUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -10,6 +9,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 import kotlin.test.Test
 
 class AuthenticationCLITest {
@@ -29,7 +29,7 @@ class AuthenticationCLITest {
         val username = "user name"
         val password = "password"
         val passwordHash = PasswordHasher.hash(password)
-        val user = UserDto("1", username, passwordHash, UserRole.MATE.name)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
 
         every { inputReader.readInput() } returnsMany listOf(username, password)
         every { useCase.invoke(username, passwordHash) } returns user
@@ -45,8 +45,6 @@ class AuthenticationCLITest {
             outputPrinter.printMessage("Login Success")
         }
         verify(exactly = 0) { outputPrinter.printMessage("Login error:(") }
-        //verify { CurrentUser.setCurrentUser(user.toDomain()) }
-        //assertThat(CurrentUser.setCurrentUser()).isEqualTo(user!!.toDomain())
     }
 
     @Test
@@ -67,7 +65,6 @@ class AuthenticationCLITest {
             outputPrinter.printMessage("Login error:(")
             outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
         }
-        //assertThat(cli.getCurrentUser()).isNull()
     }
 
     @Test
@@ -79,9 +76,15 @@ class AuthenticationCLITest {
         val incorrectPassword = "password 2"
         val correctHash = PasswordHasher.hash(correctPassword)
         val incorrectHash = PasswordHasher.hash(incorrectPassword)
-        val user = UserDto("1", correctUsername, correctHash, UserRole.MATE.name)
+        val user = User(id = UUID.randomUUID(), correctUsername, correctHash, "MATE")
 
-        every { inputReader.readInput() } returnsMany listOf(incorrectUsername, incorrectPassword, "1", correctUsername, correctPassword)
+        every { inputReader.readInput() } returnsMany listOf(
+            incorrectUsername,
+            incorrectPassword,
+            "1",
+            correctUsername,
+            correctPassword
+        )
         every { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
         every { useCase.invoke(correctUsername, correctHash) } returns user
 
@@ -94,7 +97,6 @@ class AuthenticationCLITest {
             outputPrinter.printMessage("Enter password:")
         }
         verify(exactly = 1) { outputPrinter.printMessage("Login error:(") }
-        //assertThat(cli.getCurrentUser()).isEqualTo(user)
     }
 
     @Test
@@ -116,6 +118,5 @@ class AuthenticationCLITest {
             outputPrinter.printMessage("Enter password:")
             outputPrinter.printMessage("Login error:(")
         }
-        //assertThat(cli.getCurrentUser()).isNull()
     }
 }

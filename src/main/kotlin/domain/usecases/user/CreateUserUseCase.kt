@@ -1,37 +1,22 @@
 package domain.usecases.user
 
-import data.dto.authentication.UserDto
+import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserException
-import java.util.*
+import domain.validation.ValidateUser
 
 class CreateUserUseCase(
     private val userRepository: UserRepository
 ) {
-    fun createUser(user: UserDto): Result<Unit> {
-        return try {
-
-            val checkingUsername = userRepository.getUserByName(user.username).getOrNull()
-            if (checkingUsername != null) {
-                return Result.failure(UserException.UserExist("Username '${user.username}' already exists"))
-            }
-
-            val userId = checkUserIdExist()
-            val newUser = user.copy(id = userId)
-            userRepository.addUser(newUser).fold(
-                onSuccess = { Result.success(Unit) },
-                onFailure = { Result.failure(it) }
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
+    fun createUser(user: User): Result<Unit> {
+        userRepository.getUserByName(user.username).getOrNull()?.let {
+            return Result.failure(UserException.UserExist("User already exists"))
         }
-    }
-
-    private fun checkUserIdExist(): String {
-        val newId = UUID.randomUUID().toString()
-        return when (userRepository.getUser(newId).getOrNull()) {
-            null -> newId
-            else -> checkUserIdExist()
-        }
+        val userId = ValidateUser(userRepository).generateUUIDValidToNewUser()
+        val newUser = user.copy(id = userId)
+        return userRepository.createNewUser(newUser).fold(
+            onSuccess = { Result.success(Unit) },
+            onFailure = { Result.failure(it) }
+        )
     }
 }

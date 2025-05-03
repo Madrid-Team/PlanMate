@@ -1,7 +1,6 @@
-package domain.usecases
+package domain.usecases.user
 
-import data.dto.authentication.UserDto
-import domain.models.authentication.UserRole
+import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.usecases.user.DeleteUserUseCase
 import io.mockk.every
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class DeleteUserUseCaseTest {
 
@@ -28,14 +28,10 @@ class DeleteUserUseCaseTest {
         // Given
         val adminId = "admin-id"
         val userToDeleteId = "user-to-delete-id"
-        val adminUser = UserDto(
-            id = adminId,
-            username = "admin",
-            passwordHash = "hash",
-            role = UserRole.ADMIN.name
-        )
+        val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
 
-        every { userRepository.getUser(adminId) } returns Result.success(adminUser)
+
+        every { userRepository.getUserById(adminId) } returns Result.success(adminUser)
         every { userRepository.deleteUser(userToDeleteId) } returns Result.success(Unit)
 
         // When
@@ -43,7 +39,7 @@ class DeleteUserUseCaseTest {
 
         // Then
         assertTrue(result.isSuccess)
-        verify(exactly = 1) { userRepository.getUser(adminId) }
+        verify(exactly = 1) { userRepository.getUserById(adminId) }
         verify(exactly = 1) { userRepository.deleteUser(userToDeleteId) }
     }
 
@@ -52,14 +48,11 @@ class DeleteUserUseCaseTest {
         // Given
         val mateId = "mate-id"
         val userToDeleteId = "user-to-delete-id"
-        val mateUser = UserDto(
-            id = mateId,
-            username = "mate",
-            passwordHash = "hash",
-            role = UserRole.MATE.name
-        )
 
-        every { userRepository.getUser(mateId) } returns Result.success(mateUser)
+        val mateUser = User(id = UUID.randomUUID(), "mate", "hash", "MATE")
+
+
+        every { userRepository.getUserById(mateId) } returns Result.success(mateUser)
 
         // When
         val result = deleteUserUseCase.invoke(mateId, userToDeleteId)
@@ -67,7 +60,7 @@ class DeleteUserUseCaseTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals("User is not an admin", result.exceptionOrNull()?.message)
-        verify(exactly = 1) { userRepository.getUser(mateId) }
+        verify(exactly = 1) { userRepository.getUserById(mateId) }
         verify(exactly = 0) { userRepository.deleteUser(any()) }
     }
 
@@ -78,7 +71,7 @@ class DeleteUserUseCaseTest {
         val userToDeleteId = "user-to-delete-id"
         val exception = Exception("User not found")
 
-        every { userRepository.getUser(nonExistentId) } returns Result.failure(exception)
+        every { userRepository.getUserById(nonExistentId) } returns Result.failure(exception)
 
         // When
         val result = deleteUserUseCase.invoke(nonExistentId, userToDeleteId)
@@ -86,7 +79,7 @@ class DeleteUserUseCaseTest {
         // Then
         assertTrue(result.isFailure)
         assertEquals(exception, result.exceptionOrNull())
-        verify(exactly = 1) { userRepository.getUser(nonExistentId) }
+        verify(exactly = 1) { userRepository.getUserById(nonExistentId) }
         verify(exactly = 0) { userRepository.deleteUser(any()) }
     }
 
@@ -95,15 +88,11 @@ class DeleteUserUseCaseTest {
         // Given
         val adminId = "admin-id"
         val userToDeleteId = "user-to-delete-id"
-        val adminUser = UserDto(
-            id = adminId,
-            username = "admin",
-            passwordHash = "hash",
-            role = UserRole.ADMIN.name
-        )
+        val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
+
         val exception = Exception("Database error")
 
-        every { userRepository.getUser(adminId) } returns Result.success(adminUser)
+        every { userRepository.getUserById(adminId) } returns Result.success(adminUser)
         every { userRepository.deleteUser(userToDeleteId) } throws exception
 
         // When

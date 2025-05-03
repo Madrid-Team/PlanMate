@@ -1,8 +1,7 @@
-package domain.usecases
+package domain.usecases.user
 
-import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
-import domain.models.authentication.UserRole
+import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.usecases.user.LoginUserUseCase
 import domain.utlis.UserException
@@ -11,20 +10,23 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 import kotlin.test.BeforeTest
 
-class LoginUserTest {
+class LoginUserUseCaseTest {
     private lateinit var loginUser: LoginUserUseCase
     private lateinit var userRepository: UserRepository
+
     @BeforeTest
     fun setUp() {
-        userRepository= mockk()
+        userRepository = mockk()
         loginUser = LoginUserUseCase(userRepository)
     }
+
     @Test
     fun `Should login user successfully when username and password are correct`() {
         // Given
-        val user = UserDto("1", "user1", PasswordHasher.hash("pass123"), UserRole.MATE.name)
+        val user = User(id = UUID.randomUUID(), "user1", "pass123", "MATE")
         every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
@@ -38,26 +40,25 @@ class LoginUserTest {
     @Test
     fun `Should not login when username or password are incorrect`() {
         // Given
-        val user = UserDto("1", "user1", PasswordHasher.hash("correctPass"), UserRole.MATE.name)
+        val user = User(id = UUID.randomUUID(), "user1", PasswordHasher.hash("correctPass"), "MATE")
         every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
-        assertThrows <UserException.WrongPasswordOrUserName> {
+        assertThrows<UserException.WrongPasswordOrUserName> {
             loginUser.invoke("user1", "wrongPass")
         } // Should throw
     }
 
 
-
     @Test
-    fun `Shouldn't login When username or password is null`(){
+    fun `Shouldn't login When username or password is null`() {
         // Given
-        val mate = UserDto(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE.name)
+        val user = User(id = UUID.randomUUID(), "MATE_1", PasswordHasher.hash("PASSWORD_HASH_1"), "MATE")
 
-        every {   userRepository.addUser(mate)} returns Result.success(Unit)
+        every { userRepository.createNewUser(user) } returns Result.success(Unit)
 
         // When && Then
-        assertThrows <UserException.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
+        assertThrows<UserException.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
     }
 
 
