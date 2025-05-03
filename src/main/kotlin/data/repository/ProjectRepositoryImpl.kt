@@ -68,9 +68,6 @@ class ProjectRepositoryImpl(
 
     override fun deleteProject(projectId: String): Result<Unit> {
 
-
-        val projects = projectMemoryDataSource.getProjects()
-        val currentProject = projects.find { it.id.toString() == projectId }
         val projectListAfterDeleteProject = projectMemoryDataSource.deleteProject(projectId)
 
        val result = projectDataSource.deleteProject(projectListAfterDeleteProject.map { it.toDto() })
@@ -78,8 +75,7 @@ class ProjectRepositoryImpl(
            return if (result.isSuccess) {
                 Result.success(Unit)
             } else {
-               projectMemoryDataSource.addProject(currentProject!!)
-                Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
+                 Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
             }
 
     }
@@ -88,7 +84,7 @@ class ProjectRepositoryImpl(
 
         val projectListAfterUpdateProject = projectMemoryDataSource.editProject(project)
 
-            val result = projectDataSource.editProject(projectListAfterUpdateProject.map { it.toDto() })
+        val result = projectDataSource.editProject(projectListAfterUpdateProject.map { it.toDto() })
 
             return if (result.isSuccess) {
                 Result.success(Unit)
