@@ -44,7 +44,7 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun createTask(task: Task): Boolean {
+    override fun createTask(task: TaskDto): Boolean {
         return try {
             val taskRow = taskCsvParser.parseTaskToString(
                 task.toDto().copy(
