@@ -20,7 +20,7 @@ val cliModule = module {
     single<InputReader> { ConsoleInputReader() }
     single<OutputPrinter> { ConsoleOutputPrinter() }
 
-    single { CreateTaskCLI(get(), get(), get(), get()) }
+    single { CreateTaskCLI(get(), get(), get(), get(),get()) }
     single { DeleteTaskCLI(get(), get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get()) }
@@ -30,9 +30,9 @@ val cliModule = module {
     single { AuthenticationCLI(get(), get(), get()) }
     single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectCLI(get(), get(), get(), get(), get(),get(), get(),get()) }
-    single { CreateProjectCLI(get(), get(), get()) }
+    single { CreateProjectCLI(get(), get(), get(),get()) }
     single { DeleteProjectCLI(get(), get(), get()) }
-    single { EditProjectCLI(get(), get(), get()) }
+    single { EditProjectCLI(get(), get(), get(),get(),get()) }
     single { UserCLI(get(), get(), get(), get()) }
     single { CreateUserCLI(get(), get(), get()) }
     single { DeleteUserCLI(get(), get(), get()) }

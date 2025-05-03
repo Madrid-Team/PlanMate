@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import domain.repository.ProjectRepository
+import domain.usecases.task.DisplayAllTasksUseCase
 import domain.usecases.task.createTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

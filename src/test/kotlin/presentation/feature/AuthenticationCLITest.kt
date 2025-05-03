@@ -3,7 +3,7 @@ package presentation.feature
 import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
 import domain.models.authentication.UserRole
-import domain.usecases.LoginUserUseCase
+import domain.usecases.user.LoginUserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

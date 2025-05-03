@@ -4,6 +4,7 @@ import data.dto.authentication.UserDto
 import data.utils.PasswordHasher
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.usecases.user.LoginUserUseCase
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk

@@ -1,0 +1,18 @@
+package domain.usecases.project
+
+import domain.models.project.Project
+import domain.repository.ProjectRepository
+import domain.utlis.ProjectNotFoundException
+
+class GetProjectByIdUseCase(
+    private val projectRepository: ProjectRepository
+) {
+    fun invoke(id: String): Result<Project> {
+        val project = projectRepository.getProjectById(id)
+        return if (project != null){
+            Result.success(project)
+        }else{
+            Result.failure(ProjectNotFoundException())
+        }
+    }
+}
