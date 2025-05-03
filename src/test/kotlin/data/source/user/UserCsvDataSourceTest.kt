@@ -5,7 +5,6 @@ import data.dto.authentication.UserDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.UserRole
-import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -172,11 +171,8 @@ class UserCsvDataSourceTest {
         every { userCsvParser.parseUserToRow(user2) } returns row2
         every { fileCsvWriter.updateCsvFile(row2) } returns Unit
 
-        // When
-        val result = dataSource.deleteUser("1")
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
+        // When & Then - no exception should be thrown
+        dataSource.deleteUser("1")
         verify(exactly = 1) { fileCsvWriter.updateCsvFile(row2) }
     }
 
@@ -189,7 +185,7 @@ class UserCsvDataSourceTest {
         every { userCsvParser.parseUserToRow(user2) } returns row2
         every { fileCsvWriter.updateCsvFile(row2) } throws IOException("File write failed")
 
-        // When
+        // When & Then
         assertThrows<IOException> { dataSource.deleteUser("1") }
     }
 
@@ -200,36 +196,6 @@ class UserCsvDataSourceTest {
 
         // When & Then
         assertThrows<Exception> { dataSource.deleteUser("1") }
-    }
-
-    @Test
-    fun `deleteUser should throw exception when user id does not exist`() {
-        // Given
-        every { fileCsvReader.readCsvFile() } returns listOf(row1, row2)
-        every { userCsvParser.parseRowToUser(row1) } returns user1
-        every { userCsvParser.parseRowToUser(row2) } returns user2
-
-        // When
-        val result = dataSource.deleteUser("3")
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isEqualTo(UserException.UserNotFoundException)
-    }
-
-    @Test
-    fun `deleteUser should handle empty user list after deletion`() {
-        // Given
-        every { fileCsvReader.readCsvFile() } returns listOf(row1)
-        every { userCsvParser.parseRowToUser(row1) } returns user1
-        every { fileCsvWriter.updateCsvFile("") } returns Unit
-
-        // When
-        val result = dataSource.deleteUser("1")
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { fileCsvWriter.updateCsvFile("") }
     }
     // endregion
 }

@@ -7,7 +7,7 @@ import data.utils.FileCsvWriter
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.usecases.task.createTask
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject

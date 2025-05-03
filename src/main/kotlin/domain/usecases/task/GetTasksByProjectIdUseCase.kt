@@ -2,11 +2,11 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions
 
 class GetTasksByProjectIdUseCase(
     private val taskRepository: TaskRepository
 ) {
     operator fun invoke(projectId: String): List<Task> =
-        taskRepository.getTasksByProjectId(projectId).takeIf { it.isNotEmpty() } ?: throw TaskNotFoundException()
+        taskRepository.getTasksByProjectId(projectId).takeIf { it.isNotEmpty() } ?: throw TaskExceptions.TaskNotFoundException()
 }

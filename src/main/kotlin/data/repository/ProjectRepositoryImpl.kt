@@ -5,16 +5,11 @@ import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.project.ProjectDataSource
 import data.source.project.ProjectMemoryDataSource
-import domain.models.logs.CreatedLogFormatter
-import domain.models.logs.EntityType
-import domain.models.logs.UpdatedLogFormatter
+import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.*
-import java.io.FileNotFoundException
-import java.io.IOException
-import java.time.LocalDateTime
-import kotlin.collections.mutableListOf
+import domain.utlis.PlanMateExceptions
+import domain.utlis.ProjectExceptions
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource,
@@ -56,13 +51,9 @@ class ProjectRepositoryImpl(
             projectMemoryDataSource.addProject(project)
             result
         } else {
-            when (val exception = result.exceptionOrNull()) {
-                is FileNotFoundException -> Result.failure(ProjectsFileNotExistsException())
-                is IOException -> Result.failure(ProjectsReadWriteException())
-                else -> {
-                    Result.failure(PlanMateExceptions(exception?.message.toString()))
-                }
-            }
+            return Result.failure(
+                result.exceptionOrNull().toProjectException()
+            )
         }
     }
 
@@ -70,13 +61,13 @@ class ProjectRepositoryImpl(
 
         val projectListAfterDeleteProject = projectMemoryDataSource.deleteProject(projectId)
 
-       val result = projectDataSource.deleteProject(projectListAfterDeleteProject.map { it.toDto() })
+        val result = projectDataSource.deleteProject(projectListAfterDeleteProject.map { it.toDto() })
 
-           return if (result.isSuccess) {
-                Result.success(Unit)
-            } else {
-                 Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
-            }
+        return if (result.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
+        }
 
     }
 
@@ -86,12 +77,12 @@ class ProjectRepositoryImpl(
 
         val result = projectDataSource.editProject(projectListAfterUpdateProject.map { it.toDto() })
 
-            return if (result.isSuccess) {
-                Result.success(Unit)
-            } else {
-                projectMemoryDataSource.addProject(project)
-                Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
-            }
+        return if (result.isSuccess) {
+            Result.success(Unit)
+        } else {
+            projectMemoryDataSource.addProject(project)
+            Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
+        }
 
     }
 
@@ -101,7 +92,7 @@ class ProjectRepositoryImpl(
         return if (project != null) {
             Result.success(project.projectLogs)
         } else {
-            Result.failure(ProjectNotFoundException())
+            Result.failure(ProjectExceptions.ProjectNotFoundException())
         }
     }
 

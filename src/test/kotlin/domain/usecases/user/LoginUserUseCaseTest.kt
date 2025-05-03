@@ -3,8 +3,7 @@ package domain.usecases.user
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.usecases.user.LoginUserUseCase
-import domain.utlis.UserException
+import domain.utlis.UserExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -44,7 +43,7 @@ class LoginUserUseCaseTest {
         every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
-        assertThrows<UserException.WrongPasswordOrUserName> {
+        assertThrows<UserExceptions.WrongPasswordOrUserName> {
             loginUser.invoke("user1", "wrongPass")
         } // Should throw
     }
@@ -58,7 +57,7 @@ class LoginUserUseCaseTest {
         every { userRepository.createNewUser(user) } returns Result.success(Unit)
 
         // When && Then
-        assertThrows<UserException.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
+        assertThrows<UserExceptions.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
     }
 
 

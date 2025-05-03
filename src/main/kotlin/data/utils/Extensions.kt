@@ -1,6 +1,11 @@
 package data.utils
 
+import domain.utlis.PlanMateExceptions
+import domain.utlis.ProjectExceptions
+import domain.utlis.TaskExceptions
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.IOException
 
 
 val String.Companion.project: String get() = "project.csv"
@@ -12,7 +17,6 @@ val String.Companion.taskHeader: String get() = "id,projectId,title,description,
 val String.Companion.userHeader: String get() = "id,userName,passwordHash,userRole\n1,Mohamed Ashraf,12345678,ADMIN\n"
 
 
-
 fun String.appendHeader(file: File) {
     when (this) {
         String.project -> file.appendText(String.projectHeader)
@@ -20,3 +24,25 @@ fun String.appendHeader(file: File) {
         String.user -> file.appendText(String.userHeader)
     }
 }
+
+fun Throwable?.toProjectException(): PlanMateExceptions {
+    return when (val exception = this) {
+        is FileNotFoundException -> ProjectExceptions.ProjectsFileNotExistsException()
+        is IOException -> ProjectExceptions.ProjectsReadWriteException()
+        else -> {
+            PlanMateExceptions(exception?.message.toString())
+        }
+    }
+}
+
+
+fun Throwable?.toTaskException(): PlanMateExceptions {
+    return when (val exception = this) {
+        is FileNotFoundException -> TaskExceptions.TaskNotFoundException()
+        is IOException -> TaskExceptions.TaskNotFoundException()
+        else -> {
+            PlanMateExceptions(exception?.message.toString())
+        }
+    }
+}
+

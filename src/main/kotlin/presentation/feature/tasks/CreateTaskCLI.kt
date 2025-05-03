@@ -7,7 +7,7 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
-import domain.utlis.ProjectNotFoundException
+import domain.utlis.ProjectExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -38,7 +38,7 @@ class CreateTaskCLI(
         val result = getProjectByIdUseCase.invoke(projectId)
 
         if (result.isFailure) {
-            throw ProjectNotFoundException()
+            throw ProjectExceptions.ProjectNotFoundException()
         }
         val project = result.getOrThrow()
 

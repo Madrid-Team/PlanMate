@@ -24,7 +24,7 @@ class EditProjectUseCase(private val projectRepository: ProjectRepository) {
 
     private fun validateName(project: Project) {
         if (!project.name.matches(Regex("^[A-Za-z ]+$"))) {
-            throw ProjectNameInvalidException()
+            throw ProjectExceptions.ProjectNameInvalidException()
         }
     }
 }

@@ -5,8 +5,7 @@ import data.source.task.TaskDataSource
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
-import domain.utlis.NoLogsFoundException
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -78,9 +77,9 @@ class TaskRepositoryImplTest {
     @Test
     fun `getTasksByProjectId should throw exception when date source throw exception`() {
         val projectId = "12"
-        every { taskDataSource.getTasksByProjectId(projectId) } throws TaskNotFoundException()
+        every { taskDataSource.getTasksByProjectId(projectId) } throws TaskExceptions.TaskNotFoundException()
 
-        assertThrows<TaskNotFoundException> {
+        assertThrows<TaskExceptions.TaskNotFoundException> {
             taskRepository.getTasksByProjectId(projectId)
         }
     }
@@ -168,18 +167,18 @@ class TaskRepositoryImplTest {
 
     @Test
     fun `get task logs should throw exception when the data source returns exception that the task does exist and logs is empty`() {
-        every { taskDataSource.getLogsByTaskId("200") } throws NoLogsFoundException()
+        every { taskDataSource.getLogsByTaskId("200") } throws TaskExceptions.NoLogsFoundException()
 
-        assertThrows<NoLogsFoundException> {
+        assertThrows<TaskExceptions.NoLogsFoundException> {
             taskRepository.getTaskLogsByID("200")
         }
 
     }
     @Test
     fun `get task logs should throw exception when the data source returns exception that the task is not found`() {
-        every { taskDataSource.getLogsByTaskId("300") } throws TaskNotFoundException()
+        every { taskDataSource.getLogsByTaskId("300") } throws TaskExceptions.TaskNotFoundException()
 
-        assertThrows<TaskNotFoundException> {
+        assertThrows<TaskExceptions.TaskNotFoundException> {
             taskRepository.getTaskLogsByID("300")
         }
 

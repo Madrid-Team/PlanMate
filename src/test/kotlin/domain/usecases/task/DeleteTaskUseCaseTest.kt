@@ -2,7 +2,7 @@ package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

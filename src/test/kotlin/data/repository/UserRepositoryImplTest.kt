@@ -5,10 +5,13 @@ import data.mapper.toDto
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
 import domain.models.authentication.User
-import domain.utlis.UserException
+import domain.utlis.UserExceptions.NotFoundUser
+import domain.utlis.UserExceptions.UserExist
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
 
@@ -48,14 +51,14 @@ class UserRepositoryImplTest {
         val userRow = "2,username2,hash2,MATE"
 
         every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Result.failure(UserException.UserExist("User already exists"))
+        every { userDataSource.createNewUser(userRow) } returns Result.failure(UserExist("User already exists"))
 
         // When
         val result = userRepositoryImpl.createNewUser(user)
 
         // Then
         assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
+        assertThat(result.exceptionOrNull()).isInstanceOf(UserExist::class.java)
     }
 
     @Test
@@ -110,26 +113,27 @@ class UserRepositoryImplTest {
     fun `Should delete user successfully`() {
         // Given
         val userId = "1"
-        every { userDataSource.deleteUser(userId) } returns Result.success(Unit)
+        every { userDataSource.deleteUser(userId) } returns Unit
 
         // When
-        val result = userRepositoryImpl.deleteUser(userId)
+        userRepositoryImpl.deleteUser(userId)
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
+        // Then - verify the call was made to the data source
+        verify { userDataSource.deleteUser(userId) }
     }
 
     @Test
-    fun `Should fail to delete user when datasource fails`() {
+    fun `Should propagate exception from data source when deleting user`() {
         // Given
         val userId = "2"
-        every { userDataSource.deleteUser(userId) } returns Result.failure(UserException.NotFoundUser("User not found"))
+        val exception = NotFoundUser("User not found")
+        every { userDataSource.deleteUser(userId) } throws exception
 
-        // When
-        val result = userRepositoryImpl.deleteUser(userId)
+        // When/Then
+        val thrownException = assertThrows<NotFoundUser> {
+            userRepositoryImpl.deleteUser(userId)
+        }
 
-        // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(UserException.NotFoundUser::class.java)
+        assertThat(thrownException).isSameInstanceAs(exception)
     }
 }

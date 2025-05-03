@@ -1,16 +1,16 @@
 package data.source.task
 
-import data.dto.task.TaskDto
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import data.utils.toTaskException
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
 import domain.models.task.Task
-import domain.utlis.NoLogsFoundException
-import domain.utlis.TaskNotFoundException
+import domain.utlis.TaskExceptions
+
 import domain.utlis.convertDateIntoReadableDate
 import java.io.IOException
 import java.time.LocalDateTime
@@ -27,7 +27,7 @@ class TaskCsvDataSource(
             fileCsvWriter.updateCsvFile(csvContent)
             true
         } catch (e: Exception) {
-            throw TaskNotFoundException(e.message)
+            throw e.toTaskException()
         }
     }
 
@@ -40,7 +40,7 @@ class TaskCsvDataSource(
             fileCsvWriter.updateCsvFile(csvContent)
             true
         } catch (e: Exception) {
-            throw TaskNotFoundException(e.message)
+            throw e.toTaskException()
         }
     }
 
@@ -65,7 +65,7 @@ class TaskCsvDataSource(
     }
 
     override fun getAllTasks(): List<Task> {
-        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain()}
+        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain() }
     }
 
     override fun getListWithDeletedTask(taskId: String): List<Task> {
@@ -146,10 +146,10 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id.toString() == taskId }?: throw TaskNotFoundException()
+        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskExceptions.TaskNotFoundException()
         val taskLogs = task.logs
         if (taskLogs.isEmpty())
-            throw NoLogsFoundException()
+            throw TaskExceptions.NoLogsFoundException()
         return taskLogs
     }
 
