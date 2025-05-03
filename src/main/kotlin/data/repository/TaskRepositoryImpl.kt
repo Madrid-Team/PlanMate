@@ -1,8 +1,10 @@
 package data.repository
 
+import data.mapper.toDto
 import data.source.task.TaskDataSource
 import domain.models.task.Task
 import domain.repository.TaskRepository
+import java.util.UUID
 
 class TaskRepositoryImpl(
     private val taskDataSource: TaskDataSource
@@ -15,8 +17,8 @@ class TaskRepositoryImpl(
         return taskDataSource.deleteTask(taskId)
     }
 
-    override fun createTask(task: Task): Boolean {
-        return taskDataSource.createTask(task)
+    override fun createTask(task: Task) {
+        taskDataSource.createTask(task.toDto())
     }
 
     override fun getAllTasks(): List<Task> {

@@ -12,7 +12,6 @@ import domain.models.task.Task
 import domain.utlis.NoLogsFoundException
 import domain.utlis.TaskNotFoundException
 import domain.utlis.convertDateIntoReadableDate
-import java.io.IOException
 import java.time.LocalDateTime
 
 class TaskCsvDataSource(
@@ -44,28 +43,13 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun createTask(task: Task): Boolean {
-        return try {
-            val taskRow = taskCsvParser.parseTaskToString(
-                task.toDto().copy(
-                    logs = listOf(
-                        CreatedLogFormatter.format(
-                            entityName = task.title,
-                            entityType = EntityType.TASK,
-                            username = task.createdBy,
-                        )
-                    )
-                )
-            )
-            fileCsvWriter.writeToCsvFile(taskRow)
-            true
-        } catch (e: Exception) {
-            throw IOException(e)
-        }
+    override fun createTask(task: TaskDto) {
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeToCsvFile(taskRow)
     }
 
     override fun getAllTasks(): List<Task> {
-        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain()}
+        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain() }
     }
 
     override fun getListWithDeletedTask(taskId: String): List<Task> {
@@ -146,7 +130,7 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id.toString() == taskId }?: throw TaskNotFoundException()
+        val task = getAllTasks().find { it.id.toString() == taskId } ?: throw TaskNotFoundException()
         val taskLogs = task.logs
         if (taskLogs.isEmpty())
             throw NoLogsFoundException()
