@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import domain.usecases.DisplayAllTasksUseCase
+import domain.usecases.task.DisplayAllTasksUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 

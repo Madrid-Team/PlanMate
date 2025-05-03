@@ -4,6 +4,7 @@ import data.dto.project.ProjectDto
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.project.ProjectDataSource
+import data.source.project.ProjectMemoryDataSource
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
@@ -15,10 +16,10 @@ import java.io.IOException
 import java.time.LocalDateTime
 
 class ProjectRepositoryImpl(
-    private val projectDataSource: ProjectDataSource
+    private val projectDataSource: ProjectDataSource,
+    private val projectMemoryDataSource: ProjectMemoryDataSource,
 ) : ProjectRepository {
 
-    private var projects: MutableList<Project> = mutableListOf()
 
     init {
         initProjects()
@@ -26,17 +27,19 @@ class ProjectRepositoryImpl(
 
     private fun initProjects() {
         val result = projectDataSource.getProjects()
-        projects = if (result.isSuccess) {
+        val projects = if (result.isSuccess) {
             val dtoList = result.getOrNull() as? List<ProjectDto> ?: emptyList()
             dtoList.map { it.toDomain() }.toMutableList()
         } else {
             mutableListOf()
         }
+        projectMemoryDataSource.setProjects(projects)
     }
 
     override fun getAllProjects(): Result<List<Project>> {
-        return if (projects.isNotEmpty()) {
-            Result.success(projects)
+        val allProjects = projectMemoryDataSource.getProjects()
+        return if (allProjects.isNotEmpty()) {
+            Result.success(allProjects)
         } else {
             Result.failure(PlanMateExceptions("You haven't any projects yet"))
         }
@@ -48,8 +51,7 @@ class ProjectRepositoryImpl(
         val result = projectDataSource.createProject(project.toDto())
 
         return if (result.isSuccess) {
-
-            projects.add(project)
+            projectMemoryDataSource.addProject(project)
             result
         } else {
             when (val exception = result.exceptionOrNull()) {
@@ -64,49 +66,40 @@ class ProjectRepositoryImpl(
 
     override fun deleteProject(projectId: String): Result<Unit> {
 
-        val projectToRemove = projects.find { it.id.toString() == projectId }
 
+        val projects = projectMemoryDataSource.getProjects()
+        val currentProject = projects.find { it.id.toString() == projectId }
+        val projectListAfterDeleteProject = projectMemoryDataSource.deleteProject(projectId)
 
-        return if (projectToRemove != null) {
-            projects.remove(projectToRemove)
+       val result = projectDataSource.deleteProject(projectListAfterDeleteProject.map { it.toDto() })
 
-            val result = projectDataSource.deleteProject(projects.map { it.toDto() })
-
-            if (result.isSuccess) {
+           return if (result.isSuccess) {
                 Result.success(Unit)
             } else {
-                projects.add(projectToRemove)
+               projectMemoryDataSource.addProject(currentProject!!)
                 Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
             }
 
-        } else {
-            Result.failure(PlanMateExceptions("Project with ID $projectId not found"))
-        }
     }
 
     override fun editProject(project: Project): Result<Unit> {
-        val oldProject = projects.find { it.id == project.id }
 
-        return if (oldProject != null) {
-            val indexOfUpdatedProject = projects.indexOf(oldProject)
-            projects.remove(oldProject)
-            projects.add(index = indexOfUpdatedProject, project)
+        val projectListAfterUpdateProject = projectMemoryDataSource.editProject(project)
 
-            val result = projectDataSource.editProject(projects.map { it.toDto() })
+            val result = projectDataSource.editProject(projectListAfterUpdateProject.map { it.toDto() })
 
-            if (result.isSuccess) {
+            return if (result.isSuccess) {
                 Result.success(Unit)
             } else {
-                projects[indexOfUpdatedProject] = oldProject
+                projectMemoryDataSource.addProject(project)
                 Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
             }
-        } else {
-            Result.failure(PlanMateExceptions("Project with ID $project.id not found"))
-        }
+
     }
 
     override fun getProjectLogsById(id: String): Result<List<String>> {
-        val project = projects.find { it.id.toString() == id }
+
+        val project = projectMemoryDataSource.getProjects().find { it.id.toString() == id }
         return if (project != null) {
             Result.success(project.projectLogs)
         } else {
@@ -115,7 +108,7 @@ class ProjectRepositoryImpl(
     }
 
     override fun getProjectById(id: String): Project? {
-        return projects.find { it.id.toString() == id }
+        return projectMemoryDataSource.getProjects().find { it.id.toString() == id }
     }
 
 }

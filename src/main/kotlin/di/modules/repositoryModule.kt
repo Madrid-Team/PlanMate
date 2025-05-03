@@ -4,6 +4,8 @@ import data.repository.ProjectRepositoryImpl
 import data.repository.TaskRepositoryImpl
 import data.repository.UserRepositoryImpl
 import data.source.project.ProjectCsvParser
+import data.source.project.ProjectDataSource
+import data.source.project.ProjectMemoryDataSource
 import data.source.task.TaskCsvParser
 import data.source.user.UserCsvParser
 import data.utils.FileCsvReader
@@ -18,7 +20,10 @@ import java.io.File
 
 val repositoryModule = module {
 
-    single<ProjectRepository> { ProjectRepositoryImpl(get()) }
+    single<ProjectRepository> { ProjectRepositoryImpl(get(),get()) }
     single<TaskRepository> { TaskRepositoryImpl(get()) }
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
+
+    single  { ProjectMemoryDataSource() }
+
 }
