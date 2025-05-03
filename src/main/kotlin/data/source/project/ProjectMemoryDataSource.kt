@@ -25,7 +25,12 @@ class ProjectMemoryDataSource {
 
     fun editProject(project: Project):List<Project> {
         val updatedIndex = projects.indexOf(project)
-        projects[updatedIndex] = project
+        if (updatedIndex != -1) {
+            projects[updatedIndex] = project
+        } else {
+            println("Project not found: $project")
+            // Optionally, handle this case differently (e.g., throw a custom exception)
+        }
         return projects
     }
 }
