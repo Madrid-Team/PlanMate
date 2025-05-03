@@ -2,9 +2,9 @@ package data.source.user
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.models.authentication.UserRole
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
@@ -22,8 +22,8 @@ class UserCsvDataSourceTest {
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var dataSource: UserCsvDataSource
 
-    private val user1 = UserDto("1", "username1", "passwordhash1", UserRoleDto.ADMIN)
-    private val user2 = UserDto("2", "username2", "passwordhash2", UserRoleDto.MATE)
+    private val user1 = UserDto("1", "username1", "passwordhash1", UserRole.ADMIN.name)
+    private val user2 = UserDto("2", "username2", "passwordhash2", UserRole.MATE.name)
     private val row1 = "1,username1,passwordhash1,ADMIN"
     private val row2 = "2,username2,passwordhash2,MATE"
 

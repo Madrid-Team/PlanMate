@@ -3,8 +3,8 @@ package domain.models.authentication
 import java.util.*
 
 data class User(
-    val id: String = UUID.randomUUID().toString(),
+    val id: UUID,
     val username: String,
     val passwordHash: String,
-    val role: UserRole,
+    val role: String,
 )

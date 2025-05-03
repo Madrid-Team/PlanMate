@@ -1,11 +1,13 @@
 package presentation.feature.user
 
-import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
+import data.mapper.toDto
 import data.utils.PasswordHasher
+import domain.models.authentication.User
+import domain.models.authentication.UserRole
 import domain.usecases.CreateUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 
 class CreateUserCLI(
     private val createUserUseCase: CreateUserUseCase,
@@ -20,8 +22,11 @@ class CreateUserCLI(
         val password = inputReader.readInput()
         val passwordHash = PasswordHasher.hash(password)
         try {
-            val user = UserDto(username = userName, passwordHash = passwordHash, role = UserRoleDto.MATE)
-            createUserUseCase.createUser(user)
+            val user = User(
+                username = userName, passwordHash = passwordHash, role = UserRole.MATE.name,
+                id = UUID.randomUUID()
+            )
+            createUserUseCase.createUser(user.toDto())
             outputPrinter.printMessage("Login Success")
         } catch (_: Exception) {
             outputPrinter.printMessage("Creating User Failed")

@@ -1,45 +1,33 @@
-package domain.mapper
+package data.mapper
 
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
 import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.models.project.Project
 import domain.models.task.Task
+import java.util.*
 
 fun UserDto.toDomain() =
     User(
-        id = id,
+        id = UUID.fromString(id),
         username = username,
         passwordHash = passwordHash,
-        role = role.toDomain(),
+        role = role,
     )
-
-fun UserRoleDto.toDomain() = when (this) {
-    UserRoleDto.ADMIN -> UserRole.ADMIN
-    UserRoleDto.MATE -> UserRole.MATE
-}
 
 fun User.toDto() =
     UserDto(
-        id = id,
+        id = id.toString(),
         username = username,
         passwordHash = passwordHash,
-        role = role.toDto(),
+        role = role,
     )
-
-
-fun UserRole.toDto() = when (this) {
-    UserRole.ADMIN -> UserRoleDto.ADMIN
-    UserRole.MATE -> UserRoleDto.MATE
-}
 
 
 fun ProjectDto.toDomain() =
     Project(
-        id = id,
+        id = UUID.fromString(id),
         name = name,
         description = description,
         createdBy = createdBy,
@@ -51,7 +39,7 @@ fun ProjectDto.toDomain() =
 
 fun Project.toDto() =
     ProjectDto(
-        id = id,
+        id = id.toString(),
         name = name,
         description = description,
         createdBy = createdBy,
@@ -64,7 +52,7 @@ fun Project.toDto() =
 
 fun TaskDto.toDomain() =
     Task(
-        id = id,
+        id =  UUID.fromString(id),
         projectId = projectId,
         description = description,
         createdBy = createdBy,
@@ -76,7 +64,7 @@ fun TaskDto.toDomain() =
 
 fun Task.toDto() =
     TaskDto(
-        id = id,
+        id = id.toString(),
         projectId = projectId,
         description = description,
         createdBy = createdBy,

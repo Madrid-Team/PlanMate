@@ -1,6 +1,7 @@
 package data.source.task
 
 import com.google.common.truth.Truth.assertThat
+import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.logs.CreatedLogFormatter
@@ -36,8 +37,8 @@ class TaskCsvDataSourceTest {
         val updatedTask = existingTask.copy(title = "new title")
 
         every { fileCsvReader.readCsvFile() } returns listOf("row1")
-        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask
-        every { taskCsvParser.parseTaskToString(updatedTask) } returns csvRow
+        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask.toDto()
+        every { taskCsvParser.parseTaskToString(updatedTask.toDto()) } returns csvRow
         every { fileCsvWriter.updateCsvFile(csvRow) } returns Unit
 
         val result = taskDataSource.editTask(updatedTask)
@@ -56,11 +57,11 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should delete task return true when task id is found`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task1")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task
-        every { taskCsvParser.parseTaskToString(task) } returns csvRow
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto()
+        every { taskCsvParser.parseTaskToString(task.toDto()) } returns csvRow
         every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
-        val result = taskDataSource.deleteTask(taskId)
+        val result = taskDataSource.deleteTask(taskId.toString())
 
         assertThat(result).isTrue()
         verify { fileCsvWriter.updateCsvFile(any()) }
@@ -69,7 +70,7 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should delete task throw exception when task id is not found`() {
         assertThrows<TaskNotFoundException> {
-            taskDataSource.deleteTask(task.id)
+            taskDataSource.deleteTask(task.id.toString())
         }
     }
 
@@ -79,7 +80,7 @@ class TaskCsvDataSourceTest {
         val formattedLog = "User create Task at 2025/05/02 8:25 AM"
         val copiedTaskWithLog = task.copy(logs = listOf(formattedLog))
 
-        every { taskCsvParser.parseTaskToString(copiedTaskWithLog) } returns csvRow
+        every { taskCsvParser.parseTaskToString(copiedTaskWithLog.toDto()) } returns csvRow
         every { fileCsvWriter.writeToCsvFile(csvRow) } returns Unit
         mockkObject(CreatedLogFormatter)
         every {
@@ -93,7 +94,7 @@ class TaskCsvDataSourceTest {
         val result = taskDataSource.createTask(task)
 
         assertThat(result).isTrue()
-        verify { taskCsvParser.parseTaskToString(copiedTaskWithLog) }
+        verify { taskCsvParser.parseTaskToString(copiedTaskWithLog.toDto()) }
         verify { fileCsvWriter.writeToCsvFile(csvRow) }
         verify {
             CreatedLogFormatter.format(
@@ -114,8 +115,8 @@ class TaskCsvDataSourceTest {
     @Test
     fun `should get all tasks return list of tasks`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task", "task2")
-        every { taskCsvParser.parseOneRowToTask("task") } returns task
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task
+        every { taskCsvParser.parseOneRowToTask("task") } returns task.toDto()
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto()
 
         val result = taskDataSource.getAllTasks()
 
@@ -125,8 +126,8 @@ class TaskCsvDataSourceTest {
     @Test
     fun `getTaskByProjectId should return list of tasks when id is found`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = projectId)
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = projectId)
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = projectId)
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = projectId)
 
         val result = taskDataSource.getTasksByProjectId(projectId)
 
@@ -136,8 +137,8 @@ class TaskCsvDataSourceTest {
     @Test
     fun `getTaskByProjectId should return empty list when id is not found`() {
         every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = "id1")
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = "id2")
+        every { taskCsvParser.parseOneRowToTask("task1") } returns task.toDto().copy(projectId = "id1")
+        every { taskCsvParser.parseOneRowToTask("task2") } returns task.toDto().copy(projectId = "id2")
 
         val result = taskDataSource.getTasksByProjectId(projectId)
 

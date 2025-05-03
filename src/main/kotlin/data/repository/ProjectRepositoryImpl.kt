@@ -1,9 +1,9 @@
 package data.repository
 
 import data.dto.project.ProjectDto
+import data.mapper.toDomain
+import data.mapper.toDto
 import data.source.project.ProjectDataSource
-import domain.mapper.toDomain
-import domain.mapper.toDto
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.models.logs.UpdatedLogFormatter
@@ -68,7 +68,7 @@ class ProjectRepositoryImpl(
 
     override fun deleteProject(projectId: String): Result<Unit> {
 
-        val projectToRemove = projects.find { it.id == projectId }
+        val projectToRemove = projects.find { it.id.toString() == projectId }
 
 
         return if (projectToRemove != null) {
@@ -111,7 +111,7 @@ class ProjectRepositoryImpl(
     }
 
     override fun getProjectLogsById(id: String): Result<List<String>> {
-        val project = projects.find { it.id == id }
+        val project = projects.find { it.id.toString() == id }
         return if (project != null) {
             Result.success(project.projectLogs)
         } else {
@@ -120,7 +120,7 @@ class ProjectRepositoryImpl(
     }
 
     override fun getProjectById(id: String): Project? {
-        return projects.find { it.id == id }
+        return projects.find { it.id.toString() == id }
     }
 
 

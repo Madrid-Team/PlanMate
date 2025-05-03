@@ -4,6 +4,7 @@ import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 
 class EditTaskCLI(
     private val inputReader: InputReader,
@@ -20,7 +21,7 @@ class EditTaskCLI(
         val description = inputReader.readInput("Enter new description: ")
 
         val updatedTask = Task(
-            id = taskId,
+            id =  UUID.fromString(taskId),
             projectId = projectId,
             title = title,
             description = description,

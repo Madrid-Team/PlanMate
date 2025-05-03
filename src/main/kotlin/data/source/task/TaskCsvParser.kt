@@ -1,5 +1,6 @@
 package data.source.task
 
+import data.dto.task.TaskDto
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.PROJECT_ID
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_CREATED_BY
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_DESCRIPTION
@@ -10,9 +11,9 @@ import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_TITLE
 import domain.models.task.Task
 
 class TaskCsvParser() {
-    fun parseOneRowToTask(row: String): Task {
+    fun parseOneRowToTask(row: String): TaskDto {
         val result = row.split(",")
-        return Task(
+        return TaskDto(
             id = result[TASK_ID],
             projectId = result[PROJECT_ID],
             title = result[TASK_TITLE],
@@ -23,7 +24,7 @@ class TaskCsvParser() {
         )
     }
 
-    fun parseTaskToString(task: Task): String {
+    fun parseTaskToString(task: TaskDto): String {
         val taskCsvLine = listOf(
             task.id,
             task.projectId,

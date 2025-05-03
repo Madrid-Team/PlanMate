@@ -1,11 +1,8 @@
 package presentation.feature
 
-import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import data.utils.PasswordHasher
-import domain.mapper.toDomain
-import domain.models.logs.CurrentUser
+import domain.models.authentication.UserRole
 import domain.usecases.LoginUserUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -32,7 +29,7 @@ class AuthenticationCLITest {
         val username = "user name"
         val password = "password"
         val passwordHash = PasswordHasher.hash(password)
-        val user = UserDto("1", username, passwordHash, UserRoleDto.MATE)
+        val user = UserDto("1", username, passwordHash, UserRole.MATE.name)
 
         every { inputReader.readInput() } returnsMany listOf(username, password)
         every { useCase.invoke(username, passwordHash) } returns user
@@ -82,7 +79,7 @@ class AuthenticationCLITest {
         val incorrectPassword = "password 2"
         val correctHash = PasswordHasher.hash(correctPassword)
         val incorrectHash = PasswordHasher.hash(incorrectPassword)
-        val user = UserDto("1", correctUsername, correctHash, UserRoleDto.MATE)
+        val user = UserDto("1", correctUsername, correctHash, UserRole.MATE.name)
 
         every { inputReader.readInput() } returnsMany listOf(incorrectUsername, incorrectPassword, "1", correctUsername, correctPassword)
         every { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()

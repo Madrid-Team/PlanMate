@@ -1,12 +1,13 @@
 package domain.usecases
 
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -30,7 +31,7 @@ class DeleteUserUseCaseTest {
             id = adminId,
             username = "admin",
             passwordHash = "hash",
-            role = UserRoleDto.ADMIN
+            role = UserRole.ADMIN.name
         )
 
         every { userRepository.getUser(adminId) } returns Result.success(adminUser)
@@ -54,7 +55,7 @@ class DeleteUserUseCaseTest {
             id = mateId,
             username = "mate",
             passwordHash = "hash",
-            role = UserRoleDto.MATE
+            role = UserRole.MATE.name
         )
 
         every { userRepository.getUser(mateId) } returns Result.success(mateUser)
@@ -97,7 +98,7 @@ class DeleteUserUseCaseTest {
             id = adminId,
             username = "admin",
             passwordHash = "hash",
-            role = UserRoleDto.ADMIN
+            role = UserRole.ADMIN.name
         )
         val exception = Exception("Database error")
 

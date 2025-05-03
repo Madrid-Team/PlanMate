@@ -1,7 +1,6 @@
 package data.source.user
 
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import data.utils.UserColumnsIndex
 
 
@@ -14,7 +13,7 @@ class UserCsvParser {
             id = result[userColumnsIndex.USER_ID],
             username = result[userColumnsIndex.USER_NAME],
             passwordHash = result[userColumnsIndex.USER_PASSWORD_HASH],
-            role = UserRoleDto.valueOf(result[userColumnsIndex.USER_ROLE]),
+            role = result[userColumnsIndex.USER_ROLE],
         )
     }
 
@@ -23,7 +22,7 @@ class UserCsvParser {
             user.id,
             user.username,
             user.passwordHash,
-            user.role.name,
+            user.role,
         ).joinToString(",")
 
         return userCsvLine

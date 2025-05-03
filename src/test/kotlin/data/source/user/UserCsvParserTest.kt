@@ -2,7 +2,7 @@ package data.source.user
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
+import domain.models.authentication.UserRole
 import org.junit.jupiter.api.Test
 import kotlin.test.BeforeTest
 
@@ -16,7 +16,7 @@ class UserCsvParserTest {
         id = "1",
         username = "User Name",
         passwordHash = "shci58392nwsuss9203asdx",
-        role = UserRoleDto.ADMIN,
+        role = UserRole.ADMIN.name,
     )
 
     @BeforeTest
@@ -25,7 +25,6 @@ class UserCsvParserTest {
         row = userCsvParser.parseUserToRow(userTest)
         user = userCsvParser.parseRowToUser(rowTest)
     }
-
 
 
     @Test
@@ -45,7 +44,7 @@ class UserCsvParserTest {
 
     @Test
     fun `parseRowToUser should parse user role correctly`() {
-       assertThat(user.role.name).contains("ADMIN")
+        assertThat(user.role).contains("ADMIN")
     }
 
     @Test

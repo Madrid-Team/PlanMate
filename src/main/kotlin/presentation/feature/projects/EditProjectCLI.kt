@@ -5,6 +5,7 @@ import domain.models.project.Project
 import domain.usecases.project.EditProjectUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 
 class EditProjectCLI(
     private val inputReader: InputReader,
@@ -19,7 +20,7 @@ class EditProjectCLI(
             val newDescription = inputReader.readInput("Enter the new description:")
 
             val updatedProject = Project(
-                id = id,
+                id =  UUID.fromString(id),
                 name = newName,
                 description = newDescription,
                 createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",

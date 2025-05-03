@@ -29,7 +29,7 @@ class DeleteUserCLITest {
         // Given
         val mockCurrentUser = mockk<User>()
         every { inputReader.readInput() } returns "2"
-        every { mockCurrentUser.id } returns "1"
+        every { mockCurrentUser.id.toString() } returns "1"
         every { CurrentUser.getCurrentUser() } returns mockCurrentUser
         every { useCase.invoke("1", "2") } returns Result.success(Unit)
 
@@ -50,7 +50,7 @@ class DeleteUserCLITest {
         // Given
         val mockCurrentUser = mockk<User>()
         every { inputReader.readInput() } returnsMany listOf("2", "z")
-        every { mockCurrentUser.id } returns "1"
+        every { mockCurrentUser.id.toString() } returns "1"
         every { CurrentUser.getCurrentUser() } returns mockCurrentUser
         every { useCase.invoke("1", "2") } throws Exception()
 

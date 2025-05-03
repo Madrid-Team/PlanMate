@@ -23,6 +23,6 @@ class EditTaskUseCase(
 
 
     private fun getTaskById(taskId: String): Task? {
-        return taskRepository.getAllTasks().find { it.id == taskId }
+        return taskRepository.getAllTasks().find { it.id.toString() == taskId }
     }
 }

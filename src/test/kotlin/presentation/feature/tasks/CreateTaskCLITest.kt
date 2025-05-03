@@ -27,7 +27,7 @@ class CreateTaskCLITest() {
         // Given
         every { inputReader.readInput(any()) } returnsMany listOf("1", "title", "description")
         val project = helperProject(id = "1")
-        val task = helperTask(projectId = project.id, title = "title", description = "description")
+        val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
         every { useCase.createTask(task) } returns true
 
         // When

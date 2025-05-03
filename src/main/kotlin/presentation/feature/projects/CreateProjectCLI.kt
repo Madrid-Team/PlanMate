@@ -5,6 +5,7 @@ import domain.models.project.Project
 import domain.usecases.project.CreateProjectUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 
 class CreateProjectCLI(
     private val inputReader: InputReader,
@@ -44,7 +45,8 @@ class CreateProjectCLI(
             projectLogs = emptyList(),
             projectState = projectState,
             taskStates = taskStates.trim().split(" "),
-            projectStates = currentProjectStates
+            projectStates = currentProjectStates,
+            id = UUID.randomUUID()
         )
         val result = createProjectUseCase.createProject(project)
 
