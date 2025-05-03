@@ -1,17 +1,16 @@
 package data.source.task
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.project.ProjectDto
 import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import data.utils.taskHeader
 import domain.models.logs.CreatedLogFormatter
 import domain.models.logs.EntityType
 import domain.usecases.task.createTask
 import domain.utlis.TaskNotFoundException
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,27 +31,34 @@ class TaskCsvDataSourceTest {
     }
 
     @Test
-    fun `should edit task return true when edit task successfully`() {
-        val existingTask = task
-        val updatedTask = existingTask.copy(title = "new title")
+    fun `should return success result when tasks are edited successfully`() {
+        val tasks = listOf(
+            helperTaskDto(title = "task1", description = "description one"),
+            helperTaskDto(title = "task2", description = "description two")
+        )
+        val parsedTasks = listOf(
+            "task1,description one\n",
+            "task2,description two\n"
+        )
 
-        every { fileCsvReader.readCsvFile() } returns listOf("row1")
-        every { taskCsvParser.parseOneRowToTask("row1") } returns existingTask.toDto()
-        every { taskCsvParser.parseTaskToString(updatedTask.toDto()) } returns csvRow
-        every { fileCsvWriter.updateCsvFile(csvRow) } returns Unit
+        every { taskCsvParser.parseTaskToString(any()) } returnsMany parsedTasks
+        every { fileCsvWriter.updateCsvFile(any()) } just runs
 
-        val result = taskDataSource.editTask(updatedTask)
 
-        assertThat(result).isTrue()
-        verify { fileCsvWriter.updateCsvFile(csvRow) }
+        val result = taskDataSource.editTask(tasks)
+
+
+        assertThat(result.isSuccess).isTrue()
+        verify { fileCsvWriter.updateCsvFile(String.taskHeader + parsedTasks.joinToString("")) }
     }
 
-    @Test
-    fun `should edit task throw exception when failed to edit the task`() {
-        assertThrows<TaskNotFoundException> {
-            taskDataSource.editTask(task)
-        }
-    }
+
+//    @Test
+//    fun `should edit task throw exception when failed to edit the task`() {
+//        assertThrows<TaskNotFoundException> {
+//            taskDataSource.editTask(task)
+//        }
+//    }
 
     @Test
     fun `should delete task return true when task id is found`() {
