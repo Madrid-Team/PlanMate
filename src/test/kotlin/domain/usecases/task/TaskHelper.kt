@@ -12,8 +12,8 @@ fun createTask(
     state: String = "",
     createdBy: String = "",
     logs: List<String> = listOf(),
-) = TaskDto(
-    id = id,
+) = Task(
+    id =  UUID.fromString(id),
     projectId = projectId,
     title = title,
     description = description,

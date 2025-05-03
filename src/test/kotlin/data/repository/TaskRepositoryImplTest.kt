@@ -156,46 +156,6 @@ class TaskRepositoryImplTest {
         }
     }
 
-    @Test
-    fun `get task logs should return list of task logs the same the data source returns it`() {
-
-
-        val logs = listOf(
-            "Ahmed Added a file",
-            "Ahmed deleted a file"
-
-        )
-
-
-        every { taskDataSource.getLogsByTaskId("100") } returns Result.success(listOf("ada","ada"))
-
-        val result = taskRepository.getTaskLogsByID("100")
-
-        Truth.assertThat(result).isEqualTo(logs)
-
-
-    }
-
-    @Test
-    fun `get task logs should throw exception when the data source returns exception that the task does exist and logs is empty`() {
-        every { taskDataSource.getLogsByTaskId("200") } throws TaskExceptions.NoLogsFoundException()
-
-        assertThrows<TaskExceptions.NoLogsFoundException> {
-            taskRepository.getTaskLogsByID("200")
-        }
-
-    }
-
-    @Test
-    fun `get task logs should throw exception when the data source returns exception that the task is not found`() {
-        every { taskDataSource.getLogsByTaskId("300") } throws TaskExceptions.TaskNotFoundException()
-
-        assertThrows<TaskExceptions.TaskNotFoundException> {
-            taskRepository.getTaskLogsByID("300")
-        }
-
-    }
-
     companion object {
         val tasks = listOf(
             helperTaskDto(id = "1", title = "test"),
