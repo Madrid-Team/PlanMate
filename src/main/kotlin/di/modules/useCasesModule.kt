@@ -1,13 +1,9 @@
 package di.modules
 
 import domain.usecases.logs.CreateLogUseCase
-import domain.usecases.user.CreateUserUseCase
-import domain.usecases.user.DeleteUserUseCase
 import domain.usecases.task.DisplayAllTasksUseCase
-import domain.usecases.user.LoginUserUseCase
 import domain.usecases.user.CreateUserUseCase
 import domain.usecases.user.DeleteUserUseCase
-import domain.usecases.DisplayAllTasksUseCase
 import domain.usecases.user.LoginUserUseCase
 import domain.usecases.project.*
 import domain.usecases.task.*
