@@ -26,6 +26,6 @@ val useCasesModule = module {
     single { CreateTaskUseCase(get()) }
     single { DisplayAllTasksUseCase(get(), get()) }
     single { EditTaskUseCase(get()) }
-    single { GetLogsUseCase(get()) }
+    single { GetTaskLogsUseCase(get()) }
     single { GetTasksByProjectIdUseCase(get()) }
 }

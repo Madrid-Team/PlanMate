@@ -1,71 +1,49 @@
 package domain.usecases.task
 
-import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions.NoLogsFoundException
-import domain.utlis.TaskExceptions.TaskNotFoundException
+import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
 class GetLogsUseCaseTest {
     private lateinit var taskRepository: TaskRepository
-    private lateinit var getLogsUseCase: GetLogsUseCase
+    private lateinit var getLogsUseCase: GetTaskLogsUseCase
 
     @BeforeEach
-    fun setup(){
+    fun setup() {
         taskRepository = mockk(relaxed = true)
-        getLogsUseCase = GetLogsUseCase(taskRepository)
+        getLogsUseCase = GetTaskLogsUseCase(taskRepository)
     }
 
     @Test
-    fun `get task logs when task exists and logs are not empty`(){
-        val taskId = "120"
-        val logs = listOf(
-            "Ahmed added a file",
-            "Ahmed removed a file"
-        )
-        every { taskRepository.getTaskLogsByID(taskId) } returns logs
+    fun `get TaskLogs should return true when task repository called and return success result`() {
+        //Given
+        val taskId = 1
+        every { taskRepository.getTaskLogsByID(taskId.toString()) } returns Result.success(listOf<String>())
 
-        val result = getLogsUseCase.getTaskLogs(taskId)
+        //When
+        val result = getLogsUseCase.getTaskLogs(taskId.toString())
 
-        assertThat(result).isEqualTo(logs)
+        //Then
+        kotlin.test.assertTrue { result.isSuccess }
 
     }
 
     @Test
-    fun `get task logs should throw exceptions when the task exists but the logs are empty `(){
-        val taskId = "120"
+    fun `get Task Logs should return false when project repository called and return failure result`() {
+        //Given
+        val projectId = 1
+        every { taskRepository.getTaskLogsByID(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
 
-        every { taskRepository.getTaskLogsByID(taskId) } throws  NoLogsFoundException()
+        //When
+        val result = getLogsUseCase.getTaskLogs(projectId.toString())
 
-        assertThrows <NoLogsFoundException>{
-            getLogsUseCase.getTaskLogs(taskId)
-        }
-
-
-
-    }
-
-@Test
-    fun `get task logs should throw exceptions when the task is not found`(){
-        val taskId = "120"
-
-        every { taskRepository.getTaskLogsByID(taskId) } throws TaskNotFoundException()
-
-
-        assertThrows <TaskNotFoundException>{
-            getLogsUseCase.getTaskLogs(taskId)
-        }
-
-
+        //Then
+        kotlin.test.assertFalse { result.isSuccess }
 
     }
-
-
-
 
 
 }

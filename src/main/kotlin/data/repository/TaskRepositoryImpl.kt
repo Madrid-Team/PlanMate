@@ -96,6 +96,12 @@ class TaskRepositoryImpl(
     }
 
     override fun getTaskLogsByID(taskId: String): Result<List<String>> {
-        return taskDataSource.getLogsByTaskId(taskId)
+        val task = taskMemoryDataSource.getTasks().find { it.id.toString() == taskId }
+        return if (task != null) {
+            Result.success(task.logs)
+        } else {
+            Result.failure(ProjectExceptions.ProjectNotFoundException())
+        }
     }
+
 }

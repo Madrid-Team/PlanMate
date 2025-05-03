@@ -2,10 +2,10 @@ package domain.usecases.task
 
 import domain.repository.TaskRepository
 
-class GetLogsUseCase(
+class GetTaskLogsUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun getTaskLogs(taskId : String) : List<String>{
+    fun getTaskLogs(taskId : String) : Result<List<String>>{
         return taskRepository.getTaskLogsByID(taskId)
     }
 

@@ -21,7 +21,7 @@ import java.io.File
 val repositoryModule = module {
 
     single<ProjectRepository> { ProjectRepositoryImpl(get(),get()) }
-    single<TaskRepository> { TaskRepositoryImpl(get()) }
+    single<TaskRepository> { TaskRepositoryImpl(get(),get()) }
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
 
     single  { ProjectMemoryDataSource() }
