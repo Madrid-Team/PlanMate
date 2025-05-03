@@ -13,7 +13,7 @@ fun createProject(
     projectLogs:List<String> = emptyList(),
     projectStates:List<String> = emptyList()
     ) = Project(
-    id = id,
+    id =  UUID.fromString(id),
     name = name,
     description = description,
     createdBy = createdBy,

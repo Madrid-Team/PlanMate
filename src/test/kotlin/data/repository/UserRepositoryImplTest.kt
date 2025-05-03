@@ -2,10 +2,9 @@ package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
-import data.source.user.UserCsvDataSource
 import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
+import domain.models.authentication.UserRole
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
@@ -22,12 +21,13 @@ class UserRepositoryImplTest {
     fun setUp() {
         userDataSource = mockk()
         userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource,userCsvParser)
+        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvParser)
     }
+
     @Test
     fun `Should add user successfully`() {
         // Given
-        val user = UserDto("1", "username1", "hash", UserRoleDto.ADMIN)
+        val user = UserDto("1", "username1", "hash", UserRole.ADMIN.name)
         val userRow = "1,username1,hash,ADMIN"
 
         every { userCsvParser.parseUserToRow(user) } returns userRow
@@ -39,10 +39,11 @@ class UserRepositoryImplTest {
         // Then
         assertThat(result.isSuccess).isTrue()
     }
+
     @Test
     fun `Should fail to add user when datasource fails`() {
         // Given
-        val user = UserDto("2", "username2", "hash2", UserRoleDto.MATE)
+        val user = UserDto("2", "username2", "hash2", UserRole.MATE.name)
         val userRow = "2,username2,hash2,MATE"
 
         every { userCsvParser.parseUserToRow(user) } returns userRow
@@ -59,7 +60,7 @@ class UserRepositoryImplTest {
     @Test
     fun `getUser should return user when found`() {
         // Given
-        val user = UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE)
+        val user = UserDto("1", "username1", "passwordhash1", UserRole.MATE.name)
 
         every { userDataSource.getUser("1") } returns Result.success(user)
 
@@ -75,8 +76,8 @@ class UserRepositoryImplTest {
     fun `getAllUsers should return user when found`() {
         // Given
         val users = listOf(
-            UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE),
-            UserDto("2", "username2", "passwordhash2", UserRoleDto.MATE)
+            UserDto("1", "username1", "passwordhash1", UserRole.MATE.name),
+            UserDto("2", "username2", "passwordhash2", UserRole.MATE.name)
         )
 
         every { userDataSource.getAllUsers() } returns Result.success(users)
@@ -92,7 +93,7 @@ class UserRepositoryImplTest {
     @Test
     fun `getUserByName should return user when found`() {
         // Given
-        val user = UserDto("1", "username1", "passwordhash1", UserRoleDto.MATE)
+        val user = UserDto("1", "username1", "passwordhash1", UserRole.MATE.name)
 
         every { userDataSource.getUserByName("username1") } returns Result.success(user)
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.util.*
 import kotlin.test.Test
 
 class EditTaskUseCaseTest {
@@ -36,7 +37,7 @@ class EditTaskUseCaseTest {
     ) {
         //given
         val oldTask = Task(
-            id = "111",
+            id = UUID.randomUUID(),
             projectId = "11",
             title = "title",
             description = "description",
@@ -56,7 +57,7 @@ class EditTaskUseCaseTest {
 
         //when
         val result = editTaskUseCase.editTask(
-            oldTaskId = oldTask.id,
+            oldTaskId = oldTask.id.toString(),
             updatedTask = newTask
         )
 
@@ -74,7 +75,7 @@ class EditTaskUseCaseTest {
         every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
         assertThrows<TaskNotFoundException> {
-            editTaskUseCase.editTask(task.id, task)
+            editTaskUseCase.editTask(task.id.toString(), task)
         }
     }
 }

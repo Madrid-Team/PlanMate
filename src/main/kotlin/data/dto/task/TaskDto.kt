@@ -4,7 +4,7 @@ import java.util.UUID
 
 
 data class TaskDto(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     val projectId: String,
     val title: String,
     val description: String,

@@ -5,7 +5,7 @@ import kotlin.collections.List
 
 
 data class Task(
-    val id: String = UUID.randomUUID().toString(),
+    val id: UUID,
     val projectId: String,
     val title: String,
     val description: String,

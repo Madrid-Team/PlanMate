@@ -13,7 +13,7 @@ fun helperTask(
     createdBy: String = "",
     logs: List<String> = listOf(),
 ) = Task(
-    id = id,
+    id =  UUID.fromString(id),
     projectId = projectId,
     title = title,
     description = description,

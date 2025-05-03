@@ -1,8 +1,8 @@
 package domain.usecases
 
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
 import data.utils.PasswordHasher
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
 import domain.utlis.UserException
 import io.mockk.every
@@ -23,7 +23,7 @@ class LoginUserTest {
     @Test
     fun `Should login user successfully when username and password are correct`() {
         // Given
-        val user = UserDto("1", "user1", PasswordHasher.hash("pass123"), UserRoleDto.MATE)
+        val user = UserDto("1", "user1", PasswordHasher.hash("pass123"), UserRole.MATE.name)
         every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
@@ -37,7 +37,7 @@ class LoginUserTest {
     @Test
     fun `Should not login when username or password are incorrect`() {
         // Given
-        val user = UserDto("1", "user1", PasswordHasher.hash("correctPass"), UserRoleDto.MATE)
+        val user = UserDto("1", "user1", PasswordHasher.hash("correctPass"), UserRole.MATE.name)
         every { userRepository.getAllUsers() } returns Result.success(listOf(user))
 
         // When
@@ -51,7 +51,7 @@ class LoginUserTest {
     @Test
     fun `Shouldn't login When username or password is null`(){
         // Given
-        val mate = UserDto(id = "1","MATE_1","PASSWORD_HASH_1", UserRoleDto.MATE)
+        val mate = UserDto(id = "1","MATE_1","PASSWORD_HASH_1", UserRole.MATE.name)
 
         every {   userRepository.addUser(mate)} returns Result.success(Unit)
 

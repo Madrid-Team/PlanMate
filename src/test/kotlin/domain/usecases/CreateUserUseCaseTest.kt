@@ -2,17 +2,15 @@ package domain.usecases
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.dto.authentication.UserRoleDto
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
-import java.util.UUID
 import kotlin.test.Test
 
-class CreateUserUseCaseTest  {
+class CreateUserUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var createUserUseCase: CreateUserUseCase
 
@@ -26,14 +24,14 @@ class CreateUserUseCaseTest  {
     @Test
     fun ` Should Create user successfully When User dose not exists before `() {
         //Given
-         val user3 = UserDto("3", "username3", "passwordhash3", UserRoleDto.ADMIN)
+        val user3 = UserDto("3", "username3", "passwordhash3", UserRole.ADMIN.name)
 
         //When
         every { userRepository.getUserByName("username3") } returns Result.success(null)
         every { userRepository.getUser(any()) } returns Result.success(null)
         every { userRepository.addUser(any()) } returns Result.success(Unit)
 
-        val result =createUserUseCase.createUser(user3)
+        val result = createUserUseCase.createUser(user3)
 
         //Then
         assertThat(result.isSuccess).isTrue()
@@ -42,7 +40,7 @@ class CreateUserUseCaseTest  {
     @Test
     fun `Should fail to create user when user already exists`() {
         // Given
-        val existingUser = UserDto("1", "username1", "passwordhash1", UserRoleDto.ADMIN)
+        val existingUser = UserDto("1", "username1", "passwordhash1", UserRole.ADMIN.name)
 
         every { userRepository.getUserByName("username1") } returns Result.success(existingUser)
 
@@ -53,10 +51,11 @@ class CreateUserUseCaseTest  {
         assertThat(result.isFailure).isTrue()
         assertThat(result.exceptionOrNull()).isInstanceOf(UserException.UserExist::class.java)
     }
+
     @Test
     fun `Should not create user When  wrong formed user from repository`() {
         // Given
-        val malformedUser = UserDto(id = "", username = "username7", passwordHash = "", role = UserRoleDto.ADMIN)
+        val malformedUser = UserDto(id = "", username = "username7", passwordHash = "", role = UserRole.ADMIN.name)
 
         every { userRepository.getUserByName("username7") } returns Result.success(malformedUser)
 

@@ -1,5 +1,8 @@
 package data.source.task
 
+import data.dto.task.TaskDto
+import data.mapper.toDomain
+import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.logs.CreatedLogFormatter
@@ -20,7 +23,7 @@ class TaskCsvDataSource(
     override fun editTask(task: Task): Boolean {
         return try {
             val updatedTasks = getListOfUpdatedList(task)
-            val csvContent = updatedTasks.joinToString("\n") { taskCsvParser.parseTaskToString(it) }
+            val csvContent = updatedTasks.joinToString("\n") { taskCsvParser.parseTaskToString(it.toDto()) }
             fileCsvWriter.updateCsvFile(csvContent)
             true
         } catch (e: Exception) {
@@ -32,7 +35,7 @@ class TaskCsvDataSource(
         return try {
             val listOfUpdatedTasks = getListWithDeletedTask(taskId)
             val csvContent = listOfUpdatedTasks.joinToString("\n") {
-                taskCsvParser.parseTaskToString(it)
+                taskCsvParser.parseTaskToString(it.toDto())
             }
             fileCsvWriter.updateCsvFile(csvContent)
             true
@@ -44,7 +47,7 @@ class TaskCsvDataSource(
     override fun createTask(task: Task): Boolean {
         return try {
             val taskRow = taskCsvParser.parseTaskToString(
-                task.copy(
+                task.toDto().copy(
                     logs = listOf(
                         CreatedLogFormatter.format(
                             entityName = task.title,
@@ -62,12 +65,12 @@ class TaskCsvDataSource(
     }
 
     override fun getAllTasks(): List<Task> {
-        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it) }
+        return fileCsvReader.readCsvFile().map { taskCsvParser.parseOneRowToTask(it).toDomain()}
     }
 
     override fun getListWithDeletedTask(taskId: String): List<Task> {
         return getAllTasks().let { tasks ->
-            tasks.indexOfFirst { it.id == taskId }.let { taskIndex ->
+            tasks.indexOfFirst { it.id.toString() == taskId }.let { taskIndex ->
                 (tasks.subList(0, taskIndex) + tasks.subList(taskIndex + 1, tasks.size))
             }
         }
@@ -143,7 +146,7 @@ class TaskCsvDataSource(
     }
 
     override fun getLogsByTaskId(taskId: String): List<String> {
-        val task = getAllTasks().find { it.id == taskId }?: throw TaskNotFoundException()
+        val task = getAllTasks().find { it.id.toString() == taskId }?: throw TaskNotFoundException()
         val taskLogs = task.logs
         if (taskLogs.isEmpty())
             throw NoLogsFoundException()

@@ -3,7 +3,7 @@ package data.dto.project
 import java.util.*
 
 data class ProjectDto(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String,
     val name: String,
     val description: String,
     val createdBy: String,

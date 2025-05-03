@@ -18,6 +18,7 @@ import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.TaskCLI
 import presentation.feature.user.UserCLI
 import java.io.ByteArrayOutputStream
+import java.util.*
 
 class PlanMateCLITest {
     private lateinit var inputReader: InputReader
@@ -76,7 +77,7 @@ class PlanMateCLITest {
 
     @Test
     fun `should show task menu when admin selects manage tasks`() {
-        val adminUser = User(id = "1", username = "admin", role = UserRole.ADMIN, passwordHash = "")
+        val adminUser = User(id =  UUID.fromString("1"), username = "admin", role = UserRole.ADMIN.name, passwordHash = "")
         every { CurrentUser.getCurrentUser() } returns adminUser
         every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
@@ -87,7 +88,7 @@ class PlanMateCLITest {
 
     @Test
     fun `should show project menu when member selects view projects`() {
-        val memberUser = User(id = "2", username = "user", role = UserRole.ADMIN, passwordHash = "")
+        val memberUser = User(id = UUID.fromString("2"), username = "user", role = UserRole.ADMIN.name, passwordHash = "")
         every { CurrentUser.getCurrentUser() } returns memberUser
         every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 

@@ -50,8 +50,8 @@ class PlanMateCLI(
         outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
 
         when (user.role) {
-            UserRole.ADMIN -> showAdminMenu()
-            UserRole.MATE -> showMateMenu()
+            UserRole.ADMIN.name -> showAdminMenu()
+            UserRole.MATE.name -> showMateMenu()
         }
     }
 

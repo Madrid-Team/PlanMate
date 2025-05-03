@@ -1,13 +1,15 @@
 package data.source.task
 
 import com.google.common.truth.Truth.assertThat
+import data.dto.task.TaskDto
+import data.mapper.toDto
 import domain.models.task.Task
 import domain.usecases.task.createTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class TaskCsvParserTest {
-    private lateinit var task: Task
+    private lateinit var task: TaskDto
     private lateinit var taskCsvParser: TaskCsvParser
     private val row = "1,2,title,description,state,created by,log1|log2|log3"
 
@@ -69,7 +71,7 @@ class TaskCsvParserTest {
             task.logs.joinToString("|")
         ).joinToString(",")
 
-        val result = taskCsvParser.parseTaskToString(task)
+        val result = taskCsvParser.parseTaskToString(task.toDto())
         assertThat(result).isEqualTo(expectedValue)
     }
 

@@ -5,6 +5,8 @@ import domain.models.task.Task
 import domain.usecases.task.CreateTaskUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
+import java.util.*
 
 class CreateTaskCLI(
     private val inputReader: InputReader,
@@ -33,7 +35,8 @@ class CreateTaskCLI(
             description = description,
             state = "",
             createdBy = CurrentUser.getCurrentUser()?.username ?: "Unknown",
-            logs = listOf()
+            logs = listOf(),
+            id = UUID.randomUUID()
         )
     }
 

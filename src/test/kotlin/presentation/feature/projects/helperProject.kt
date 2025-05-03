@@ -14,7 +14,7 @@ fun helperProject(
     projectStates: List<String> = listOf("ACTIVE", "ARCHIVED")
 ): Project {
     return Project(
-        id = id,
+        id =  UUID.fromString(id),
         name = name,
         description = description,
         createdBy = createdBy,

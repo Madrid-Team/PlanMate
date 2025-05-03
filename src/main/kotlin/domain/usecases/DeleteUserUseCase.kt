@@ -1,6 +1,6 @@
 package domain.usecases
 
-import data.dto.authentication.UserRoleDto
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
 
 class DeleteUserUseCase(
@@ -13,7 +13,7 @@ class DeleteUserUseCase(
                 onSuccess = { it },
                 onFailure = { return Result.failure(it) }
             )
-            if (userResponse?.role == UserRoleDto.ADMIN) {
+            if (userResponse?.role == UserRole.ADMIN.name) {
                 userRepository.deleteUser(userToDeleteId)
             } else {
                 return Result.failure(Exception("User is not an admin"))

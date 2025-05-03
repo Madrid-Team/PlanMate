@@ -3,7 +3,7 @@ package domain.models.project
 import java.util.*
 
 data class Project(
-    val id: String = UUID.randomUUID().toString(),
+    val id: UUID,
     val name: String,
     val description: String,
     val createdBy: String,
