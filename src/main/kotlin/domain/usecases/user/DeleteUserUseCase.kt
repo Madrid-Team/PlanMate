@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.user
 
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository

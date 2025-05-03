@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.user
 
 
 import data.dto.authentication.UserDto
