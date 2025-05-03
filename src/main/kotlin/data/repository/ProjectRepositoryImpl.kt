@@ -14,6 +14,7 @@ import domain.utlis.*
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDateTime
+import kotlin.collections.mutableListOf
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource,
@@ -27,13 +28,14 @@ class ProjectRepositoryImpl(
 
     private fun initProjects() {
         val result = projectDataSource.getProjects()
-        val projects = if (result.isSuccess) {
+        if (result.isSuccess) {
             val dtoList = result.getOrNull() as? List<ProjectDto> ?: emptyList()
-            dtoList.map { it.toDomain() }.toMutableList()
+            val a = dtoList.map { it.toDomain() }.toMutableList()
+            projectMemoryDataSource.setProjects(a)
         } else {
-            mutableListOf()
+            mutableListOf<Project>()
         }
-        projectMemoryDataSource.setProjects(projects)
+
     }
 
     override fun getAllProjects(): Result<List<Project>> {

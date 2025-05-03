@@ -10,8 +10,8 @@ class ProjectMemoryDataSource {
         return projects.toList()
     }
 
-    fun setProjects(projects: List<Project>): List<Project> {
-        return projects.toList()
+    fun setProjects(projects: List<Project>) {
+          this.projects.addAll(projects)
     }
 
     fun addProject(project: Project) {
