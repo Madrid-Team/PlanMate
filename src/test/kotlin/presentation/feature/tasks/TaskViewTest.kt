@@ -37,5 +37,28 @@ class TaskViewTest(){
         // Then
         verify { outputPrinter.printMessage("Project not found.") }
     }
+    @Test
+    fun `should print formatted tasks when tasks exist`() {
+        // Given
+        val projectId = "p1"
+        val expectedOutput = """
+            TODO:
+            - Task 1
 
+            In Progress:
+            - Task 2
+
+            Done:
+            - Task 3
+        """.trimIndent()
+
+        every { inputReader.readInput("Enter project ID: ") } returns projectId
+        every { displayAllTasksUseCase.display(projectId) } returns expectedOutput
+
+        // When
+        taskView.show()
+
+        // Then
+        verify { outputPrinter.printMessage(expectedOutput) }
+    }
 }
