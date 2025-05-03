@@ -3,6 +3,7 @@ package domain.usecases.user
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.usecases.user.LoginUserUseCase
 import domain.utlis.UserException
 import io.mockk.every
 import io.mockk.mockk

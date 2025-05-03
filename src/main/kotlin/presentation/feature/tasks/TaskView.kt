@@ -1,6 +1,23 @@
 package presentation.feature.tasks
 
 
-class TaskView {
+import domain.usecases.task.DisplayAllTasksUseCase
+import presentation.components.InputReader
+import presentation.components.OutputPrinter
+
+
+class TaskView(
+    private val displayAllTasksUseCase: DisplayAllTasksUseCase,
+    private val outputPrinter: OutputPrinter,
+    private val inputReader: InputReader
+) {
+
+    fun show() {
+        outputPrinter.printMessage("=== Display Tasks ===")
+        val projectId = inputReader.readInput("Enter project ID: ")
+
+        val result = displayAllTasksUseCase.display(projectId)
+        outputPrinter.printMessage(result)
+    }
 
 }

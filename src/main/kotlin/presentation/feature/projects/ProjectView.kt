@@ -19,7 +19,7 @@ class ProjectView(private val outputPrinter: OutputPrinter) {
                         "Description : ${project.description}\n" +
                         "Project State : ${project.projectState}\n" +
                         "Created By : ${project.createdBy}\n" +
-                        "Project Logs : ${project.projectLogs}\n" +
+                        "Project Logs :\n ${project.projectLogs.map { log -> "     -- $log" }.joinToString("\n")}\n" +
                         "Project States : ${project.projectStates.joinToString(", ")}\n" +
                         "Task States : ${project.taskStates.joinToString(", ")}\n"
             )

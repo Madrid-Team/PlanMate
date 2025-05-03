@@ -1,9 +1,8 @@
 package domain.models.logs
-
-
-enum class EntityType {
-    PROJECT,
-    TASK;
+enum class OperationType {
+    CREATE,
+    UPDATE,
+    DELETE;
 
     override fun toString(): String {
         return name.lowercase()

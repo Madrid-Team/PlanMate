@@ -2,6 +2,7 @@ package domain.usecases.user
 
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.usecases.user.DeleteUserUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
