@@ -15,7 +15,7 @@ class DisplayAllTasksUseCase(
         val swimlanesMap = states.associateWith { mutableListOf<String>() }
 
         for (task in tasks) {
-            swimlanesMap[task.state]?.add(task.title)
+            swimlanesMap[task.taskState]?.add(task.title)
         }
 
         return formatAsSwimlanes(states, swimlanesMap)

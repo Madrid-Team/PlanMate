@@ -17,7 +17,7 @@ fun helperTask(
     projectId = projectId,
     title = title,
     description = description,
-    state = state,
+    taskState = state,
     createdBy = createdBy,
     logs = logs
 )

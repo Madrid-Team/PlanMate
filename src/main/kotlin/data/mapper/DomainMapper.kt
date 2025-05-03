@@ -57,7 +57,7 @@ fun TaskDto.toDomain() =
         description = description,
         createdBy = createdBy,
         logs = logs,
-        state = state,
+        taskState = taskState,
         title = title,
     )
 
@@ -69,6 +69,6 @@ fun Task.toDto() =
         description = description,
         createdBy = createdBy,
         logs = logs,
-        state = state,
+        taskState = taskState,
         title = title,
     )

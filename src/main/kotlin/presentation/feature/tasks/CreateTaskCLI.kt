@@ -31,7 +31,7 @@ class CreateTaskCLI(
             projectId = projectId,
             title = title,
             description = description,
-            state = "",
+            taskState = "",
             createdBy = "",
             logs = listOf(),
             id = UUID.randomUUID()

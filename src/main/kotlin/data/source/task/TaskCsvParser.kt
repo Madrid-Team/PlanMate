@@ -18,7 +18,7 @@ class TaskCsvParser() {
             projectId = result[PROJECT_ID],
             title = result[TASK_TITLE],
             description = result[TASK_DESCRIPTION],
-            state = result[TASK_STATES],
+            taskState = result[TASK_STATES],
             createdBy = result[TASK_CREATED_BY],
             logs = result[TASK_LOGS].split("|")
         )
@@ -30,7 +30,7 @@ class TaskCsvParser() {
             task.projectId,
             task.description,
             task.createdBy,
-            task.state,
+            task.taskState,
             task.title,
             task.logs.joinToString("|")
         ).joinToString(",")

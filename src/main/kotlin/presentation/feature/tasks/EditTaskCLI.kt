@@ -25,7 +25,7 @@ class EditTaskCLI(
             projectId = projectId,
             title = title,
             description = description,
-            state = "",
+            taskState = "",
             createdBy = "",
             logs = listOf()
         )
