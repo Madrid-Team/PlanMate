@@ -1,13 +1,11 @@
 package domain.usecases.task
 
-import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
 import domain.utlis.TaskExceptions.TaskNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.assertTrue
 
@@ -22,7 +20,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `deleteTask should delete task when id is found`() {
+    fun `deleteTask should return success when TaskRepository return success`() {
         //given
         val taskId = UUID.randomUUID().toString()
         every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
@@ -32,18 +30,17 @@ class DeleteTaskUseCaseTest {
         val result = deleteTaskUseCase.deleteTask(taskId)
 
         //then
-        assertTrue { result }
+        assertTrue { result.isSuccess }
     }
 
     @Test
-    fun `deleteTask should return throw exception when id is not found`() {
+    fun `deleteTask should return failure when TaskRepository return failure`() {
         //given
         val taskId = UUID.randomUUID().toString()
         every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
-        //when && then
-        assertThrows<TaskNotFoundException> {
-            deleteTaskUseCase.deleteTask(taskId)
-        }
+        val result = deleteTaskUseCase.deleteTask(taskId)
+
+        assertTrue { result.isFailure }
     }
 }
