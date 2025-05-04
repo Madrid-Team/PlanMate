@@ -22,7 +22,7 @@ class CreateTaskUseCaseTest {
     }
 
     @Test
-    fun `should return true when task is saved successfully`() {
+    fun `createTask should return true when task is saved successfully`() {
         // given
         val task = createTask(title = "new task", description = "description")
         every { taskRepository.createTask(task) } returns Result.success(Unit)
@@ -36,30 +36,24 @@ class CreateTaskUseCaseTest {
     }
 
     @Test
-    fun `should return false when task saving fails`() {
+    fun `createTask should return false when task saving fails`() {
         // given
         val task = createTask(title = "new task")
         every { taskRepository.createTask(task) } throws CannotCreateTaskException()
 
-        // when
-        val result = createTaskUseCase.createTask(task)
-
-        // then
+        // when && then
         assertThrows<CannotCreateTaskException> {
             taskRepository.createTask(task)
         }
     }
 
     @Test
-    fun `should return false when task title is empty`() {
+    fun `createTask should return false when task title is empty`() {
         // given
         val task = createTask(title = "")
         every { taskRepository.createTask(task) } throws TaskTitleIsEmptyException()
 
-        // when
-        val result = createTaskUseCase.createTask(task)
-
-        // then
+        // when && then
         assertThrows<TaskTitleIsEmptyException> {
             taskRepository.createTask(task)
         }
