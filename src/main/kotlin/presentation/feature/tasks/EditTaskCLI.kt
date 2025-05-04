@@ -35,7 +35,7 @@ class EditTaskCLI(
         if (result.isSuccess) {
             outputPrinter.printMessage("Task updated successfully")
         } else {
-            outputPrinter.printMessage("Failed to update task")
+            outputPrinter.printError("Failed to update task")
         }
 
     }
