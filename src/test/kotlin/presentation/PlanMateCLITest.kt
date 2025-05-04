@@ -1,24 +1,20 @@
 package presentation
 
 import com.google.common.truth.Truth.assertThat
+import data.utils.PasswordHasher
 import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import presentation.feature.projects.ProjectAuditLogCLI
 import presentation.feature.admin.AdminCLI
+import presentation.feature.projects.ProjectAuditLogCLI
 import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.TaskCLI
 import presentation.feature.user.UserCLI
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 class PlanMateCLITest {
@@ -31,9 +27,6 @@ class PlanMateCLITest {
     private lateinit var adminCLI: AdminCLI
     private lateinit var projectAuditLogCLI: ProjectAuditLogCLI
     private lateinit var planMateCLI: PlanMateCLI
-    private val outputStream = ByteArrayOutputStream()
-    private lateinit var user: User
-    private val userMock = mockk<User>()
 
 
     @BeforeEach
@@ -46,38 +39,53 @@ class PlanMateCLITest {
         userCLI = mockk(relaxed = true)
         adminCLI = mockk(relaxed = true)
         projectAuditLogCLI = mockk(relaxed = true)
-        user = mockk(relaxed = true)
-//        planMateCLI = mockk(relaxed = true)
-
-        planMateCLI = PlanMateCLI(
-            inputReader,
-            outputPrinter,
-            authenticationCLI,
-            taskCLI,
-            projectCLI,
-            userCLI,
-            adminCLI
-        )
+        planMateCLI = PlanMateCLI(inputReader, outputPrinter, authenticationCLI, taskCLI, projectCLI, userCLI, adminCLI)
         mockkObject(CurrentUser)
-        every { userMock.username } returns "test-user"
-        every { CurrentUser.getCurrentUser() } returns userMock
+        mockkStatic(UUID::class)
     }
 
     @Test
-    fun `should print welcome message when app starts`() {
-        val user = CurrentUser.getCurrentUser()
-
+    fun `should print welcome  and main menu and exit message when app starts when select 0`() {
+        // Given
+        every { inputReader.readInput("Select an option: ") } returns "0"
+        every { CurrentUser.getCurrentUser() } returns null
         // when
         planMateCLI.start()
 
         // then
-        val printed = outputStream.toString().trim()
-        assertThat(printed).contains("=== Welcome to PlanMate ===")
+        verify {
+            outputPrinter.printMessage("=== Welcome to PlanMate ===")
+            outputPrinter.printMessage("=== === Main Menu === ===")
+            outputPrinter.printMessage("1. Log in")
+            outputPrinter.printMessage("0. Exit")
+            outputPrinter.printMessage("Goodbye!")
+        }
+
     }
 
     @Test
-    fun `should call authenticationCLI login when user selects login`() {
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
+    fun `should print invalid option message when app starts when select invalid option`() {
+        // Given
+        every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
+        every { CurrentUser.getCurrentUser() } returns null
+        // when
+        planMateCLI.start()
+
+        // then
+        verify {
+            outputPrinter.printMessage("=== Welcome to PlanMate ===")
+            outputPrinter.printMessage("=== === Main Menu === ===")
+            outputPrinter.printMessage("1. Log in")
+            outputPrinter.printMessage("0. Exit")
+            outputPrinter.printError("Invalid option.")
+            outputPrinter.printMessage("Goodbye!")
+        }
+
+    }
+
+    @Test
+    fun `should call authenticationCLI login when user selects 1`() {
+        every { inputReader.readInput(any()) } returnsMany listOf("1")
         every { CurrentUser.getCurrentUser() } returns null
 
         planMateCLI.start()
@@ -87,36 +95,162 @@ class PlanMateCLITest {
 
 
     @Test
-    fun `should show task menu when admin selects manage tasks`() {
-        val adminUser =
-            User(id = UUID.fromString("1"), username = "admin", role = UserRole.ADMIN.name, passwordHash = "")
-        every { CurrentUser.getCurrentUser() } returns adminUser
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
-
+    fun `should show admin menu when admin login success`() {
+        // Given
+        val username = "admin"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "ADMIN")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "0")
+        // When
         planMateCLI.start()
 
+
+        // Then
+        verify {
+            outputPrinter.printMessage("=== Welcome to PlanMate ===")
+            outputPrinter.printMessage("=== === Main Menu === ===")
+            outputPrinter.printMessage("1. Log in")
+            outputPrinter.printMessage("0. Exit")
+            assertThat(user).isNotNull()
+            outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
+            outputPrinter.printMessage("=== Admin Menu ===")
+            outputPrinter.printMessage("1. Manage tasks")
+            outputPrinter.printMessage("2. Manage projects")
+            outputPrinter.printMessage("3. Manage users")
+            outputPrinter.printMessage("4. Admin tools")
+            outputPrinter.printMessage("0. Log out")
+        }
+    }
+
+    @Test
+    fun `should show mate menu when mate login success`() {
+        // Given
+        val username = "mate"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "0")
+        // When
+        planMateCLI.start()
+
+
+        // Then
+        verify {
+            outputPrinter.printMessage("=== Welcome to PlanMate ===")
+            outputPrinter.printMessage("=== === Main Menu === ===")
+            outputPrinter.printMessage("1. Log in")
+            outputPrinter.printMessage("0. Exit")
+            assertThat(user).isNotNull()
+            outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
+            outputPrinter.printMessage("=== Mate Menu ===")
+            outputPrinter.printMessage("1. View my tasks")
+            outputPrinter.printMessage("2. View projects")
+            outputPrinter.printMessage("0. Log out")
+        }
+    }
+
+    @Test
+    fun `should show taskCLI when user selects 1 in admin menu`() {
+        // given
+        val username = "admin"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "ADMIN")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "1", "0")
+
+        // when
+        planMateCLI.start()
+
+        // then
         verify { taskCLI.show() }
     }
 
     @Test
-    fun `should show project menu when member selects view projects`() {
-        val memberUser =
-            User(id = UUID.fromString("2"), username = "user", role = UserRole.ADMIN.name, passwordHash = "")
-        every { CurrentUser.getCurrentUser() } returns memberUser
-        every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
+    fun `should show projectCLI when user selects 2 in admin menu`() {
+        // given
+        val username = "admin"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "ADMIN")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "2", "0")
 
+        // when
         planMateCLI.start()
 
+        // then
         verify { projectCLI.show() }
     }
 
     @Test
-    fun `should print invalid option when user enters wrong input`() {
-        every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
-        every { CurrentUser.getCurrentUser() } returns null
+    fun `should show userCLI when user selects 3 in admin menu`() {
+        // given
+        val username = "admin"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "ADMIN")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "3", "0")
 
+        // when
         planMateCLI.start()
 
-        verify { outputPrinter.printMessage("Invalid option") }
+        // then
+        verify { userCLI.show() }
+    }
+
+    @Test
+    fun `should show adminCLI when user selects 4 in admin menu`() {
+        // given
+        val username = "admin"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "ADMIN")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "4", "0")
+
+        // when
+        planMateCLI.start()
+
+        // then
+        verify { adminCLI.showAdminMenu() }
+    }
+
+    @Test
+    fun `should show taskCLI when user selects 1 in mate menu`() {
+        // given
+        val username = "mate"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "1", "0")
+
+        // when
+        planMateCLI.start()
+
+        // then
+        verify { taskCLI.show() }
+    }
+
+    @Test
+    fun `should show taskCLI when user selects 2 in mate menu`() {
+        // given
+        val username = "mate"
+        val password = "password"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
+        every { CurrentUser.getCurrentUser() } returns user
+        every { inputReader.readInput(any()) } returnsMany listOf("1", username, password, "2", "0")
+
+        // when
+        planMateCLI.start()
+
+        // then
+        verify { projectCLI.showProjects() }
     }
 }
