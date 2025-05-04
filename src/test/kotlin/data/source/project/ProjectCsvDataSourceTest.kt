@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ProjectCsvDataSourceTest {
@@ -19,9 +20,9 @@ class ProjectCsvDataSourceTest {
 
     @BeforeEach
     fun setUp() {
-        fileCsvWriter = mockk()
-        fileCsvReader = mockk()
-        projectCsvParser = mockk()
+        fileCsvWriter = mockk(relaxed = true)
+        fileCsvReader = mockk(relaxed = true)
+        projectCsvParser = mockk(relaxed = true)
         dataSource = ProjectCsvDataSource(fileCsvReader, fileCsvWriter, projectCsvParser)
     }
 
@@ -44,16 +45,16 @@ class ProjectCsvDataSourceTest {
         val project = createProject(name = "Test Project", description = "Desc")
 
         //When & Then
-        assertThrows<IOException> {
-            dataSource.createProject(project)
-        }
+        val result = dataSource.createProject(project)
+        assertTrue { result.isFailure }
     }
 
     @Test
     fun `editProject should return success result when writing succeeds`() {
         //Given
         val project = listOf(createProject(name = "Test Project", description = "Desc"))
-
+        every { fileCsvWriter.writeToCsvFile(any()) } returns Unit
+        every { projectCsvParser.parseProjectToString(project[0]) } returns ""
         //When
         val result = dataSource.editProject(project)
 
@@ -64,13 +65,13 @@ class ProjectCsvDataSourceTest {
     @Test
     fun `editProject should return exception when writing throws exception`() {
         //Given
-        every { fileCsvWriter.writeToCsvFile(any()) } throws IOException()
         val project = listOf(createProject(name = "Test Project", description = "Desc"))
+        every { projectCsvParser.parseProjectToString(project[0]) } returns ""
+        every { fileCsvWriter.updateCsvFile(any()) } throws IOException()
 
         //When & Then
-        assertThrows<IOException> {
-            dataSource.editProject(project)
-        }
+        val result = dataSource.editProject(project)
+       assertTrue { result.isFailure }
     }
 
 }
