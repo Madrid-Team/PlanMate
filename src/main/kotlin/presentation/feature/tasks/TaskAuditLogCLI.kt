@@ -1,4 +1,4 @@
-package presentation.feature
+package org.madrid.presentation.feature.tasks
 
 import domain.usecases.task.GetTaskLogsUseCase
 import presentation.components.InputReader

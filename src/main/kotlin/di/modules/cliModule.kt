@@ -7,7 +7,7 @@ import presentation.components.ConsoleOutputPrinter
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import presentation.feature.TaskAuditLogCLI
+import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.*
 import presentation.feature.tasks.*

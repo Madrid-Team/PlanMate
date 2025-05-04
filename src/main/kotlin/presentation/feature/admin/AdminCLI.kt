@@ -1,7 +1,7 @@
 package presentation.feature.admin
 
 import presentation.feature.projects.ProjectAuditLogCLI
-import presentation.feature.TaskAuditLogCLI
+import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 
 class AdminCLI(private val projectAuditLogCLI: ProjectAuditLogCLI, private val taskAuditLogCLI: TaskAuditLogCLI) {
     fun showAdminMenu() {

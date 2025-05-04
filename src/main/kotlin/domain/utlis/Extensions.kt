@@ -12,7 +12,7 @@ fun LocalDateTime.convertDateIntoReadableDate(): String {
     return formattedDateTime
 }
 
-fun String.isValidString(): Boolean {
-    val regex = Regex("^[a-zA-Z0-9_-]{3,30}$")
-    return this.matches(regex)
-}
+//fun String.isValidString(): Boolean {
+//    val regex = Regex("^[a-zA-Z0-9_-]{3,30}$")
+//    return this.matches(regex)
+//}
