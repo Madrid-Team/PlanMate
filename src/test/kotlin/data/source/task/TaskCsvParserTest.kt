@@ -3,10 +3,10 @@ package data.source.task
 import com.google.common.truth.Truth.assertThat
 import data.dto.task.TaskDto
 import data.mapper.toDto
-import domain.models.task.Task
 import domain.usecases.task.createTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.*
 
 class TaskCsvParserTest {
     private lateinit var task: TaskDto
@@ -52,7 +52,7 @@ class TaskCsvParserTest {
     @Test
     fun `parseTaskToString function should parse task to string correctly`() {
         val task = createTask(
-            id = "1",
+            id = UUID.randomUUID().toString(),
             projectId = "2",
             title = "title",
             description = "description",
