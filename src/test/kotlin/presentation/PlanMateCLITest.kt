@@ -6,6 +6,7 @@ import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -31,6 +32,9 @@ class PlanMateCLITest {
     private lateinit var projectAuditLogCLI: ProjectAuditLogCLI
     private lateinit var planMateCLI: PlanMateCLI
     private val outputStream = ByteArrayOutputStream()
+    private lateinit var user: User
+    private val userMock = mockk<User>()
+
 
     @BeforeEach
     fun setUp() {
@@ -42,6 +46,8 @@ class PlanMateCLITest {
         userCLI = mockk(relaxed = true)
         adminCLI = mockk(relaxed = true)
         projectAuditLogCLI = mockk(relaxed = true)
+        user = mockk(relaxed = true)
+//        planMateCLI = mockk(relaxed = true)
 
         planMateCLI = PlanMateCLI(
             inputReader,
@@ -52,16 +58,21 @@ class PlanMateCLITest {
             userCLI,
             adminCLI
         )
+        mockkObject(CurrentUser)
+        every { userMock.username } returns "test-user"
+        every { CurrentUser.getCurrentUser() } returns userMock
     }
 
     @Test
     fun `should print welcome message when app starts`() {
+        val user = CurrentUser.getCurrentUser()
+
         // when
         planMateCLI.start()
 
         // then
         val printed = outputStream.toString().trim()
-        assertThat(printed).contains("Welcome to PlanMate!")
+        assertThat(printed).contains("=== Welcome to PlanMate ===")
     }
 
     @Test
@@ -77,7 +88,8 @@ class PlanMateCLITest {
 
     @Test
     fun `should show task menu when admin selects manage tasks`() {
-        val adminUser = User(id =  UUID.fromString("1"), username = "admin", role = UserRole.ADMIN.name, passwordHash = "")
+        val adminUser =
+            User(id = UUID.fromString("1"), username = "admin", role = UserRole.ADMIN.name, passwordHash = "")
         every { CurrentUser.getCurrentUser() } returns adminUser
         every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
@@ -88,7 +100,8 @@ class PlanMateCLITest {
 
     @Test
     fun `should show project menu when member selects view projects`() {
-        val memberUser = User(id = UUID.fromString("2"), username = "user", role = UserRole.ADMIN.name, passwordHash = "")
+        val memberUser =
+            User(id = UUID.fromString("2"), username = "user", role = UserRole.ADMIN.name, passwordHash = "")
         every { CurrentUser.getCurrentUser() } returns memberUser
         every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
