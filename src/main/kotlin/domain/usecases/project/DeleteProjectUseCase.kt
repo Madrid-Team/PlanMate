@@ -8,7 +8,11 @@ class DeleteProjectUseCase(
 
     fun deleteProject(projectId: String): Result<Unit> {
         val result = projectRepository.deleteProject(projectId)
-        return result
+        return if (result.isSuccess) {
+            Result.success(Unit)
+        } else {
+            Result.failure(result.exceptionOrNull()!!)
+        }
     }
 
 
