@@ -100,7 +100,7 @@ class TaskRepositoryImpl(
         return if (task != null) {
             Result.success(task.logs)
         } else {
-            Result.failure(ProjectExceptions.ProjectNotFoundException())
+            Result.failure(TaskExceptions.TaskNotFoundException())
         }
     }
 

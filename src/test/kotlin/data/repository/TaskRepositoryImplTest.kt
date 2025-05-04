@@ -1,6 +1,7 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
+import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.task.TaskDataSource
 import data.source.task.TaskMemoryDataSource
@@ -130,6 +131,36 @@ class TaskRepositoryImplTest {
         val result = taskRepository.deleteTask(taskId)
 
         assertTrue { result.isFailure }
+    }
+
+    @Test
+    fun `getTaskLogsById returns task's logs when it exists in tasks list`() {
+
+        val id = UUID.randomUUID().toString()
+        val tasks = listOf(
+            helperTaskDto(id = id, "20", logs = listOf("ahmed added a task", "ahmed deleted a task"))
+        )
+        every { taskMemoryDataSource.getTasks() } returns tasks.map { it.toDomain() }
+
+        val result = taskRepository.getTaskLogsByID(id)
+
+
+        assertTrue(result.isSuccess)
+    }
+
+
+    @Test
+    fun `getTaskLogsByID throw Task not found exception when task  does not exist in tasks list`() {
+        val id = UUID.randomUUID().toString()
+        val tasks = listOf(
+            helperTaskDto(id = id, "20", logs = listOf("ahmed added a task", "ahmed deleted a task"))
+        )
+        every { taskMemoryDataSource.getTasks() } returns tasks.map { it.toDomain() }
+
+        val result = taskRepository.getTaskLogsByID("5")
+
+
+        assertTrue(result.isFailure)
     }
 
     companion object {
