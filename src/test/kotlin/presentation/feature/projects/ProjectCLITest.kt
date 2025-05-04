@@ -28,13 +28,28 @@ class ProjectCLITest {
         deleteProjectCLI = mockk(relaxed = true)
         editProjectCLI = mockk(relaxed = true)
         projectView = mockk(relaxed = true)
-        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI, projectAuditLogCLI ,projectView, getAllProjectsUseCase)
+        getAllProjectsUseCase = mockk(relaxed = true)
+        projectAuditLogCLI = mockk(relaxed = true)
+        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI, projectAuditLogCLI, projectView, getAllProjectsUseCase)
     }
 
     @Test
-    fun `should navigate to CreateProjectCLI when user selects 1`() {
+    fun `should show projects when user selects 1`() {
         // given
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
+        every { getAllProjectsUseCase.getAllProjects() } returns Result.success(emptyList())
+
+        // when
+        projectCLI.show()
+
+        // then
+        verify { projectView.projectList(any()) }
+    }
+
+    @Test
+    fun `should navigate to CreateProjectCLI when user selects 2`() {
+        // given
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "0")
 
         // when
         projectCLI.show()
@@ -44,9 +59,9 @@ class ProjectCLITest {
     }
 
     @Test
-    fun `should navigate to EditProjectCLI when user selects 2`() {
+    fun `should navigate to EditProjectCLI when user selects 3`() {
         // given
-        every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "0")
 
         // when
         projectCLI.show()
@@ -56,9 +71,9 @@ class ProjectCLITest {
     }
 
     @Test
-    fun `should navigate to DeleteProjectCLI when user selects 3`() {
+    fun `should navigate to DeleteProjectCLI when user selects 4`() {
         // given
-        every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("4", "0")
 
         // when
         projectCLI.show()
@@ -68,14 +83,26 @@ class ProjectCLITest {
     }
 
     @Test
-    fun `should print invalid option message when user selects unknown option`() {
+    fun `should navigate to ProjectAuditLogCLI when user selects 5`() {
         // given
-        every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("5", "0")
 
         // when
         projectCLI.show()
 
         // then
-        verify { outputPrinter.printMessage("Invalid option") }
+        verify { projectAuditLogCLI.show() }
+    }
+
+    @Test
+    fun `should print invalid option message when user selects unknown option`() {
+        // given
+        every { inputReader.readInput("Select an option:") } returnsMany listOf("9", "0")
+
+        // when
+        projectCLI.show()
+
+        // then
+        verify { outputPrinter.printMessage("Invalid option. Please try again.") }
     }
 }
