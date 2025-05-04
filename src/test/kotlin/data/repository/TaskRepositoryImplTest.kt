@@ -15,28 +15,31 @@ import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.util.UUID
 
 class TaskRepositoryImplTest {
     private lateinit var taskDataSource: TaskDataSource
     private lateinit var taskRepository: TaskRepository
-    private val taskMemoryDataSource: TaskMemoryDataSource = mockk()
+    private lateinit var taskMemoryDataSource: TaskMemoryDataSource
 
 
     @BeforeEach
     fun setup() {
         taskDataSource = mockk(relaxed = true)
+        taskMemoryDataSource = mockk(relaxed = true)
         taskRepository = TaskRepositoryImpl(taskDataSource, taskMemoryDataSource)
     }
 
     @Test
     fun `edit task should return success result when data source return success`() {
-        val task = createTask(id = "1231", title = "task")
+        val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         val tasks = listOf(
-            createTask(id = "1231", title = "task"),
-            createTask(id = "123123", title = "task2")
+            helperTaskDto(id = UUID.randomUUID().toString(), title = "task"),
+            helperTaskDto(id = UUID.randomUUID().toString(), title = "task2")
         )
-        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
-        taskRepository = TaskRepositoryImpl(taskDataSource, taskMemoryDataSource)
+
+        every { taskMemoryDataSource.editTask(task) } returns listOf(task)
+        every { taskDataSource.editTask(tasks) } returns Result.success(Unit)
 
         val result = taskRepository.editTask(task)
 
