@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -46,8 +47,8 @@ class GetTasksByProjectIdUseCaseTest {
             )
         )
 
-        assertThrows<Exception> {
-            getTasksByProjectIdUseCase(projectId)
-        }
+        val result = getTasksByProjectIdUseCase(projectId)
+
+        assertTrue(result.isFailure)
     }
 }
