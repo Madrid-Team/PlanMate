@@ -41,7 +41,7 @@ class TaskCLITest {
     }
 
     @Test
-    fun `should navigate to EditProjectCLI when user selects 2`() {
+    fun `should navigate to EditTaskCLI when user selects 2`() {
         // given
         every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
@@ -49,11 +49,11 @@ class TaskCLITest {
         taskCLI.show()
 
         // then
-        verify { createTaskCLI.show() }
+        verify { editTaskCLI.show() }
     }
 
     @Test
-    fun `should navigate to DeleteProjectCLI when user selects 3`() {
+    fun `should navigate to DeleteTaskCLI when user selects 3`() {
         // given
         every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
 
@@ -61,7 +61,19 @@ class TaskCLITest {
         taskCLI.show()
 
         // then
-        verify { createTaskCLI.show() }
+        verify { deleteTaskCLI.show() }
+    }
+
+    @Test
+    fun `should navigate to TaskView when user selects 4`() {
+        // given
+        every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
+
+        // when
+        taskCLI.show()
+
+        // then
+        verify { taskView.show() }
     }
 
     @Test
@@ -73,6 +85,6 @@ class TaskCLITest {
         taskCLI.show()
 
         // then
-        verify { outputPrinter.printMessage("Invalid option") }
+        verify { outputPrinter.printError("Invalid option.") }
     }
 }

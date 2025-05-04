@@ -13,7 +13,7 @@ class TaskCLI(
 ) {
     fun show() {
         while (true) {
-            outputPrinter.printMessage("\n=== Task Menu ===")
+            outputPrinter.printMessage("=== Task Menu ===")
             outputPrinter.printMessage("1. Create Task")
             outputPrinter.printMessage("2. Edit Task")
             outputPrinter.printMessage("3. Delete Task")
