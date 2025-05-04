@@ -7,10 +7,9 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class ProjectCsvDataSourceTest {
     private lateinit var fileCsvWriter: FileCsvWriter
@@ -31,11 +30,10 @@ class ProjectCsvDataSourceTest {
         //Given
         val project = createProject(name = "Test Project", description = "Desc")
 
-        //When
-        val result = dataSource.createProject(project)
-
-        //Then
-        assertTrue { result.isSuccess }
+        //When & Then
+        assertDoesNotThrow {
+            dataSource.createProject(project)
+        }
     }
 
     @Test
@@ -45,8 +43,9 @@ class ProjectCsvDataSourceTest {
         val project = createProject(name = "Test Project", description = "Desc")
 
         //When & Then
-        val result = dataSource.createProject(project)
-        assertTrue { result.isFailure }
+        assertThrows<IOException> {
+            dataSource.createProject(project)
+        }
     }
 
     @Test
@@ -55,11 +54,11 @@ class ProjectCsvDataSourceTest {
         val project = listOf(createProject(name = "Test Project", description = "Desc"))
         every { fileCsvWriter.writeToCsvFile(any()) } returns Unit
         every { projectCsvParser.parseProjectToString(project[0]) } returns ""
-        //When
-        val result = dataSource.editProject(project)
+        //When & Then
+        assertDoesNotThrow {
+            dataSource.editProject(project)
+        }
 
-        //Then
-        assertTrue { result.isSuccess }
     }
 
     @Test
@@ -70,8 +69,9 @@ class ProjectCsvDataSourceTest {
         every { fileCsvWriter.updateCsvFile(any()) } throws IOException()
 
         //When & Then
-        val result = dataSource.editProject(project)
-       assertTrue { result.isFailure }
+        assertThrows<IOException> {
+            dataSource.editProject(project)
+        }
     }
 
 }

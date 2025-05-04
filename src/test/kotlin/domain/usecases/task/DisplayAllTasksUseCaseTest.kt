@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.usecases.createProject
+import domain.utlis.ProjectExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +28,7 @@ class DisplayAllTasksUseCaseTest {
     fun `display should return Project not found message when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID().toString()
-        every { projectRepository.getProjectById(projectId) } returns null
+        every { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
         // When
         val result = displayAllTasksUseCase.display(projectId)

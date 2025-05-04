@@ -6,6 +6,7 @@ import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
+import domain.utlis.PlanMateExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -52,23 +53,23 @@ class CreateProjectCLI(
             projectStates = currentProjectStates,
             id = UUID.randomUUID()
         )
-        val result = createProjectUseCase.createProject(
-            project.copy(
-                projectLogs = listOf(
-                    createLogUseCase.invoke(
-                        operationType = OperationType.CREATE,
-                        entityName = project.name,
-                        entityType = EntityType.PROJECT,
-                        username = project.createdBy,
+        try {
+            createProjectUseCase.createProject(
+                project.copy(
+                    projectLogs = listOf(
+                        createLogUseCase.invoke(
+                            operationType = OperationType.CREATE,
+                            entityName = project.name,
+                            entityType = EntityType.PROJECT,
+                            username = project.createdBy,
+                        )
                     )
                 )
             )
-        )
-
-        result.onSuccess {
             outputPrinter.printMessage("Project created successfully")
-        }.onFailure {
-            outputPrinter.printMessage("Failed to create project: ${it.message}")
+
+        } catch (e: PlanMateExceptions) {
+            outputPrinter.printMessage("Failed to create project: ${e.message}")
         }
     }
 }

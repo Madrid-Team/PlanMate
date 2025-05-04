@@ -4,7 +4,6 @@ import domain.models.authentication.User
 import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
@@ -21,10 +20,9 @@ class CreateProjectCLITest {
     private val createProjectUseCase = mockk<CreateProjectUseCase>()
     private val createLogUseCase = mockk<CreateLogUseCase>()
 
-     private val userMock = mockk<User>()
+    private val userMock = mockk<User>()
 
     private lateinit var cli: CreateProjectCLI
-
 
 
     @BeforeEach
@@ -49,7 +47,7 @@ class CreateProjectCLITest {
         every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "ACTIVE IN_PROGRESS DONE"
         every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
 
-      val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
+        val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
         every {
             createLogUseCase.invoke(
                 operationType = OperationType.CREATE,
@@ -66,18 +64,20 @@ class CreateProjectCLITest {
             projectLogs = listOf(mockLogString)
         )
 
-        every { createProjectUseCase.createProject(any()) } returns Result.success(Unit)
+        every { createProjectUseCase.createProject(any()) } returns Unit
 
         // When
         cli.show()
 
         // Then
-        verify { createProjectUseCase.createProject(match {
-            it.name == project.name &&
-                    it.description == project.description &&
-                    it.projectState == "ACTIVE" &&
-                    it.projectLogs.size == 1
-        }) }
+        verify {
+            createProjectUseCase.createProject(match {
+                it.name == project.name &&
+                        it.description == project.description &&
+                        it.projectState == "ACTIVE" &&
+                        it.projectLogs.size == 1
+            })
+        }
         verify { outputPrinter.printMessage("Project created successfully") }
     }
 
@@ -100,14 +100,16 @@ class CreateProjectCLITest {
             )
         } returns mockLogString
 
-        every { createProjectUseCase.createProject(any()) } returns Result.failure(PlanMateExceptions("failed"))
+        every { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
 
         // When
         cli.show()
 
         // Then
+        verify { createProjectUseCase.createProject(any()) }
         verify { outputPrinter.printMessage("Failed to create project: failed") }
     }
+
     @Test
     fun `should handle invalid project state selection`() {
         // Given
@@ -124,7 +126,7 @@ class CreateProjectCLITest {
             createLogUseCase.invoke(any(), any(), any(), any())
         } returns mockLogString
 
-        every { createProjectUseCase.createProject(any()) } returns Result.success(Unit)
+        every { createProjectUseCase.createProject(any()) } returns mockk()
 
         // When
         cli.show()

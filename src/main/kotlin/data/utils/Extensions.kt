@@ -29,6 +29,7 @@ fun Throwable?.toProjectException(): PlanMateExceptions {
     return when (val exception = this) {
         is FileNotFoundException -> ProjectExceptions.ProjectsFileNotExistsException()
         is IOException -> ProjectExceptions.ProjectsReadWriteException()
+        is PlanMateExceptions -> exception
         else -> {
             PlanMateExceptions(exception?.message.toString())
         }
@@ -40,6 +41,7 @@ fun Throwable?.toTaskException(): PlanMateExceptions {
     return when (val exception = this) {
         is FileNotFoundException -> TaskExceptions.TaskNotFoundException()
         is IOException -> TaskExceptions.TaskNotFoundException()
+        is PlanMateExceptions -> exception
         else -> {
             PlanMateExceptions(exception?.message.toString())
         }

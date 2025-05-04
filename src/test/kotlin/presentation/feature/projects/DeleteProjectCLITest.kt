@@ -3,6 +3,7 @@ package presentation.feature.projects
 import domain.models.project.Project
 import domain.usecases.project.DeleteProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
+import domain.utlis.ProjectExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -30,8 +31,8 @@ class DeleteProjectCLITest {
     fun `show function should print Project deleted successfully when project deleted`() {
         // Given
         every { inputReader.readInput(any()) } returns "1" andThen "yes"
-        every { getProjectByIdUseCase.invoke("1") } returns Result.success(mockProject)
-        every { deleteUseCase.deleteProject("1") } returns Result.success(Unit)
+        every { getProjectByIdUseCase.invoke("1") } returns mockProject
+        every { deleteUseCase.deleteProject("1") } returns mockk()
 
         // When
         cli.show()
@@ -44,7 +45,7 @@ class DeleteProjectCLITest {
     fun `show function should print Deletion cancelled when cancel project deletion`() {
         // Given
         every { inputReader.readInput(any()) } returns "2" andThen "no"
-        every { getProjectByIdUseCase.invoke("2") } returns Result.success(mockProject)
+        every { getProjectByIdUseCase.invoke("2") } returns mockProject
 
         // When
         cli.show()
@@ -58,8 +59,8 @@ class DeleteProjectCLITest {
     fun `show function should print Failed to delete project Not found when can't delete project`() {
         // Given
         every { inputReader.readInput(any()) } returns "3" andThen "yes"
-        every { getProjectByIdUseCase.invoke("3") } returns Result.success(mockProject)
-        every { deleteUseCase.deleteProject("3") } returns Result.failure(Exception("Not found"))
+        every { getProjectByIdUseCase.invoke("3") } returns mockProject
+        every { deleteUseCase.deleteProject("3") } throws Exception("Not found")
 
         // When
         cli.show()
@@ -72,7 +73,7 @@ class DeleteProjectCLITest {
     fun `show function should print Project not found when project not found`() {
         // Given
         every { inputReader.readInput(any()) } returns "4"
-        every { getProjectByIdUseCase.invoke("4") } returns Result.failure(Exception("Project not found"))
+        every { getProjectByIdUseCase.invoke("4") } throws ProjectExceptions.ProjectNotFoundException()
 
         // When
         cli.show()
