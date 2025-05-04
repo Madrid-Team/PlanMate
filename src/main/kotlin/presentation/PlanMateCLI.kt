@@ -30,7 +30,14 @@ class PlanMateCLI(
 
 
             when (inputReader.readInput("Select an option: ")) {
-                "1" ->  authenticationCLI.login()
+                "1" ->  {
+                    authenticationCLI.login()
+                    val user = CurrentUser.getCurrentUser()
+                    if (user != null) {
+                        showMenuForUser(user)
+                    }
+                    break
+                }
 
                 "0" -> {
                     outputPrinter.printMessage("Goodbye!")
@@ -39,10 +46,7 @@ class PlanMateCLI(
 
                 else -> outputPrinter.printError("Invalid option.")
             }
-            val user = CurrentUser.getCurrentUser()
-            if ( user!= null) {
-                showMenuForUser(user)
-            }
+
         }
     }
 
