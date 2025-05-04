@@ -6,7 +6,6 @@ import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
@@ -30,7 +29,7 @@ class EditTaskUseCaseTest {
         "'','description',''",
         "'','','created by'",
     )
-    fun `should return true when data provided is valid`(
+    fun `editTask should return true when data provided is valid`(
         title: String,
         description: String,
         createdBy: String,
@@ -63,7 +62,7 @@ class EditTaskUseCaseTest {
     }
 
     @Test
-    fun `should return throw exception when id is not found`() {
+    fun `editTask should return throw exception when id is not found`() {
         //given
         val task = createTask(
             id = UUID.randomUUID().toString(),

@@ -1,15 +1,15 @@
 package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
+import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
+import domain.usecases.createProject
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import domain.repository.ProjectRepository
-import domain.usecases.createProject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 class DisplayAllTasksUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -24,7 +24,7 @@ class DisplayAllTasksUseCaseTest {
     }
 
     @Test
-    fun `should return Project not found message when project does not exist`() {
+    fun `display should return Project not found message when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID().toString()
         every { projectRepository.getProjectById(projectId) } returns null
@@ -37,7 +37,7 @@ class DisplayAllTasksUseCaseTest {
     }
 
     @Test
-    fun `should return empty swimlanes when no tasks exist`() {
+    fun `display should return empty swimlanes when no tasks exist`() {
         // Given
         val projectId = UUID.randomUUID().toString()
         val project = createProject(
@@ -65,7 +65,7 @@ class DisplayAllTasksUseCaseTest {
     }
 
     @Test
-    fun `should return formatted swimlanes when project and tasks exist`() {
+    fun `display should return formatted swimlanes when project and tasks exist`() {
         // Given
         val projectId = UUID.randomUUID().toString()
         val project = createProject(

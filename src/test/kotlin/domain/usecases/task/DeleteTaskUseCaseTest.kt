@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
+import kotlin.test.assertTrue
 
 class DeleteTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
@@ -21,7 +22,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should delete task when id is found`() {
+    fun `deleteTask should delete task when id is found`() {
         //given
         val taskId = UUID.randomUUID().toString()
         every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
@@ -31,14 +32,14 @@ class DeleteTaskUseCaseTest {
         val result = deleteTaskUseCase.deleteTask(taskId)
 
         //then
-        assertThat(result).isTrue()
+        assertTrue { result }
     }
 
     @Test
-    fun `should return throw exception when id is not found`() {
+    fun `deleteTask should return throw exception when id is not found`() {
         //given
         val taskId = UUID.randomUUID().toString()
-        every { taskRepository.getAllTasks() } throws  TaskNotFoundException()
+        every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
         //when && then
         assertThrows<TaskNotFoundException> {
