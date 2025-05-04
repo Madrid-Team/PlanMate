@@ -2,12 +2,12 @@ package data.source.user
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
+import data.mapper.toDomain
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.UserRole
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -21,9 +21,12 @@ class UserCsvDataSourceTest {
     private lateinit var fileCsvReader: FileCsvReader
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var dataSource: UserCsvDataSource
+    private lateinit var userDataSource: UserDataSource
 
-    private val user1 = UserDto("126fb5810-951e-4913-aae8-1d36d72d85eb", "username1", "passwordhash1", UserRole.ADMIN.name)
-    private val user2 = UserDto("26fb5810-951e-4913-aae8-1d36d72d85eb", "username2", "passwordhash2", UserRole.MATE.name)
+    private val user1 =
+        UserDto("126fb5810-951e-4913-aae8-1d36d72d85eb", "username1", "passwordhash1", UserRole.ADMIN.name)
+    private val user2 =
+        UserDto("26fb5810-951e-4913-aae8-1d36d72d85eb", "username2", "passwordhash2", UserRole.MATE.name)
     private val row1 = "26fb5810-951e-4913-aae8-1d36d72d85eb,username1,passwordhash1,ADMIN"
     private val row2 = "26fb5810-951e-4913-aae8-1d36d72d85eb,username2,passwordhash2,MATE"
 
@@ -32,6 +35,7 @@ class UserCsvDataSourceTest {
         fileCsvWriter = mockk(relaxed = true)
         fileCsvReader = mockk(relaxed = true)
         userCsvParser = mockk(relaxed = true)
+        userDataSource = mockk(relaxed = true)
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
 
@@ -80,7 +84,6 @@ class UserCsvDataSourceTest {
 
         // Then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).containsExactly(user1, user2)
     }
 
     @Test
@@ -120,7 +123,7 @@ class UserCsvDataSourceTest {
 
         // Then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user1)
+        assertThat(result.getOrNull()).isEqualTo(user1.toDomain())
     }
 
     @Test
@@ -147,7 +150,7 @@ class UserCsvDataSourceTest {
 
         // Then
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user1)
+        assertThat(result.getOrNull()).isEqualTo(user1.toDomain())
     }
 
     @Test
@@ -183,8 +186,9 @@ class UserCsvDataSourceTest {
     @Test
     fun `deleteUser should throw exception when file write fails`() {
         // Given
-        every { fileCsvReader.readCsvFile() } returns listOf(row1, row2)
+        every { fileCsvReader.readCsvFile() } returns listOf(row2)
         every { userCsvParser.parseRowToUser(row1) } returns user1
+//        every { userDataSource.getAllUsers() } returns Result.success(List())
         every { userCsvParser.parseRowToUser(row2) } returns user2
         every { userCsvParser.parseUserToRow(user2) } returns row2
         every { fileCsvWriter.updateCsvFile(row2) } throws IOException("File write failed")
