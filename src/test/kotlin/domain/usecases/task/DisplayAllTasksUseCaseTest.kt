@@ -1,4 +1,4 @@
-package domain.usecases
+package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
@@ -6,10 +6,10 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import domain.repository.ProjectRepository
-import domain.usecases.task.DisplayAllTasksUseCase
-import domain.usecases.task.createTask
+import domain.usecases.createProject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class DisplayAllTasksUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -26,20 +26,20 @@ class DisplayAllTasksUseCaseTest {
     @Test
     fun `should return Project not found message when project does not exist`() {
         // Given
-        val projectId = "non_existing_project"
+        val projectId = UUID.randomUUID().toString()
         every { projectRepository.getProjectById(projectId) } returns null
 
         // When
         val result = displayAllTasksUseCase.display(projectId)
 
         // Then
-        assertThat(result).isEqualTo("Project not found.")
+        assertThat(result.exceptionOrNull()!!.message.toString()).isEqualTo("Project not found.")
     }
 
     @Test
     fun `should return empty swimlanes when no tasks exist`() {
         // Given
-        val projectId = "p2"
+        val projectId = UUID.randomUUID().toString()
         val project = createProject(
             id = projectId,
             name = "Empty Project",
@@ -61,13 +61,13 @@ class DisplayAllTasksUseCaseTest {
 
     Done:
 """.trimIndent()
-        assertThat(result).isEqualTo(expectedOutput)
+        assertThat(result.getOrNull()).isEqualTo(expectedOutput)
     }
 
     @Test
     fun `should return formatted swimlanes when project and tasks exist`() {
         // Given
-        val projectId = "p1"
+        val projectId = UUID.randomUUID().toString()
         val project = createProject(
             id = projectId,
             name = "My Project",
@@ -75,9 +75,9 @@ class DisplayAllTasksUseCaseTest {
         )
 
         val tasks = listOf(
-            createTask(id = "t1", title = "Task 1", state = "TODO", projectId = projectId),
-            createTask(id = "t2", title = "Task 2", state = "In Progress", projectId = projectId),
-            createTask(id = "t3", title = "Task 3", state = "Done", projectId = projectId)
+            createTask(id = UUID.randomUUID().toString(), title = "Task 1", state = "TODO", projectId = projectId),
+            createTask(id = UUID.randomUUID().toString(), title = "Task 2", state = "In Progress", projectId = projectId),
+            createTask(id = UUID.randomUUID().toString(), title = "Task 3", state = "Done", projectId = projectId)
         )
 
         every { projectRepository.getProjectById(projectId) } returns project
@@ -99,7 +99,7 @@ class DisplayAllTasksUseCaseTest {
     Done:
     - Task 3
 """.trimIndent()
-        assertThat(result).isEqualTo(expectedOutput)
+        assertThat(result.getOrNull()).isEqualTo(expectedOutput)
     }
 
 

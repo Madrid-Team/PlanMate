@@ -1,7 +1,8 @@
-package domain.usecases
+package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.usecases.project.CreateProjectUseCase
+import domain.usecases.createProject
+import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -47,6 +48,7 @@ class CreateProjectUseCaseTest {
         val project = createProject(
             name = "Test Project",
         )
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
 
         //When
         val result = createProjectUseCase.createProject(project)
@@ -62,7 +64,7 @@ class CreateProjectUseCaseTest {
         val project = createProject(
             name = "123 #$",
         )
-
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
         //When
         val result = createProjectUseCase.createProject(project)
         // Then
@@ -76,7 +78,7 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = "123 #$"
         )
-
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
         //When
         val result = createProjectUseCase.createProject(project)
 
@@ -92,6 +94,8 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = ""
         )
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+
         //When
         val result = createProjectUseCase.createProject(project)
 
@@ -106,6 +110,7 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             projectStates = emptyList()
         )
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
 
         //When
         val result = createProjectUseCase.createProject(project)
@@ -123,6 +128,7 @@ class CreateProjectUseCaseTest {
             taskStates = emptyList()
         )
 
+        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
         //When
         val result = createProjectUseCase.createProject(project)
 

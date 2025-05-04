@@ -1,7 +1,7 @@
-package domain.usecases
+package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.usecases.project.EditProjectUseCase
+import domain.usecases.createProject
 import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.util.UUID
 
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -24,7 +25,7 @@ class EditProjectUseCaseTest {
     fun `editProject should return true when project is updated successfully in projectRepository`() {
         //Given
         val project =  createProject(
-            id = "1",
+            id = UUID.randomUUID().toString(),
             name = "Test Project",
             description = "dia"
         )
@@ -41,7 +42,7 @@ class EditProjectUseCaseTest {
     fun `editProject should return false when id is not found`() {
         //Given
         val project =  createProject(
-            id = "1",
+            id =UUID.randomUUID().toString(),
             name = "Test Project",
             description = "dia"
         )
