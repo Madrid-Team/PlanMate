@@ -19,7 +19,7 @@ class DeleteTaskCLI(
         if (result.isSuccess) {
             outputPrinter.printMessage("Task deleted successfully.")
         } else {
-            outputPrinter.printMessage("Task not found or could not be deleted.")
+            outputPrinter.printError("Task not found or could not be deleted.")
         }
     }
 }

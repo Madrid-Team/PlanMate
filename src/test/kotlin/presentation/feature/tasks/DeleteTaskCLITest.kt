@@ -37,7 +37,7 @@ class DeleteTaskCLITest {
             outputPrinter.printMessage("=== Delete Task ===")
             outputPrinter.printMessage("Enter task ID to delete:")
             deleteTaskUseCase.deleteTask("1")
-            outputPrinter.printMessage("Task deleted successfully")
+            outputPrinter.printMessage("Task deleted successfully.")
         }
     }
 
@@ -51,6 +51,6 @@ class DeleteTaskCLITest {
         deleteTaskCLI.show()
 
         // then
-        verify { outputPrinter.printMessage("Task not found or could not be deleted.") }
+        verify { outputPrinter.printError("Task not found or could not be deleted.") }
     }
 }
