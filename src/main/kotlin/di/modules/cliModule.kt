@@ -21,7 +21,7 @@ val cliModule = module {
     single<OutputPrinter> { ConsoleOutputPrinter() }
 
     single { CreateTaskCLI(get(), get(), get(), get(),get()) }
-    single { DeleteTaskCLI(get(), get(), get(), get()) }
+    single { DeleteTaskCLI(get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get()) }
     single { TaskView(get(), get(), get()) }

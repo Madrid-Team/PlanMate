@@ -1,19 +1,20 @@
 package domain.usecases.task
 
-import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions
 
 class DeleteTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun deleteTask(taskId: String): Boolean {
-        getTaskById(taskId) ?: throw TaskExceptions.TaskNotFoundException()
-        taskRepository.deleteTask(taskId)
-        return true
-    }
-
-    private fun getTaskById(taskId: String): Task? {
-        return taskRepository.getAllTasks().getOrNull()?.find { it.id.toString() == taskId }
+    fun deleteTask(taskId: String): Result<Unit> {
+        try {
+            val result = taskRepository.deleteTask(taskId)
+            return if (result.isSuccess) {
+                Result.success(Unit)
+            } else {
+                Result.failure(result.exceptionOrNull()!!)
+            }
+        } catch (e: Exception) {
+            return Result.failure(e)
+        }
     }
 }

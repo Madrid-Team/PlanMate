@@ -13,7 +13,6 @@ class DeleteTaskCLITest {
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
-    private lateinit var taskView: TaskView
     private lateinit var deleteTaskCLI: DeleteTaskCLI
 
     @BeforeEach
@@ -21,14 +20,14 @@ class DeleteTaskCLITest {
         inputReader = mockk()
         outputPrinter = mockk(relaxed = true)
         deleteTaskUseCase = mockk()
-        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, taskView, deleteTaskUseCase)
+        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase)
     }
 
     @Test
     fun `should show success message when task is deleted successfully`() {
         // given
         every { inputReader.readInput() } returns "1"
-        every { deleteTaskUseCase.deleteTask("1") } returns true
+        every { deleteTaskUseCase.deleteTask("1") } returns Result.success(Unit)
 
         // when
         deleteTaskCLI.show()
@@ -46,7 +45,7 @@ class DeleteTaskCLITest {
     fun `should show fail message when task deletion fails`() {
         // given
         every { inputReader.readInput() } returns "2"
-        every { deleteTaskUseCase.deleteTask("2") } returns false
+        every { deleteTaskUseCase.deleteTask("2") } returns Result.failure(Exception())
 
         // when
         deleteTaskCLI.show()
