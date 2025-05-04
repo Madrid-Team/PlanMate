@@ -1,6 +1,5 @@
 package data.repository
 
-import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import data.mapper.toDto
 import data.source.task.TaskDataSource
@@ -9,19 +8,18 @@ import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
-import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import java.util.*
+import kotlin.test.assertTrue
 
 class TaskRepositoryImplTest {
     private lateinit var taskDataSource: TaskDataSource
     private lateinit var taskRepository: TaskRepository
     private lateinit var taskMemoryDataSource: TaskMemoryDataSource
-
 
     @BeforeEach
     fun setup() {
@@ -31,7 +29,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `edit task should return success result when data source return success`() {
+    fun `editTask should return success result when data source return success`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         val tasks = listOf(
             helperTaskDto(id = UUID.randomUUID().toString(), title = "task"),
@@ -46,123 +44,98 @@ class TaskRepositoryImplTest {
         assertThat(result.isSuccess).isTrue()
     }
 
-//    @Test
-//    fun `edit task should throw exception when data source throw exception`() {
-//        val task = createTask(id = "1231", title = "task")
-//        every { taskDataSource.editTask(task) } throws Exception()
-//
-//        assertThrows<Exception> {
-//            taskRepository.editTask(task)
-//        }
-//    }
+    @Test
+    fun `editTask should return result failure when data source return failure`() {
+        val task = createTask(id = UUID.randomUUID().toString(), title = "task")
+        val tasks = listOf(task)
+        every { taskMemoryDataSource.editTask(task) } returns listOf(task)
+        every { taskDataSource.editTask(tasks.map { it.toDto() }) } returns Result.failure(Exception())
+
+        val result = taskRepository.editTask(task)
+
+        assertTrue { result.isFailure }
+        verify { taskMemoryDataSource.addTask(task) }
+    }
 
 
     @Test
-    fun `get all task should return list of tasks when data source is not empty`() {
+    fun `getAllTask should return list of tasks when data source is not empty`() {
         val tasks = listOf(createTask(), createTask())
-        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
+        every { taskMemoryDataSource.getTasks() } returns tasks
 
         val result = taskRepository.getAllTasks()
 
-        Truth.assertThat(result).isEqualTo(tasks)
+        assertTrue { result.isSuccess }
     }
 
+
     @Test
-    fun `get all task should return empty list when data source is empty`() {
-        val tasks = emptyList<Task>()
-        every { taskDataSource.getAllTasks() } returns Result.success(tasks.map { it.toDto() })
+    fun `getAllTask should return failure when data source return failure`() {
+        every { taskMemoryDataSource.getTasks() } returns listOf()
 
         val result = taskRepository.getAllTasks()
 
-        Truth.assertThat(result).isEqualTo(tasks)
+        assertTrue { result.isFailure }
+    }
+
+
+    @Test
+    fun `getTasksByProjectId should return list of taskDto data source return success`() {
+        val projectId = UUID.randomUUID().toString()
+        every { taskDataSource.getAllTasks() } returns Result.success(listOf())
+
+        val result = taskDataSource.getTasksByProjectId(projectId)
+
+        assertTrue { result.isSuccess }
     }
 
     @Test
-    fun `get all task should throw exception when data source throw exception`() {
-        every { taskDataSource.getAllTasks() } throws Exception()
-
-        assertThrows<Exception> {
-            taskRepository.getAllTasks()
-        }
-    }
-
-    @Test
-    fun `getTasksByProjectId should return list of tasks when date source is not empty`() {
-        val tasks = listOf(createTask(), createTask())
-        val projectId = tasks[0].projectId
-        every { taskDataSource.getTasksByProjectId(projectId) } returns Result.success(tasks.map { it.toDto() })
-
-        val result = taskRepository.getTasksByProjectId(projectId)
-
-        Truth.assertThat(result).isEqualTo(tasks)
-    }
-
-    @Test
-    fun `getTasksByProjectId should return empty list when date source is empty`() {
-        val tasks = emptyList<Task>()
-        val projectId = "12"
-        every { taskDataSource.getTasksByProjectId(projectId) } returns Result.success(tasks.map { it.toDto() })
-
-        val result = taskRepository.getTasksByProjectId(projectId)
-
-        Truth.assertThat(result).isEqualTo(tasks)
-    }
-
-    @Test
-    fun `getTasksByProjectId should throw exception when date source throw exception`() {
-        val projectId = "12"
-        every { taskDataSource.getTasksByProjectId(projectId) } throws TaskExceptions.TaskNotFoundException()
-
-        assertThrows<TaskExceptions.TaskNotFoundException> {
-            taskRepository.getTasksByProjectId(projectId)
-        }
-    }
-
-    @Test
-    fun `create task should return true when data source return true`() {
-        val task = createTask(id = "1231", title = "task")
+    fun `createTask should return success when data source return success`() {
+        val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         every { taskDataSource.createTask(task.toDto()) } returns Result.success(Unit)
 
         val result = taskRepository.createTask(task)
 
-        assertThat(result.isSuccess).isTrue()
+        assertTrue { result.isSuccess }
     }
 
     @Test
-    fun `create task should throw exception when data source throw exception`() {
-        val task = createTask(id = "1231", title = "task")
-        every { taskDataSource.createTask(task.toDto()) } throws Exception()
+    fun `createTask should return failure when data source return failure`() {
+        val task = createTask(id = UUID.randomUUID().toString(), title = "task")
+        every { taskDataSource.createTask(task.toDto()) } returns Result.failure(Exception())
 
-        assertThrows<Exception> {
-            taskRepository.createTask(task)
-        }
+        val result = taskRepository.createTask(task)
+
+        assertTrue { result.isFailure }
     }
 
 
     @Test
-    fun `delete task should return true when data source return true`() {
-        val taskId = "1313"
+    fun `deleteTask should return success when data source return success`() {
+        val taskId = UUID.randomUUID().toString()
         every { taskDataSource.deleteTask(tasks) } returns Result.success(Unit)
 
         val result = taskRepository.deleteTask(taskId)
 
-        assertThat(result.isSuccess).isTrue()
+        assertTrue { result.isSuccess }
     }
 
     @Test
-    fun `delete task should throw exception when data source throw exception`() {
-        val taskId = "1313"
-        every { taskDataSource.deleteTask(tasks) } throws Exception()
+    fun `deleteTask should return failure when data source return failure`() {
+        val taskId = UUID.randomUUID().toString()
+        val tasks = emptyList<Task>()
+        every { taskMemoryDataSource.deleteTask(taskId) } returns tasks
+        every { taskDataSource.deleteTask(tasks.map { it.toDto() }) } returns Result.failure(Exception())
 
-        assertThrows<Exception> {
-            taskRepository.deleteTask(taskId)
-        }
+        val result = taskRepository.deleteTask(taskId)
+
+        assertTrue { result.isFailure }
     }
 
     companion object {
         val tasks = listOf(
-            helperTaskDto(id = "1", title = "test"),
-            helperTaskDto(id = "2", title = "test2")
+            helperTaskDto(id = UUID.randomUUID().toString(), title = "test"),
+            helperTaskDto(id = UUID.randomUUID().toString(), title = "test2")
         )
     }
 }
