@@ -14,7 +14,7 @@ class CliModuleTest : KoinTest {
 
 
     @Test
-    fun `test InputReader and OutputPrinter are injected successfully`() {
+    fun `test InputReader and OutputPrinter are injected and work successfully`() {
         startKoin {
             modules(cliModule)
         }
