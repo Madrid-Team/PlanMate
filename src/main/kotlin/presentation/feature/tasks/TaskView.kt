@@ -2,6 +2,7 @@ package presentation.feature.tasks
 
 
 import domain.usecases.task.DisplayAllTasksUseCase
+import domain.utlis.TaskExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -16,11 +17,11 @@ class TaskView(
         outputPrinter.printMessage("=== Display Tasks ===")
         val projectId = inputReader.readInput("Enter project ID: ")
 
-        val result = displayAllTasksUseCase.display(projectId)
-
-        result
-            .onSuccess { outputPrinter.printMessage(it) }
-            .onFailure { outputPrinter.printMessage("Error: ${it.message}") }
+        try {
+            val result = displayAllTasksUseCase.display(projectId)
+            outputPrinter.printMessage(result)
+        } catch (exception: TaskExceptions) {
+            outputPrinter.printMessage(exception.message.toString())
+        }
     }
-
 }
