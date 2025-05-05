@@ -61,17 +61,13 @@ class TaskRepositoryImpl(
         }
     }
 
-    override fun deleteTask(taskId: String): Result<Unit> {
-        val taskListAfterUpdateProject = taskMemoryDataSource.deleteTask(taskId)
-
-        val result = taskDataSource.deleteTask(taskListAfterUpdateProject.map { it.toDto() })
-
-        return if (result.isSuccess) {
-            Result.success(Unit)
-        } else {
-            Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to delete project"))
+    override fun deleteTask(taskId: String) {
+        try {
+            val taskListAfterUpdateProject = taskMemoryDataSource.deleteTask(taskId)
+            taskDataSource.deleteTask(taskListAfterUpdateProject.map { it.toDto() })
+        } catch (exception: Exception) {
+            throw exception.toTaskException()
         }
-
     }
 
 

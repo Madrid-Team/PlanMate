@@ -20,18 +20,13 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun deleteTask(task: List<TaskDto>): Result<Unit> {
-        return try {
-            var tasksFileContentAfterDeletion = String.taskHeader
-            task.forEach {
-                val projectAsString = taskCsvParser.parseTaskToString(it)
-                tasksFileContentAfterDeletion += projectAsString
-            }
-            fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+    override fun deleteTask(task: List<TaskDto>) {
+        var tasksFileContentAfterDeletion = String.taskHeader
+        task.forEach {
+            val projectAsString = taskCsvParser.parseTaskToString(it)
+            tasksFileContentAfterDeletion += projectAsString
         }
+        fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
     }
 
     override fun createTask(task: TaskDto) {

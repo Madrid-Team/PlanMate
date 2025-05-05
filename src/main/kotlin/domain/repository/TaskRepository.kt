@@ -5,7 +5,7 @@ import domain.models.task.Task
 
 interface TaskRepository {
     fun editTask(task: Task)
-    fun deleteTask(taskId: String): Result<Unit>
+    fun deleteTask(taskId: String)
     fun createTask(task: Task)
     fun getAllTasks(): Result<List<Task>>
     fun getTasksByProjectId(projectId: String): Result<List<Task>>
