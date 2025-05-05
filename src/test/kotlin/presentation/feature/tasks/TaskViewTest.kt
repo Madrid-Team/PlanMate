@@ -10,7 +10,7 @@ import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
 
-class TaskViewTest(){
+class TaskViewTest {
     private lateinit var displayAllTasksUseCase: DisplayAllTasksUseCase
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
@@ -23,12 +23,13 @@ class TaskViewTest(){
         displayAllTasksUseCase = mockk()
         taskView = TaskView(displayAllTasksUseCase, outputPrinter, inputReader)
     }
+
     @Test
     fun `should print project not found when project does not exist`() {
         // Given
         val projectId = "non_existing_project"
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Project not found.")
+        every { displayAllTasksUseCase.display(projectId) } returns "Project not found."
 
         // When
         taskView.show()
@@ -36,6 +37,7 @@ class TaskViewTest(){
         // Then
         verify { outputPrinter.printMessage("Project not found.") }
     }
+
     @Test
     fun `should print formatted tasks when tasks exist`() {
         // Given
@@ -52,7 +54,7 @@ class TaskViewTest(){
         """.trimIndent()
 
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success(expectedOutput)
+        every { displayAllTasksUseCase.display(projectId) } returns expectedOutput
 
         // When
         taskView.show()

@@ -23,7 +23,7 @@ class DeleteTaskUseCaseTest {
     @Test
     fun `deleteTask should execute successfully when TaskRepository delete task`() {
         val taskId = UUID.randomUUID().toString()
-        every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
+        every { taskRepository.getAllTasks() } returns listOf(createTask(id = taskId))
         every { taskRepository.deleteTask(taskId) } returns Unit
 
         assertDoesNotThrow { deleteTaskUseCase.deleteTask(taskId) }

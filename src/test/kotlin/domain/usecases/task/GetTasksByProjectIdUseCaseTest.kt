@@ -4,9 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 class GetTasksByProjectIdUseCaseTest {
     private lateinit var taskRepository: TaskRepository
@@ -24,12 +25,7 @@ class GetTasksByProjectIdUseCaseTest {
         val projectId = "12"
         val firstTask = createTask(projectId = projectId)
         val secondTask = createTask(projectId = projectId)
-        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(
-            listOf(
-                firstTask,
-                secondTask
-            )
-        )
+        every { taskRepository.getTasksByProjectId(projectId) } returns listOf(firstTask, secondTask)
 
         val result = getTasksByProjectIdUseCase(projectId)
 
@@ -38,16 +34,8 @@ class GetTasksByProjectIdUseCaseTest {
 
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
-        val projectId = "12"
-        every { taskRepository.getAllTasks() } returns Result.success(
-            listOf(
-                createTask(),
-                createTask(),
-            )
-        )
+        every { taskRepository.getAllTasks() } throws Exception()
 
-        val result = getTasksByProjectIdUseCase(projectId)
-
-        assertTrue(result.isFailure)
+        assertThrows<Exception> { getTasksByProjectIdUseCase(UUID.randomUUID().toString()) }
     }
 }
