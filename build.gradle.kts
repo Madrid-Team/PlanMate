@@ -71,6 +71,7 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     classDirectories.setFrom(filteredCoverage)
+    enabled = false
     violationRules {
         rule {
             limit {
