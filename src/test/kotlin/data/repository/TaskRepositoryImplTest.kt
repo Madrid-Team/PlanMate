@@ -76,10 +76,16 @@ class TaskRepositoryImplTest {
 
     @Test
     fun `getTasksByProjectId should return list of taskDto data source return success`() {
-        val projectId = UUID.randomUUID().toString()
         every { taskDataSource.getAllTasks() } returns listOf()
 
         assertDoesNotThrow { taskDataSource.getTasksByProjectId(projectId) }
+    }
+
+    @Test
+    fun `getTaskByProjectID should throw exception tasks return from data source is empty`() {
+        every { taskMemoryDataSource.getTasks() } returns emptyList()
+
+        assertThrows<TaskExceptions.TaskNotFoundException> { taskRepository.getTasksByProjectId(projectId) }
     }
 
     @Test
@@ -149,6 +155,7 @@ class TaskRepositoryImplTest {
     }
 
     companion object {
+        val projectId = UUID.randomUUID().toString()
         val tasks = listOf(
             helperTaskDto(id = UUID.randomUUID().toString(), title = "test"),
             helperTaskDto(id = UUID.randomUUID().toString(), title = "test2")
