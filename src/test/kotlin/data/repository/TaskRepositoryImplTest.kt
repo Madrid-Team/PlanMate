@@ -9,12 +9,14 @@ import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TaskRepositoryImplTest {
@@ -88,6 +90,25 @@ class TaskRepositoryImplTest {
         val result = taskDataSource.getTasksByProjectId(projectId)
 
         assertTrue { result.isSuccess }
+    }
+
+    @Test
+    fun `should return failure when no tasks match the projectId`() {
+        // Given
+        val projectId = "project-123"
+        val tasks = listOf(
+            Task(id = UUID.randomUUID(), title = "Task 1", description = "Test", projectId = "other-id", taskState = "OPEN", createdBy = "admin", logs = emptyList())
+        )
+        every { taskMemoryDataSource.getTasks() } returns tasks
+
+        // When
+        val result = taskRepository.getTasksByProjectId(projectId)
+
+        // Then
+        assertTrue(result.isFailure)
+        val exception = result.exceptionOrNull()
+        assertTrue(exception is TaskExceptions.TaskNotFoundException)
+        assertEquals("You haven't any projects yet", exception.message)
     }
 
     @Test
