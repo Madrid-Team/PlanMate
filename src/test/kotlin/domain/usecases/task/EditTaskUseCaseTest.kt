@@ -67,7 +67,5 @@ class EditTaskUseCaseTest {
         assertThrows<Exception> {
             editTaskUseCase.editTask(task)
         }
-
-//        assertTrue { result.isFailure }
     }
 }

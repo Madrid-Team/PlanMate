@@ -8,6 +8,7 @@ import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -89,7 +90,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `createTask should execute successfully when data source create task succeffully`() {
+    fun `createTask should execute successfully when data source create task successfully`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         every { taskDataSource.createTask(task.toDto()) } returns Unit
 
@@ -99,32 +100,29 @@ class TaskRepositoryImplTest {
     @Test
     fun `createTask should throw exception when data source throw exception`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
-        every { taskDataSource.createTask(task.toDto()) } throws  IOException()
+        every { taskDataSource.createTask(task.toDto()) } throws IOException()
 
         assertThrows<Exception> { taskRepository.createTask(task) }
     }
 
 
     @Test
-    fun `deleteTask should return success when data source return success`() {
+    fun `deleteTask should execute successfully when data source delete task successfully`() {
         val taskId = UUID.randomUUID().toString()
-        every { taskDataSource.deleteTask(tasks) } returns Result.success(Unit)
+        every { taskDataSource.deleteTask(tasks) } returns Unit
 
-        val result = taskRepository.deleteTask(taskId)
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskRepository.deleteTask(taskId) }
     }
 
     @Test
-    fun `deleteTask should return failure when data source return failure`() {
+    fun `deleteTask should throw exception when data source fails to delete`() {
         val taskId = UUID.randomUUID().toString()
         val tasks = emptyList<Task>()
         every { taskMemoryDataSource.deleteTask(taskId) } returns tasks
-        every { taskDataSource.deleteTask(tasks.map { it.toDto() }) } returns Result.failure(Exception())
+        every { taskDataSource.deleteTask(tasks.map { it.toDto() }) } throws IOException()
 
-        val result = taskRepository.deleteTask(taskId)
 
-        assertTrue { result.isFailure }
+        assertThrows<TaskExceptions> { taskRepository.deleteTask(taskId) }
     }
 
     @Test

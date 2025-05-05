@@ -3,13 +3,13 @@ package data.source.task
 import com.google.common.truth.Truth.assertThat
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import kotlin.test.assertTrue
 
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
@@ -45,7 +45,7 @@ class TaskCsvDataSourceTest {
 
 
     @Test
-    fun `editTask should throw exception when edit csv file throw excprion`() {
+    fun `editTask should throw exception when edit csv file throw exception`() {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.updateCsvFile(csvRow) } throws IOException()
 
@@ -55,13 +55,11 @@ class TaskCsvDataSourceTest {
     }
 
     @Test
-    fun `deleteTask should return failure when failed to update file`() {
+    fun `deleteTask should execute successfully when csv delete successfully`() {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
-        val result = taskDataSource.deleteTask(tasksDto)
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskDataSource.deleteTask(tasksDto) }
     }
 
 

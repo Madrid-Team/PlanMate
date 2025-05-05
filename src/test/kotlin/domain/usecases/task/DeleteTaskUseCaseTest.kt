@@ -6,8 +6,9 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import java.util.*
-import kotlin.test.assertTrue
 
 class DeleteTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
@@ -20,27 +21,19 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `deleteTask should return success when TaskRepository return success`() {
-        //given
+    fun `deleteTask should execute successfully when TaskRepository delete task`() {
         val taskId = UUID.randomUUID().toString()
         every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
-        every { taskRepository.deleteTask(taskId) } returns Result.success(Unit)
+        every { taskRepository.deleteTask(taskId) } returns Unit
 
-        //when
-        val result = deleteTaskUseCase.deleteTask(taskId)
-
-        //then
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { deleteTaskUseCase.deleteTask(taskId) }
     }
 
     @Test
-    fun `deleteTask should return failure when TaskRepository return failure`() {
-        //given
+    fun `deleteTask should throw exception when TaskRepository throw exception`() {
         val taskId = UUID.randomUUID().toString()
         every { taskRepository.getAllTasks() } throws TaskNotFoundException()
 
-        val result = deleteTaskUseCase.deleteTask(taskId)
-
-        assertTrue { result.isFailure }
+        assertThrows<Exception> { deleteTaskUseCase.deleteTask(taskId) }
     }
 }
