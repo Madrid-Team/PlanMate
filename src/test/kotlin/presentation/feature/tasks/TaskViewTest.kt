@@ -1,6 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DisplayAllTasksUseCase
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -63,12 +64,13 @@ class TaskViewTest {
         // Then
         verify { outputPrinter.printMessage(expectedOutput) }
     }
+
     @Test
     fun `should show error message when display fails`() {
         val projectId = "project-123"
         val errorMessage = "Project not found"
         every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.failure(Exception(errorMessage))
+        every { displayAllTasksUseCase.display(projectId) } throws TaskExceptions(errorMessage)
 
         taskView.show()
 
@@ -76,14 +78,15 @@ class TaskViewTest {
             outputPrinter.printMessage("=== Display Tasks ===")
             inputReader.readInput("Enter project ID: ")
             displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMessage("Error: $errorMessage")
+            outputPrinter.printMessage(errorMessage)
         }
     }
+
     @Test
     fun `should display tasks when display is successful`() {
         val projectId = "project-123"
         every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Task 1\nTask 2")
+        every { displayAllTasksUseCase.display(projectId) } returns "Task 1\nTask 2"
 
         taskView.show()
 
