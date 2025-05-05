@@ -8,4 +8,5 @@ interface TaskDataSource {
     fun createTask(task: TaskDto)
     fun getAllTasks(): List<TaskDto>
     fun getTasksByProjectId(projectId: String): List<TaskDto>
+    fun getTaskLogsByID(taskId: String): List<String>
 }

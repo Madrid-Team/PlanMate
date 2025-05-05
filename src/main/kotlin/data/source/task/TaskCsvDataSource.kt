@@ -4,7 +4,6 @@ import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
-import domain.utlis.TaskExceptions
 
 class TaskCsvDataSource(
     private val taskCsvParser: TaskCsvParser,
@@ -49,5 +48,11 @@ class TaskCsvDataSource(
         return allTasks.ifEmpty {
             emptyList()
         }
+    }
+
+    override fun getTaskLogsByID(taskId: String): List<String> {
+        return getAllTasks()
+            .find { it.id == taskId }
+            ?.logs ?: emptyList()
     }
 }
