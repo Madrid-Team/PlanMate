@@ -29,6 +29,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     // SERIALIZATION
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    //mongoDB
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.4.0"))
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine")
+    implementation("org.mongodb:bson-kotlinx:5.4.0")
 }
 
 tasks.test {
