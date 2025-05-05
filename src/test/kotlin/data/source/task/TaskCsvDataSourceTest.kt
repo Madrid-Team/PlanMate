@@ -66,23 +66,19 @@ class TaskCsvDataSourceTest {
 
 
     @Test
-    fun `createTask should return success when creating task successfully`() {
+    fun `createTask should execute successfully when creating task successfully`() {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.writeToCsvFile(csvRow) } returns Unit
 
-        val result = taskDataSource.createTask(task)
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskDataSource.createTask(task) }
     }
 
     @Test
-    fun `createTask should return failure when writing to csv file is failed`() {
+    fun `createTask should throw exception when writing to csv file is failed`() {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.writeToCsvFile(csvRow) } throws IOException()
 
-        val result = taskDataSource.createTask(task)
-
-        assertTrue { result.isFailure }
+        assertThrows<IOException> { taskDataSource.createTask(task) }
     }
 
     @Test

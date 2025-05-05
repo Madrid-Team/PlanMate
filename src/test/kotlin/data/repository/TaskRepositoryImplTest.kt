@@ -89,23 +89,19 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `createTask should return success when data source return success`() {
+    fun `createTask should execute successfully when data source create task succeffully`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
-        every { taskDataSource.createTask(task.toDto()) } returns Result.success(Unit)
+        every { taskDataSource.createTask(task.toDto()) } returns Unit
 
-        val result = taskRepository.createTask(task)
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskRepository.createTask(task) }
     }
 
     @Test
-    fun `createTask should return failure when data source return failure`() {
+    fun `createTask should throw exception when data source throw exception`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
-        every { taskDataSource.createTask(task.toDto()) } returns Result.failure(Exception())
+        every { taskDataSource.createTask(task.toDto()) } throws  IOException()
 
-        val result = taskRepository.createTask(task)
-
-        assertTrue { result.isFailure }
+        assertThrows<Exception> { taskRepository.createTask(task) }
     }
 
 

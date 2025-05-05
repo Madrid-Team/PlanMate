@@ -1,13 +1,11 @@
 package domain.usecases.task
 
-import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions.CannotCreateTaskException
 import domain.utlis.TaskExceptions.TaskTitleIsEmptyException
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
@@ -22,27 +20,21 @@ class CreateTaskUseCaseTest {
     }
 
     @Test
-    fun `createTask should return true when task is saved successfully`() {
-        // given
+    fun `createTask should execute successfully when task is saved successfully`() {
         val task = createTask(title = "new task", description = "description")
-        every { taskRepository.createTask(task) } returns Result.success(Unit)
+        every { taskRepository.createTask(task) } returns Unit
 
-        // when
-        val result = createTaskUseCase.createTask(task)
-
-        // then
-        verify { taskRepository.createTask(task) }
-        assertThat(result)
+        assertDoesNotThrow { createTaskUseCase.createTask(task) }
     }
 
     @Test
-    fun `createTask should return false when task saving fails`() {
+    fun `createTask should throw exception when task saving fails`() {
         // given
         val task = createTask(title = "new task")
-        every { taskRepository.createTask(task) } throws CannotCreateTaskException()
+        every { taskRepository.createTask(task) } throws Exception()
 
         // when && then
-        assertThrows<CannotCreateTaskException> {
+        assertThrows<Exception> {
             taskRepository.createTask(task)
         }
     }
