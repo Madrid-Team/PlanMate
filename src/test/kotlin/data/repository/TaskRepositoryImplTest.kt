@@ -17,7 +17,6 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import java.util.*
-import kotlin.test.assertTrue
 
 class TaskRepositoryImplTest {
     private lateinit var taskDataSource: TaskDataSource
@@ -126,17 +125,14 @@ class TaskRepositoryImplTest {
 
     @Test
     fun `getTaskLogsById returns task's logs when it exists in tasks list`() {
-
         val id = UUID.randomUUID().toString()
         val tasks = listOf(
             helperTaskDto(id = id, "20", logs = listOf("ahmed added a task", "ahmed deleted a task"))
         )
         every { taskMemoryDataSource.getTasks() } returns tasks.map { it.toDomain() }
+        every { taskMemoryDataSource.getTaskLogsById(id) } returns tasks.map { it.logs.toString() }
 
-        val result = taskRepository.getTaskLogsByID(id)
-
-
-        assertTrue(result.isSuccess)
+        assertDoesNotThrow { taskRepository.getTaskLogsByID(id) }
     }
 
 
@@ -148,10 +144,9 @@ class TaskRepositoryImplTest {
         )
         every { taskMemoryDataSource.getTasks() } returns tasks.map { it.toDomain() }
 
-        val result = taskRepository.getTaskLogsByID("5")
+        assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByID("5") }
 
 
-        assertTrue(result.isFailure)
     }
 
     companion object {

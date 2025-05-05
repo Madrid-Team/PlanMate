@@ -1,11 +1,11 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.GetTaskLogsUseCase
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
@@ -32,7 +32,7 @@ class TaskAuditLogCLITest {
         val logs = listOf("Log A", "Log B")
 
         every { reader.readInput(any()) } returns taskId
-        every { useCase.getTaskLogs(taskId) } returns Result.success(logs)
+        every { useCase.getTaskLogs(taskId) } returns logs
 
         cli.show()
 
@@ -46,7 +46,7 @@ class TaskAuditLogCLITest {
         val taskId = "task-empty"
 
         every { reader.readInput(any()) } returns taskId
-        every { useCase.getTaskLogs(taskId) } returns Result.success(emptyList())
+        every { useCase.getTaskLogs(taskId) } returns emptyList()
 
         cli.show()
 
@@ -54,16 +54,36 @@ class TaskAuditLogCLITest {
     }
 
     @Test
-    fun `show should print error message when use case fails`() {
-        val taskId = "task-fail"
-        val exception = RuntimeException("Something failed")
+    fun `should print message when no logs are found`() {
+        val taskId = "task-123"
 
         every { reader.readInput(any()) } returns taskId
-        every { useCase.getTaskLogs(taskId) } returns Result.failure(exception)
+        every { useCase.getTaskLogs(taskId) } returns emptyList()
 
         cli.show()
 
-        verify { printer.printError(errorMessage = "Failed to fetch audit logs : Something failed\n") }
+        verifySequence {
+            printer.printMessage("=== Task Audit Log ===")
+            reader.readInput("Enter Task ID to view audit logs: ")
+            printer.printMessage("No audit logs found for this task id : $taskId\n")
+        }
     }
 
+    @Test
+    fun `should print error message when exception is thrown`() {
+        val taskId = "task-123"
+        val errorMessage = "Task not found"
+
+        every { reader.readInput(any()) } returns taskId
+        every { useCase.getTaskLogs(taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
+
+        cli.show()
+
+        verifySequence {
+            printer.printMessage("=== Task Audit Log ===")
+            reader.readInput("Enter Task ID to view audit logs: ")
+            printer.printError(errorMessage = "Failed to fetch audit logs : ${errorMessage}\n")
+
+        }
+    }
 }
