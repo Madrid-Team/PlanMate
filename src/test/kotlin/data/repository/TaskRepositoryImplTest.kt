@@ -1,6 +1,5 @@
 package data.repository
 
-import com.google.common.truth.Truth.assertThat
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.task.TaskDataSource
@@ -11,9 +10,11 @@ import domain.repository.TaskRepository
 import domain.usecases.task.createTask
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
+import java.io.IOException
 import java.util.*
 import kotlin.test.assertTrue
 
@@ -30,7 +31,7 @@ class TaskRepositoryImplTest {
     }
 
     @Test
-    fun `editTask should return success result when data source return success`() {
+    fun `editTask should pass edit task successfully to data source`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         val tasks = listOf(
             helperTaskDto(id = UUID.randomUUID().toString(), title = "task"),
@@ -38,24 +39,21 @@ class TaskRepositoryImplTest {
         )
 
         every { taskMemoryDataSource.editTask(task) } returns listOf(task)
-        every { taskDataSource.editTask(tasks) } returns Result.success(Unit)
+        every { taskDataSource.editTask(tasks) } returns Unit
 
-        val result = taskRepository.editTask(task)
-
-        assertThat(result.isSuccess).isTrue()
+        assertDoesNotThrow { taskDataSource.editTask(tasks) }
     }
 
     @Test
-    fun `editTask should return result failure when data source return failure`() {
+    fun `editTask should throw exception when failed to edit task`() {
         val task = createTask(id = UUID.randomUUID().toString(), title = "task")
         val tasks = listOf(task)
         every { taskMemoryDataSource.editTask(task) } returns listOf(task)
-        every { taskDataSource.editTask(tasks.map { it.toDto() }) } returns Result.failure(Exception())
+        every { taskDataSource.editTask(tasks.map { it.toDto() }) } throws IOException()
 
-        val result = taskRepository.editTask(task)
-
-        assertTrue { result.isFailure }
-        verify { taskMemoryDataSource.addTask(task) }
+        assertThrows<Exception> {
+            taskRepository.editTask(task)
+        }
     }
 
 

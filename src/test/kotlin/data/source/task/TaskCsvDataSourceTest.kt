@@ -3,12 +3,11 @@ package data.source.task
 import com.google.common.truth.Truth.assertThat
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
-import io.mockk.runs
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import java.io.IOException
 import kotlin.test.assertTrue
 
@@ -27,7 +26,7 @@ class TaskCsvDataSourceTest {
     }
 
     @Test
-    fun `editTask should return success when file updated successfully`() {
+    fun `editTask should update file successfully`() {
         val tasks = listOf(
             helperTaskDto(title = "task1", description = "description one"),
             helperTaskDto(title = "task2", description = "description two")
@@ -38,24 +37,21 @@ class TaskCsvDataSourceTest {
         )
 
         every { taskCsvParser.parseTaskToString(any()) } returnsMany parsedTasks
-        every { fileCsvWriter.updateCsvFile(any()) } just runs
+        every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
 
-        val result = taskDataSource.editTask(tasks)
-
-
-        assertThat(result.isSuccess).isTrue()
+        assertDoesNotThrow { taskDataSource.editTask(tasks) }
     }
 
 
     @Test
-    fun `editTask should return failure when failed to update file`() {
+    fun `editTask should throw exception when edit csv file throw excprion`() {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.updateCsvFile(csvRow) } throws IOException()
 
-        val result = taskDataSource.editTask(tasksDto)
-
-        assertTrue { result.isFailure }
+        assertThrows<Exception> {
+            fileCsvWriter.updateCsvFile(csvRow)
+        }
     }
 
     @Test
