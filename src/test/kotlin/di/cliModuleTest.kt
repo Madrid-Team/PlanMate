@@ -22,7 +22,7 @@ class CliModuleTest : KoinTest {
         val inputReader: InputReader by inject()
         val outputPrinter: OutputPrinter by inject()
 
-        assertNotNull(inputReader)
+        assert(inputReader !=null)
         assertNotNull(outputPrinter )
 
         stopKoin() // Stop Koin after test

@@ -1,15 +1,16 @@
 import data.source.project.ProjectDataSource
+import data.source.task.TaskDataSource
 import data.source.user.UserDataSource
-import data.utils.FileValidator
-import di.modules.dataSourceModule
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.qualifier.named
 import org.koin.test.KoinTest
 import org.koin.test.inject
+import data.utils.FileValidator
+import di.modules.dataSourceModule
+import org.koin.core.qualifier.named
 import java.io.File
 import kotlin.test.assertNotNull
 
@@ -66,6 +67,10 @@ class FileValidatorTest : KoinTest {
         assertNotNull(userDataSource )
     }
 
-
+    @Test
+    fun `test TaskDataSource is injected correctly`() {
+        val taskDataSource: TaskDataSource by inject()
+        assertNotNull(taskDataSource )
+    }
 
 }
