@@ -7,7 +7,7 @@ interface TaskRepository {
     fun editTask(task: Task)
     fun deleteTask(taskId: String)
     fun createTask(task: Task)
-    fun getAllTasks(): Result<List<Task>>
-    fun getTasksByProjectId(projectId: String): Result<List<Task>>
+    fun getAllTasks(): List<Task>
+    fun getTasksByProjectId(projectId: String): List<Task>
     fun getTaskLogsByID(taskId: String): Result<List<String>>
 }

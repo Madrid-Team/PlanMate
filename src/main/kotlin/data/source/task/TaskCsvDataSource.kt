@@ -34,30 +34,20 @@ class TaskCsvDataSource(
         fileCsvWriter.writeToCsvFile(taskRow)
     }
 
-    override fun getAllTasks(): Result<List<TaskDto>> {
+    override fun getAllTasks(): List<TaskDto> {
         val tasks = mutableListOf<TaskDto>()
-
-        return try {
-
-            fileCsvReader.readCsvFile().forEach { row ->
-                if (row.isNotEmpty()) {
-                    tasks.add(taskCsvParser.parseOneRowToTask(row))
-                }
+        fileCsvReader.readCsvFile().forEach { row ->
+            if (row.isNotEmpty()) {
+                tasks.add(taskCsvParser.parseOneRowToTask(row))
             }
-
-            Result.success(tasks)
-
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+        return tasks
     }
 
-    override fun getTasksByProjectId(projectId: String): Result<List<TaskDto>> {
-        val allTasks = getAllTasks().getOrNull()
-        return if (!allTasks.isNullOrEmpty()) {
-            Result.success(allTasks)
-        } else {
-            Result.failure(TaskExceptions.TaskNotFoundException("Tasks not found"))
+    override fun getTasksByProjectId(projectId: String): List<TaskDto> {
+        val allTasks = getAllTasks()
+        return allTasks.ifEmpty {
+            emptyList()
         }
     }
 }

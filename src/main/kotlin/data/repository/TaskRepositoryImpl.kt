@@ -1,6 +1,5 @@
 package data.repository
 
-import data.dto.task.TaskDto
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.task.TaskDataSource
@@ -9,7 +8,6 @@ import data.utils.toTaskException
 import domain.models.project.Project
 import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utlis.PlanMateExceptions
 import domain.utlis.TaskExceptions
 
 class TaskRepositoryImpl(
@@ -22,23 +20,19 @@ class TaskRepositoryImpl(
     }
 
     private fun initTasks() {
-        val result = taskDataSource.getAllTasks()
-        if (result.isSuccess) {
-            val dtoList = result.getOrNull() as? List<TaskDto> ?: emptyList()
-            val a = dtoList.map { it.toDomain() }.toMutableList()
-            taskMemoryDataSource.setTasks(a)
+        val tasksFromDataSource = taskDataSource.getAllTasks()
+        if (tasksFromDataSource.isNotEmpty()) {
+            val domainTasks = tasksFromDataSource.map { it.toDomain() }.toMutableList()
+            taskMemoryDataSource.setTasks(domainTasks)
         } else {
             mutableListOf<Project>()
         }
-
     }
 
-    override fun getAllTasks(): Result<List<Task>> {
+    override fun getAllTasks(): List<Task> {
         val allTasks = taskMemoryDataSource.getTasks()
-        return if (allTasks.isNotEmpty()) {
-            Result.success(allTasks)
-        } else {
-            Result.failure(PlanMateExceptions("You haven't any projects yet"))
+        return allTasks.ifEmpty {
+            throw TaskExceptions.TaskNotFoundException("Can't get tasks")
         }
     }
 
@@ -70,12 +64,11 @@ class TaskRepositoryImpl(
         }
     }
 
-
-    override fun getTasksByProjectId(projectId: String): Result<List<Task>> {
+    override fun getTasksByProjectId(projectId: String): List<Task> {
         val allTasks = taskMemoryDataSource.getTasks().filter { it.projectId == projectId }
-        return if (allTasks.isNotEmpty()) {
-            Result.success(allTasks)
-        } else Result.failure(TaskExceptions.TaskNotFoundException("You haven't any projects yet"))
+        return allTasks.ifEmpty {
+            throw TaskExceptions.TaskNotFoundException("Can't get tasks for this project")
+        }
     }
 
     override fun getTaskLogsByID(taskId: String): Result<List<String>> {
