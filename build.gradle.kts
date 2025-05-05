@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.serialization") version "1.9.22"
     id("jacoco")
 }
 
@@ -12,30 +12,35 @@ repositories {
 }
 
 dependencies {
-    // TEST
-    testImplementation(kotlin("test"))
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    // KOIN
+    // Kotlin standard library
+    implementation(kotlin("stdlib"))
+
+    // Koin Core
     implementation("io.insert-koin:koin-core:3.5.3")
-    // JUPITER
+
+    // JSON & Serialization
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // JUnit 5 (no kotlin-test-junit or kotlin-test-junit5 to avoid conflict)
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
-    // TRUTH
+
+    // Koin Test - JVM only (no junit4 or kotlin-test bindings)
+    testImplementation("io.insert-koin:koin-test-jvm:3.5.0")
+
+    // Mocking & Assertions
+    testImplementation("io.mockk:mockk:1.13.7")
     testImplementation("com.google.truth:truth:1.4.4")
-    // MOCKK
-    testImplementation("io.mockk:mockk:1.14.0")
-    // JSON
-    implementation("com.google.code.gson:gson:2.10.1")
-    // SERIALIZATION
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(11)
 }
 
 jacoco {
