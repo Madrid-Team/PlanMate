@@ -1,5 +1,6 @@
 package presentation.feature.projects
 
+import data.utils.toProjectException
 import domain.usecases.project.GetProjectLogsByIdUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -66,7 +67,7 @@ class ProjectAuditLogCLITest {
         val exception = RuntimeException("Something went wrong")
 
         every { reader.readInput(any()) } returns projectId
-        every { useCase.getProjectLogsById(projectId) } throws exception
+        every { useCase.getProjectLogsById(projectId) } throws exception.toProjectException()
 
         cli.show()
 
