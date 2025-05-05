@@ -12,6 +12,7 @@ import data.utils.FileCsvWriter
 import data.utils.FileValidator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
+import org.madrid.data.source.mongoDb.MongoClientConnection
 import java.io.File
 
 val dataSourceModule = module {
@@ -44,4 +45,6 @@ val dataSourceModule = module {
     single<TaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader"))) }
 
     single { TaskMemoryDataSource() }
+
+    single { MongoClientConnection() }
 }
