@@ -87,7 +87,7 @@ class TaskCsvDataSourceTest {
 
         val result = taskDataSource.getAllTasks()
 
-        assertThat(result.getOrNull()).isEqualTo(listOf(task, task))
+        assertThat(result).isEqualTo(listOf(task, task))
     }
 
     @Test

@@ -63,30 +63,23 @@ class TaskRepositoryImplTest {
         val tasks = listOf(createTask(), createTask())
         every { taskMemoryDataSource.getTasks() } returns tasks
 
-        val result = taskRepository.getAllTasks()
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskRepository.getAllTasks() }
     }
 
 
     @Test
-    fun `getAllTask should return failure when data source return failure`() {
+    fun `getAllTask should throw exception when data source throw exception`() {
         every { taskMemoryDataSource.getTasks() } returns listOf()
-
-        val result = taskRepository.getAllTasks()
-
-        assertTrue { result.isFailure }
+        assertThrows<TaskExceptions.TaskNotFoundException> { taskRepository.getAllTasks() }
     }
 
 
     @Test
     fun `getTasksByProjectId should return list of taskDto data source return success`() {
         val projectId = UUID.randomUUID().toString()
-        every { taskDataSource.getAllTasks() } returns Result.success(listOf())
+        every { taskDataSource.getAllTasks() } returns listOf()
 
-        val result = taskDataSource.getTasksByProjectId(projectId)
-
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { taskDataSource.getTasksByProjectId(projectId) }
     }
 
     @Test
