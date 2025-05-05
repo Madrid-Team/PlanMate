@@ -4,6 +4,8 @@ import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
+import data.utils.toTaskException
+import domain.utlis.PlanMateExceptions
 import domain.utlis.TaskExceptions
 
 class TaskCsvDataSource(
@@ -11,17 +13,12 @@ class TaskCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val fileCsvReader: FileCsvReader
 ) : TaskDataSource {
-    override fun editTask(tasks: List<TaskDto>): Result<Unit> {
-        return try {
-            var taskAfterUpdate = String.taskHeader
-            tasks.forEach {
-                val taskAsString = taskCsvParser.parseTaskToString(it)
-                taskAfterUpdate += taskAsString
-            }
+    override fun editTask(tasks: List<TaskDto>) {
+        var taskAfterUpdate = String.taskHeader
+        tasks.forEach {
+            val taskAsString = taskCsvParser.parseTaskToString(it)
+            taskAfterUpdate += taskAsString
             fileCsvWriter.updateCsvFile(taskAfterUpdate)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
         }
     }
 

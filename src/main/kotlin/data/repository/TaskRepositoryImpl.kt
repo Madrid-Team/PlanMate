@@ -5,6 +5,7 @@ import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.task.TaskDataSource
 import data.source.task.TaskMemoryDataSource
+import data.utils.toTaskException
 import domain.models.project.Project
 import domain.models.task.Task
 import domain.repository.TaskRepository
@@ -61,16 +62,13 @@ class TaskRepositoryImpl(
         }
     }
 
-    override fun editTask(task: Task): Result<Unit> {
-        val taskListAfterUpdateProject = taskMemoryDataSource.editTask(task)
-
-        val result = taskDataSource.editTask(taskListAfterUpdateProject.map { it.toDto() })
-
-        return if (result.isSuccess) {
-            Result.success(Unit)
-        } else {
+    override fun editTask(task: Task) {
+        try {
+            val taskListAfterUpdateProject = taskMemoryDataSource.editTask(task)
+            taskDataSource.editTask(taskListAfterUpdateProject.map { it.toDto() })
+        } catch (exception: Exception) {
             taskMemoryDataSource.addTask(task)
-            Result.failure(result.exceptionOrNull() ?: PlanMateExceptions("Failed to edit project"))
+            throw exception.toTaskException()
         }
     }
 
