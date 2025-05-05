@@ -33,7 +33,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
 }
 kotlin {
     jvmToolchain(8)
@@ -71,7 +70,6 @@ tasks.jacocoTestReport {
 
 tasks.jacocoTestCoverageVerification {
     classDirectories.setFrom(filteredCoverage)
-    enabled = false
     violationRules {
         rule {
             limit {
