@@ -4,8 +4,6 @@ import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
-import data.utils.toTaskException
-import domain.utlis.PlanMateExceptions
 import domain.utlis.TaskExceptions
 
 class TaskCsvDataSource(
@@ -36,14 +34,9 @@ class TaskCsvDataSource(
         }
     }
 
-    override fun createTask(task: TaskDto): Result<Unit> {
-        return try {
-            val taskRow = taskCsvParser.parseTaskToString(task)
-            fileCsvWriter.writeToCsvFile(taskRow)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    override fun createTask(task: TaskDto) {
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeToCsvFile(taskRow)
     }
 
     override fun getAllTasks(): Result<List<TaskDto>> {

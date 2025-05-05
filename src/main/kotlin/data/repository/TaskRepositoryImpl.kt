@@ -10,10 +10,7 @@ import domain.models.project.Project
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
 import domain.utlis.TaskExceptions
-import java.io.FileNotFoundException
-import java.io.IOException
 
 class TaskRepositoryImpl(
     private val taskDataSource: TaskDataSource,
@@ -45,20 +42,12 @@ class TaskRepositoryImpl(
         }
     }
 
-    override fun createTask(task: Task): Result<Unit> {
-        val result = taskDataSource.createTask(task.toDto())
-
-        return if (result.isSuccess) {
+    override fun createTask(task: Task) {
+        try {
+            taskDataSource.createTask(task.toDto())
             taskMemoryDataSource.addTask(task)
-            result
-        } else {
-            when (val exception = result.exceptionOrNull()) {
-                is FileNotFoundException -> Result.failure(ProjectExceptions.ProjectsFileNotExistsException())
-                is IOException -> Result.failure(ProjectExceptions.ProjectsReadWriteException())
-                else -> {
-                    Result.failure(PlanMateExceptions(exception?.message.toString()))
-                }
-            }
+        } catch (exception: Exception) {
+            throw exception.toTaskException()
         }
     }
 
