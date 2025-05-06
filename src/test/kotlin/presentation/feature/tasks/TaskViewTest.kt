@@ -4,6 +4,7 @@ import domain.usecases.task.DisplayAllTasksUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import io.mockk.verifySequence
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -60,4 +61,37 @@ class TaskViewTest(){
         // Then
         verify { outputPrinter.printMessage(expectedOutput) }
     }
+    @Test
+    fun `should show error message when display fails`() {
+        val projectId = "project-123"
+        val errorMessage = "Project not found"
+        every { inputReader.readInput(any()) } returns projectId
+        every { displayAllTasksUseCase.display(projectId) } returns Result.failure(Exception(errorMessage))
+
+        taskView.show()
+
+        verifySequence {
+            outputPrinter.printMessage("=== Display Tasks ===")
+            inputReader.readInput("Enter project ID: ")
+            displayAllTasksUseCase.display(projectId)
+            outputPrinter.printMessage("Error: $errorMessage")
+        }
+    }
+    @Test
+    fun `should display tasks when display is successful`() {
+        val projectId = "project-123"
+        every { inputReader.readInput(any()) } returns projectId
+        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Task 1\nTask 2")
+
+        taskView.show()
+
+        verifySequence {
+            outputPrinter.printMessage("=== Display Tasks ===")
+            inputReader.readInput("Enter project ID: ")
+            displayAllTasksUseCase.display(projectId)
+            outputPrinter.printMessage("Task 1\nTask 2")
+        }
+    }
+
+
 }

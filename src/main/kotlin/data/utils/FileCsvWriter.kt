@@ -5,9 +5,10 @@ import java.io.IOException
 class FileCsvWriter(
     private val fileValidator: FileValidator
 ) {
-    fun writeProjectToCsvFile(row: String) {
-        return fileValidator.checkFile().appendText(row)
-    }
+
+//    fun writeProjectToCsvFile(row: String) {
+//        return fileValidator.checkFile().appendText(row)
+//    }
 
     fun writeToCsvFile(row: String) {
         try {

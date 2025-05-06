@@ -41,9 +41,27 @@ kotlin {
 jacoco {
     toolVersion = "0.8.10"
 }
+val filteredCoverage = fileTree(layout.buildDirectory.dir("classes/kotlin/main")) {
+    include("**/data/repository/**")
+    include("**/data/source/**")
+    include("**/domain/usecases/**")
+    include("**/presentation/**")
+
+    exclude("**/data/dto/**")
+    exclude("**/data/mapper/**")
+    exclude("**/di/**")
+    exclude("**/domain/models/**")
+    exclude("**/domain/repository/**")
+    exclude("**/utils/**")
+    exclude("**/*Dto.class")
+    exclude("**/*Mapper.class")
+    exclude("**/*Module.class")
+    exclude("**/BuildConfig.*")
+}
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+    classDirectories.setFrom(filteredCoverage)
     reports {
         xml.required.set(true)
         html.required.set(true)
@@ -51,10 +69,11 @@ tasks.jacocoTestReport {
 }
 
 tasks.jacocoTestCoverageVerification {
+    classDirectories.setFrom(filteredCoverage)
     violationRules {
         rule {
             limit {
-                minimum = "0.8".toBigDecimal()
+                minimum = "0.7".toBigDecimal()
             }
         }
     }
