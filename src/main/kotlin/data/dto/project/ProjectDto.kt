@@ -4,12 +4,13 @@ import data.dto.task.TaskDto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
+import org.bson.types.ObjectId
 import java.util.*
 
 
 @Serializable
 data class ProjectDto(
-    @BsonId @SerialName("_id") val id: String,
+    @SerialName("_id") val id: String = ObjectId().toString(),
     val name: String,
     val description: String,
     val createdBy: String,
