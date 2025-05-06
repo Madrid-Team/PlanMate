@@ -4,7 +4,7 @@ plugins {
     id("jacoco")
 }
 
-group = "org.madrid"
+group = "org.example"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -34,13 +34,20 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(8)
 }
 
-jacoco {
-    toolVersion = "0.8.10"
-}
+val excludedClasses = listOf(
+    "**/di/**",
+    "**/data/dto/**",
+    "**/data/mapper/**",
+    "**/data/utils/**",
+    "**/domain/models/**",
+    "**/domain/utils/**",
+    "**/presentation/Main.kt",
+)
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
@@ -48,9 +55,19 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         html.required.set(true)
     }
+    classDirectories.setFrom(
+        fileTree("build/classes/kotlin/main") {
+            exclude(excludedClasses)
+        }
+    )
 }
 
 tasks.jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+        fileTree("build/classes/kotlin/main") {
+            exclude(excludedClasses)
+        }
+    )
     violationRules {
         rule {
             limit {
