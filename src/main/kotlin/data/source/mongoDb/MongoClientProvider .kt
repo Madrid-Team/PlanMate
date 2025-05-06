@@ -6,12 +6,8 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import data.dto.project.ProjectDto
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.madrid.data.utils.CONNECTION_STRING
 import org.madrid.data.utils.DATABASE_NAME
-import org.madrid.data.utils.PROJECT_COLLECTION
 
 class MongoClientProvider {
 
