@@ -47,4 +47,5 @@ val dataSourceModule = module {
     single { TaskMemoryDataSource() }
 
     single { MongoClientProvider() }
+    single { get<MongoClientProvider>().getDatabase() }
 }
