@@ -15,6 +15,7 @@ dependencies {
     // TEST
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
     // KOIN
     implementation("io.insert-koin:koin-core:3.5.3")
     // JUPITER
