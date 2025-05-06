@@ -2,15 +2,15 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import java.util.*
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 class EditTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
@@ -29,7 +29,7 @@ class EditTaskUseCaseTest {
         "'','description',''",
         "'','','created by'",
     )
-    fun `editTask should return true when data provided is valid`(
+    fun `editTask should execute successfully when repository not throw exception`(
         title: String,
         description: String,
         createdBy: String,
@@ -50,15 +50,10 @@ class EditTaskUseCaseTest {
             description = description.ifBlank { oldTask.description },
             createdBy = createdBy.ifBlank { oldTask.createdBy }
         )
-        every { taskRepository.getAllTasks() } returns Result.success(listOf(oldTask))
-        every { taskRepository.editTask(any()) } returns Result.success(Unit)
 
+        every { taskRepository.editTask(any()) } returns Unit
 
-        //when
-        val result = editTaskUseCase.editTask(newTask)
-
-        //then
-        assertTrue { result.isSuccess }
+        assertDoesNotThrow { editTaskUseCase.editTask(newTask) }
     }
 
     @Test
@@ -68,10 +63,9 @@ class EditTaskUseCaseTest {
             id = UUID.randomUUID().toString(),
             title = "title"
         )
-        every { taskRepository.getAllTasks() } throws TaskExceptions.TaskNotFoundException()
 
-        val result = editTaskUseCase.editTask(task)
-
-        assertTrue { result.isFailure }
+        assertThrows<Exception> {
+            editTaskUseCase.editTask(task)
+        }
     }
 }

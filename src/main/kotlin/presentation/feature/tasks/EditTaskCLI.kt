@@ -2,6 +2,8 @@ package presentation.feature.tasks
 
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
+import domain.utlis.PlanMateExceptions
+import domain.utlis.TaskExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -30,13 +32,11 @@ class EditTaskCLI(
             logs = listOf()
         )
 
-        val result = editTaskUseCase.editTask(updatedTask)
-
-        if (result.isSuccess) {
+        try {
+            editTaskUseCase.editTask(updatedTask)
             outputPrinter.printMessage("Task updated successfully")
-        } else {
-            outputPrinter.printError("Failed to update task")
+        } catch (exception: TaskExceptions.TaskCannotEditException) {
+            outputPrinter.printError(exception.message ?: "Failed to update task")
         }
-
     }
 }

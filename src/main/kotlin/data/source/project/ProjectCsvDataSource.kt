@@ -10,63 +10,44 @@ class ProjectCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val projectCsvParser: ProjectCsvParser
 ) : ProjectDataSource {
-    override fun getProjects(): Result<List<ProjectDto>> {
+    override fun getProjects(): List<ProjectDto> {
 
         val projects = mutableListOf<ProjectDto>()
 
-        return try {
-
-            fileCsvReader.readCsvFile().forEach { row ->
-                if (row.isNotEmpty()) {
-                    projects.add(projectCsvParser.parseOneRowToProject(row))
-                }
+        fileCsvReader.readCsvFile().forEach { row ->
+            if (row.isNotEmpty()) {
+                projects.add(projectCsvParser.parseOneRowToProject(row))
             }
-
-            Result.success(projects)
-
-        } catch (e: Exception) {
-            Result.failure(e)
         }
+
+        return projects
+
 
     }
 
-    override fun createProject(project: ProjectDto): Result<Unit> {
-        return try {
-
+    override fun createProject(project: ProjectDto) {
             val row = projectCsvParser.parseProjectToString(project)
             fileCsvWriter.writeToCsvFile(row)
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
     }
 
-    override fun deleteProject(projects: List<ProjectDto>): Result<Unit> {
-        return try {
+    override fun deleteProject(projects: List<ProjectDto>) {
+
             var projectFileContentAfterDeletion = String.projectHeader
             projects.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectFileContentAfterDeletion += projectAsString
             }
             fileCsvWriter.updateCsvFile(projectFileContentAfterDeletion)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+
     }
 
-    override fun editProject(projects: List<ProjectDto>): Result<Unit> {
-        return try {
+    override fun editProject(projects: List<ProjectDto>){
+
             var projectAfterUpdate = String.projectHeader
             projects.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectAfterUpdate += projectAsString
             }
             fileCsvWriter.updateCsvFile(projectAfterUpdate)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
     }
 }

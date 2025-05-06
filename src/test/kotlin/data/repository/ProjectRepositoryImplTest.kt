@@ -6,18 +6,17 @@ import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.project.ProjectDataSource
 import data.source.project.ProjectMemoryDataSource
-import domain.models.project.Project
-import domain.utlis.PlanMateExceptions
+import data.utils.ProjectRepositoryImpl
 import domain.utlis.ProjectExceptions
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import java.util.*
 
 class ProjectRepositoryImplTest {
     private lateinit var projectDataSource: ProjectDataSource
@@ -34,29 +33,6 @@ class ProjectRepositoryImplTest {
         )
     }
 
-
-
-    @Test
-    fun `getAllProjects should return success when memory has projects`() {
-        val projects = listOf(
-            createProject(id = UUID.randomUUID().toString(), name = "test"),
-            createProject(id = UUID.randomUUID().toString(), name = "test2")
-        )
-        every {  projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
-        val result = repository.getAllProjects()
-        assertTrue(result.isSuccess)
-        assertEquals(2, result.getOrNull()?.size)
-    }
-
-    @Test
-    fun `getAllProjects should return failure when memory is empty`() {
-        every { projectMemoryDataSource.getProjects() } returns emptyList()
-        val result = repository.getAllProjects()
-        assertTrue(result.isFailure)
-        assertTrue(result.exceptionOrNull() is PlanMateExceptions)
-    }
-
-
     @Test
     fun `getAllProjects returns list of projects when list is not empty `() {
         // Given
@@ -64,12 +40,12 @@ class ProjectRepositoryImplTest {
             createProject(id = UUID.randomUUID().toString(), name = "test"),
             createProject(id = UUID.randomUUID().toString(), name = "test2")
         )
-        every { projectDataSource.getProjects() } returns Result.success(projects)
+        every { projectDataSource.getProjects() } returns projects
         every { projectMemoryDataSource.setProjects(any()) } just Runs
         every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
         // When
-        val result = repository.getAllProjects().getOrNull()
+        val result = repository.getAllProjects()
 
         // Then
         assertThat(result).containsExactlyElementsIn(projects.map { it.toDomain() })
@@ -79,14 +55,14 @@ class ProjectRepositoryImplTest {
     fun `createProject returns success when data source return success`() {
         // Given
         val project = createProject(name = "test")
-        every { projectDataSource.createProject(project) } returns Result.success(Unit)
+        every { projectDataSource.createProject(project) } returns Unit
         every { projectMemoryDataSource.addProject(project.toDomain()) } returns Unit
 
         // When
-        val result = repository.createProject(project.toDomain())
-
         // Then
-        assertTrue(result.isSuccess)
+        assertDoesNotThrow {
+            repository.createProject(project.toDomain())
+        }
     }
 
     @Test
@@ -98,13 +74,12 @@ class ProjectRepositoryImplTest {
             createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
         )
         every { projectMemoryDataSource.deleteProject(projectId) } returns projects.map { it.toDomain() }
-        every { projectDataSource.getProjects() } returns Result.success(projects)
+        every { projectDataSource.getProjects() } returns projects
 
-        // When
-        val result = repository.deleteProject(projectId)
-
-        // Then
-        assertTrue(result.isSuccess)
+        // When & Then
+        assertDoesNotThrow {
+            repository.deleteProject(projectId)
+        }
     }
 
     @Test
@@ -116,11 +91,15 @@ class ProjectRepositoryImplTest {
             createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
         )
         every { projectMemoryDataSource.editProject(project.toDomain()) } returns projects.map { it.toDomain() }
-        every { projectDataSource.getProjects() } returns Result.success(projects)
+        every { projectDataSource.getProjects() } returns projects
 
-        val result = repository.editProject(project.toDomain())
 
-        assertTrue(result.isSuccess)
+        // When & Then
+        assertDoesNotThrow {
+            repository.editProject(project.toDomain())
+
+        }
+
     }
 
 
@@ -139,14 +118,13 @@ class ProjectRepositoryImplTest {
                 projectLogs = listOf("project created", "project updated")
             )
         )
-        every { projectDataSource.getProjects() } returns Result.success(projects)
+        every { projectDataSource.getProjects() } returns projects
         every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
-
-        val result = repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
-
-
-        assertTrue(result.isSuccess)
+        //When & Then
+        assertDoesNotThrow {
+            repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+        }
     }
 
 
@@ -165,12 +143,10 @@ class ProjectRepositoryImplTest {
                 projectLogs = listOf("project created", "project updated")
             )
         )
-        every { projectDataSource.getProjects() } returns Result.success(projects)
         every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
         assertThrows<ProjectExceptions.ProjectNotFoundException> {
-            val result = repository.getProjectLogsById("5")
-            result.getOrThrow()
+            repository.getProjectById("5")
         }
     }
 
@@ -187,15 +163,13 @@ class ProjectRepositoryImplTest {
     }
 
     @Test
-    fun `getProjectById should return null when ID does not match`() {
+    fun `getProjectById should throw exception when ID does not match`() {
         val notExistId = UUID.randomUUID().toString()
         val project = createProject(id = UUID.randomUUID().toString())
 
-        every { projectMemoryDataSource.getProjects() } returns listOf(project.toDomain())
+        every { projectMemoryDataSource.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
 
-        val result = repository.getProjectById(notExistId)
-
-        assertNull(result)
+        assertThrows<ProjectExceptions.ProjectNotFoundException> { repository.getProjectById(notExistId) }
     }
 
 

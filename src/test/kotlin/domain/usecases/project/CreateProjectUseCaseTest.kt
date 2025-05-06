@@ -5,10 +5,11 @@ import domain.usecases.createProject
 import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class CreateProjectUseCaseTest {
 
@@ -33,13 +34,12 @@ class CreateProjectUseCaseTest {
             projectStates = listOf("Testing", "Todo"),
         )
 
-        every { projectRepository.createProject(project) } returns Result.success(Unit)
-        //When
-        val result = createProjectUseCase.createProject(project)
-
-        //Then
-        assertTrue { result.isSuccess }
-
+        every { projectRepository.createProject(project) } returns Unit
+        //When & Then
+        assertDoesNotThrow {
+            createProjectUseCase.createProject(project)
+        }
+        verify { projectRepository.createProject(project) }
     }
 
     @Test
@@ -48,13 +48,12 @@ class CreateProjectUseCaseTest {
         val project = createProject(
             name = "Test Project",
         )
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
 
-        //When
-        val result = createProjectUseCase.createProject(project)
-
-        // Then
-        assertFalse { result.isSuccess }
+        //When & Then
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
 
     }
 
@@ -64,11 +63,12 @@ class CreateProjectUseCaseTest {
         val project = createProject(
             name = "123 #$",
         )
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
-        //When
-        val result = createProjectUseCase.createProject(project)
-        // Then
-        assertFalse { result.isSuccess }
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
+        //When &Then
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
+
     }
 
     @Test
@@ -78,12 +78,11 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = "123 #$"
         )
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
         //When
-        val result = createProjectUseCase.createProject(project)
-
-        //Then
-        assertFalse { result.isSuccess }
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
     }
 
 
@@ -94,13 +93,13 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = ""
         )
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
 
         //When
-        val result = createProjectUseCase.createProject(project)
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
 
-        //Then
-        assertFalse { result.isSuccess }
     }
 
     @Test
@@ -110,13 +109,12 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             projectStates = emptyList()
         )
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
 
         //When
-        val result = createProjectUseCase.createProject(project)
-
-        //Then
-        assertFalse { result.isSuccess }
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
     }
 
 
@@ -128,12 +126,11 @@ class CreateProjectUseCaseTest {
             taskStates = emptyList()
         )
 
-        every { projectRepository.createProject(project) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.createProject(project) } throws PlanMateExceptions("")
         //When
-        val result = createProjectUseCase.createProject(project)
-
-        //Then
-        assertFalse { result.isSuccess }
+        assertThrows<PlanMateExceptions> {
+            createProjectUseCase.createProject(project)
+        }
     }
 
 }

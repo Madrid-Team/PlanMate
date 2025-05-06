@@ -4,11 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.usecases.createProject
+import domain.utlis.ProjectExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class DisplayAllTasksUseCaseTest {
@@ -27,13 +29,9 @@ class DisplayAllTasksUseCaseTest {
     fun `display should return Project not found message when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID().toString()
-        every { projectRepository.getProjectById(projectId) } returns null
+        every { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
-        // When
-        val result = displayAllTasksUseCase.display(projectId)
-
-        // Then
-        assertThat(result.exceptionOrNull()!!.message.toString()).isEqualTo("Project not found.")
+        assertThrows<ProjectExceptions.ProjectNotFoundException> { displayAllTasksUseCase.display(projectId) }
     }
 
     @Test
@@ -47,7 +45,7 @@ class DisplayAllTasksUseCaseTest {
         )
 
         every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(emptyList())
+        every { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
 
         // When
         val result = displayAllTasksUseCase.display(projectId)
@@ -61,7 +59,7 @@ class DisplayAllTasksUseCaseTest {
 
     Done:
 """.trimIndent()
-        assertThat(result.getOrNull()).isEqualTo(expectedOutput)
+        assertThat(result).isEqualTo(expectedOutput)
     }
 
     @Test
@@ -76,12 +74,17 @@ class DisplayAllTasksUseCaseTest {
 
         val tasks = listOf(
             createTask(id = UUID.randomUUID().toString(), title = "Task 1", state = "TODO", projectId = projectId),
-            createTask(id = UUID.randomUUID().toString(), title = "Task 2", state = "In Progress", projectId = projectId),
+            createTask(
+                id = UUID.randomUUID().toString(),
+                title = "Task 2",
+                state = "In Progress",
+                projectId = projectId
+            ),
             createTask(id = UUID.randomUUID().toString(), title = "Task 3", state = "Done", projectId = projectId)
         )
 
         every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(tasks)
+        every { taskRepository.getTasksByProjectId(projectId) } returns tasks
 
         // When
         val result = displayAllTasksUseCase.display(projectId)
@@ -99,7 +102,7 @@ class DisplayAllTasksUseCaseTest {
     Done:
     - Task 3
 """.trimIndent()
-        assertThat(result.getOrNull()).isEqualTo(expectedOutput)
+        assertThat(result).isEqualTo(expectedOutput)
     }
 
 

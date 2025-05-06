@@ -38,7 +38,7 @@ class CreateTaskCLITest() {
         every { inputReader.readInput(any()) } returnsMany listOf(UUID.randomUUID().toString(), "title", "description")
         val project = helperProject(id = UUID.randomUUID().toString())
         val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-        every { createTaskUseCase.createTask(task) } returns Result.success(Unit)
+        every { createTaskUseCase.createTask(task) } returns Unit
 
         // When
         cli.show()
@@ -53,7 +53,7 @@ class CreateTaskCLITest() {
         // Given
         every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
         val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-        every { createTaskUseCase.createTask(task) } returns Result.success(Unit)
+        every { createTaskUseCase.createTask(task) } returns Unit
 
         // When
         cli.show()

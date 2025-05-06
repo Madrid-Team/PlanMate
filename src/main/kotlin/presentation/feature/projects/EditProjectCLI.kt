@@ -1,15 +1,15 @@
 package presentation.feature.projects
 
-import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
+import domain.utlis.PlanMateExceptions
+import domain.utlis.ProjectExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import java.util.*
 
 class EditProjectCLI(
     private val inputReader: InputReader,
@@ -22,10 +22,10 @@ class EditProjectCLI(
 
         outputPrinter.printMessage("=== Edit Project ===")
         val id = inputReader.readInput("Enter the ID of the project to edit:")
+        try {
 
-        val result = getProjectByIdUseCase.invoke(id)
-        if (result.isSuccess) {
-            val currentProject = result.getOrThrow()
+            val result = getProjectByIdUseCase.invoke(id)
+            val currentProject = result
             var updatedProject = currentProject.copy()
 
             while (true) {
@@ -47,7 +47,9 @@ class EditProjectCLI(
                     }
 
                     "3" -> {
-                        val taskStatesMenu = currentProject.projectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
+                        val taskStatesMenu =
+                            currentProject.projectStates.mapIndexed { index, state -> "${index + 1}. $state" }
+                                .joinToString("\n")
                         val promptMessage = "Select project State:\n$taskStatesMenu\nEnter number: "
 
                         while (true) {
@@ -55,7 +57,8 @@ class EditProjectCLI(
 
                             val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
                             if (selectedIndex != null && selectedIndex in 0 until currentProject.projectStates.size) {
-                                updatedProject = updatedProject.copy(projectState = currentProject.projectStates[selectedIndex])
+                                updatedProject =
+                                    updatedProject.copy(projectState = currentProject.projectStates[selectedIndex])
                                 break
                             } else {
                                 println("Invalid selection. Please enter a valid state id ")
@@ -69,10 +72,19 @@ class EditProjectCLI(
                         if (currentProject == updatedProject) {
                             return
                         } else {
-
-                            val editResult = editProjectUseCase.editProject(updatedProject.copy(projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(currentProject, updatedProject)))
-                            editResult.onSuccess { outputPrinter.printMessage("Project edited successfully.") }
-                            editResult.onFailure { outputPrinter.printMessage("Failed to edit project: ${result.exceptionOrNull()?.message}") }
+                            try {
+                                editProjectUseCase.editProject(
+                                    updatedProject.copy(
+                                        projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
+                                            currentProject,
+                                            updatedProject
+                                        )
+                                    )
+                                )
+                                outputPrinter.printMessage("Project edited successfully.")
+                            } catch (e: PlanMateExceptions) {
+                                outputPrinter.printMessage("Failed to edit project: ${e.message}")
+                            }
                             return
                         }
                     }
@@ -80,13 +92,13 @@ class EditProjectCLI(
                     else -> outputPrinter.printMessage("Invalid option. Please try again.")
                 }
             }
-
-        } else {
-            outputPrinter.printMessage(result.exceptionOrNull()?.message ?: "Project not found")
+        } catch (e: ProjectExceptions.ProjectNotFoundException) {
+            outputPrinter.printMessage(e.message ?: "Project not found")
         }
+
     }
 
-    private fun getLogsForAllChangesInUpdatedProject(currentProject: Project, updatedProject: Project):List<String> {
+    private fun getLogsForAllChangesInUpdatedProject(currentProject: Project, updatedProject: Project): List<String> {
         val listOfLogs = mutableListOf<String>()
         if (updatedProject.name != currentProject.name) {
             listOfLogs.add(
@@ -130,6 +142,6 @@ class EditProjectCLI(
         }
 
 
-            return listOfLogs
+        return listOfLogs
     }
 }

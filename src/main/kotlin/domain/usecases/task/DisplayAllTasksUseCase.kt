@@ -7,28 +7,19 @@ class DisplayAllTasksUseCase(
     private val projectRepository: ProjectRepository,
     private val taskRepository: TaskRepository
 ) {
-    fun display(projectId: String): Result<String> {
-        return try {
-            val project = projectRepository.getProjectById(projectId)
-                ?: return Result.failure(Exception("Project not found."))
+    fun display(projectId: String): String {
+        val project = projectRepository.getProjectById(projectId)
 
-            val tasks = taskRepository.getTasksByProjectId(projectId)
-            val list = tasks.getOrNull()
-            val states = project.taskStates
-            val swimlanesMap = states.associateWith { mutableListOf<String>() }
+        val tasks = taskRepository.getTasksByProjectId(projectId)
+        val states = project.taskStates
+        val swimlanesMap = states.associateWith { mutableListOf<String>() }
 
-            if (list != null) {
-                for (task in list) {
-                    swimlanesMap[task.taskState]?.add(task.title)
-                }
-            }
-
-            val formatted = formatAsSwimlanes(states, swimlanesMap)
-            Result.success(formatted)
-        } catch (e: Exception) {
-            Result.failure(e)
+        for (task in tasks) {
+            swimlanesMap[task.taskState]?.add(task.title)
         }
+        return formatAsSwimlanes(states, swimlanesMap)
     }
+
     private fun formatAsSwimlanes(states: List<String>, swimlanesMap: Map<String, List<String>>): String {
         val builder = StringBuilder()
 
@@ -44,9 +35,6 @@ class DisplayAllTasksUseCase(
                 builder.append("\n")
             }
         }
-
         return builder.toString().trimEnd()
     }
-
-
 }

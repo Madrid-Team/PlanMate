@@ -37,7 +37,7 @@ class ProjectCLITest {
     fun `should show projects when user selects 1`() {
         // given
         every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
-        every { getAllProjectsUseCase.getAllProjects() } returns Result.success(emptyList())
+        every { getAllProjectsUseCase.getAllProjects() } returns emptyList()
 
         // when
         projectCLI.show()

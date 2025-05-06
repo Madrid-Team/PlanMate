@@ -1,13 +1,14 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.EditTaskUseCase
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 
 class EditTaskCLITest {
@@ -40,7 +41,7 @@ class EditTaskCLITest {
             title = "New Title",
             description = "New Description"
         )
-        every { editTaskUseCase.editTask(updatedTask) } returns Result.success(Unit)
+        every { editTaskUseCase.editTask(updatedTask) } returns Unit
 
         editTaskCLI.show()
 
@@ -61,11 +62,10 @@ class EditTaskCLITest {
             title = "New Title",
             description = "New Description"
         )
-        every { editTaskUseCase.editTask(any()) } returns Result.failure(Exception())
+        every { editTaskUseCase.editTask(any()) } throws TaskExceptions.TaskCannotEditException()
 
         editTaskCLI.show()
 
-        verify { outputPrinter.printError("Failed to update task") }
-
+        verify { outputPrinter.printError(TaskExceptions.TaskCannotEditException().message!!) }
     }
 }

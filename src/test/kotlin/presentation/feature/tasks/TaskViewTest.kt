@@ -1,6 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DisplayAllTasksUseCase
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -11,7 +12,7 @@ import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
 
-class TaskViewTest(){
+class TaskViewTest {
     private lateinit var displayAllTasksUseCase: DisplayAllTasksUseCase
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
@@ -24,12 +25,13 @@ class TaskViewTest(){
         displayAllTasksUseCase = mockk()
         taskView = TaskView(displayAllTasksUseCase, outputPrinter, inputReader)
     }
+
     @Test
     fun `should print project not found when project does not exist`() {
         // Given
         val projectId = "non_existing_project"
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Project not found.")
+        every { displayAllTasksUseCase.display(projectId) } returns "Project not found."
 
         // When
         taskView.show()
@@ -37,6 +39,7 @@ class TaskViewTest(){
         // Then
         verify { outputPrinter.printMessage("Project not found.") }
     }
+
     @Test
     fun `should print formatted tasks when tasks exist`() {
         // Given
@@ -53,7 +56,7 @@ class TaskViewTest(){
         """.trimIndent()
 
         every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success(expectedOutput)
+        every { displayAllTasksUseCase.display(projectId) } returns expectedOutput
 
         // When
         taskView.show()
@@ -61,12 +64,13 @@ class TaskViewTest(){
         // Then
         verify { outputPrinter.printMessage(expectedOutput) }
     }
+
     @Test
     fun `should show error message when display fails`() {
         val projectId = "project-123"
         val errorMessage = "Project not found"
         every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.failure(Exception(errorMessage))
+        every { displayAllTasksUseCase.display(projectId) } throws TaskExceptions(errorMessage)
 
         taskView.show()
 
@@ -74,14 +78,15 @@ class TaskViewTest(){
             outputPrinter.printMessage("=== Display Tasks ===")
             inputReader.readInput("Enter project ID: ")
             displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMessage("Error: $errorMessage")
+            outputPrinter.printMessage(errorMessage)
         }
     }
+
     @Test
     fun `should display tasks when display is successful`() {
         val projectId = "project-123"
         every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns Result.success("Task 1\nTask 2")
+        every { displayAllTasksUseCase.display(projectId) } returns "Task 1\nTask 2"
 
         taskView.show()
 

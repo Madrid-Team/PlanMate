@@ -1,6 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DeleteTaskUseCase
+import domain.utlis.TaskExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -12,14 +13,12 @@ class DeleteTaskCLI(
     fun show() {
         outputPrinter.printMessage("=== Delete Task ===")
         outputPrinter.printMessage("Enter task ID to delete:")
-        val taskId = inputReader.readInput()
-
-        val result = deleteTaskUseCase.deleteTask(taskId)
-
-        if (result.isSuccess) {
+        try {
+            val taskId = inputReader.readInput()
+            deleteTaskUseCase.deleteTask(taskId)
             outputPrinter.printMessage("Task deleted successfully.")
-        } else {
-            outputPrinter.printError("Task not found or could not be deleted.")
+        } catch (exception: TaskExceptions.TaskCannotDeleteException) {
+            outputPrinter.printError(exception.message ?: "Task not found or could not be deleted.")
         }
     }
 }

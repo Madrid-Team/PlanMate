@@ -6,6 +6,8 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class GetProjectLogsByIdUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -21,13 +23,12 @@ class GetProjectLogsByIdUseCaseTest {
     fun `getProjectLogs should return true when project repository called and return success result`() {
         //Given
         val projectId = 1
-        every { projectRepository.getProjectLogsById(projectId.toString()) } returns Result.success(listOf<String>())
+        every { projectRepository.getProjectLogsById(projectId.toString()) } returns listOf()
 
         //When
-        val result = getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
-
-        //Then
-        kotlin.test.assertTrue { result.isSuccess }
+        assertDoesNotThrow {
+            getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+        }
 
     }
 
@@ -35,13 +36,12 @@ class GetProjectLogsByIdUseCaseTest {
     fun `getProjectLogs should return false when project repository called and return failure result`() {
         //Given
         val projectId = 1
-        every { projectRepository.getProjectLogsById(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
+        every { projectRepository.getProjectLogsById(projectId.toString()) } throws PlanMateExceptions("")
 
         //When
-        val result = getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+        assertThrows<PlanMateExceptions> {
 
-        //Then
-        kotlin.test.assertFalse { result.isSuccess }
-
+            getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+        }
     }
 }

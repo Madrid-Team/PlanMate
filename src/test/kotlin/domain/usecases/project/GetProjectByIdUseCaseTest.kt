@@ -1,46 +1,50 @@
 package domain.usecases.project
 
+import com.google.common.truth.Truth.assertThat
+import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.usecases.createProject
+import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class GetProjectByIdUseCaseTest {
-
-    lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
-    lateinit var projectRepository: ProjectRepository
+    private lateinit var projectRepository: ProjectRepository
+    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
-        projectRepository = mockk(relaxed = true)
+        projectRepository = mockk()
         getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository)
     }
 
-
     @Test
-    fun `getAllProjects should return a success result when there are projects`() {
-        val project = createProject(
-            id = UUID.randomUUID().toString(),
-            name = "Test Project",
-            description = "dia"
-        )
-        every { projectRepository.getProjectById(UUID.randomUUID().toString()) } returns project
-        val result = getProjectByIdUseCase(UUID.randomUUID().toString())
-        assertTrue { result.isSuccess }
+    fun `should return project when project exists`() {
+        // Given
+        val projectId = "1"
+        val mockProject: Project = mockk()
+        every { projectRepository.getProjectById(projectId) } returns mockProject
+
+        // When
+        val result = getProjectByIdUseCase.invoke(projectId)
+
+        // Then
+        assertDoesNotThrow { getProjectByIdUseCase.invoke(projectId) }
+        assertThat(result).isEqualTo(mockProject)
     }
 
-
     @Test
-    fun `getAllProjects should return a fail result when there are no projects`() {
-        val projectId = UUID.randomUUID().toString()
-        every { projectRepository.getProjectById(projectId) } returns null
-        val result = getProjectByIdUseCase(projectId)
-        assertTrue { result.isFailure }
+    fun ` should throw exception when project does not exist`() {
+        // Given
+        val projectId = "999"
+        every { projectRepository.getProjectById(projectId) } throws PlanMateExceptions("Project not found")
+
+        // When & Then
+        assertThrows<PlanMateExceptions> {
+            getProjectByIdUseCase.invoke(projectId)
+        }
     }
-
-
 }

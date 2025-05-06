@@ -1,10 +1,12 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utlis.PlanMateExceptions
+import domain.utlis.TaskExceptions
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
 class GetLogsUseCaseTest {
@@ -18,32 +20,22 @@ class GetLogsUseCaseTest {
     }
 
     @Test
-    fun `get TaskLogs should return true when task repository called and return success result`() {
+    fun `get TaskLogs should return list of logs when task repository return list of logs`() {
         //Given
         val taskId = 1
-        every { taskRepository.getTaskLogsByID(taskId.toString()) } returns Result.success(listOf<String>())
+        every { taskRepository.getTaskLogsByID(taskId.toString()) } returns listOf()
 
-        //When
-        val result = getLogsUseCase.getTaskLogs(taskId.toString())
-
-        //Then
-        kotlin.test.assertTrue { result.isSuccess }
+        assertDoesNotThrow { getLogsUseCase.getTaskLogs(taskId.toString()) }
 
     }
 
     @Test
-    fun `get Task Logs should return false when project repository called and return failure result`() {
+    fun `get Task Logs should throw exception when project repository throw exception`() {
         //Given
         val projectId = 1
-        every { taskRepository.getTaskLogsByID(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
+        every { taskRepository.getTaskLogsByID(projectId.toString()) } throws TaskExceptions.NoLogsFoundException()
 
-        //When
-        val result = getLogsUseCase.getTaskLogs(projectId.toString())
-
-        //Then
-        kotlin.test.assertFalse { result.isSuccess }
+        assertThrows<TaskExceptions.NoLogsFoundException> { getLogsUseCase.getTaskLogs(projectId.toString()) }
 
     }
-
-
 }

@@ -28,4 +28,9 @@ class TaskMemoryDataSource {
         tasks[updatedIndex] = task
         return tasks
     }
+
+    fun getTaskLogsById(taskId: String): List<String> {
+        return tasks.find { it.id.toString() == taskId }
+            ?.logs ?: emptyList()
+    }
 }

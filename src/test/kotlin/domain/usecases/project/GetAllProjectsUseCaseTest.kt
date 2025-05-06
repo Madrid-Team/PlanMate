@@ -1,55 +1,48 @@
 package domain.usecases.project
 
+import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.usecases.createProject
-import domain.utlis.ProjectExceptions
+import domain.utlis.PlanMateExceptions
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class GetAllProjectsUseCaseTest {
-
-    lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
-    lateinit var projectRepository: ProjectRepository
+    private lateinit var projectRepository: ProjectRepository
+    private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
 
     @BeforeEach
     fun setUp() {
-        projectRepository = mockk(relaxed = true)
+        projectRepository = mockk()
         getAllProjectsUseCase = GetAllProjectsUseCase(projectRepository)
     }
 
-
     @Test
-    fun `getAllProjects should return a success result when there are projects`() {
-        val project = listOf(
-            createProject(
-                id = UUID.randomUUID().toString(),
-                name = "Test Project",
-                description = "dia"
-            ),
-            createProject(
-                id = UUID.randomUUID().toString(),
-                name = "Test Project",
-                description = "dia"
-            )
-        )
-        every { projectRepository.getAllProjects() } returns Result.success(project)
+    fun `should return projects list when repository returns successfully`() {
+        // Given
+        val mockProjects = listOf<Project>(mockk(), mockk())
+        every { projectRepository.getAllProjects() } returns mockProjects
+
+        // When
         val result = getAllProjectsUseCase.getAllProjects()
-        assertTrue { result.isSuccess }
+
+        // Then
+        assertDoesNotThrow { getAllProjectsUseCase.getAllProjects() }
+        assertEquals(mockProjects, result)
     }
 
-
-
     @Test
-    fun `getAllProjects should return a fail result when there are no projects`() {
-        every { projectRepository.getAllProjects() } returns Result.failure(ProjectExceptions(""))
-        val result = getAllProjectsUseCase.getAllProjects()
-        assertTrue { result.isFailure }
+    fun `should throw exception when repository fails`() {
+        // Given
+        every { projectRepository.getAllProjects() } throws PlanMateExceptions("Failed to fetch projects")
+
+        // When & Then
+        assertThrows<PlanMateExceptions> {
+            getAllProjectsUseCase.getAllProjects()
+        }
     }
-
-
-
 }
