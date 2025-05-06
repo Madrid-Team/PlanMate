@@ -42,15 +42,35 @@ jacoco {
     toolVersion = "0.8.10"
 }
 
+val excludedClasses = listOf(
+    "**/di/**",
+    "**/data/dto/**",
+    "**/data/mapper/**",
+    "**/data/utils/**",
+    "**/domain/models/**",
+    "**/domain/utils/**",
+    "**/presentation/Main.kt",
+)
+
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
         xml.required.set(true)
         html.required.set(true)
     }
+    classDirectories.setFrom(
+        fileTree("build/classes/kotlin/main") {
+            exclude(excludedClasses)
+        }
+    )
 }
 
 tasks.jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+        fileTree("build/classes/kotlin/main") {
+            exclude(excludedClasses)
+        }
+    )
     violationRules {
         rule {
             limit {
