@@ -4,7 +4,7 @@ plugins {
     id("jacoco")
 }
 
-group = "org.example"
+group = "org.madrid"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -34,9 +34,12 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
-
 kotlin {
     jvmToolchain(8)
+}
+
+jacoco {
+    toolVersion = "0.8.10"
 }
 
 val excludedClasses = listOf(
