@@ -7,19 +7,20 @@ import org.madrid.data.source.mongoDb.MongoClientProvider
 class ProjectMongoDBDataSource(
     private val mongoClientProvider: MongoClientProvider
 ): ProjectDataSource {
-    override fun getProjects(): Result<List<ProjectDto>> {
+    override fun getProjects(): List<ProjectDto> {
         TODO("Not yet implemented")
     }
 
-    override fun createProject(project: ProjectDto): Result<Unit> {
+    override fun createProject(project: ProjectDto) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteProject(projects: List<ProjectDto>): Result<Unit> {
+    override fun deleteProject(projects: List<ProjectDto>) {
         TODO("Not yet implemented")
     }
 
-    override fun editProject(projects: List<ProjectDto>): Result<Unit> {
+    override fun editProject(projects: List<ProjectDto>) {
         TODO("Not yet implemented")
     }
+
 }
