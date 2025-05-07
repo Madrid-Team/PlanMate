@@ -8,9 +8,11 @@ import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
+import org.madrid.data.source.project.RemoteProjectDataSource
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource,
+    private val remoteProjectDataSource: RemoteProjectDataSource
     private val projectMemoryDataSource: ProjectMemoryDataSource,
 ) : ProjectRepository {
 
@@ -38,11 +40,10 @@ class ProjectRepositoryImpl(
     }
 
 
-    override fun createProject(project: Project) {
+    override suspend fun createProject(project: Project) {
         try {
-            val result = projectDataSource.createProject(project.toDto())
+            remoteProjectDataSource.createProject(project.toDto())
             projectMemoryDataSource.addProject(project)
-            result
 
         } catch (exception: Exception) {
             throw exception.toProjectException()
