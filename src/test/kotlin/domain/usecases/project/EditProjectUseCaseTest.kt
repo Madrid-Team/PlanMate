@@ -4,8 +4,10 @@ import domain.repository.ProjectRepository
 import domain.usecases.createProject
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -24,48 +26,53 @@ class EditProjectUseCaseTest {
 
     @Test
     fun `editProject should return true when project is updated successfully in projectRepository`() {
-        //Given
-        val project = createProject(
-            id = UUID.randomUUID().toString(),
-            name = "Test Project",
-            description = "dia"
-        )
-        every { projectRepository.editProject(project) } returns Unit
+        runTest {
+            //Given
+            val project = createProject(
+                id = UUID.randomUUID().toString(),
+                name = "Test Project",
+                description = "dia"
+            )
+            coEvery { projectRepository.editProject(project) } returns Unit
 
-        //When
+            //When
 
-        assertDoesNotThrow {
-            editProjectUseCase.editProject(project)
+            assertDoesNotThrow {
+                editProjectUseCase.editProject(project)
+            }
         }
-
     }
 
     @Test
     fun `editProject should return false when id is not found`() {
-        //Given
-        val project = createProject(
-            id = UUID.randomUUID().toString(),
-            name = "Test Project",
-            description = "dia"
-        )
-        every { projectRepository.editProject(project) } throws PlanMateExceptions("")
+        runTest {
+            //Given
+            val project = createProject(
+                id = UUID.randomUUID().toString(),
+                name = "Test Project",
+                description = "dia"
+            )
+            coEvery { projectRepository.editProject(project) } throws PlanMateExceptions("")
 
-        //When
-        assertThrows<PlanMateExceptions> {
-            editProjectUseCase.editProject(project)
+            //When
+            assertThrows<PlanMateExceptions> {
+                editProjectUseCase.editProject(project)
+            }
         }
     }
 
 
     @Test
     fun `editProject should return false when updated name is invalid`() {
-        //Given
-        val project = createProject(
-            name = "123&",
-        )
-        //When & Then
-        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
-            editProjectUseCase.editProject(project)
+        runTest {
+            //Given
+            val project = createProject(
+                name = "123&",
+            )
+            //When & Then
+            assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+                editProjectUseCase.editProject(project)
+            }
         }
     }
 

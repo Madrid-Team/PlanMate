@@ -54,7 +54,7 @@ class EditProjectCLITest {
         every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "4")
         every { inputReader.readInput("Enter the new name:") } returns "new-name"
 
-        every { getProjectByIdUseCase.invoke("1") } returns originalProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
         every {
             createLogUseCase.invoke(
                 operationType = OperationType.UPDATE,
@@ -68,7 +68,7 @@ class EditProjectCLITest {
             )
         } returns mockLogString
 
-        every {
+        coEvery {
             editProjectUseCase.editProject(match {
                 it.name == "new-name" &&
                         it.description == "original-description" &&
@@ -82,7 +82,7 @@ class EditProjectCLITest {
 
         // Then
         verify { outputPrinter.printMessage("Project edited successfully.") }
-        verify { editProjectUseCase.editProject(any()) }
+        coVerify { editProjectUseCase.editProject(any()) }
     }
 
     @Test
@@ -102,7 +102,7 @@ class EditProjectCLITest {
         every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "4")
         every { inputReader.readInput("Enter the new description:") } returns "new-description"
 
-        every { getProjectByIdUseCase.invoke("1") } returns originalProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
         every {
             createLogUseCase.invoke(
                 operationType = OperationType.UPDATE,
@@ -116,7 +116,7 @@ class EditProjectCLITest {
             )
         } returns mockLogString
 
-        every {
+        coEvery {
             editProjectUseCase.editProject(match {
                 it.name == "original-name" &&
                         it.description == "new-description" &&
@@ -150,7 +150,7 @@ class EditProjectCLITest {
         every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "4")
         every { inputReader.readInput(match { it.contains("Select project State:") }) } returns "2"
 
-        every { getProjectByIdUseCase.invoke("1") } returns originalProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
         every {
             createLogUseCase.invoke(
                 operationType = OperationType.UPDATE,
@@ -164,7 +164,7 @@ class EditProjectCLITest {
             )
         } returns mockLogString
 
-        every {
+        coEvery {
             editProjectUseCase.editProject(match {
                 it.name == "original-name" &&
                         it.description == "original-description" &&
@@ -185,12 +185,12 @@ class EditProjectCLITest {
     fun `should show error message when project not found`() {
         // Given
         every { inputReader.readInput("Enter the ID of the project to edit:") } returns "999"
-        every { getProjectByIdUseCase.invoke("999") } throws ProjectExceptions.ProjectNotFoundException()
+        coEvery { getProjectByIdUseCase.invoke("999") } throws ProjectExceptions.ProjectNotFoundException()
 
         // When & Then
         cli.show()
         verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
-        verify(exactly = 0) { editProjectUseCase.editProject(any()) }
+        coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
     }
 
     @Test
@@ -210,9 +210,9 @@ class EditProjectCLITest {
         every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "4")
         every { inputReader.readInput("Enter the new name:") } returns "new-name"
 
-        every { getProjectByIdUseCase.invoke("1") } returns originalProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
         every { createLogUseCase.invoke(any(), any(), any(), any(), any(), any(), any(), any()) } returns mockLogString
-        every { editProjectUseCase.editProject(any()) } throws PlanMateExceptions("Edit failed")
+        coEvery { editProjectUseCase.editProject(any()) } throws PlanMateExceptions("Edit failed")
 
         // When & Then
         cli.show()
@@ -234,13 +234,13 @@ class EditProjectCLITest {
         every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
         every { inputReader.readInput("Select an option:") } returns "4"
 
-        every { getProjectByIdUseCase.invoke("1") } returns originalProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
 
         // When
         cli.show()
 
         // Then
-        verify(exactly = 0) { editProjectUseCase.editProject(any()) }
+        coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
         verify(exactly = 0) { outputPrinter.printMessage("Project edited successfully.") }
     }
 }
