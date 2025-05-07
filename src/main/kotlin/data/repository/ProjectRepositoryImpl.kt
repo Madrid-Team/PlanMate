@@ -50,10 +50,10 @@ class ProjectRepositoryImpl(
         }
     }
 
-    override fun deleteProject(projectId: String) {
+    override suspend fun deleteProject(projectId: String) {
         try {
             val projectListAfterDeleteProject = projectMemoryDataSource.deleteProject(projectId)
-         projectDataSource.deleteProject(projectListAfterDeleteProject.map { it.toDto() })
+         remoteProjectDataSource.deleteProject(projectId)
         } catch (exception: Exception) {
             throw exception.toProjectException()
         }

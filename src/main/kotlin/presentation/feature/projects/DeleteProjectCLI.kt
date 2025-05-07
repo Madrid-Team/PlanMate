@@ -3,6 +3,7 @@ package presentation.feature.projects
 import domain.usecases.project.DeleteProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utlis.ProjectExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -22,7 +23,9 @@ class DeleteProjectCLI(
             val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
             when (confirmed.lowercase()) {
                 "yes" -> {
-                    deleteProjectUseCase.deleteProject(projectId)
+                    runBlocking {
+                        deleteProjectUseCase.deleteProject(projectId)
+                    }
                     outputPrinter.printMessage("Project deleted successfully.")
                 }
 

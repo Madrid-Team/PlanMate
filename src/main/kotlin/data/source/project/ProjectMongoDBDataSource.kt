@@ -1,5 +1,6 @@
 package org.madrid.data.source.project
 
+import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
@@ -20,7 +21,8 @@ class ProjectMongoDBDataSource(
     }
 
     override suspend fun deleteProject(projectId: String) {
-        TODO("Not yet implemented")
+        val query = Filters.eq("id", projectId)
+        collection.deleteOne(query)
     }
 
     override suspend fun editProject(project: ProjectDto) {
