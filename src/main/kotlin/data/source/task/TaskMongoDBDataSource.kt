@@ -44,7 +44,7 @@ class TaskMongoDBDataSource(
     }
 
     override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
-        val projectFilter = eq("id", projectId)
+        val projectFilter = eq("_id", projectId)
         return collection.find(projectFilter).toList().flatMap { it.tasks }.flatMap { it.logs }.toList()
 
     }
