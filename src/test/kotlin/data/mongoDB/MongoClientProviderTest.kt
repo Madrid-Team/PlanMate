@@ -20,7 +20,7 @@ class MongoClientProviderTest {
     @BeforeAll
     fun setup() {
         mongoClientProvider = MongoClientProvider()
-        database = mongoClientProvider.database
+//        database = mongoClientProvider.database
     }
 
     @Test

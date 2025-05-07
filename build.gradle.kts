@@ -15,7 +15,7 @@ dependencies {
     // TEST
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     // KOIN
     implementation("io.insert-koin:koin-core:3.5.3")
     // JUPITER
@@ -34,6 +34,7 @@ dependencies {
     implementation(platform("org.mongodb:mongodb-driver-bom:5.4.0"))
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine")
     implementation("org.mongodb:bson-kotlinx:5.4.0")
+
 }
 
 tasks.test {
