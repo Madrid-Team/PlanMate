@@ -4,8 +4,8 @@ import data.dto.project.ProjectDto
 
 interface RemoteProjectDataSource {
 
-    fun getProjects(): List<ProjectDto>
-    fun createProject(project: ProjectDto)
-    fun deleteProject(projectId: String)
-    fun editProject(project: ProjectDto)
+    suspend fun getProjects(): List<ProjectDto>
+    suspend fun createProject(project: ProjectDto)
+    suspend fun deleteProject(projectId: String)
+    suspend fun editProject(project: ProjectDto)
 }

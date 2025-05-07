@@ -3,24 +3,26 @@ package org.madrid.data.source.project
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
+import org.madrid.data.utils.PROJECT_COLLECTION
 
 class ProjectMongoDBDataSource(
-    private val database: MongoDatabase
-): ProjectDataSource {
+    database: MongoDatabase
+) : RemoteProjectDataSource {
+    private val collection = database.getCollection<ProjectDto>(PROJECT_COLLECTION)
 
-    override fun getProjects(): List<ProjectDto> {
+    override suspend fun getProjects(): List<ProjectDto> {
         TODO("Not yet implemented")
     }
 
-    override fun createProject(project: ProjectDto) {
-
+    override suspend fun createProject(project: ProjectDto) {
+        collection.insertOne(project)
     }
 
-    override fun deleteProject(projects: List<ProjectDto>) {
-
+    override suspend fun deleteProject(projectId: String) {
+        TODO("Not yet implemented")
     }
 
-    override fun editProject(projects: List<ProjectDto>) {
+    override suspend fun editProject(project: ProjectDto) {
         TODO("Not yet implemented")
     }
 
