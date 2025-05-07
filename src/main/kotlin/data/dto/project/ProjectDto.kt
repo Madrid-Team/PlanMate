@@ -9,7 +9,7 @@ import java.util.*
 
 @Serializable
 data class ProjectDto(
-    @BsonId @SerialName("_id") val id: String,
+    @SerialName("_id") val id: String,
     val name: String,
     val description: String,
     val createdBy: String,

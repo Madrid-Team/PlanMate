@@ -7,6 +7,7 @@ import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -54,19 +55,21 @@ class CreateProjectCLI(
             id = UUID.randomUUID()
         )
         try {
-            createProjectUseCase.createProject(
-                project.copy(
-                    projectLogs = listOf(
-                        createLogUseCase.invoke(
-                            operationType = OperationType.CREATE,
-                            entityName = project.name,
-                            entityType = EntityType.PROJECT,
-                            username = project.createdBy,
+            runBlocking {
+                createProjectUseCase.createProject(
+                    project.copy(
+                        projectLogs = listOf(
+                            createLogUseCase.invoke(
+                                operationType = OperationType.CREATE,
+                                entityName = project.name,
+                                entityType = EntityType.PROJECT,
+                                username = project.createdBy,
+                            )
                         )
                     )
                 )
-            )
-            outputPrinter.printMessage("Project created successfully")
+                outputPrinter.printMessage("Project created successfully")
+            }
 
         } catch (e: PlanMateExceptions) {
             outputPrinter.printMessage("Failed to create project: ${e.message}")
