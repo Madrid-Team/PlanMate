@@ -22,7 +22,7 @@ class ValidateUser(
 
     fun generateUUIDValidToNewUser(): UUID {
         val newId = UUID.randomUUID()
-        return when (userRepository.getUserById(newId.toString()).getOrNull()) {
+        return when (userRepository.getUserById(newId.toString())) {
             null -> newId
             else -> generateUUIDValidToNewUser()
         }

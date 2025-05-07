@@ -3,12 +3,14 @@ package domain.usecases.user
 import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
 
@@ -31,15 +33,14 @@ class CreateUserUseCaseTest {
         val generateId = UUID.randomUUID()
         val newUser = user.copy(id = generateId)
 
-        every { userRepository.getUserByName(newUserName) } returns Result.success(null)
-        every { userRepository.createNewUser(newUser) } returns Result.success(Unit)
+        every { userRepository.getUserByName(newUserName) } returns null
+        every { userRepository.createNewUser(newUser) } returns Unit
         every { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
 
-        // When
-        val result = createUserUseCase.createUser(user)
+        // When - Should not throw any exceptions
+        createUserUseCase.createUser(user)
 
         // Then
-        assertThat(result.isSuccess).isTrue()
         verify {
             userRepository.getUserByName(newUserName)
             userRepository.createNewUser(newUser)
@@ -47,17 +48,17 @@ class CreateUserUseCaseTest {
     }
 
     @Test
-    fun `Should not create user When  wrong formed user from repository`() {
+    fun `Should not create user When user already exists`() {
         // Given
-        val malformedUser = User(id = UUID.randomUUID(), "username7", "", "ADMIN")
+        val existingUser = User(id = UUID.randomUUID(), "username7", "password", "ADMIN")
 
-        every { userRepository.getUserByName("username7") } returns Result.success(malformedUser)
+        every { userRepository.getUserByName("username7") } returns existingUser
 
-        // When
-        val result = createUserUseCase.createUser(malformedUser)
+        // When/Then
+        val exception = assertThrows<UserExceptions.UserExist> {
+            createUserUseCase.createUser(existingUser)
+        }
 
-        // Then
-        assertThat(result.isFailure).isTrue()
-
+        assertThat(exception.message).contains("User already exists")
     }
 }

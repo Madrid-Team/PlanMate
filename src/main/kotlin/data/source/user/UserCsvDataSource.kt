@@ -11,17 +11,12 @@ class UserCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
 ) : UserDataSource {
-    override fun createNewUser(row: String): Result<Unit> {
-        try {
-            fileCsvWriter.writeToCsvFile(row)
-            return Result.success(Unit)
-        } catch (e: Exception) {
-            return Result.failure(e)
-        }
+    override fun createNewUser(row: String) {
+        fileCsvWriter.writeToCsvFile(row)
     }
 
     override fun deleteUser(userId: String) {
-        val allUsers = getAllUsers().getOrThrow()
+        val allUsers = getAllUsers()
         val updatedUsers = allUsers.filter { it.id.toString() != userId }
         val userRows = updatedUsers.map { user ->
             userCsvParser.parseUserToRow(user.toDto())
@@ -29,31 +24,21 @@ class UserCsvDataSource(
         fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
     }
 
-    override fun getUserById(userId: String): Result<User?> {
-        return try {
-            val user = getAllUsers().getOrThrow().firstOrNull { userId == it.id.toString() }
-            Result.success(user)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong"))
-        }
+    override fun getUserById(userId: String): User? {
+        val user = getAllUsers().firstOrNull { userId == it.id.toString() }
+        return user
+
     }
 
-    override fun getAllUsers(): Result<List<User>> {
-        return try {
-            val rows = fileCsvReader.readCsvFile()
-            val users = rows.map { userCsvParser.parseRowToUser(it).toDomain() }
-            return Result.success(users)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong in csv file"))
-        }
+    override fun getAllUsers(): List<User> {
+        val rows = fileCsvReader.readCsvFile()
+        val users = rows.map { userCsvParser.parseRowToUser(it).toDomain() }
+
+        return users
+
     }
 
-    override fun getUserByName(userName: String): Result<User?> {
-        return try {
-            val user = getAllUsers().getOrThrow().firstOrNull { userName == it.username }
-            Result.success(user)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong"))
-        }
+    override fun getUserByName(userName: String): User? {
+        return getAllUsers().firstOrNull { userName == it.username }
     }
 }

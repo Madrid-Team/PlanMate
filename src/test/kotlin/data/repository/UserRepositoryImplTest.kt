@@ -35,13 +35,13 @@ class UserRepositoryImplTest {
         val userRow = "1,username1,hash,ADMIN"
 
         every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Result.success(Unit)
+        every { userDataSource.createNewUser(userRow) } returns Unit
 
-        // When
-        val result = userRepositoryImpl.createNewUser(user)
+        // When/Then - No exception is thrown
+        userRepositoryImpl.createNewUser(user)
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
+        // Verify
+        verify { userDataSource.createNewUser(userRow) }
     }
 
     @Test
@@ -49,16 +49,18 @@ class UserRepositoryImplTest {
         // Given
         val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
         val userRow = "2,username2,hash2,MATE"
+        val exception = UserExist("User already exists")
 
         every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Result.failure(UserExist("User already exists"))
+        every { userDataSource.createNewUser(userRow) } throws exception
 
-        // When
-        val result = userRepositoryImpl.createNewUser(user)
+        // When/Then
+        val thrownException = assertThrows<Exception> {
+            userRepositoryImpl.createNewUser(user)
+        }
 
-        // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(UserExist::class.java)
+        // Verify exception is wrapped
+        assertThat(thrownException.cause).isSameInstanceAs(exception)
     }
 
     @Test
@@ -66,14 +68,13 @@ class UserRepositoryImplTest {
         // Given
         val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-        every { userDataSource.getUserById("1") } returns Result.success(user)
+        every { userDataSource.getUserById("1") } returns user
 
         // When
         val result = userRepositoryImpl.getUserById("1")
 
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user)
+        assertThat(result).isEqualTo(user)
     }
 
     @Test
@@ -84,14 +85,13 @@ class UserRepositoryImplTest {
             User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
         )
 
-        every { userDataSource.getAllUsers() } returns Result.success(users)
+        every { userDataSource.getAllUsers() } returns users
 
         // When
         val result = userRepositoryImpl.getAllUsers()
 
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).containsExactlyElementsIn(users)
+        assertThat(result).containsExactlyElementsIn(users)
     }
 
     @Test
@@ -99,14 +99,13 @@ class UserRepositoryImplTest {
         // Given
         val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-        every { userDataSource.getUserByName("username1") } returns Result.success(user)
+        every { userDataSource.getUserByName("username1") } returns user
 
         // When
         val result = userRepositoryImpl.getUserByName("username1")
 
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user)
+        assertThat(result).isEqualTo(user)
     }
 
     @Test
@@ -130,10 +129,10 @@ class UserRepositoryImplTest {
         every { userDataSource.deleteUser(userId) } throws exception
 
         // When/Then
-        val thrownException = assertThrows<NotFoundUser> {
+        val thrownException = assertThrows<Exception> {
             userRepositoryImpl.deleteUser(userId)
         }
 
-        assertThat(thrownException).isSameInstanceAs(exception)
+        assertThat(thrownException.cause).isSameInstanceAs(exception)
     }
 }
