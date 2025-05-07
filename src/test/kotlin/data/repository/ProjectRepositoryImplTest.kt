@@ -95,22 +95,23 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `editProject returns success when data source return success`() {
-        // Given
-        val project = createProject(id = UUID.randomUUID().toString(), name = "test")
-        val projects = listOf(
-            createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
-            createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
-        )
-        every { projectMemoryDataSource.editProject(project.toDomain()) } returns projects.map { it.toDomain() }
-        every { projectDataSource.getProjects() } returns projects
+        runTest {
+            // Given
+            val project = createProject(id = UUID.randomUUID().toString(), name = "test")
+            val projects = listOf(
+                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
+                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
+            )
+            every { projectMemoryDataSource.editProject(project.toDomain()) } returns projects.map { it.toDomain() }
+            every { projectDataSource.getProjects() } returns projects
 
 
-        // When & Then
-        assertDoesNotThrow {
-            repository.editProject(project.toDomain())
+            // When & Then
+            assertDoesNotThrow {
+                repository.editProject(project.toDomain())
 
+            }
         }
-
     }
 
 
@@ -141,47 +142,51 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `getProjectLogsById throw ProjectNotFoundException when project not exists in projects list`() {
-
-        val projects = listOf(
-            createProject(
-                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-                name = "test1",
-                projectLogs = listOf("project created", "project updated")
-            ),
-            createProject(
-                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-                name = "test2",
-                projectLogs = listOf("project created", "project updated")
+        runTest {
+            val projects = listOf(
+                createProject(
+                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+                    name = "test1",
+                    projectLogs = listOf("project created", "project updated")
+                ),
+                createProject(
+                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+                    name = "test2",
+                    projectLogs = listOf("project created", "project updated")
+                )
             )
-        )
-        every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+            every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
-        assertThrows<ProjectExceptions.ProjectNotFoundException> {
-            repository.getProjectById("5")
+            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+                repository.getProjectById("5")
+            }
+        }
+
+        @Test
+        fun `getProjectById should return the correct project when ID matches`() {
+            runTest {
+                val id = UUID.randomUUID()
+                val expectedProject = createProject(id = id.toString())
+
+                every { projectMemoryDataSource.getProjects() } returns listOf(expectedProject.toDomain())
+
+                val result = repository.getProjectById(id.toString())
+
+                assertThat(expectedProject).isEqualTo(result?.toDto())
+            }
+        }
+
+        @Test
+        fun `getProjectById should throw exception when ID does not match`() {
+            runTest {
+                val notExistId = UUID.randomUUID().toString()
+                val project = createProject(id = UUID.randomUUID().toString())
+
+                every { projectMemoryDataSource.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
+
+                assertThrows<ProjectExceptions.ProjectNotFoundException> { repository.getProjectById(notExistId) }
+            }
         }
     }
-
-    @Test
-    fun `getProjectById should return the correct project when ID matches`() {
-        val id = UUID.randomUUID()
-        val expectedProject = createProject(id = id.toString())
-
-        every { projectMemoryDataSource.getProjects() } returns listOf(expectedProject.toDomain())
-
-        val result = repository.getProjectById(id.toString())
-
-        assertThat(expectedProject).isEqualTo(result?.toDto())
-    }
-
-    @Test
-    fun `getProjectById should throw exception when ID does not match`() {
-        val notExistId = UUID.randomUUID().toString()
-        val project = createProject(id = UUID.randomUUID().toString())
-
-        every { projectMemoryDataSource.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
-
-        assertThrows<ProjectExceptions.ProjectNotFoundException> { repository.getProjectById(notExistId) }
-    }
-
 
 }

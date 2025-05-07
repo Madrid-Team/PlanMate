@@ -6,7 +6,7 @@ import domain.utlis.ProjectExceptions
 
 class EditProjectUseCase(private val projectRepository: ProjectRepository) {
 
-    fun editProject(project: Project) {
+    suspend fun editProject(project: Project) {
         validateName(project)
         projectRepository.editProject(project)
     }

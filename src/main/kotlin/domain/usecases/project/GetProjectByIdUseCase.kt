@@ -6,5 +6,5 @@ import domain.repository.ProjectRepository
 class GetProjectByIdUseCase(
     private val projectRepository: ProjectRepository
 ) {
-    fun invoke(id: String): Project = projectRepository.getProjectById(id)
+    suspend fun invoke(id: String): Project = projectRepository.getProjectById(id)
 }

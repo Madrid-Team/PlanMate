@@ -59,10 +59,10 @@ class ProjectRepositoryImpl(
         }
     }
 
-    override fun editProject(project: Project) {
+    override suspend fun editProject(project: Project) {
         try {
             val projectListAfterUpdateProject = projectMemoryDataSource.editProject(project)
-            projectDataSource.editProject(projectListAfterUpdateProject.map { it.toDto() })
+            remoteProjectDataSource.editProject(project.toDto())
 
         } catch (exception: Exception) {
             throw exception.toProjectException()
@@ -79,9 +79,9 @@ class ProjectRepositoryImpl(
         }
     }
 
-    override fun getProjectById(id: String): Project {
+    override suspend fun getProjectById(id: String): Project {
         try {
-            return projectMemoryDataSource.getProjects().find { it.id.toString() == id }
+            return remoteProjectDataSource.getProjects().find { it.id.toString() == id }?.toDomain()
                 ?: throw ProjectExceptions.ProjectNotFoundException()
         } catch (exception: Exception) {
             throw exception.toProjectException()

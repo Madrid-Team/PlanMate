@@ -1,6 +1,7 @@
 package org.madrid.data.source.project
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
@@ -26,7 +27,10 @@ class ProjectMongoDBDataSource(
     }
 
     override suspend fun editProject(project: ProjectDto) {
-        TODO("Not yet implemented")
+        val query = Filters.eq("id", project.id)
+        val updateSet = Updates.set("id", project.id)
+
+        collection.updateOne(filter = query, update = updateSet)
     }
 
 }
