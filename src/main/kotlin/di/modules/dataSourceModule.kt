@@ -13,6 +13,8 @@ import data.utils.FileValidator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.madrid.data.source.mongoDb.MongoClientProvider
+import org.madrid.data.source.project.ProjectMongoDBDataSource
+import org.madrid.data.source.project.RemoteProjectDataSource
 import java.io.File
 
 val dataSourceModule = module {
@@ -44,8 +46,11 @@ val dataSourceModule = module {
     single<UserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
     single<TaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader"))) }
 
-    single { TaskMemoryDataSource() }
-
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
+
+    single<RemoteProjectDataSource> { ProjectMongoDBDataSource(get())}
+
+    single { TaskMemoryDataSource() }
+
 }

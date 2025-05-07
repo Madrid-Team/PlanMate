@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<ProjectRepository> { ProjectRepositoryImpl(get(), get()) }
+    single<ProjectRepository> { ProjectRepositoryImpl(get(), get(), get()) }
     single<TaskRepository> { TaskRepositoryImpl(get(),get()) }
     single<UserRepository> { UserRepositoryImpl(get(), get()) }
 
