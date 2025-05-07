@@ -70,9 +70,9 @@ class ProjectRepositoryImpl(
 
     }
 
-    override fun getProjectLogsById(id: String): List<String> {
+    override suspend fun getProjectLogsById(id: String): List<String> {
         try {
-            val project = projectMemoryDataSource.getProjects().find { it.id.toString() == id }
+            val project = remoteProjectDataSource.getProjects().find { it.id == id }
             return project?.projectLogs ?: throw ProjectExceptions.ProjectNotFoundException()
         } catch (exception: Exception) {
             throw exception.toProjectException()

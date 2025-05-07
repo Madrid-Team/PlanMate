@@ -8,6 +8,6 @@ interface ProjectRepository {
     suspend fun createProject(project: Project)
     suspend fun deleteProject(projectId: String)
     suspend fun editProject(project: Project)
-    fun getProjectLogsById(id: String): List<String>
+    suspend fun getProjectLogsById(id: String): List<String>
     suspend fun getProjectById(id: String):Project
 }

@@ -22,13 +22,13 @@ class ProjectMongoDBDataSource(
     }
 
     override suspend fun deleteProject(projectId: String) {
-        val query = Filters.eq("id", projectId)
+        val query = Filters.eq("_id", projectId)
         collection.deleteOne(query)
     }
 
     override suspend fun editProject(project: ProjectDto) {
-        val query = Filters.eq("id", project.id)
-        val updateSet = Updates.set("id", project.id)
+        val query = Filters.eq("_id", project.id)
+        val updateSet = Updates.set("_id", project.id)
 
         collection.updateOne(filter = query, update = updateSet)
     }
