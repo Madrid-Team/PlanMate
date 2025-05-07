@@ -3,6 +3,7 @@ package presentation.feature.tasks
 
 import domain.usecases.task.DisplayAllTasksUseCase
 import domain.utlis.TaskExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -18,7 +19,7 @@ class TaskView(
         val projectId = inputReader.readInput("Enter project ID: ")
 
         try {
-            val result = displayAllTasksUseCase.display(projectId)
+            val result = runBlocking { displayAllTasksUseCase.display(projectId) }
             outputPrinter.printMessage(result)
         } catch (exception: TaskExceptions) {
             outputPrinter.printMessage(exception.message.toString())

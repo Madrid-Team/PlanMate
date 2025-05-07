@@ -8,6 +8,7 @@ import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -24,8 +25,9 @@ class EditProjectCLI(
         val id = inputReader.readInput("Enter the ID of the project to edit:")
         try {
 
-            val result = getProjectByIdUseCase.invoke(id)
-            val currentProject = result
+            val currentProject = runBlocking {
+                getProjectByIdUseCase.invoke(id)
+            }
             var updatedProject = currentProject.copy()
 
             while (true) {
@@ -73,15 +75,17 @@ class EditProjectCLI(
                             return
                         } else {
                             try {
-                                editProjectUseCase.editProject(
-                                    updatedProject.copy(
-                                        projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
-                                            currentProject,
-                                            updatedProject
+                                runBlocking {
+                                    editProjectUseCase.editProject(
+                                        updatedProject.copy(
+                                            projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
+                                                currentProject,
+                                                updatedProject
+                                            )
                                         )
                                     )
-                                )
-                                outputPrinter.printMessage("Project edited successfully.")
+                                    outputPrinter.printMessage("Project edited successfully.")
+                                }
                             } catch (e: PlanMateExceptions) {
                                 outputPrinter.printMessage("Failed to edit project: ${e.message}")
                             }

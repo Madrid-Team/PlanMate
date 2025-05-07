@@ -7,6 +7,7 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -35,7 +36,8 @@ class CreateTaskCLI(
         val projectId = inputReader.readInput("Enter project ID: ")
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
-        val project = getProjectByIdUseCase.invoke(projectId)
+
+        val project = runBlocking { getProjectByIdUseCase.invoke(projectId) }
 
         outputPrinter.printMessage("Available task states:")
         project.taskStates.forEachIndexed { index, state ->

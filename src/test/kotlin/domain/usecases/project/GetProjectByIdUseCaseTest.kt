@@ -4,8 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -23,28 +25,33 @@ class GetProjectByIdUseCaseTest {
 
     @Test
     fun `should return project when project exists`() {
-        // Given
-        val projectId = "1"
-        val mockProject: Project = mockk()
-        every { projectRepository.getProjectById(projectId) } returns mockProject
+        runTest {
+            // Given
+            val projectId = "1"
+            val mockProject: Project = mockk()
+            coEvery { projectRepository.getProjectById(projectId) } returns mockProject
 
-        // When
-        val result = getProjectByIdUseCase.invoke(projectId)
+            // When
+            val result = getProjectByIdUseCase.invoke(projectId)
 
-        // Then
-        assertDoesNotThrow { getProjectByIdUseCase.invoke(projectId) }
-        assertThat(result).isEqualTo(mockProject)
+            // Then
+            assertDoesNotThrow { getProjectByIdUseCase.invoke(projectId) }
+            assertThat(result).isEqualTo(mockProject)
+        }
     }
 
     @Test
     fun ` should throw exception when project does not exist`() {
-        // Given
-        val projectId = "999"
-        every { projectRepository.getProjectById(projectId) } throws PlanMateExceptions("Project not found")
+        runTest {
+            // Given
+            val projectId = "999"
+            coEvery { projectRepository.getProjectById(projectId) } throws PlanMateExceptions("Project not found")
 
-        // When & Then
-        assertThrows<PlanMateExceptions> {
-            getProjectByIdUseCase.invoke(projectId)
+            // When & Then
+            assertThrows<PlanMateExceptions> {
+                getProjectByIdUseCase.invoke(projectId)
+            }
         }
     }
+
 }
