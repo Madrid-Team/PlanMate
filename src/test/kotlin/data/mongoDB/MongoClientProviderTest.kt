@@ -1,8 +1,7 @@
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
 import org.bson.Document
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -12,7 +11,7 @@ import org.madrid.data.utils.DATABASE_NAME
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MongoClientProviderTest {
+    class MongoClientProviderTest {
 
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
@@ -20,7 +19,7 @@ class MongoClientProviderTest {
     @BeforeAll
     fun setup() {
         mongoClientProvider = MongoClientProvider()
-//        database = mongoClientProvider.database
+        database = mongoClientProvider.getDatabase()
     }
 
     @Test
