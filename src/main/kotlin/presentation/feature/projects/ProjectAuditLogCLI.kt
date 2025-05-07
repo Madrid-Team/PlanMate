@@ -2,6 +2,7 @@ package presentation.feature.projects
 
 import domain.usecases.project.GetProjectLogsByIdUseCase
 import domain.utlis.PlanMateExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -14,7 +15,7 @@ class ProjectAuditLogCLI(
         printer.printMessage("=== Project Audit Log ===")
         val projectId = reader.readInput("Enter Project ID to view audit logs: ")
         try {
-            val logs = getProjectLogsByIdUseCase.getProjectLogsById(projectId)
+            val logs = runBlocking { getProjectLogsByIdUseCase.getProjectLogsById(projectId) }
             if (logs.isEmpty()) {
                 printer.printMessage("No audit logs found for project ID: $projectId\n")
             } else {

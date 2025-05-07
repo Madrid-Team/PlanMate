@@ -5,6 +5,6 @@ import domain.repository.ProjectRepository
 class GetProjectLogsByIdUseCase(
     private val projectRepository: ProjectRepository
 ) {
-    fun getProjectLogsById(id: String): List<String> =
+    suspend fun getProjectLogsById(id: String): List<String> =
         projectRepository.getProjectLogsById(id)
 }
