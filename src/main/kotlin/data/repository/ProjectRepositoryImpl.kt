@@ -32,9 +32,9 @@ class ProjectRepositoryImpl(
 
     }
 
-    override fun getAllProjects(): List<Project> {
-        val allProjects = projectMemoryDataSource.getProjects()
-        return allProjects.ifEmpty {
+    override suspend fun getAllProjects(): List<Project> {
+        val allProjects = remoteProjectDataSource.getProjects()
+        return allProjects.map { it.toDomain() }.ifEmpty {
             throw PlanMateExceptions("You haven't any projects yet")
         }
     }

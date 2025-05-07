@@ -4,7 +4,7 @@ import domain.models.project.Project
 
 interface ProjectRepository {
 
-    fun getAllProjects(): List<Project>
+    suspend fun getAllProjects(): List<Project>
     suspend fun createProject(project: Project)
     fun deleteProject(projectId: String)
     fun editProject(project: Project)

@@ -3,6 +3,7 @@ package org.madrid.data.source.project
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
+import kotlinx.coroutines.flow.toList
 import org.madrid.data.utils.PROJECT_COLLECTION
 
 class ProjectMongoDBDataSource(
@@ -11,7 +12,7 @@ class ProjectMongoDBDataSource(
     private val collection = database.getCollection<ProjectDto>(PROJECT_COLLECTION)
 
     override suspend fun getProjects(): List<ProjectDto> {
-        TODO("Not yet implemented")
+        return collection.find().toList()
     }
 
     override suspend fun createProject(project: ProjectDto) {
