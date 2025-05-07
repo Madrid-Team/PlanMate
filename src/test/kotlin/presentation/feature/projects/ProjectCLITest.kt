@@ -1,6 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetAllProjectsUseCase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -37,7 +38,7 @@ class ProjectCLITest {
     fun `should show projects when user selects 1`() {
         // given
         every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
-        every { getAllProjectsUseCase.getAllProjects() } returns emptyList()
+        coEvery { getAllProjectsUseCase.getAllProjects() } returns emptyList()
 
         // when
         projectCLI.show()

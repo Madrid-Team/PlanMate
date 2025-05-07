@@ -8,10 +8,7 @@ import data.source.project.ProjectDataSource
 import data.source.project.ProjectMemoryDataSource
 import data.utils.ProjectRepositoryImpl
 import domain.utlis.ProjectExceptions
-import io.mockk.Runs
-import io.mockk.every
-import io.mockk.just
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -43,20 +40,22 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `getAllProjects returns list of projects when list is not empty `() {
-        // Given
-        val projects = listOf(
-            createProject(id = UUID.randomUUID().toString(), name = "test"),
-            createProject(id = UUID.randomUUID().toString(), name = "test2")
-        )
-        every { projectDataSource.getProjects() } returns projects
-        every { projectMemoryDataSource.setProjects(any()) } just Runs
-        every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+        testScope.runTest {
+            // Given
+            val projects = listOf(
+                createProject(id = UUID.randomUUID().toString(), name = "test"),
+                createProject(id = UUID.randomUUID().toString(), name = "test2")
+            )
+            coEvery { remoteProjectDataSource.getProjects() } returns projects
+            every { projectMemoryDataSource.setProjects(any()) } just Runs
+            every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
-        // When
-        val result = repository.getAllProjects()
+            // When
+            val result = repository.getAllProjects()
 
-        // Then
-        assertThat(result).containsExactlyElementsIn(projects.map { it.toDomain() })
+            // Then
+            assertThat(result).containsExactlyElementsIn(projects.map { it.toDomain() })
+        }
     }
 
     @Test

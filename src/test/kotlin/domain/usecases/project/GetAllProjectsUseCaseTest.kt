@@ -3,8 +3,10 @@ package domain.usecases.project
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,26 +25,30 @@ class GetAllProjectsUseCaseTest {
 
     @Test
     fun `should return projects list when repository returns successfully`() {
-        // Given
-        val mockProjects = listOf<Project>(mockk(), mockk())
-        every { projectRepository.getAllProjects() } returns mockProjects
+        runTest {
+            // Given
+            val mockProjects = listOf<Project>(mockk(), mockk())
+            coEvery { projectRepository.getAllProjects() } returns mockProjects
 
-        // When
-        val result = getAllProjectsUseCase.getAllProjects()
+            // When
+            val result = getAllProjectsUseCase.getAllProjects()
 
-        // Then
-        assertDoesNotThrow { getAllProjectsUseCase.getAllProjects() }
-        assertEquals(mockProjects, result)
+            // Then
+            assertDoesNotThrow { getAllProjectsUseCase.getAllProjects() }
+            assertEquals(mockProjects, result)
+        }
     }
 
     @Test
     fun `should throw exception when repository fails`() {
-        // Given
-        every { projectRepository.getAllProjects() } throws PlanMateExceptions("Failed to fetch projects")
+        runTest {
+            // Given
+            coEvery { projectRepository.getAllProjects() } throws PlanMateExceptions("Failed to fetch projects")
 
-        // When & Then
-        assertThrows<PlanMateExceptions> {
-            getAllProjectsUseCase.getAllProjects()
+            // When & Then
+            assertThrows<PlanMateExceptions> {
+                getAllProjectsUseCase.getAllProjects()
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package presentation.feature.projects
 
 import domain.usecases.project.GetAllProjectsUseCase
 import domain.utlis.PlanMateExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -39,8 +40,10 @@ class ProjectCLI(
 
     fun showProjects() {
         try {
-            getAllProjectsUseCase.getAllProjects().also {
-                projectView.projectList(it)
+            runBlocking {
+                getAllProjectsUseCase.getAllProjects().also {
+                    projectView.projectList(it)
+                }
             }
         } catch (e: PlanMateExceptions) {
             outputPrinter.printMessage("Failed to load projects:${e.message}")
