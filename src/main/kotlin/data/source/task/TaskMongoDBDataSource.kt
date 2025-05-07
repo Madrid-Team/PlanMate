@@ -1,30 +1,40 @@
 package org.madrid.data.source.task
 
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
-import data.source.task.TaskDataSource
+import kotlinx.coroutines.flow.toList
+import org.madrid.data.utils.PROJECT_COLLECTION
 
-class TaskMongoDBDataSource: TaskDataSource {
-    override fun editTask(tasks: List<TaskDto>) {
+class TaskMongoDBDataSource(
+    private val database: MongoDatabase
+
+) : RemoteTaskDataSource {
+    private val collection = database.getCollection<ProjectDto>(PROJECT_COLLECTION)
+    override suspend fun editTask(tasks: TaskDto) {
+        return
+    }
+
+    override suspend fun deleteTask(projectId: String,taskId: String) {
         TODO("Not yet implemented")
     }
 
-    override fun deleteTask(task: List<TaskDto>) {
+    override suspend fun createTask(task: TaskDto) {
+        collection.updateOne(
+            filter = Filters.eq("id", task.projectId),
+            update = Updates.push("tasks", task)
+        )
+    }
+
+    override suspend fun getTasksByProjectId(projectId: String): List<TaskDto> {
         TODO("Not yet implemented")
     }
 
-    override fun createTask(task: TaskDto) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
+        val projectFilter = Filters.eq("id", projectId)
+        return collection.find(projectFilter).toList().flatMap { it.tasks }.flatMap { it.logs }.toList()
 
-    override fun getAllTasks(): List<TaskDto> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getTasksByProjectId(projectId: String): List<TaskDto> {
-        TODO("Not yet implemented")
-    }
-
-    override fun getTaskLogsByID(taskId: String): List<String> {
-        TODO("Not yet implemented")
     }
 }
