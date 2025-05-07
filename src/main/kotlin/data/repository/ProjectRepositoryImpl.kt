@@ -12,7 +12,7 @@ import org.madrid.data.source.project.RemoteProjectDataSource
 
 class ProjectRepositoryImpl(
     private val projectDataSource: ProjectDataSource,
-    private val remoteProjectDataSource: RemoteProjectDataSource
+    private val remoteProjectDataSource: RemoteProjectDataSource,
     private val projectMemoryDataSource: ProjectMemoryDataSource,
 ) : ProjectRepository {
 

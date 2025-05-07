@@ -7,7 +7,7 @@ class CreateProjectUseCase(
     private val projectRepository: ProjectRepository,
 ) {
 
-    fun createProject(project: Project) =
+    suspend fun createProject(project: Project) =
         projectRepository.createProject(project)
 
 
