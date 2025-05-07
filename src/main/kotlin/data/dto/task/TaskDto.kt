@@ -1,6 +1,5 @@
 package data.dto.task
 
-import data.dto.authentication.UserDto
 import kotlinx.serialization.Serializable
 
 @Serializable
