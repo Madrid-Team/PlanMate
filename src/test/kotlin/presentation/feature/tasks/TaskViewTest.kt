@@ -2,10 +2,9 @@ package presentation.feature.tasks
 
 import domain.usecases.task.DisplayAllTasksUseCase
 import domain.utlis.TaskExceptions
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import io.mockk.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -17,6 +16,7 @@ class TaskViewTest {
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var taskView: TaskView
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
@@ -24,27 +24,31 @@ class TaskViewTest {
         outputPrinter = mockk(relaxed = true)
         displayAllTasksUseCase = mockk()
         taskView = TaskView(displayAllTasksUseCase, outputPrinter, inputReader)
+        testScope = TestScope()
     }
 
     @Test
     fun `should print project not found when project does not exist`() {
-        // Given
-        val projectId = "non_existing_project"
-        every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns "Project not found."
+      testScope.launch {
+          // Given
+          val projectId = "non_existing_project"
+          every { inputReader.readInput("Enter project ID: ") } returns projectId
+          coEvery { displayAllTasksUseCase.display(projectId) } returns "Project not found."
 
-        // When
-        taskView.show()
+          // When
+          taskView.show()
 
-        // Then
-        verify { outputPrinter.printMessage("Project not found.") }
+          // Then
+          verify { outputPrinter.printMessage("Project not found.") }
+      }
     }
 
     @Test
     fun `should print formatted tasks when tasks exist`() {
-        // Given
-        val projectId = "p1"
-        val expectedOutput = """
+       testScope.launch {
+           // Given
+           val projectId = "p1"
+           val expectedOutput = """
             TODO:
             - Task 1
 
@@ -55,46 +59,51 @@ class TaskViewTest {
             - Task 3
         """.trimIndent()
 
-        every { inputReader.readInput("Enter project ID: ") } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns expectedOutput
+           every { inputReader.readInput("Enter project ID: ") } returns projectId
+           coEvery { displayAllTasksUseCase.display(projectId) } returns expectedOutput
 
-        // When
-        taskView.show()
+           // When
+           taskView.show()
 
-        // Then
-        verify { outputPrinter.printMessage(expectedOutput) }
+           // Then
+           verify { outputPrinter.printMessage(expectedOutput) }
+       }
     }
 
     @Test
     fun `should show error message when display fails`() {
-        val projectId = "project-123"
-        val errorMessage = "Project not found"
-        every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } throws TaskExceptions(errorMessage)
+       testScope.launch {
+           val projectId = "project-123"
+           val errorMessage = "Project not found"
+           every { inputReader.readInput(any()) } returns projectId
+           coEvery { displayAllTasksUseCase.display(projectId) } throws TaskExceptions(errorMessage)
 
-        taskView.show()
+           taskView.show()
 
-        verifySequence {
-            outputPrinter.printMessage("=== Display Tasks ===")
-            inputReader.readInput("Enter project ID: ")
-            displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMessage(errorMessage)
-        }
+           coVerifySequence {
+               outputPrinter.printMessage("=== Display Tasks ===")
+               inputReader.readInput("Enter project ID: ")
+               displayAllTasksUseCase.display(projectId)
+               outputPrinter.printMessage(errorMessage)
+           }
+       }
     }
 
     @Test
     fun `should display tasks when display is successful`() {
-        val projectId = "project-123"
-        every { inputReader.readInput(any()) } returns projectId
-        every { displayAllTasksUseCase.display(projectId) } returns "Task 1\nTask 2"
+        testScope.launch {
+            val projectId = "project-123"
+            every { inputReader.readInput(any()) } returns projectId
+            coEvery { displayAllTasksUseCase.display(projectId) } returns "Task 1\nTask 2"
 
-        taskView.show()
+            taskView.show()
 
-        verifySequence {
-            outputPrinter.printMessage("=== Display Tasks ===")
-            inputReader.readInput("Enter project ID: ")
-            displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMessage("Task 1\nTask 2")
+            coVerifySequence {
+                outputPrinter.printMessage("=== Display Tasks ===")
+                inputReader.readInput("Enter project ID: ")
+                displayAllTasksUseCase.display(projectId)
+                outputPrinter.printMessage("Task 1\nTask 2")
+            }
         }
     }
 

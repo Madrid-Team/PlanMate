@@ -2,9 +2,12 @@ package presentation.feature.tasks
 
 import domain.usecases.task.EditTaskUseCase
 import domain.utlis.TaskExceptions
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -17,6 +20,7 @@ class EditTaskCLITest {
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var taskView: TaskView
     private lateinit var editTaskCLI: EditTaskCLI
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
@@ -29,43 +33,47 @@ class EditTaskCLITest {
 
     @Test
     fun `should edit task successfully when call edit task`() {
-        every { inputReader.readInput(any()) } returnsMany listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            "New Title",
-            "New Description"
-        )
-        val updatedTask = helperTask(
-            projectId = UUID.randomUUID().toString(),
-            id = UUID.randomUUID().toString(),
-            title = "New Title",
-            description = "New Description"
-        )
-        every { editTaskUseCase.editTask(updatedTask) } returns Unit
+      testScope.launch {
+          every { inputReader.readInput(any()) } returnsMany listOf(
+              UUID.randomUUID().toString(),
+              UUID.randomUUID().toString(),
+              "New Title",
+              "New Description"
+          )
+          val updatedTask = helperTask(
+              projectId = UUID.randomUUID().toString(),
+              id = UUID.randomUUID().toString(),
+              title = "New Title",
+              description = "New Description"
+          )
+          coEvery { editTaskUseCase.editTask(updatedTask) } returns Unit
 
-        editTaskCLI.show()
+          editTaskCLI.show()
 
-        verify { outputPrinter.printMessage("Task updated successfully") }
+          verify { outputPrinter.printMessage("Task updated successfully") }
+      }
     }
 
     @Test
     fun `should show error message when task update fails`() {
-        every { inputReader.readInput(any()) } returnsMany listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            "New Title",
-            "New Description"
-        )
-        val updatedTask = helperTask(
-            projectId = UUID.randomUUID().toString(),
-            id = UUID.randomUUID().toString(),
-            title = "New Title",
-            description = "New Description"
-        )
-        every { editTaskUseCase.editTask(any()) } throws TaskExceptions.TaskCannotEditException()
+        testScope.launch {
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "New Title",
+                "New Description"
+            )
+            val updatedTask = helperTask(
+                projectId = UUID.randomUUID().toString(),
+                id = UUID.randomUUID().toString(),
+                title = "New Title",
+                description = "New Description"
+            )
+            coEvery { editTaskUseCase.editTask(any()) } throws TaskExceptions.TaskCannotEditException()
 
-        editTaskCLI.show()
+            editTaskCLI.show()
 
-        verify { outputPrinter.printError(TaskExceptions.TaskCannotEditException().message!!) }
-    }
+            verify { outputPrinter.printError(TaskExceptions.TaskCannotEditException().message!!) }
+        }
+        }
 }

@@ -6,7 +6,7 @@ import domain.repository.TaskRepository
 class GetTasksByProjectIdUseCase(
     private val taskRepository: TaskRepository
 ) {
-    operator fun invoke(projectId: String): List<Task> {
+    suspend operator fun invoke(projectId: String): List<Task> {
         return taskRepository.getTasksByProjectId(projectId)
     }
 }

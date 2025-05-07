@@ -7,6 +7,7 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -20,15 +21,17 @@ class CreateTaskCLI(
 
 ) {
     fun show() {
-        outputPrinter.printMessage("=== Create Task ===")
-        try {
-            val task = readTaskInput()
-            createTaskUseCase.createTask(task)
-            outputPrinter.printMessage("Task created successfully")
-        } catch (exception: Exception) {
-            outputPrinter.printMessage(exception.message.toString())
-            outputPrinter.printMessage("Failed to create task")
-        }
+       runBlocking {
+           outputPrinter.printMessage("=== Create Task ===")
+           try {
+               val task = readTaskInput()
+               createTaskUseCase.createTask(task)
+               outputPrinter.printMessage("Task created successfully")
+           } catch (exception: Exception) {
+               outputPrinter.printMessage(exception.message.toString())
+               outputPrinter.printMessage("Failed to create task")
+           }
+       }
     }
 
     private fun readTaskInput(): Task {

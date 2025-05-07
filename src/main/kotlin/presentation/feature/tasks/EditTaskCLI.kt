@@ -1,9 +1,11 @@
 package presentation.feature.tasks
 
+import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
 import domain.utlis.PlanMateExceptions
 import domain.utlis.TaskExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -28,13 +30,15 @@ class EditTaskCLI(
             title = title,
             description = description,
             taskState = "",
-            createdBy = "",
+            createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",
             logs = listOf()
         )
 
         try {
-            editTaskUseCase.editTask(updatedTask)
-            outputPrinter.printMessage("Task updated successfully")
+            runBlocking {
+                editTaskUseCase.editTask(updatedTask)
+                outputPrinter.printMessage("Task updated successfully")
+            }
         } catch (exception: TaskExceptions.TaskCannotEditException) {
             outputPrinter.printError(exception.message ?: "Failed to update task")
         }

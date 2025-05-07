@@ -7,7 +7,7 @@ class DisplayAllTasksUseCase(
     private val projectRepository: ProjectRepository,
     private val taskRepository: TaskRepository
 ) {
-    fun display(projectId: String): String {
+    suspend fun display(projectId: String): String {
         val project = projectRepository.getProjectById(projectId)
 
         val tasks = taskRepository.getTasksByProjectId(projectId)

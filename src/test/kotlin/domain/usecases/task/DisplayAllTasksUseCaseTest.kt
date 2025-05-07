@@ -5,9 +5,9 @@ import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.usecases.createProject
 import domain.utlis.ProjectExceptions
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -17,82 +17,90 @@ class DisplayAllTasksUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var taskRepository: TaskRepository
     private lateinit var displayAllTasksUseCase: DisplayAllTasksUseCase
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk()
         taskRepository = mockk()
         displayAllTasksUseCase = DisplayAllTasksUseCase(projectRepository, taskRepository)
+        testScope = TestScope()
     }
 
     @Test
     fun `display should return Project not found message when project does not exist`() {
         // Given
-        val projectId = UUID.randomUUID().toString()
-        every { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+        testScope.launch {
+            val projectId = UUID.randomUUID().toString()
+            every { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
-        assertThrows<ProjectExceptions.ProjectNotFoundException> { displayAllTasksUseCase.display(projectId) }
+            assertThrows<ProjectExceptions.ProjectNotFoundException> { displayAllTasksUseCase.display(projectId) }
+        }
     }
 
     @Test
     fun `display should return empty swimlanes when no tasks exist`() {
-        // Given
-        val projectId = UUID.randomUUID().toString()
-        val project = createProject(
-            id = projectId,
-            name = "Empty Project",
-            taskStates = listOf("TODO", "In Progress", "Done")
-        )
+        testScope.launch {
+            // Given
+            val projectId = UUID.randomUUID().toString()
+            val project = createProject(
+                id = projectId,
+                name = "Empty Project",
+                taskStates = listOf("TODO", "In Progress", "Done")
+            )
 
-        every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
+            every { projectRepository.getProjectById(projectId) } returns project
+            coEvery { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
 
-        // When
-        val result = displayAllTasksUseCase.display(projectId)
-        // Then
-        verify { projectRepository.getProjectById(projectId) }
-        verify { taskRepository.getTasksByProjectId(projectId) }
-        val expectedOutput = """
+            // When
+            val result = displayAllTasksUseCase.display(projectId)
+            // Then
+            verify { projectRepository.getProjectById(projectId) }
+            coVerify() { taskRepository.getTasksByProjectId(projectId) }
+            val expectedOutput = """
     TODO:
 
     In Progress:
 
     Done:
 """.trimIndent()
-        assertThat(result).isEqualTo(expectedOutput)
+            assertThat(result).isEqualTo(expectedOutput)
+        }
     }
 
     @Test
     fun `display should return formatted swimlanes when project and tasks exist`() {
-        // Given
-        val projectId = UUID.randomUUID().toString()
-        val project = createProject(
-            id = projectId,
-            name = "My Project",
-            taskStates = listOf("TODO", "In Progress", "Done")
-        )
 
-        val tasks = listOf(
-            createTask(id = UUID.randomUUID().toString(), title = "Task 1", state = "TODO", projectId = projectId),
-            createTask(
-                id = UUID.randomUUID().toString(),
-                title = "Task 2",
-                state = "In Progress",
-                projectId = projectId
-            ),
-            createTask(id = UUID.randomUUID().toString(), title = "Task 3", state = "Done", projectId = projectId)
-        )
+        testScope.launch {
+            // Given
+            val projectId = UUID.randomUUID().toString()
+            val project = createProject(
+                id = projectId,
+                name = "My Project",
+                taskStates = listOf("TODO", "In Progress", "Done")
+            )
 
-        every { projectRepository.getProjectById(projectId) } returns project
-        every { taskRepository.getTasksByProjectId(projectId) } returns tasks
+            val tasks = listOf(
+                createTask(id = UUID.randomUUID().toString(), title = "Task 1", state = "TODO", projectId = projectId),
+                createTask(
+                    id = UUID.randomUUID().toString(),
+                    title = "Task 2",
+                    state = "In Progress",
+                    projectId = projectId
+                ),
+                createTask(id = UUID.randomUUID().toString(), title = "Task 3", state = "Done", projectId = projectId)
+            )
 
-        // When
-        val result = displayAllTasksUseCase.display(projectId)
+            every { projectRepository.getProjectById(projectId) } returns project
+            coEvery { taskRepository.getTasksByProjectId(projectId) } returns tasks
 
-        // Then
-        verify { projectRepository.getProjectById(projectId) }
-        verify { taskRepository.getTasksByProjectId(projectId) }
-        val expectedOutput = """
+            // When
+            val result = displayAllTasksUseCase.display(projectId)
+
+            // Then
+            coVerify { projectRepository.getProjectById(projectId) }
+            coEvery { taskRepository.getTasksByProjectId(projectId) }
+            val expectedOutput = """
     TODO:
     - Task 1
 
@@ -102,7 +110,8 @@ class DisplayAllTasksUseCaseTest {
     Done:
     - Task 3
 """.trimIndent()
-        assertThat(result).isEqualTo(expectedOutput)
+            assertThat(result).isEqualTo(expectedOutput)
+        }
     }
 
 

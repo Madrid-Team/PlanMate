@@ -15,6 +15,8 @@ import org.koin.dsl.module
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
 import org.madrid.data.source.project.RemoteProjectDataSource
+import org.madrid.data.source.task.RemoteTaskDataSource
+import org.madrid.data.source.task.TaskMongoDBDataSource
 import java.io.File
 
 val dataSourceModule = module {
@@ -52,5 +54,6 @@ val dataSourceModule = module {
     single<RemoteProjectDataSource> { ProjectMongoDBDataSource(get())}
 
     single { TaskMemoryDataSource() }
+    single<RemoteTaskDataSource> { TaskMongoDBDataSource(get()) }
 
 }

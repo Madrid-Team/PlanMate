@@ -6,7 +6,7 @@ import domain.repository.TaskRepository
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun createTask(task: Task) {
+    suspend fun createTask(task: Task) {
         taskRepository.createTask(task)
     }
 }
