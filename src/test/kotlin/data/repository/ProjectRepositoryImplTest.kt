@@ -12,25 +12,33 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import org.madrid.data.source.project.RemoteProjectDataSource
 import java.util.*
 
 class ProjectRepositoryImplTest {
     private lateinit var projectDataSource: ProjectDataSource
     private lateinit var repository: ProjectRepositoryImpl
     private lateinit var projectMemoryDataSource: ProjectMemoryDataSource
+    private lateinit var remoteProjectDataSource: RemoteProjectDataSource
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
         projectDataSource = mockk(relaxed = true)
         projectMemoryDataSource = mockk(relaxed = true)
+        remoteProjectDataSource = mockk(relaxed = true)
         repository = ProjectRepositoryImpl(
             projectDataSource,
+            remoteProjectDataSource,
             projectMemoryDataSource
         )
+        testScope = TestScope()
     }
 
     @Test
@@ -53,15 +61,17 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `createProject returns success when data source return success`() {
-        // Given
-        val project = createProject(name = "test")
-        every { projectDataSource.createProject(project) } returns Unit
-        every { projectMemoryDataSource.addProject(project.toDomain()) } returns Unit
+        testScope.runTest {
+            // Given
+            val project = createProject(name = "test")
+            every { projectDataSource.createProject(project) } returns Unit
+            every { projectMemoryDataSource.addProject(project.toDomain()) } returns Unit
 
-        // When
-        // Then
-        assertDoesNotThrow {
-            repository.createProject(project.toDomain())
+            // When
+            // Then
+            assertDoesNotThrow {
+                repository.createProject(project.toDomain())
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.*
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -23,11 +24,13 @@ class CreateProjectCLITest {
     private val userMock = mockk<User>()
 
     private lateinit var cli: CreateProjectCLI
+    private lateinit var testScope: TestScope
 
 
     @BeforeEach
     fun setUp() {
 
+        testScope = TestScope()
         mockkObject(CurrentUser)
         every { userMock.username } returns "test-user"
         every { CurrentUser.getCurrentUser() } returns userMock
@@ -64,13 +67,13 @@ class CreateProjectCLITest {
             projectLogs = listOf(mockLogString)
         )
 
-        every { createProjectUseCase.createProject(any()) } returns Unit
+        coEvery { createProjectUseCase.createProject(any()) } returns Unit
 
         // When
         cli.show()
 
         // Then
-        verify {
+        coVerify {
             createProjectUseCase.createProject(match {
                 it.name == project.name &&
                         it.description == project.description &&
@@ -100,14 +103,14 @@ class CreateProjectCLITest {
             )
         } returns mockLogString
 
-        every { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
+        coEvery { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
 
         // When
         cli.show()
 
         // Then
-        verify { createProjectUseCase.createProject(any()) }
-        verify { outputPrinter.printMessage("Failed to create project: failed") }
+        coVerify { createProjectUseCase.createProject(any()) }
+        coVerify { outputPrinter.printMessage("Failed to create project: failed") }
     }
 
     @Test
@@ -126,13 +129,13 @@ class CreateProjectCLITest {
             createLogUseCase.invoke(any(), any(), any(), any())
         } returns mockLogString
 
-        every { createProjectUseCase.createProject(any()) } returns mockk()
+        coEvery { createProjectUseCase.createProject(any()) } returns mockk()
 
         // When
         cli.show()
 
         // Then
-        verify { createProjectUseCase.createProject(any()) }
-        verify { outputPrinter.printMessage("Project created successfully") }
+        coVerify { createProjectUseCase.createProject(any()) }
+        coVerify { outputPrinter.printMessage("Project created successfully") }
     }
 }
