@@ -2,8 +2,10 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -21,27 +23,29 @@ class DeleteProjectUseCaseTest {
 
     @Test
     fun `deleteProject should return a success result when project deleted successfully`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.deleteProject(projectId.toString()) } returns Unit
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.deleteProject(projectId.toString()) } returns Unit
 
-        //When
-        assertDoesNotThrow {
-            deleteProjectUseCase.deleteProject(projectId.toString())
+            //When
+            assertDoesNotThrow {
+                deleteProjectUseCase.deleteProject(projectId.toString())
+            }
         }
-
-
     }
 
     @Test
     fun `deleteProject should return a failure result when project not deleted successfully`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.deleteProject(projectId.toString()) } throws PlanMateExceptions("")
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.deleteProject(projectId.toString()) } throws PlanMateExceptions("")
 
-        //When
-        assertThrows<PlanMateExceptions> {
-            deleteProjectUseCase.deleteProject(projectId.toString())
+            //When
+            assertThrows<PlanMateExceptions> {
+                deleteProjectUseCase.deleteProject(projectId.toString())
+            }
         }
     }
 

@@ -76,18 +76,20 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `deleteProject returns success when data source return success`() {
-        // Given
-        val projectId = "26fb5810-951e-4913-aae8-1d36d72d85eb"
-        val projects = listOf(
-            createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
-            createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
-        )
-        every { projectMemoryDataSource.deleteProject(projectId) } returns projects.map { it.toDomain() }
-        every { projectDataSource.getProjects() } returns projects
+        runTest {
+            // Given
+            val projectId = "26fb5810-951e-4913-aae8-1d36d72d85eb"
+            val projects = listOf(
+                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
+                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
+            )
+            every { projectMemoryDataSource.deleteProject(projectId) } returns projects.map { it.toDomain() }
+            every { projectDataSource.getProjects() } returns projects
 
-        // When & Then
-        assertDoesNotThrow {
-            repository.deleteProject(projectId)
+            // When & Then
+            assertDoesNotThrow {
+                repository.deleteProject(projectId)
+            }
         }
     }
 
