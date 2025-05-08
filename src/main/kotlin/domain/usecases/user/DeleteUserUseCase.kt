@@ -7,7 +7,7 @@ import domain.utlis.UserExceptions
 class DeleteUserUseCase(
     private val userRepository: UserRepository
 ) {
-    fun invoke(userRequestId: String, userToDeleteId: String) {
+    suspend fun invoke(userRequestId: String, userToDeleteId: String) {
         val user = userRepository.getUserById(userRequestId)
             ?: throw UserExceptions.UserNotFoundException()
 

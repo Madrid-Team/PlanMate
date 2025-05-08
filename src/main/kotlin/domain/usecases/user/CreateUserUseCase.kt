@@ -7,7 +7,7 @@ import domain.validation.ValidateUser
 class CreateUserUseCase(
     private val userRepository: UserRepository
 ) {
-    fun createUser(user: User) {
+    suspend fun createUser(user: User) {
         val userId = ValidateUser(userRepository).generateUUIDValidToNewUser()
         val newUser = user.copy(id = userId)
         userRepository.createNewUser(newUser)

@@ -5,6 +5,7 @@ import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.usecases.user.CreateUserUseCase
 import domain.utlis.UserExceptions
+import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -48,7 +49,7 @@ class CreateUserCLI(
                 id = UUID.randomUUID()
             )
             outputPrinter.printMessage("Creating user...")
-            createUserUseCase.createUser(user)
+            runBlocking { createUserUseCase.createUser(user) }
             outputPrinter.printMessage("User created successfully")
         } catch (e: UserExceptions.UserExist) {
             outputPrinter.printError(e.message.toString())

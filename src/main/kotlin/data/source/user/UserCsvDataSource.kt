@@ -12,7 +12,7 @@ class UserCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
 ) : ExternalUserDataSource {
-    override fun createNewUser(user: User) {
+    override suspend fun createNewUser(user: User) {
         val row: String = userCsvParser.parseUserToRow(user.toDto())
         try {
             getUserByName(user.username)
@@ -24,7 +24,7 @@ class UserCsvDataSource(
         }
     }
 
-    override fun deleteUser(userId: String) {
+    override suspend fun deleteUser(userId: String) {
         val allUsers = getAllUsers()
         if (allUsers.isEmpty()) throw UserExceptions.UserNotFoundException()
         val updatedUsers = allUsers.filter { it.id.toString() != userId }
@@ -34,13 +34,13 @@ class UserCsvDataSource(
         fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
     }
 
-    override fun getUserById(userId: String): User {
+    override suspend fun getUserById(userId: String): User {
         val user = getAllUsers().firstOrNull { userId == it.id.toString() }
         return user ?: throw UserExceptions.UserNotFoundException()
 
     }
 
-    override fun getAllUsers(): List<User> {
+    override suspend fun getAllUsers(): List<User> {
         val rows = fileCsvReader.readCsvFile()
         val users = rows.map { userCsvParser.parseRowToUser(it).toDomain() }
 
@@ -48,7 +48,7 @@ class UserCsvDataSource(
 
     }
 
-    override fun getUserByName(userName: String): User {
+    override suspend fun getUserByName(userName: String): User {
         return getAllUsers().firstOrNull { userName == it.username } ?: throw UserExceptions.UserNotFoundException()
     }
 }

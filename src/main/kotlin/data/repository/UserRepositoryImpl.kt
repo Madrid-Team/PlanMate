@@ -8,32 +8,32 @@ import domain.repository.UserRepository
 class UserRepositoryImpl(
     private val externalUserDataSource: ExternalUserDataSource,
 ) : UserRepository {
-    override fun deleteUser(userId: String) = executeUserOperation {
+    override suspend fun deleteUser(userId: String) = executeUserOperation {
         externalUserDataSource.deleteUser(userId)
     }
 
-    override fun createNewUser(user: User) = executeUserOperation {
+    override suspend fun createNewUser(user: User) = executeUserOperation {
         externalUserDataSource.createNewUser(user)
     }
 
 
-    override fun getUserById(userId: String): User =
+    override suspend fun getUserById(userId: String): User =
         executeUserOperation {
             externalUserDataSource.getUserById(userId)
         }
 
 
-    override fun getAllUsers(): List<User> = executeUserOperation {
+    override suspend fun getAllUsers(): List<User> = executeUserOperation {
         externalUserDataSource.getAllUsers()
     }
 
-    override fun getUserByName(userName: String): User =
+    override suspend fun getUserByName(userName: String): User =
         executeUserOperation {
             externalUserDataSource.getUserByName(userName)
         }
 
 
-    private fun <T> executeUserOperation(operation: () -> T): T {
+    private suspend fun <T> executeUserOperation(operation: suspend () -> T): T {
         try {
             return operation()
         } catch (e: Exception) {
