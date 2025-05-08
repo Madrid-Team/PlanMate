@@ -9,7 +9,6 @@ import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -39,12 +38,12 @@ class CreateTaskCLI(
 
     }
 
-    private fun readTaskInput(): Task {
+    private suspend fun readTaskInput(): Task {
         val projectId = inputReader.readInput("Enter project ID: ")
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
 
-        val project = runBlocking { getProjectByIdUseCase.invoke(projectId) }
+        val project = getProjectByIdUseCase.invoke(projectId)
 
         outputPrinter.printMessage("Available task states:")
         project.taskStates.forEachIndexed { index, state ->
