@@ -1,7 +1,8 @@
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.runBlocking
 import org.bson.Document
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -25,16 +26,19 @@ import org.madrid.data.utils.DATABASE_NAME
     @Test
     fun `Should provide a valid MongoDatabase instance When connection is correct and database is returned`() {
         assertNotNull(database)
-        assertEquals(DATABASE_NAME, database.name) // Replace with your actual DB name
+        assertEquals(DATABASE_NAME, database.name)
     }
 
     @Test
-    fun `Should respond to ping command`() = runBlocking {
-        val result: Document =
-            assertDoesNotThrow { database.runCommand(Document("ping", 1)) }
+    fun `Should respond to ping command`() {
+        runBlocking {
 
-        assertEquals(1, result.getInteger("ok"))
+            val result: Document =
+                assertDoesNotThrow { database.runCommand(Document("ping", 1)) }
 
+            assertEquals(1, result.getInteger("ok"))
+
+        }
     }
 
 }
