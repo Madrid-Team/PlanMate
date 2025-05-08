@@ -20,7 +20,7 @@ class PlanMateCLI(
     private val userCLI: UserCLI,
     private val adminCLI: AdminCLI
 ) {
-    fun start() {
+    suspend fun start() {
         outputPrinter.printMessage("=== Welcome to PlanMate ===")
 
         while (true) {
@@ -30,7 +30,7 @@ class PlanMateCLI(
 
 
             when (inputReader.readInput("Select an option: ")) {
-                "1" ->  {
+                "1" -> {
                     authenticationCLI.login()
                     val user = CurrentUser.getCurrentUser()
                     if (user != null) {
@@ -50,7 +50,7 @@ class PlanMateCLI(
         }
     }
 
-    private fun showMenuForUser(user: User) {
+    private suspend fun showMenuForUser(user: User) {
         outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
 
         when (user.role) {
@@ -59,7 +59,7 @@ class PlanMateCLI(
         }
     }
 
-    private fun showAdminMenu() {
+    private suspend fun showAdminMenu() {
         while (true) {
             outputPrinter.printMessage("=== Admin Menu ===")
             outputPrinter.printMessage("1. Manage tasks")

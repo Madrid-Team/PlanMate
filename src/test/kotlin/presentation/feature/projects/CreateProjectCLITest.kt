@@ -9,6 +9,7 @@ import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -43,99 +44,108 @@ class CreateProjectCLITest {
 
     @Test
     fun `should create project successfully when create project then return success`() {
-        // Given
-        every { inputReader.readInput("Enter project name: ") } returns "project name"
-        every { inputReader.readInput("Enter project description: ") } returns "description"
-        every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-        every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "ACTIVE IN_PROGRESS DONE"
-        every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
+        runTest {
+            // Given
+            every { inputReader.readInput("Enter project name: ") } returns "project name"
+            every { inputReader.readInput("Enter project description: ") } returns "description"
+            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "ACTIVE IN_PROGRESS DONE"
+            every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
 
-        val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
-        every {
-            createLogUseCase.invoke(
-                operationType = OperationType.CREATE,
-                entityName = "project name",
-                entityType = EntityType.PROJECT,
-                username = "test-user"
+            val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
+            every {
+                createLogUseCase.invoke(
+                    operationType = OperationType.CREATE,
+                    entityName = "project name",
+                    entityType = EntityType.PROJECT,
+                    username = "test-user"
+                )
+            } returns mockLogString
+
+            val project = helperProject(
+                id = "00000000-0000-0000-0000-000000000001",
+                name = "project name",
+                description = "description",
+                projectLogs = listOf(mockLogString)
             )
-        } returns mockLogString
 
-        val project = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "project name",
-            description = "description",
-            projectLogs = listOf(mockLogString)
-        )
+            coEvery { createProjectUseCase.createProject(any()) } returns Unit
 
-        coEvery { createProjectUseCase.createProject(any()) } returns Unit
+            // When
+            cli.show()
 
-        // When
-        cli.show()
-
-        // Then
-        coVerify {
-            createProjectUseCase.createProject(match {
-                it.name == project.name &&
-                        it.description == project.description &&
-                        it.projectState == "ACTIVE" &&
-                        it.projectLogs.size == 1
-            })
+            // Then
+            coVerify {
+                createProjectUseCase.createProject(match {
+                    it.name == project.name &&
+                            it.description == project.description &&
+                            it.projectState == "ACTIVE" &&
+                            it.projectLogs.size == 1
+                })
+            }
+            verify { outputPrinter.printMessage("Project created successfully") }
         }
-        verify { outputPrinter.printMessage("Project created successfully") }
     }
 
     @Test
     fun `should show error message when creation fails`() {
-        // Given
-        every { inputReader.readInput("Enter project name: ") } returns "project name"
-        every { inputReader.readInput("Enter project description: ") } returns "description"
-        every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-        every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-        every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
+        runTest {
+            // Given
+            every { inputReader.readInput("Enter project name: ") } returns "project name"
+            every { inputReader.readInput("Enter project description: ") } returns "description"
+            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
 
-        val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
-        every {
-            createLogUseCase.invoke(
-                operationType = OperationType.CREATE,
-                entityName = "project name",
-                entityType = EntityType.PROJECT,
-                username = "test-user"
-            )
-        } returns mockLogString
+            val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
+            every {
+                createLogUseCase.invoke(
+                    operationType = OperationType.CREATE,
+                    entityName = "project name",
+                    entityType = EntityType.PROJECT,
+                    username = "test-user"
+                )
+            } returns mockLogString
 
-        coEvery { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
+            coEvery { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        coVerify { createProjectUseCase.createProject(any()) }
-        coVerify { outputPrinter.printMessage("Failed to create project: failed") }
+            // Then
+            coVerify { createProjectUseCase.createProject(any()) }
+            coVerify { outputPrinter.printMessage("Failed to create project: failed") }
+        }
     }
 
     @Test
     fun `should handle invalid project state selection`() {
-        // Given
-        every { inputReader.readInput("Enter project name: ") } returns "project name"
-        every { inputReader.readInput("Enter project description: ") } returns "description"
-        every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-        every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+        runTest {
+            // Given
+            every { inputReader.readInput("Enter project name: ") } returns "project name"
+            every { inputReader.readInput("Enter project description: ") } returns "description"
+            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
 
-        // First input invalid, second valid
-        every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returnsMany listOf("5", "1")
+            // First input invalid, second valid
+            every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returnsMany listOf(
+                "5",
+                "1"
+            )
 
-        val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
-        every {
-            createLogUseCase.invoke(any(), any(), any(), any())
-        } returns mockLogString
+            val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
+            every {
+                createLogUseCase.invoke(any(), any(), any(), any())
+            } returns mockLogString
 
-        coEvery { createProjectUseCase.createProject(any()) } returns mockk()
+            coEvery { createProjectUseCase.createProject(any()) } returns mockk()
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        coVerify { createProjectUseCase.createProject(any()) }
-        coVerify { outputPrinter.printMessage("Project created successfully") }
+            // Then
+            coVerify { createProjectUseCase.createProject(any()) }
+            coVerify { outputPrinter.printMessage("Project created successfully") }
+        }
     }
 }

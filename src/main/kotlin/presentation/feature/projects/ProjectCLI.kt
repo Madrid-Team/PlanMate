@@ -16,7 +16,7 @@ class ProjectCLI(
     private val projectView: ProjectView,
     private val getAllProjectsUseCase: GetAllProjectsUseCase
 ) {
-    fun show() {
+    suspend fun show() {
         while (true) {
             outputPrinter.printMessage("=== Project Menu ===")
             outputPrinter.printMessage("1. Show Projects")
