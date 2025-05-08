@@ -22,14 +22,14 @@ class DeleteProjectCLITest {
 
     @BeforeEach
     fun setUp() {
-        cli = DeleteProjectCLI(inputReader, outputPrinter, deleteUseCase, getProjectByIdUseCase)
+        cli = DeleteProjectCLI(inputReader, outputPrinter, deleteUseCase)
     }
 
     @Test
     fun `show function should print Project deleted successfully when project deleted`() {
         // Given
         every { inputReader.readInput(any()) } returns "1" andThen "yes"
-        every { getProjectByIdUseCase.invoke("1") } returns mockProject
+        coEvery { getProjectByIdUseCase.invoke("1") } returns mockProject
         coEvery { deleteUseCase.deleteProject("1") } returns mockk()
 
         // When
@@ -43,7 +43,7 @@ class DeleteProjectCLITest {
     fun `show function should print Deletion cancelled when cancel project deletion`() {
         // Given
         every { inputReader.readInput(any()) } returns "2" andThen "no"
-        every { getProjectByIdUseCase.invoke("2") } returns mockProject
+        coEvery { getProjectByIdUseCase.invoke("2") } returns mockProject
 
         // When
         cli.show()
@@ -57,7 +57,7 @@ class DeleteProjectCLITest {
     fun `show function should print Failed to delete project Not found when can't delete project`() {
         // Given
         every { inputReader.readInput(any()) } returns "3" andThen "yes"
-        every { getProjectByIdUseCase.invoke("3") } returns mockProject
+        coEvery { getProjectByIdUseCase.invoke("3") } returns mockProject
         coEvery { deleteUseCase.deleteProject("3") } throws Exception("Not found")
 
         // When
@@ -71,7 +71,7 @@ class DeleteProjectCLITest {
     fun `show function should print Project not found when project not found`() {
         // Given
         every { inputReader.readInput(any()) } returns "4"
-        every { getProjectByIdUseCase.invoke("4") } throws ProjectExceptions.ProjectNotFoundException()
+        coEvery { getProjectByIdUseCase.invoke("4") } throws ProjectExceptions.ProjectNotFoundException()
 
         // When
         cli.show()
