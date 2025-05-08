@@ -32,7 +32,7 @@ class DisplayAllTasksUseCaseTest {
         // Given
         testScope.launch {
             val projectId = UUID.randomUUID().toString()
-            every { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             assertThrows<ProjectExceptions.ProjectNotFoundException> { displayAllTasksUseCase.display(projectId) }
         }
@@ -49,13 +49,13 @@ class DisplayAllTasksUseCaseTest {
                 taskStates = listOf("TODO", "In Progress", "Done")
             )
 
-            every { projectRepository.getProjectById(projectId) } returns project
+            coEvery { projectRepository.getProjectById(projectId) } returns project
             coEvery { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
 
             // When
             val result = displayAllTasksUseCase.display(projectId)
             // Then
-            verify { projectRepository.getProjectById(projectId) }
+            coVerify { projectRepository.getProjectById(projectId) }
             coVerify() { taskRepository.getTasksByProjectId(projectId) }
             val expectedOutput = """
     TODO:
@@ -91,7 +91,7 @@ class DisplayAllTasksUseCaseTest {
                 createTask(id = UUID.randomUUID().toString(), title = "Task 3", state = "Done", projectId = projectId)
             )
 
-            every { projectRepository.getProjectById(projectId) } returns project
+            coEvery { projectRepository.getProjectById(projectId) } returns project
             coEvery { taskRepository.getTasksByProjectId(projectId) } returns tasks
 
             // When

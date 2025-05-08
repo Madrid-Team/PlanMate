@@ -117,25 +117,26 @@ class ProjectRepositoryImplTest {
 
     @Test
     fun `getProjectLogsById returns project's logs when it exists in projects list`() {
-
-        val projects = listOf(
-            createProject(
-                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-                name = "test1",
-                projectLogs = listOf("project created", "project updated")
-            ),
-            createProject(
-                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-                name = "test2",
-                projectLogs = listOf("project created", "project updated")
+        runTest {
+            val projects = listOf(
+                createProject(
+                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+                    name = "test1",
+                    projectLogs = listOf("project created", "project updated")
+                ),
+                createProject(
+                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+                    name = "test2",
+                    projectLogs = listOf("project created", "project updated")
+                )
             )
-        )
-        every { projectDataSource.getProjects() } returns projects
-        every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+            coEvery { remoteProjectDataSource.getProjects() } returns projects
+            every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
 
-        //When & Then
-        assertDoesNotThrow {
-            repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+            //When & Then
+            assertDoesNotThrow {
+                repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+            }
         }
     }
 
