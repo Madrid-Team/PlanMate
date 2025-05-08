@@ -6,6 +6,7 @@ import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
+import data.source.task.ExternalTaskDataSource
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 import org.madrid.data.utils.PROJECT_COLLECTION
@@ -13,7 +14,7 @@ import org.madrid.data.utils.PROJECT_COLLECTION
 class TaskMongoDBDataSource(
     database: MongoDatabase
 
-) : RemoteTaskDataSource {
+) : ExternalTaskDataSource {
     private val collection = database.getCollection<ProjectDto>(PROJECT_COLLECTION)
     override suspend fun editTask(task: TaskDto) {
         val filter = Filters.and(
