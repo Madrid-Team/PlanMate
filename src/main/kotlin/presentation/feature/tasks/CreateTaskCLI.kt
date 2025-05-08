@@ -7,7 +7,10 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -20,18 +23,20 @@ class CreateTaskCLI(
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 
 ) {
-    fun show() {
-       runBlocking {
-           outputPrinter.printMessage("=== Create Task ===")
-           try {
-               val task = readTaskInput()
-               createTaskUseCase.createTask(task)
-               outputPrinter.printMessage("Task created successfully")
-           } catch (exception: Exception) {
-               outputPrinter.printMessage(exception.message.toString())
-               outputPrinter.printMessage("Failed to create task")
-           }
-       }
+    suspend fun show() = withContext(Dispatchers.IO) {
+        outputPrinter.printMessage("=== Create Task ===")
+        try {
+            val task = readTaskInput()
+            val deferredTaskCreation = async {
+                createTaskUseCase.createTask(task)
+            }
+            deferredTaskCreation.await()
+            outputPrinter.printMessage("Task created successfully")
+        } catch (exception: Exception) {
+            outputPrinter.printMessage(exception.message.toString())
+            outputPrinter.printMessage("Failed to create task")
+        }
+
     }
 
     private fun readTaskInput(): Task {

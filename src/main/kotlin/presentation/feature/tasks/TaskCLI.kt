@@ -11,7 +11,7 @@ class TaskCLI(
     private val outputPrinter: OutputPrinter,
     private val inputReader: InputReader
 ) {
-    fun show() {
+    suspend fun show() {
         while (true) {
             outputPrinter.printMessage("=== Task Menu ===")
             outputPrinter.printMessage("1. Create Task")

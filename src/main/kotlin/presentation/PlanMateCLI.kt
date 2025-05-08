@@ -79,7 +79,7 @@ class PlanMateCLI(
         }
     }
 
-    private fun showMateMenu() {
+    private suspend fun showMateMenu() {
         while (true) {
             outputPrinter.printMessage("=== Mate Menu ===")
             outputPrinter.printMessage("1. View my tasks")
