@@ -1,16 +1,15 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
-import data.mapper.toDto
-import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
 import domain.models.authentication.User
-import domain.utlis.UserExceptions.NotFoundUser
+import domain.utlis.UserExceptions
 import domain.utlis.UserExceptions.UserExist
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
@@ -18,49 +17,43 @@ import kotlin.test.Test
 class UserRepositoryImplTest {
 
     private lateinit var userDataSource: UserDataSource
-    private lateinit var userCsvParser: UserCsvParser
     private lateinit var userRepositoryImpl: UserRepositoryImpl
 
     @BeforeEach
     fun setUp() {
         userDataSource = mockk()
-        userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvParser)
+        userRepositoryImpl = UserRepositoryImpl(userDataSource)
     }
 
     @Test
     fun `Should add user successfully`() {
         // Given
         val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
-        val userRow = "1,username1,hash,ADMIN"
 
-        every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Unit
+        every { userDataSource.createNewUser(user) } returns Unit
 
         // When/Then - No exception is thrown
-        userRepositoryImpl.createNewUser(user)
-
         // Verify
-        verify { userDataSource.createNewUser(userRow) }
+        assertDoesNotThrow {
+            userRepositoryImpl.createNewUser(user)
+        }
+        verify { userDataSource.createNewUser(user) }
     }
 
     @Test
     fun `Should fail to add user when datasource fails`() {
         // Given
         val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
-        val userRow = "2,username2,hash2,MATE"
-        val exception = UserExist("User already exists")
-
-        every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } throws exception
+        val exception = UserExist()
+        every { userDataSource.createNewUser(user) } throws exception
 
         // When/Then
-        val thrownException = assertThrows<Exception> {
+        val thrownException = assertThrows<UserExist> {
             userRepositoryImpl.createNewUser(user)
         }
 
         // Verify exception is wrapped
-        assertThat(thrownException.cause).isSameInstanceAs(exception)
+        assertThat(thrownException).isSameInstanceAs(exception)
     }
 
     @Test
@@ -125,14 +118,14 @@ class UserRepositoryImplTest {
     fun `Should propagate exception from data source when deleting user`() {
         // Given
         val userId = "2"
-        val exception = NotFoundUser("User not found")
+        val exception = UserExceptions.UserNotFoundException()
         every { userDataSource.deleteUser(userId) } throws exception
 
         // When/Then
-        val thrownException = assertThrows<Exception> {
+        val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
             userRepositoryImpl.deleteUser(userId)
         }
 
-        assertThat(thrownException.cause).isSameInstanceAs(exception)
+        assertThat(thrownException).isSameInstanceAs(exception)
     }
 }

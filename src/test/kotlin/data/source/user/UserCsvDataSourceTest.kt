@@ -3,9 +3,12 @@ package data.source.user
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.mapper.toDomain
+import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.models.authentication.User
 import domain.models.authentication.UserRole
+import domain.utlis.UserExceptions
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -14,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.UUID
 
 
 class UserCsvDataSourceTest {
@@ -43,32 +47,47 @@ class UserCsvDataSourceTest {
     @Test
     fun `Should create user successfully`() {
         // Given
-        val row = "1,username1,password1,ADMIN"
-
+        val user = User(UUID.randomUUID(), "username1", "password1", UserRole.ADMIN.name)
+        val row = userCsvParser.parseUserToRow(user.toDto())
         every { fileCsvWriter.writeToCsvFile(row) } returns Unit
 
-        // When
-        val result = dataSource.createNewUser(row)
+        // When & Then
+        assertDoesNotThrow {
+            dataSource.createNewUser(user)
+        }
+    }
 
+    @Test
+    fun `Should fail to create user when user already exists`() {
+        // Given
+        val user = User(UUID.randomUUID(), "username1", "password1", UserRole.ADMIN.name)
+        val row = userCsvParser.parseUserToRow(user.toDto())
+        every { fileCsvWriter.writeToCsvFile(row) } returns Unit
+        every { fileCsvReader.readCsvFile() } returns listOf(row1)
+        every { userCsvParser.parseRowToUser(row1) } returns user1
+
+        // When
+        assertThrows<UserExceptions.UserExist> {
+            dataSource.createNewUser(user)
+        }
         // Then
-        assertThat(result.isSuccess).isTrue()
+        verify(exactly = 0) { fileCsvWriter.writeToCsvFile(row) }
     }
 
     @Test
     fun `Should fail to create user when writer throws IOException`() {
         // Given
-        val row = "2,username2,password2,MATE"
+        val user = User(UUID.randomUUID(), "username2", "password2", UserRole.MATE.name)
+        val row = userCsvParser.parseUserToRow(user.toDto())
         val exception = IOException("File write failed")
 
         every { fileCsvWriter.writeToCsvFile(row) } throws exception
 
         // When
-        val result = dataSource.createNewUser(row)
-
+        assertThrows<IOException> {
+            dataSource.createNewUser(user)
+        }
         // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(IOException::class.java)
-        assertThat(result.exceptionOrNull()?.message).isEqualTo("File write failed")
     }
 
 
@@ -81,10 +100,10 @@ class UserCsvDataSourceTest {
         every { userCsvParser.parseRowToUser(row2) } returns user2
 
         // When
-        val result = dataSource.getAllUsers()
-
         // Then
-        assertThat(result.isSuccess).isTrue()
+        assertDoesNotThrow {
+            dataSource.getAllUsers()
+        }
     }
 
     @Test
@@ -93,22 +112,23 @@ class UserCsvDataSourceTest {
         every { fileCsvReader.readCsvFile() } returns listOf()
 
         // When
-        val result = dataSource.getAllUsers()
-
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEmpty()
+        val result = dataSource.getAllUsers()
+        assertDoesNotThrow {
+            dataSource.getAllUsers()
+        }
+        assertThat(result).isEmpty()
     }
 
     @Test
     fun `getAllUsers should throws exception when file read fails`() {
         // Given
-        every { fileCsvReader.readCsvFile() } throws Exception()
+        every { fileCsvReader.readCsvFile() } throws IOException()
 
-        // When
-        val result = dataSource.getAllUsers()
         // When & Then
-        assertThat(result.isFailure).isTrue()
+        assertThrows<IOException> {
+            dataSource.getAllUsers()
+        }
     }
 
     // endregion
@@ -118,24 +138,26 @@ class UserCsvDataSourceTest {
         // Given
         every { fileCsvReader.readCsvFile() } returns listOf(row1)
         every { userCsvParser.parseRowToUser(row1) } returns user1
-
         // When
-        val result = dataSource.getUserByName("username1")
+        val result = dataSource.getUserByName(user1.username)
 
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user1.toDomain())
+        assertDoesNotThrow {
+            dataSource.getUserByName(user1.username)
+        }
+
+        assertThat(result).isEqualTo(user1.toDomain())
     }
 
     @Test
     fun `getUserByName should throws exception when file read fails`() {
         // Given
-        every { fileCsvReader.readCsvFile() } throws Exception()
+        every { fileCsvReader.readCsvFile() } throws IOException()
 
-        // When
-        val result = dataSource.getUserByName("username1")
         // When & Then
-        assertThat(result.isFailure).isTrue()
+        assertThrows<IOException> {
+            dataSource.getUserByName("username1")
+        }
     }
 
     // endregion
@@ -145,24 +167,25 @@ class UserCsvDataSourceTest {
         // Given
         every { fileCsvReader.readCsvFile() } returns listOf(row1)
         every { userCsvParser.parseRowToUser(row1) } returns user1
-
+        val id = "26fb5810-951e-4913-aae8-1d36d72d85eb"
         // When
-        val result = dataSource.getUserById("26fb5810-951e-4913-aae8-1d36d72d85eb")
-
+        val result = dataSource.getUserById(id)
         // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user1.toDomain())
+        assertDoesNotThrow {
+            dataSource.getUserById(id)
+        }
+        assertThat(result).isEqualTo(user1.toDomain())
     }
 
     @Test
     fun `getUser should throws exception when file read fails`() {
         // Given
-        every { fileCsvReader.readCsvFile() } throws Exception()
+        every { fileCsvReader.readCsvFile() } throws IOException()
 
-        // When
-        val result = dataSource.getUserById("26fb5810-951e-4913-aae8-1d36d72d85eb")
         // When & Then
-        assertThat(result.isFailure).isTrue()
+        assertThrows<IOException> {
+            dataSource.getUserById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+        }
     }
     // endregion
 
@@ -181,16 +204,17 @@ class UserCsvDataSourceTest {
         assertDoesNotThrow {
             dataSource.deleteUser("26fb5810-951e-4913-aae8-1d36d72d85eb")
         }
-//        verify(exactly = 1) { fileCsvWriter.updateCsvFile(row2) }
+//        verify(verifyzzzzfgdfgtfgzexactly = 1) { fileCsvWriter.updateCsvFile(row2) }
     }
 
     @Test
     fun `deleteUser should fail when file write fails`() {
-        every { userDataSource.getAllUsers() } returns Result.success(emptyList())
+        every { userDataSource.getAllUsers() } returns emptyList()
 
-        dataSource.deleteUser("non-existent-user-id")
-
-        verify(exactly = 1) { fileCsvWriter.updateCsvFile(any()) }
+        assertThrows<UserExceptions.UserNotFoundException> {
+            dataSource.deleteUser("non-existent-user-id")
+        }
+        verify(exactly = 0) { fileCsvWriter.updateCsvFile(any()) }
     }
 
     @Test
@@ -199,7 +223,7 @@ class UserCsvDataSourceTest {
         every { fileCsvReader.readCsvFile() } throws IOException("File read failed")
 
         // When & Then
-        assertThrows<Exception> { dataSource.deleteUser("1") }
+        assertThrows<IOException> { dataSource.deleteUser("1") }
     }
     // endregion
 }

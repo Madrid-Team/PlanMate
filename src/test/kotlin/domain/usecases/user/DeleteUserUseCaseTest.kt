@@ -1,5 +1,6 @@
 package domain.usecases.user
 
+import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
@@ -80,7 +81,7 @@ class DeleteUserUseCaseTest {
         val nonExistentId = "non-existent-id"
         val userToDeleteId = "user-to-delete-id"
 
-        every { userRepository.getUserById(nonExistentId) } returns null
+        every { userRepository.getUserById(nonExistentId) } throws UserExceptions.UserNotFoundException()
 
         // When/Then
         val exception = assertThrows<UserExceptions.UserNotFoundException> {
@@ -89,6 +90,7 @@ class DeleteUserUseCaseTest {
 
         verify(exactly = 1) { userRepository.getUserById(nonExistentId) }
         verify(exactly = 0) { userRepository.deleteUser(any()) }
+        assertThat(exception).isInstanceOf(UserExceptions.UserNotFoundException::class.java)
     }
 
     @Test
@@ -96,10 +98,8 @@ class DeleteUserUseCaseTest {
         // Given
         val adminId = "admin-id"
         val userToDeleteId = "non-existent-id"
-        val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
 
-        every { userRepository.getUserById(adminId) } returns adminUser
-        every { userRepository.getUserById(userToDeleteId) } returns null
+        every { userRepository.getUserById(userToDeleteId) } throws UserExceptions.UserNotFoundException()
 
         // When/Then
         val exception = assertThrows<UserExceptions.UserNotFoundException> {
@@ -109,6 +109,7 @@ class DeleteUserUseCaseTest {
         verify(exactly = 1) { userRepository.getUserById(adminId) }
         verify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
         verify(exactly = 0) { userRepository.deleteUser(any()) }
+        assertThat(exception).isInstanceOf(UserExceptions.UserNotFoundException::class.java)
     }
 
     @Test

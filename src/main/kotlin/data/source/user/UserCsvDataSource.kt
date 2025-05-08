@@ -5,18 +5,28 @@ import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.User
+import domain.utlis.UserExceptions
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
 ) : UserDataSource {
-    override fun createNewUser(row: String) {
-        fileCsvWriter.writeToCsvFile(row)
+    override fun createNewUser(user: User) {
+        val row: String = userCsvParser.parseUserToRow(user.toDto())
+        try {
+            getUserByName(user.username)
+            throw UserExceptions.UserExist()
+        } catch (_: UserExceptions.UserNotFoundException) {
+            fileCsvWriter.writeToCsvFile(row)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     override fun deleteUser(userId: String) {
         val allUsers = getAllUsers()
+        if (allUsers.isEmpty()) throw UserExceptions.UserNotFoundException()
         val updatedUsers = allUsers.filter { it.id.toString() != userId }
         val userRows = updatedUsers.map { user ->
             userCsvParser.parseUserToRow(user.toDto())
@@ -24,9 +34,9 @@ class UserCsvDataSource(
         fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
     }
 
-    override fun getUserById(userId: String): User? {
+    override fun getUserById(userId: String): User {
         val user = getAllUsers().firstOrNull { userId == it.id.toString() }
-        return user
+        return user ?: throw UserExceptions.UserNotFoundException()
 
     }
 
@@ -38,7 +48,7 @@ class UserCsvDataSource(
 
     }
 
-    override fun getUserByName(userName: String): User? {
-        return getAllUsers().firstOrNull { userName == it.username }
+    override fun getUserByName(userName: String): User {
+        return getAllUsers().firstOrNull { userName == it.username } ?: throw UserExceptions.UserNotFoundException()
     }
 }

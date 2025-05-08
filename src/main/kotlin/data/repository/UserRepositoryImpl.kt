@@ -1,28 +1,23 @@
 package data.repository
 
-import data.mapper.toDto
-import data.source.user.UserCsvParser
 import data.source.user.UserDataSource
 import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
 
 class UserRepositoryImpl(
     private val userDataSource: UserDataSource,
-    private val userCsvParser: UserCsvParser,
 ) : UserRepository {
     override fun deleteUser(userId: String) = executeUserOperation {
         userDataSource.deleteUser(userId)
     }
 
     override fun createNewUser(user: User) = executeUserOperation {
-        val row: String = userCsvParser.parseUserToRow(user.toDto())
-        userDataSource.createNewUser(row)
+        userDataSource.createNewUser(user)
     }
 
 
-    override fun getUserById(userId: String): User? =
+    override fun getUserById(userId: String): User =
         executeUserOperation {
             userDataSource.getUserById(userId)
         }
@@ -32,9 +27,9 @@ class UserRepositoryImpl(
         userDataSource.getAllUsers()
     }
 
-    override fun getUserByName(userName: String): User? =
+    override fun getUserByName(userName: String): User =
         executeUserOperation {
-            userDataSource.getUserByName(userName) ?: throw UserExceptions.UserNotFoundException()
+            userDataSource.getUserByName(userName)
         }
 
 

@@ -13,7 +13,7 @@ val repositoryModule = module {
 
     single<ProjectRepository> { ProjectRepositoryImpl(get(), get()) }
     single<TaskRepository> { TaskRepositoryImpl(get(),get()) }
-    single<UserRepository> { UserRepositoryImpl(get(), get()) }
+    single<UserRepository> { UserRepositoryImpl(get()) }
 
     single  { ProjectMemoryDataSource() }
 

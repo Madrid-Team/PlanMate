@@ -56,6 +56,6 @@ class LoginUserUseCaseTest {
         every { userRepository.createNewUser(user) } returns Unit
 
         // When && Then
-        assertThrows<UserExceptions.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
+        assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.invoke(null, "PASSWORD_HASH_1") }
     }
 }
