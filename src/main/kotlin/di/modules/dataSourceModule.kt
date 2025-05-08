@@ -1,5 +1,7 @@
 package di.modules
 
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import data.dto.project.ProjectDto
 import data.source.project.ProjectCsvDataSource
 import data.source.project.ProjectCsvParser
 import data.source.project.ProjectDataSource
@@ -16,6 +18,7 @@ import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
 import org.madrid.data.source.project.RemoteProjectDataSource
 import org.madrid.data.source.task.TaskMongoDBDataSource
+import org.madrid.data.utils.PROJECT_COLLECTION
 import java.io.File
 
 val dataSourceModule = module {
@@ -49,6 +52,7 @@ val dataSourceModule = module {
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
+    single { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
 
     single<RemoteProjectDataSource> { ProjectMongoDBDataSource(get())}
 

@@ -29,7 +29,7 @@ class ProjectCLI(
             when (inputReader.readInput("Select an option:")) {
                 "1" -> showProjects()
                 "2" -> createProjectCLI.show()
-                "3" -> runBlocking { editProjectCLI.show() }
+                "3" -> editProjectCLI.show()
                 "4" -> deleteProjectCLI.show()
                 "5" -> projectAuditLogCLI.show()
                 "0" -> return
