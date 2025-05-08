@@ -26,7 +26,7 @@ class UserCsvDataSourceTest {
     private lateinit var fileCsvReader: FileCsvReader
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var dataSource: UserCsvDataSource
-    private lateinit var userDataSource: UserDataSource
+    private lateinit var externalUserDataSource: ExternalUserDataSource
 
     private val user1 =
         UserDto("126fb5810-951e-4913-aae8-1d36d72d85eb", "username1", "passwordhash1", UserRole.ADMIN.name)
@@ -40,7 +40,7 @@ class UserCsvDataSourceTest {
         fileCsvWriter = mockk(relaxed = true)
         fileCsvReader = mockk(relaxed = true)
         userCsvParser = mockk(relaxed = true)
-        userDataSource = mockk(relaxed = true)
+        externalUserDataSource = mockk(relaxed = true)
         dataSource = UserCsvDataSource(fileCsvReader, fileCsvWriter, userCsvParser)
     }
 
@@ -209,7 +209,7 @@ class UserCsvDataSourceTest {
 
     @Test
     fun `deleteUser should fail when file write fails`() {
-        every { userDataSource.getAllUsers() } returns emptyList()
+        every { externalUserDataSource.getAllUsers() } returns emptyList()
 
         assertThrows<UserExceptions.UserNotFoundException> {
             dataSource.deleteUser("non-existent-user-id")

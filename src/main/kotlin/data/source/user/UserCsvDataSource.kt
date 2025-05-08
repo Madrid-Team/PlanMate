@@ -11,7 +11,7 @@ class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
-) : UserDataSource {
+) : ExternalUserDataSource {
     override fun createNewUser(user: User) {
         val row: String = userCsvParser.parseUserToRow(user.toDto())
         try {

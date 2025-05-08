@@ -6,7 +6,7 @@ import org.bson.codecs.pojo.annotations.BsonId
 
 @Serializable
 data class UserDto(
-    @BsonId @SerialName("_id") val id: String,
+    @SerialName("_id") val id: String,
     val username: String,
     val passwordHash: String,
     val role: String,

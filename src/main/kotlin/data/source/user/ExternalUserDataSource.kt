@@ -2,7 +2,7 @@ package data.source.user
 
 import domain.models.authentication.User
 
-interface UserDataSource {
+interface ExternalUserDataSource {
     fun createNewUser(user: User)
     fun deleteUser(userId: String)
     fun getUserById(userId: String): User
