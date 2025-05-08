@@ -26,7 +26,7 @@ class LoginUserUseCaseTest {
     fun `Should login user successfully when username and password are correct`() {
         // Given
         val user = User(id = UUID.randomUUID(), "user1", "pass123", "MATE")
-        every { userRepository.getAllUsers() } returns Result.success(listOf(user))
+        every { userRepository.getAllUsers() } returns listOf(user)
 
         // When
         val result = loginUser.invoke("user1", "pass123")
@@ -35,12 +35,11 @@ class LoginUserUseCaseTest {
         assertTrue { result != null }
     }
 
-
     @Test
     fun `Should not login when username or password are incorrect`() {
         // Given
         val user = User(id = UUID.randomUUID(), "user1", PasswordHasher.hash("correctPass"), "MATE")
-        every { userRepository.getAllUsers() } returns Result.success(listOf(user))
+        every { userRepository.getAllUsers() } returns listOf(user)
 
         // When
         assertThrows<UserExceptions.WrongPasswordOrUserName> {
@@ -54,11 +53,9 @@ class LoginUserUseCaseTest {
         // Given
         val user = User(id = UUID.randomUUID(), "MATE_1", PasswordHasher.hash("PASSWORD_HASH_1"), "MATE")
 
-        every { userRepository.createNewUser(user) } returns Result.success(Unit)
+        every { userRepository.createNewUser(user) } returns Unit
 
         // When && Then
-        assertThrows<UserExceptions.NotFoundUser> { loginUser.invoke(null, "PASSWORD_HASH_1") }
+        assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.invoke(null, "PASSWORD_HASH_1") }
     }
-
-
 }

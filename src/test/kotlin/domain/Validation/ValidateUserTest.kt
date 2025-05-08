@@ -86,7 +86,7 @@ class ValidateUserTest {
         }
 
         //Then
-        assertTrue(exception is UserExceptions.NotFoundUser)
+        assertTrue(exception is UserExceptions.UserNotFoundException)
     }
 
 
@@ -102,7 +102,7 @@ class ValidateUserTest {
         val users = listOf(user)
 
         // When + Then
-        val exception = assertThrows<UserExceptions.NotFoundUser> {
+        val exception = assertThrows<UserExceptions.UserNotFoundException> {
             validateUser.validateUserToLogin(users, "nonexistentUser", "hashed123")
         }
 
@@ -113,7 +113,7 @@ class ValidateUserTest {
     fun `should generate a unique UUID When UUID is in use`() {
         // Given
         val newUUID = UUID.randomUUID()
-        every { userRepository.getUserById(any()) } returns Result.success(null)
+        every { userRepository.getUserById(any()) } returns mockk()
 
         // When
         val generatedUUID = validateUser.generateUUIDValidToNewUser()

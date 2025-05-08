@@ -107,7 +107,6 @@ class CreateProjectCLITest {
 
         // When
         cli.show()
-
         // Then
         coVerify { createProjectUseCase.createProject(any()) }
         coVerify { outputPrinter.printMessage("Failed to create project: failed") }

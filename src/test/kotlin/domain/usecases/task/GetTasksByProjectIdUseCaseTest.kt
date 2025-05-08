@@ -42,7 +42,7 @@ class GetTasksByProjectIdUseCaseTest {
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
        testScope.launch {
-           coEvery { taskRepository.getAllTasks() } throws Exception()
+//           coEvery { taskRepository.getAllTasks() } throws Exception()
 
            assertThrows<Exception> { getTasksByProjectIdUseCase(UUID.randomUUID().toString()) }
        }

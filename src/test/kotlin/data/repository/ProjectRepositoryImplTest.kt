@@ -4,8 +4,8 @@
 //import data.createProject
 //import data.mapper.toDomain
 //import data.mapper.toDto
-//import data.source.project.ProjectDataSource
-//import data.source.project.ProjectMemoryDataSource
+//import data.source.project.ExternalProjectDataSource
+//import data.source.project.ProjectManager
 //import data.utils.ProjectRepositoryImpl
 //import domain.utlis.ProjectExceptions
 //import io.mockk.*
@@ -15,25 +15,24 @@
 //import org.junit.jupiter.api.Test
 //import org.junit.jupiter.api.assertDoesNotThrow
 //import org.junit.jupiter.api.assertThrows
-//import org.madrid.data.source.project.RemoteProjectDataSource
 //import java.util.*
 //
 //class ProjectRepositoryImplTest {
-//    private lateinit var projectDataSource: ProjectDataSource
+//    private lateinit var externalProjectDataSource: ExternalProjectDataSource
 //    private lateinit var repository: ProjectRepositoryImpl
-//    private lateinit var projectMemoryDataSource: ProjectMemoryDataSource
-//    private lateinit var remoteProjectDataSource: RemoteProjectDataSource
+//    private lateinit var projectManager: ProjectManager
+//    private lateinit var remoteProjectDataSource: ExternalProjectDataSource
 //    private lateinit var testScope: TestScope
 //
 //    @BeforeEach
 //    fun setup() {
-//        projectDataSource = mockk(relaxed = true)
-//        projectMemoryDataSource = mockk(relaxed = true)
+//        externalProjectDataSource = mockk(relaxed = true)
+//        projectManager = mockk(relaxed = true)
 //        remoteProjectDataSource = mockk(relaxed = true)
 //        repository = ProjectRepositoryImpl(
-//            projectDataSource,
+//            externalProjectDataSource,
 //            remoteProjectDataSource,
-//            projectMemoryDataSource
+//            projectManager
 //        )
 //        testScope = TestScope()
 //    }
@@ -47,8 +46,8 @@
 //                createProject(id = UUID.randomUUID().toString(), name = "test2")
 //            )
 //            coEvery { remoteProjectDataSource.getProjects() } returns projects
-//            every { projectMemoryDataSource.setProjects(any()) } just Runs
-//            every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+//            every { projectManager.setProjects(any()) } just Runs
+//            every { projectManager.getProjects() } returns projects.map { it.toDomain() }
 //
 //            // When
 //            val result = repository.getAllProjects()
@@ -63,8 +62,8 @@
 //        testScope.runTest {
 //            // Given
 //            val project = createProject(name = "test")
-//            every { projectDataSource.createProject(project) } returns Unit
-//            every { projectMemoryDataSource.addProject(project.toDomain()) } returns Unit
+//            every { externalProjectDataSource.createProject(project) } returns Unit
+//            every { projectManager.addProject(project.toDomain()) } returns Unit
 //
 //            // When
 //            // Then
@@ -83,8 +82,8 @@
 //                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
 //                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
 //            )
-//            every { projectMemoryDataSource.deleteProject(projectId) } returns projects.map { it.toDomain() }
-//            every { projectDataSource.getProjects() } returns projects
+//            every { projectManager.deleteProject(projectId) } returns projects.map { it.toDomain() }
+//            every { externalProjectDataSource.getProjects() } returns projects
 //
 //            // When & Then
 //            assertDoesNotThrow {
@@ -102,8 +101,8 @@
 //                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test"),
 //                createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
 //            )
-//            every { projectMemoryDataSource.editProject(project.toDomain()) } returns projects.map { it.toDomain() }
-//            every { projectDataSource.getProjects() } returns projects
+//            every { projectManager.editProject(project.toDomain()) } returns projects.map { it.toDomain() }
+//            every { externalProjectDataSource.getProjects() } returns projects
 //
 //
 //            // When & Then
@@ -117,25 +116,26 @@
 //
 //    @Test
 //    fun `getProjectLogsById returns project's logs when it exists in projects list`() {
-//
-//        val projects = listOf(
-//            createProject(
-//                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-//                name = "test1",
-//                projectLogs = listOf("project created", "project updated")
-//            ),
-//            createProject(
-//                id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
-//                name = "test2",
-//                projectLogs = listOf("project created", "project updated")
+//        runTest {
+//            val projects = listOf(
+//                createProject(
+//                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+//                    name = "test1",
+//                    projectLogs = listOf("project created", "project updated")
+//                ),
+//                createProject(
+//                    id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+//                    name = "test2",
+//                    projectLogs = listOf("project created", "project updated")
+//                )
 //            )
-//        )
-//        every { projectDataSource.getProjects() } returns projects
-//        every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+//            coEvery { remoteProjectDataSource.getProjects() } returns projects
+//            every { projectManager.getProjects() } returns projects.map { it.toDomain() }
 //
-//        //When & Then
-//        assertDoesNotThrow {
-//            repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+//            //When & Then
+//            assertDoesNotThrow {
+//                repository.getProjectLogsById("26fb5810-951e-4913-aae8-1d36d72d85eb")
+//            }
 //        }
 //    }
 //
@@ -155,7 +155,7 @@
 //                    projectLogs = listOf("project created", "project updated")
 //                )
 //            )
-//            every { projectMemoryDataSource.getProjects() } returns projects.map { it.toDomain() }
+//            every { projectManager.getProjects() } returns projects.map { it.toDomain() }
 //
 //            assertThrows<ProjectExceptions.ProjectNotFoundException> {
 //                repository.getProjectById("5")
@@ -168,7 +168,7 @@
 //                val id = UUID.randomUUID()
 //                val expectedProject = createProject(id = id.toString())
 //
-//                every { projectMemoryDataSource.getProjects() } returns listOf(expectedProject.toDomain())
+//                every { projectManager.getProjects() } returns listOf(expectedProject.toDomain())
 //
 //                val result = repository.getProjectById(id.toString())
 //
@@ -182,7 +182,7 @@
 //                val notExistId = UUID.randomUUID().toString()
 //                val project = createProject(id = UUID.randomUUID().toString())
 //
-//                every { projectMemoryDataSource.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
+//                every { projectManager.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
 //
 //                assertThrows<ProjectExceptions.ProjectNotFoundException> { repository.getProjectById(notExistId) }
 //            }

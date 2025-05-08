@@ -2,12 +2,16 @@ package data.source.task
 
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
+import domain.usecases.task.createTask
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
+import java.util.*
 
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
@@ -27,20 +31,16 @@ class TaskCsvDataSourceTest {
 
     @Test
     fun `editTask should update file successfully`() {
-        val tasks = listOf(
-            helperTaskDto(title = "task1", description = "description one"),
-            helperTaskDto(title = "task2", description = "description two")
-        )
-        val parsedTasks = listOf(
-            "task1,description one\n",
-            "task2,description two\n"
-        )
+        runTest {
+            val task = createTask(id = UUID.randomUUID().toString(), title = "task")
+            val updatedTask = helperTaskDto(id = UUID.randomUUID().toString(), title = "task")
 
-        every { taskCsvParser.parseTaskToString(any()) } returnsMany parsedTasks
-        every { fileCsvWriter.updateCsvFile(any()) } returns Unit
+//            every { taskCsvParser.parseTaskToString(any()) } returnsMany parsedTasks
+            every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
 
-//        assertDoesNotThrow { externalTaskDataSource.editTask(tasks) }
+            assertDoesNotThrow { externalTaskDataSource.editTask(updatedTask) }
+        }
     }
 
 
