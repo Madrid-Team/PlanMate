@@ -7,6 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
 import data.source.project.ProjectDataSource
 import kotlinx.coroutines.flow.toList
+import org.bson.Document
+import org.bson.types.ObjectId
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.utils.PROJECT_COLLECTION
 
@@ -28,10 +30,25 @@ class ProjectMongoDBDataSource(
     }
 
     override suspend fun editProject(project: ProjectDto) {
-        val query = Filters.eq("_id", project.id)
-        val updateSet = Updates.set("id", project.id)
+//        val objectId = ObjectId(project.id)
+//
+//        val updateDoc = Document()
+//            .append("name", project.name)
+//            .append("description", project.description)
+//            .append("createdBy", project.createdBy)
+//            .append("projectLogs", project.projectLogs)
+//            .append("projectState", project.projectState)
+//            .append("taskStates", project.taskStates)
+//            .append("projectStates", project.projectStates)
+//            .append("matesIds", project.matesIds)
+//            .append("tasks", project.tasks)
 
-        collection.updateOne(filter = query, update = updateSet)
+        // Important: Keep the original _id
+//        updateDoc.append("_id", objectId)
+
+        val query = Filters.eq("_id", project.id)
+
+        collection.replaceOne( query, project)
     }
 
 }

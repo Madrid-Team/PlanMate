@@ -61,7 +61,6 @@ class ProjectRepositoryImpl(
 
     override suspend fun editProject(project: Project) {
         try {
-            val projectListAfterUpdateProject = projectMemoryDataSource.editProject(project)
             remoteProjectDataSource.editProject(project.toDto())
 
         } catch (exception: Exception) {

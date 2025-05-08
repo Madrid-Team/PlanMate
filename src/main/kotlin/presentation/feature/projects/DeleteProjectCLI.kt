@@ -13,29 +13,31 @@ class DeleteProjectCLI(
     private val deleteProjectUseCase: DeleteProjectUseCase
 ) {
     fun show() {
-        outputPrinter.printMessage("=== Delete Project ===")
-        val projectId = inputReader.readInput("Enter project ID to delete: ")
+        runBlocking {
+            outputPrinter.printMessage("=== Delete Project ===")
+            val projectId = inputReader.readInput("Enter project ID to delete: ")
 
-        try {
-            val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
-            when (confirmed.lowercase()) {
-                "yes" -> {
-                    runBlocking {
+            try {
+                val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
+                when (confirmed.lowercase()) {
+                    "yes" -> {
+
                         deleteProjectUseCase.deleteProject(projectId)
+
+                        outputPrinter.printMessage("Project deleted successfully.")
                     }
-                    outputPrinter.printMessage("Project deleted successfully.")
+
+                    else -> {
+                        outputPrinter.printMessage("Deletion cancelled.")
+
+                    }
+
                 }
-
-                else -> {
-                    outputPrinter.printMessage("Deletion cancelled.")
-
-                }
-
+            } catch (e: ProjectExceptions.ProjectNotFoundException) {
+                outputPrinter.printMessage(e.message ?: "Project not found")
+            } catch (e: Exception) {
+                outputPrinter.printMessage("Failed to delete project: ${e.message}")
             }
-        } catch (e: ProjectExceptions.ProjectNotFoundException) {
-            outputPrinter.printMessage(e.message ?: "Project not found")
-        } catch (e: Exception) {
-            outputPrinter.printMessage("Failed to delete project: ${e.message}")
         }
     }
 }
