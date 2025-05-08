@@ -31,7 +31,7 @@ class DeleteUserCLITest {
         every { inputReader.readInput() } returns "2"
         every { mockCurrentUser.id.toString() } returns "1"
         every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-        every { useCase.invoke("1", "2") } returns Result.success(Unit)
+        every { useCase.invoke("1", "2") } returns Unit
 
         // When
         cli.show()

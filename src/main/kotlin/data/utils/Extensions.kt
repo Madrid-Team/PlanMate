@@ -3,6 +3,7 @@ package data.utils
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
 import domain.utlis.TaskExceptions
+import domain.utlis.UserExceptions
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -29,6 +30,7 @@ fun Throwable?.toProjectException(): PlanMateExceptions {
     return when (val exception = this) {
         is FileNotFoundException -> ProjectExceptions.ProjectsFileNotExistsException()
         is IOException -> ProjectExceptions.ProjectsReadWriteException()
+        is ProjectExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {
             PlanMateExceptions(exception?.message.toString())
@@ -41,9 +43,23 @@ fun Throwable?.toTaskException(): PlanMateExceptions {
     return when (val exception = this) {
         is FileNotFoundException -> TaskExceptions.TaskNotFoundException()
         is IOException -> TaskExceptions.TaskNotFoundException()
+        is TaskExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {
             PlanMateExceptions(exception?.message.toString())
+        }
+    }
+}
+
+
+fun Throwable.toUserException(): PlanMateExceptions {
+    return when (val exception = this) {
+        is FileNotFoundException -> UserExceptions.UserNotFoundException()
+        is IOException -> UserExceptions.UserReadWrightException()
+        is UserExceptions -> exception
+        is PlanMateExceptions -> exception
+        else -> {
+            PlanMateExceptions(exception.message.toString())
         }
     }
 }

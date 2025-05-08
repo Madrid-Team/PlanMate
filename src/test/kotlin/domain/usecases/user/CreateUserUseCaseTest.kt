@@ -1,27 +1,35 @@
 package domain.usecases.user
 
 import com.google.common.truth.Truth.assertThat
+import data.repository.UserRepositoryImpl
+import data.source.user.UserDataSource
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
 
 class CreateUserUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var createUserUseCase: CreateUserUseCase
+    private lateinit var userDataSource: UserDataSource
+
     @BeforeEach
     fun setUp() {
-        userRepository = mockk()
+        // Mock the data source
+        userDataSource = mockk<UserDataSource>(relaxed = false)
+        userRepository = UserRepositoryImpl(userDataSource)
         mockkConstructor(ValidateUser::class)
         createUserUseCase = CreateUserUseCase(userRepository)
     }
-
 
     @Test
     fun `should create user successfully When User dose not exists before`() {
@@ -29,35 +37,51 @@ class CreateUserUseCaseTest {
         val newUserName = "new user"
         val user = User(id = UUID.randomUUID(), username = newUserName, passwordHash = "password", role = "MATE")
         val generateId = UUID.randomUUID()
-        val newUser = user.copy(id = generateId)
 
-        every { userRepository.getUserByName(newUserName) } returns Result.success(null)
-        every { userRepository.createNewUser(newUser) } returns Result.success(Unit)
         every { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
 
+        every { userDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
+
+        every { userDataSource.createNewUser(any()) } returns Unit
+
         // When
-        val result = createUserUseCase.createUser(user)
+        assertDoesNotThrow {
+            createUserUseCase.createUser(user)
+        }
 
         // Then
-        assertThat(result.isSuccess).isTrue()
         verify {
-            userRepository.getUserByName(newUserName)
-            userRepository.createNewUser(newUser)
+            userDataSource.createNewUser(user.copy(id = generateId))
         }
     }
 
     @Test
-    fun `Should not create user When  wrong formed user from repository`() {
+    fun `Should not create user When user already exists`() {
         // Given
-        val malformedUser = User(id = UUID.randomUUID(), "username7", "", "ADMIN")
+        val existingUsername = "existingUser"
+        val existingUser = User(
+            id = UUID.randomUUID(),
+            username = existingUsername,
+            passwordHash = "password",
+            role = "MATE"
+        )
 
-        every { userRepository.getUserByName("username7") } returns Result.success(malformedUser)
+        every { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
 
-        // When
-        val result = createUserUseCase.createUser(malformedUser)
+        every { userDataSource.getUserByName(existingUsername) } returns existingUser
 
-        // Then
-        assertThat(result.isFailure).isTrue()
+        every { userDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
 
+        // When & Then
+        val exception = assertThrows<UserExceptions.UserExist> {
+            createUserUseCase.createUser(existingUser)
+        }
+
+        assertThat(exception.message).isEqualTo("User already exists")
+
+        // Verify createNewUser was called
+        verify {
+            userRepository.createNewUser(any())
+        }
     }
 }

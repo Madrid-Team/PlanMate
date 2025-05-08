@@ -10,9 +10,9 @@ class LoginUserUseCase(private val userRepository: UserRepository) {
 
     fun invoke(userName: String?, passwordHash: String?): User? {
         return if (userName.isNullOrEmpty() || passwordHash.isNullOrEmpty()) {
-            throw UserExceptions.NotFoundUser("Not found user or wrong username")
+            throw UserExceptions.UserNameOrPasswordError()
         } else {
-            ValidateUser(userRepository).validateUserToLogin(userRepository.getAllUsers().getOrNull(), userName, passwordHash)
+            ValidateUser(userRepository).validateUserToLogin(userRepository.getAllUsers(), userName, passwordHash)
         }
     }
 }
