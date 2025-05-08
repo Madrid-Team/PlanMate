@@ -2,7 +2,6 @@ package data
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import data.dto.project.ProjectDto
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 
@@ -12,7 +11,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
     val copy = database.getCollection<Document>("projects_test")
 
 
-     suspend fun copyCollectionIfDifferent(): MongoCollection<ProjectDto> {
+     suspend fun copyCollectionIfDifferent(): MongoCollection<Document> {
         val originalDocs = original.find().toList()
         val copyDocs = copy.find().toList()
         val areStructurallyEqual = areStructurallyEqual(originalDocs, copyDocs)
@@ -23,7 +22,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
                 copy.insertMany(originalDocs)
                 println("projects_test collection refreshed.")
 
-                return   database.getCollection<ProjectDto>("projects_test")
+                return   database.getCollection<Document>("projects_test")
             } else {
                 println("Original collection is empty. Nothing to copy.")
                 throw AssertionError("Original collection is empty Can't Copy collection to do testing.")
@@ -31,7 +30,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
             }
         } else {
             println("No structural difference. Copy not needed.")
-            return database.getCollection<ProjectDto>("projects_test")
+            return database.getCollection<Document>("projects_test")
         }
 
     }
