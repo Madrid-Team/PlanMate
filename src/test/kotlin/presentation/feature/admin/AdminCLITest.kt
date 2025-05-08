@@ -53,7 +53,7 @@ class AdminCLITest {
             val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
             adminCLI.showAdminMenu()
 
-            verify(exactly = 1) { taskAuditLogCLI.show() }
+            coVerify(exactly = 1) { taskAuditLogCLI.show() }
         }
     }
 
