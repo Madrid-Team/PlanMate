@@ -5,7 +5,6 @@ import domain.utlis.TaskExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
@@ -30,7 +29,7 @@ class TaskAuditLogCLITest {
 
     @Test
     fun `show should print audit logs when logs exist`() {
-        runTest {
+        testScope.launch {
             val taskId = "task-123"
             val logs = listOf("Log A", "Log B")
 

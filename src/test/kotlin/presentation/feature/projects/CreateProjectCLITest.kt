@@ -8,6 +8,7 @@ import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
 import io.mockk.*
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -21,9 +22,7 @@ class CreateProjectCLITest {
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val createProjectUseCase = mockk<CreateProjectUseCase>()
     private val createLogUseCase = mockk<CreateLogUseCase>()
-
     private val userMock = mockk<User>()
-
     private lateinit var cli: CreateProjectCLI
     private lateinit var testScope: TestScope
 
@@ -89,7 +88,7 @@ class CreateProjectCLITest {
 
     @Test
     fun `should show error message when creation fails`() {
-        runTest {
+        testScope.launch {
             // Given
             every { inputReader.readInput("Enter project name: ") } returns "project name"
             every { inputReader.readInput("Enter project description: ") } returns "description"

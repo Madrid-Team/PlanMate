@@ -29,29 +29,30 @@ class EditTaskCLITest {
         editTaskUseCase = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
         editTaskCLI = EditTaskCLI(inputReader, outputPrinter, taskView, editTaskUseCase)
+        testScope = TestScope()
     }
 
     @Test
     fun `should edit task successfully when call edit task`() {
-      testScope.launch {
-          every { inputReader.readInput(any()) } returnsMany listOf(
-              UUID.randomUUID().toString(),
-              UUID.randomUUID().toString(),
-              "New Title",
-              "New Description"
-          )
-          val updatedTask = helperTask(
-              projectId = UUID.randomUUID().toString(),
-              id = UUID.randomUUID().toString(),
-              title = "New Title",
-              description = "New Description"
-          )
-          coEvery { editTaskUseCase.editTask(updatedTask) } returns Unit
+        testScope.launch {
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "New Title",
+                "New Description"
+            )
+            val updatedTask = helperTask(
+                projectId = UUID.randomUUID().toString(),
+                id = UUID.randomUUID().toString(),
+                title = "New Title",
+                description = "New Description"
+            )
+            coEvery { editTaskUseCase.editTask(updatedTask) } returns Unit
 
-          editTaskCLI.show()
+            editTaskCLI.show()
 
-          verify { outputPrinter.printMessage("Task updated successfully") }
-      }
+            verify { outputPrinter.printMessage("Task updated successfully") }
+        }
     }
 
     @Test
@@ -75,5 +76,5 @@ class EditTaskCLITest {
 
             verify { outputPrinter.printError(TaskExceptions.TaskCannotEditException().message!!) }
         }
-        }
+    }
 }

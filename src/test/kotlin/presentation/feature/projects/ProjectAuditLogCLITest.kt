@@ -6,6 +6,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
@@ -18,6 +20,7 @@ class ProjectAuditLogCLITest {
     private lateinit var printer: OutputPrinter
     private lateinit var useCase: GetProjectLogsByIdUseCase
     private lateinit var cli: ProjectAuditLogCLI
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
@@ -25,6 +28,7 @@ class ProjectAuditLogCLITest {
         printer = mockk(relaxed = true)
         useCase = mockk()
         cli = ProjectAuditLogCLI(reader, printer, useCase)
+        testScope = TestScope()
     }
 
     @Test
@@ -69,7 +73,7 @@ class ProjectAuditLogCLITest {
 
     @Test
     fun `show should print error when use case fails`() {
-        runTest {
+        testScope.launch {
             val projectId = "789"
             val exception = RuntimeException("Something went wrong")
 

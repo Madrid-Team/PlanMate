@@ -5,6 +5,8 @@ import domain.usecases.project.DeleteProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utlis.ProjectExceptions
 import io.mockk.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
@@ -18,12 +20,14 @@ class DeleteProjectCLITest {
     private val deleteUseCase = mockk<DeleteProjectUseCase>()
     private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>()
     private val mockProject = mockk<Project>()
+    private lateinit var testScope: TestScope
 
     private lateinit var cli: DeleteProjectCLI
 
     @BeforeEach
     fun setUp() {
         cli = DeleteProjectCLI(inputReader, outputPrinter, deleteUseCase)
+        testScope = TestScope()
     }
 
     @Test
@@ -60,7 +64,7 @@ class DeleteProjectCLITest {
 
     @Test
     fun `show function should print Failed to delete project Not found when can't delete project`() {
-        runTest {
+        testScope.launch {
             // Given
             every { inputReader.readInput(any()) } returns "3" andThen "yes"
             coEvery { getProjectByIdUseCase.invoke("3") } returns mockProject
@@ -76,7 +80,7 @@ class DeleteProjectCLITest {
 
     @Test
     fun `show function should print Project not found when project not found`() {
-        runTest {
+        testScope.launch {
             // Given
             every { inputReader.readInput(any()) } returns "4"
             coEvery { getProjectByIdUseCase.invoke("4") } throws ProjectExceptions.ProjectNotFoundException()
