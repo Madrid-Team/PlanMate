@@ -19,61 +19,59 @@ class CreateProjectCLI(
     private val createLogUseCase: CreateLogUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        coroutineScope {
-            outputPrinter.printMessage("=== Create Project ===")
-            val name = inputReader.readInput("Enter project name: ")
-            val description = inputReader.readInput("Enter project description: ")
-            val taskStates = inputReader.readInput("Enter task States seperated by white space description: ")
-            val projectStates = inputReader.readInput("Enter project States seperated by white space description: ")
+        outputPrinter.printMessage("=== Create Project ===")
+        val name = inputReader.readInput("Enter project name: ")
+        val description = inputReader.readInput("Enter project description: ")
+        val taskStates = inputReader.readInput("Enter task States seperated by white space description: ")
+        val projectStates = inputReader.readInput("Enter project States seperated by white space description: ")
 
 
-            val currentProjectStates = projectStates.split(" ")
-            val statesMenu =
-                currentProjectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
-            val promptMessage = "Select project State:\n$statesMenu\nEnter number: "
+        val currentProjectStates = projectStates.split(" ")
+        val statesMenu =
+            currentProjectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
+        val promptMessage = "Select project State:\n$statesMenu\nEnter number: "
 
-            var projectState: String
-            while (true) {
-                val projectStateInput = inputReader.readInput(promptMessage)
+        var projectState: String
+        while (true) {
+            val projectStateInput = inputReader.readInput(promptMessage)
 
-                val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
-                if (selectedIndex != null && selectedIndex in 0 until currentProjectStates.size) {
-                    projectState = currentProjectStates[selectedIndex]
-                    break
-                } else {
-                    println("Invalid selection. Please enter a valid state id ")
-                    currentProjectStates.firstOrNull() ?: ""
-                }
+            val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
+            if (selectedIndex != null && selectedIndex in 0 until currentProjectStates.size) {
+                projectState = currentProjectStates[selectedIndex]
+                break
+            } else {
+                println("Invalid selection. Please enter a valid state id ")
+                currentProjectStates.firstOrNull() ?: ""
             }
+        }
 
-            val project = Project(
-                name = name,
-                description = description,
-                createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",
-                projectLogs = emptyList(),
-                projectState = projectState,
-                taskStates = taskStates.trim().split(" "),
-                projectStates = currentProjectStates,
-                id = UUID.randomUUID()
-            )
-            try {
-                val logUseCase = async {
-                    createLogUseCase.invoke(
-                        operationType = OperationType.CREATE,
-                        entityName = project.name,
-                        entityType = EntityType.PROJECT,
-                        username = project.createdBy,
-                    )
-                }
-                val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
-                val projectCreation = async {
-                    createProjectUseCase.createProject(projectWithLog)
-                }
-                projectCreation.await()
-                outputPrinter.printMessage("Project created successfully")
-            } catch (e: PlanMateExceptions) {
-                outputPrinter.printMessage("Failed to create project: ${e.message}")
+        val project = Project(
+            name = name,
+            description = description,
+            createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",
+            projectLogs = emptyList(),
+            projectState = projectState,
+            taskStates = taskStates.trim().split(" "),
+            projectStates = currentProjectStates,
+            id = UUID.randomUUID()
+        )
+        try {
+            val logUseCase = async {
+                createLogUseCase.invoke(
+                    operationType = OperationType.CREATE,
+                    entityName = project.name,
+                    entityType = EntityType.PROJECT,
+                    username = project.createdBy,
+                )
             }
+            val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
+            val projectCreation = async {
+                createProjectUseCase.createProject(projectWithLog)
+            }
+            projectCreation.await()
+            outputPrinter.printMessage("Project created successfully")
+        } catch (e: PlanMateExceptions) {
+            outputPrinter.printMessage("Failed to create project: ${e.message}")
         }
     }
 }
