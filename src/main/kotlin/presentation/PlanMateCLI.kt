@@ -46,7 +46,6 @@ class PlanMateCLI(
 
                 else -> outputPrinter.printError("Invalid option.")
             }
-
         }
     }
 
