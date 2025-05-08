@@ -14,14 +14,17 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
+import org.madrid.data.source.project.RemoteProjectDataSource
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 
@@ -29,7 +32,7 @@ import kotlin.test.assertNull
 class ProjectMongoDBDataSourceTest {
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
-    private lateinit var projectMongoDBDataSource: ProjectMongoDBDataSource
+    private lateinit var projectMongoDBDataSource: RemoteProjectDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     @BeforeAll
     fun setup() {
@@ -38,7 +41,7 @@ class ProjectMongoDBDataSourceTest {
         copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database)
         runBlocking {
             projectMongoDBDataSource =
-                ProjectMongoDBDataSource(copyCollectionIfDifferentToTest.copyCollectionIfDifferent() )
+                ProjectMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
         }
 
 
@@ -123,7 +126,7 @@ class ProjectMongoDBDataSourceTest {
 
         val collection = mockk<MongoCollection<ProjectDto>>()
         val dataSource =ProjectMongoDBDataSource(collection)
-        // Mock deleteOne to return a successful result
+
         coEvery {
             collection.deleteOne(eq(Filters.eq("_id", "ghost2")), any())
         } returns DeleteResult.acknowledged(1)
@@ -161,7 +164,7 @@ class ProjectMongoDBDataSourceTest {
 
         // Then
         val found = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "ghost")).firstOrNull()
-        assertNull(found) // since it was never inserted
+        assertNull(found)
     }
     @Test
     fun `createProject should insert the project into the collection`() = runTest {
@@ -180,8 +183,8 @@ class ProjectMongoDBDataSourceTest {
 
         projectMongoDBDataSource.createProject(testProject)
 
-        val stored = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "test123")).firstOrNull()
-        assertNull(stored)
+        val stored = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "test123"))
+        assertNotNull(stored)
     }
 
     @Test
@@ -206,6 +209,42 @@ class ProjectMongoDBDataSourceTest {
         val foundProjects = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "duplicate123")).toList()
         assertEquals(0, foundProjects.size)
     }
+    @Test
+    fun `editProject should call replaceOne with correct query and project`() = runTest {
+        val collection = mockk<MongoCollection<ProjectDto>>()
+        val testProject = ProjectDto(
+            id = UUID.randomUUID().toString(),
+            name = "Edited Project",
+            description = "Updated description",
+            createdBy = "tester",
+            projectLogs = emptyList(),
+            projectState = "active",
+            taskStates = emptyList(),
+            projectStates = emptyList(),
+            matesIds = emptyList(),
+            tasks = emptyList()
+        )
 
+        val expectedQuery = Filters.eq("_id", testProject.id)
+
+
+        coEvery {
+            collection.replaceOne(expectedQuery, testProject, any())
+        } returns mockk()
+
+        val dataSource = ProjectMongoDBDataSource(collection)
+
+        dataSource.editProject(testProject)
+
+        coVerify(exactly = 1) {
+            collection.replaceOne(expectedQuery, testProject, any())
+        }
+    }
+
+@AfterAll
+fun cleanup() {
+    mongoClientProvider.close()
+
+}
 
 }
