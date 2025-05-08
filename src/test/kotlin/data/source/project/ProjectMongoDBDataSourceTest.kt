@@ -37,8 +37,7 @@ class ProjectMongoDBDataSourceTest {
         database = mongoClientProvider.getDatabase()
         copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database)
         runBlocking {
-            projectMongoDBDataSource =
-                ProjectMongoDBDataSource(copyCollectionIfDifferentToTest.copyCollectionIfDifferent() )
+//            projectMongoDBDataSource = ProjectMongoDBDataSource(copyCollectionIfDifferentToTest.copyCollectionIfDifferent() )
         }
 
 
