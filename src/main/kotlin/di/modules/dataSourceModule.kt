@@ -15,7 +15,6 @@ import org.koin.dsl.module
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
 import org.madrid.data.source.project.RemoteProjectDataSource
-import org.madrid.data.source.task.RemoteTaskDataSource
 import org.madrid.data.source.task.TaskMongoDBDataSource
 import java.io.File
 
@@ -46,14 +45,14 @@ val dataSourceModule = module {
 
     single<ProjectDataSource> { ProjectCsvDataSource(get(named("projectReader")), get(named("projectWriter")), get()) }
     single<UserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
-    single<TaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader"))) }
+    single<ExternalTaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader")),get()) }
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
 
     single<RemoteProjectDataSource> { ProjectMongoDBDataSource(get())}
 
-    single { TaskMemoryDataSource() }
-    single<RemoteTaskDataSource> { TaskMongoDBDataSource(get()) }
+    single { TaskManager() }
+    single<ExternalTaskDataSource> { TaskMongoDBDataSource(get()) }
 
 }

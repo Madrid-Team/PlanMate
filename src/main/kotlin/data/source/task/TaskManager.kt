@@ -1,29 +1,30 @@
 package data.source.task
 
+import data.dto.task.TaskDto
 import domain.models.task.Task
 
-class TaskMemoryDataSource {
+class TaskManager {
 
-    private val tasks = mutableListOf<Task>()
+    private val tasks = mutableListOf<TaskDto>()
 
-    fun getTasks(): List<Task> {
+    fun getTasks(): List<TaskDto> {
         return tasks.toList()
     }
 
-    fun setTasks(tasks: List<Task>) {
+    fun setTasks(tasks: List<TaskDto>) {
         this.tasks.addAll(tasks)
     }
 
-    fun addTask(task: Task) {
+    fun addTask(task: TaskDto) {
         tasks.add(task)
     }
 
-    fun deleteTask(taskId: String): List<Task> {
+    fun deleteTask(taskId: String): List<TaskDto> {
         tasks.removeIf { it.id.toString() == taskId }
         return tasks
     }
 
-    fun editTask(task: Task): List<Task> {
+    fun editTask(task: TaskDto): List<TaskDto> {
         val updatedIndex = tasks.indexOfFirst { it.id == task.id }
         tasks[updatedIndex] = task
         return tasks
