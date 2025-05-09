@@ -36,21 +36,24 @@ class UserMongoDBDataSourceTest {
     private lateinit var userMongoDBDataSource: ExternalUserDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     private lateinit var userDtoCollection: MongoCollection<UserDto>
-    private  var testScope: TestScope=TestScope()
+    private var testScope: TestScope = TestScope()
+
     @BeforeAll
     fun setup() {
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,"user_test","users")
-       runTest {
-        copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
-       }
-      userDtoCollection=  database.getCollection<UserDto>("user_test")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "user_test", "users")
+        testScope.launch {
+            copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
+            userDtoCollection = database.getCollection<UserDto>("user_test")
             userMongoDBDataSource =
-                UserMongoDBDataSource(userDtoCollection )
+                UserMongoDBDataSource(userDtoCollection)
+
+        }
 
     }
-    val id =UUID.randomUUID().toString()
+
+    val id = UUID.randomUUID().toString()
     val userDto = UserDto(
         id = id,
         username = "User Name",
@@ -69,43 +72,48 @@ class UserMongoDBDataSourceTest {
         passwordHash = "shci58392nwsuss9203asdxh",
         role = UserRole.ADMIN.name,
     )
+
     @Test
-    fun `createNewUser should call insertOne with correct project`() = runTest {
-        // Arrange
-        val collection = mockk<MongoCollection<UserDto>>()
-
-
-        coEvery {
-            collection.insertOne(eq(userTest), any<InsertOneOptions>())
-        } returns mockk()
-
-        val dataSource = UserMongoDBDataSource(userDtoCollection)
-
-        dataSource.createNewUser(userTest)
+    fun `createNewUser should call insertOne with correct project`() {
         testScope.launch {
-        coVerify(exactly = 1) {
-            collection.insertOne(eq(userTest), any<InsertOneOptions>())
+            // Arrange
+            val collection = mockk<MongoCollection<UserDto>>()
+
+
+            coEvery {
+                collection.insertOne(eq(userTest), any<InsertOneOptions>())
+            } returns mockk()
+
+            val dataSource = UserMongoDBDataSource(userDtoCollection)
+
+            dataSource.createNewUser(userTest)
+            testScope.launch {
+                coVerify(exactly = 1) {
+                    collection.insertOne(eq(userTest), any<InsertOneOptions>())
+                }
+            }
         }
     }
-}
+
 
     @Test
     fun `createNewUser adds a project and getAllUsers returns it`() {
-        var users:List<UserDto> =emptyList()
+        testScope.launch {
 
-        runTest {
+            var users: List<UserDto> = emptyList()
+
             userMongoDBDataSource.createNewUser(userTest2)
 
             users = userMongoDBDataSource.getAllUsers()
+
+            assertEquals(true, users.any { it.username == "User Name5" })
+
         }
-        assertEquals(true, users.any { it.username == "User Name5" })
-
     }
-
 
     @Test
     fun `deleteProject should delete project with given projectId`() {
-        runTest {
+        testScope.launch {
             //Given
             val userId = userMongoDBDataSource.getAllUsers().first().id
             val userListSizeBeforeDelete = userMongoDBDataSource.getAllUsers().size
@@ -114,36 +122,38 @@ class UserMongoDBDataSourceTest {
             userMongoDBDataSource.deleteUser(userId)
 
             // Then
-            assertEquals(userListSizeBeforeDelete-1, userMongoDBDataSource.getAllUsers().size)
+            assertEquals(userListSizeBeforeDelete - 1, userMongoDBDataSource.getAllUsers().size)
 
         }
     }
 
     @Test
-    fun `deleteUser should call deleteOne with the correct filter`() = runTest {
-        // Given
-        val userId = "ghost2"
-
-        val collection = mockk<MongoCollection<User>>()
-        val dataSource = UserMongoDBDataSource(userDtoCollection)
-
-        coEvery {
-            collection.deleteOne(eq(Filters.eq("_id", "ghost2")), any())
-        } returns DeleteResult.acknowledged(1)
-
-
-        //When
-        dataSource.deleteUser(userId)
+    fun `deleteUser should call deleteOne with the correct filter`() {
         testScope.launch {
-            //Then
-            coVerify {
+            // Given
+            val userId = "ghost2"
+
+            val collection = mockk<MongoCollection<User>>()
+            val dataSource = UserMongoDBDataSource(userDtoCollection)
+
+            coEvery {
                 collection.deleteOne(eq(Filters.eq("_id", "ghost2")), any())
+            } returns DeleteResult.acknowledged(1)
+
+
+            //When
+            dataSource.deleteUser(userId)
+            testScope.launch {
+                //Then
+                coVerify {
+                    collection.deleteOne(eq(Filters.eq("_id", "ghost2")), any())
+                }
             }
         }
     }
 
     @Test
-    fun `getUserById returns user when found`()  {
+    fun `getUserById returns user when found`() {
         val collection = mockk<MongoCollection<UserDto>>()
         val dataSource = UserMongoDBDataSource(collection)
 
@@ -155,8 +165,9 @@ class UserMongoDBDataSourceTest {
             assertNotNull(result)
         }
     }
+
     @Test
-    fun `getUserById throws exception when user not found`()  {
+    fun `getUserById throws exception when user not found`() {
         val collection = mockk<MongoCollection<UserDto>>()
         val dataSource = UserMongoDBDataSource(collection)
 
@@ -164,38 +175,38 @@ class UserMongoDBDataSourceTest {
             coEvery { firstOrNull() } returns null
         }
         testScope.launch {
-        assertFailsWith<UserExceptions.UserNotFoundException> {
-            dataSource.getUserById("user51")
-        }
+            assertFailsWith<UserExceptions.UserNotFoundException> {
+                dataSource.getUserById("user51")
+            }
         }
     }
 
     @Test
-    fun `getUserByName returns user when user exists`() = runTest {
-        // Arrange
-        val collection = mockk<MongoCollection<UserDto>>()
+    fun `getUserByName returns user when user exists`() {
+        testScope.launch {
+            // Arrange
+            val collection = mockk<MongoCollection<UserDto>>()
 
-        val userName = userTest.username
+            val userName = userTest.username
 
-        val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
-        coEvery { mockFlow.firstOrNull() } returns userTest
-        coEvery { collection.find(eq("username", userName)) } returns mockFlow
+            val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
+            coEvery { mockFlow.firstOrNull() } returns userTest
+            coEvery { collection.find(eq("username", userName)) } returns mockFlow
 
-        // Act
-        copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
-        userMongoDBDataSource.createNewUser(userTest)
-        val result = userMongoDBDataSource.getUserByName(userName)
+            // Act
+            copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
+            userMongoDBDataSource.createNewUser(userTest)
+            val result = userMongoDBDataSource.getUserByName(userName)
 
-        // Assert
-        assertEquals(userTest, result)
-       testScope.launch {
-        coVerify { collection.find(eq("username", userName)) }
-        coVerify { mockFlow.firstOrNull() }
+            // Assert
+            assertEquals(userTest, result)
+            coVerify { collection.find(eq("username", userName)) }
+            coVerify { mockFlow.firstOrNull() }
+
+        }
     }
-    }
-
     @Test
-    fun `getUserByName throws exception when user not found`()  {
+    fun `getUserByName throws exception when user not found`() {
         val collection = mockk<MongoCollection<UserDto>>()
         val dataSource = UserMongoDBDataSource(collection)
 
@@ -210,23 +221,23 @@ class UserMongoDBDataSourceTest {
     }
 
     @Test
-    fun `getUserById throws exception on database error`() = runTest {
-        // Arrange
-        val collection = mockk<MongoCollection<UserDto>>()
-        val userId = "user1"
-        val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
-        coEvery { mockFlow.firstOrNull() } throws RuntimeException("DB error")
-        coEvery { collection.find(eq("_id", userId)) } returns mockFlow
-
-        // Act & Assert
-
-        userMongoDBDataSource.getUserById(userId)
-
+    fun `getUserById throws exception on database error`() {
         testScope.launch {
-            coVerify { collection.find(eq("_id", userId)) }
-            coVerify { mockFlow.firstOrNull() }
-        }
+            // Arrange
+            val collection = mockk<MongoCollection<UserDto>>()
+            val userId = "user1"
+            val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
+            coEvery { mockFlow.firstOrNull() } throws RuntimeException("DB error")
+            coEvery { collection.find(eq("_id", userId)) } returns mockFlow
 
+            // Act & Assert
+
+            userMongoDBDataSource.getUserById(userId)
+
+                coVerify { collection.find(eq("_id", userId)) }
+                coVerify { mockFlow.firstOrNull() }
+
+        }
     }
 
 }
