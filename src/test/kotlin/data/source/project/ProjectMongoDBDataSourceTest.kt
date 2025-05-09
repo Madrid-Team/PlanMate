@@ -19,7 +19,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
-import org.madrid.data.source.project.RemoteProjectDataSource
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,7 +31,7 @@ import kotlin.test.assertNull
 class ProjectMongoDBDataSourceTest {
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
-    private lateinit var projectMongoDBDataSource: RemoteProjectDataSource
+    private lateinit var projectMongoDBDataSource: ExternalProjectDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     @BeforeAll
     fun setup() {
