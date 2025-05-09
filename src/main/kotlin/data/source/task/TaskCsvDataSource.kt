@@ -4,7 +4,6 @@ import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
-import data.utils.toTaskException
 
 class TaskCsvDataSource(
     private val taskCsvParser: TaskCsvParser,
@@ -33,47 +32,29 @@ class TaskCsvDataSource(
     }
 
     override suspend fun editTask(task: TaskDto) {
-        try {
-            val taskListAfterEditTask = taskManager.editTask(task)
-            var tasksFileContentAfterDeletion = String.taskHeader
-            taskListAfterEditTask.forEach {
-                val projectAsString = taskCsvParser.parseTaskToString(it)
-                tasksFileContentAfterDeletion += projectAsString
-            }
-            fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
-
-        } catch (exception: Exception) {
-            throw exception.toTaskException()
+        val taskListAfterEditTask = taskManager.editTask(task)
+        var tasksFileContentAfterDeletion = String.taskHeader
+        taskListAfterEditTask.forEach {
+            val projectAsString = taskCsvParser.parseTaskToString(it)
+            tasksFileContentAfterDeletion += projectAsString
         }
-
+        fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
     }
 
     override suspend fun deleteTask(projectId: String, taskId: String) {
-        try {
-            val taskListAfterDeleteTask = taskManager.deleteTask(taskId)
-            var tasksFileContentAfterDeletion = String.taskHeader
-            taskListAfterDeleteTask.forEach {
-                val projectAsString = taskCsvParser.parseTaskToString(it)
-                tasksFileContentAfterDeletion += projectAsString
-            }
-            fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
-
-        } catch (exception: Exception) {
-            throw exception.toTaskException()
+        val taskListAfterDeleteTask = taskManager.deleteTask(taskId)
+        var tasksFileContentAfterDeletion = String.taskHeader
+        taskListAfterDeleteTask.forEach {
+            val projectAsString = taskCsvParser.parseTaskToString(it)
+            tasksFileContentAfterDeletion += projectAsString
         }
+        fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
     }
 
     override suspend fun createTask(task: TaskDto) {
-
-        try {
-
-            val taskRow = taskCsvParser.parseTaskToString(task)
-            fileCsvWriter.writeToCsvFile(taskRow)
-            taskManager.addTask(task)
-
-        } catch (exception: Exception) {
-            throw exception.toTaskException()
-        }
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeToCsvFile(taskRow)
+        taskManager.addTask(task)
     }
 
     override suspend fun getTasksByProjectId(projectId: String): List<TaskDto> {
