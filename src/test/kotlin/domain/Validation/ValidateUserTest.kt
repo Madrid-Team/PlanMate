@@ -6,7 +6,8 @@ import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
 import io.mockk.*
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.BeforeTest
@@ -17,6 +18,7 @@ import kotlin.test.assertTrue
 class ValidateUserTest {
     private lateinit var userRepository: UserRepository
     private lateinit var validateUser: ValidateUser
+    private val testScope: TestScope = TestScope()
 
     @BeforeTest
     fun setup() {
@@ -109,7 +111,7 @@ class ValidateUserTest {
 
     @Test
     fun `should generate a unique UUID When UUID is in use`() {
-        runTest {
+        testScope.launch {
             // Given
             val newUUID = UUID.randomUUID().toString()
             coEvery { userRepository.getUserById(any()) } returns mockk()
@@ -122,5 +124,4 @@ class ValidateUserTest {
             coVerify(exactly = 1) { userRepository.getUserById(any()) }
         }
     }
-
 }
