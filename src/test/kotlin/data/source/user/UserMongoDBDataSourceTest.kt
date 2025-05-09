@@ -120,7 +120,7 @@ class UserMongoDBDataSourceTest {
     }
 
     @Test
-    fun `deleteUser should call deleteOne with correct filter`() = runTest {
+    fun `deleteUser should call deleteOne with the correct filter`() = runTest {
         // Given
         val userId = "ghost2"
 
