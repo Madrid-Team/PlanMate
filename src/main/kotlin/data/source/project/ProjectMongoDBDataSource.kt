@@ -1,15 +1,12 @@
 package org.madrid.data.source.project
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.project.ProjectDto
-import data.mapper.toDomain
 import data.source.project.ExternalProjectDataSource
-import domain.models.project.Project
+import domain.models.logs.CurrentUser
 import domain.utlis.ProjectExceptions
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 
 class ProjectMongoDBDataSource(
@@ -17,7 +14,8 @@ class ProjectMongoDBDataSource(
 ) : ExternalProjectDataSource {
 
     override suspend fun getProjects(): List<ProjectDto> {
-        return collection.find().toList()
+        val filter = eq("createdBy",CurrentUser.getCurrentUser().username)
+        return collection.find(filter).toList()
     }
 
     override suspend fun createProject(project: ProjectDto) {
@@ -41,9 +39,9 @@ class ProjectMongoDBDataSource(
         return collection.find(filter).toList().flatMap { it.projectLogs }
     }
 
-    override suspend fun getProjectById(id: String): Project {
+    override suspend fun getProjectById(id: String): ProjectDto {
         val filter = eq("_id", id)
-        return collection.find(filter).firstOrNull()?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+        return collection.find(filter).firstOrNull() ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
 }

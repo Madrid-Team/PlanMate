@@ -17,6 +17,6 @@ data class ProjectDto(
     val projectState: String,
     val taskStates: List<String>,
     val projectStates: List<String>,
-    val matesIds:List<String> = emptyList(),
+    val matesUsernames:List<String> = emptyList(),
     val tasks:List<TaskDto> = emptyList()
 )

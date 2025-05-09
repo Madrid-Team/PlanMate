@@ -1,13 +1,9 @@
 package data.source.project
 
 import data.dto.project.ProjectDto
-import data.mapper.toDomain
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.projectHeader
-import data.utils.toProjectException
-import domain.models.project.Project
-import domain.utlis.ProjectExceptions
 
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -38,13 +34,9 @@ class ProjectCsvDataSource(
     }
 
     override suspend fun createProject(project: ProjectDto) {
-        try {
-            val row = projectCsvParser.parseProjectToString(project)
-            fileCsvWriter.writeToCsvFile(row)
-            projectManager.addProject(project)
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
+        val row = projectCsvParser.parseProjectToString(project)
+        fileCsvWriter.writeToCsvFile(row)
+        projectManager.addProject(project)
     }
 
     override suspend fun deleteProject(projectId: String) {
@@ -60,7 +52,7 @@ class ProjectCsvDataSource(
             fileCsvWriter.updateCsvFile(stringAfterDelete)
         } catch (e: Exception) {
             projectWillDeleted?.let { projectManager.addProject(projectWillDeleted) }
-            throw e.toProjectException()
+            throw e
         }
 
     }
@@ -78,24 +70,15 @@ class ProjectCsvDataSource(
             fileCsvWriter.updateCsvFile(projectAfterUpdate)
         } catch (e: Exception) {
             projectManager.addProject(project)
-            throw e.toProjectException()
+            throw e
         }
     }
 
-    override suspend fun getProjectLogsById(id: String): List<String> {
-        return try {
-            projectManager.getProjects().find { it.id == id }?.projectLogs
-                ?: throw ProjectExceptions.ProjectNotFoundException()
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
+    override suspend fun getProjectLogsById(id: String): List<String>? {
+        return projectManager.getProjects().find { it.id == id }?.projectLogs
     }
 
-    override suspend fun getProjectById(id: String): Project {
-        return try {
-            projectManager.getProjects().find { it.id == id }?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
+    override suspend fun getProjectById(id: String): ProjectDto? {
+        return projectManager.getProjects().find { it.id == id }
     }
 }

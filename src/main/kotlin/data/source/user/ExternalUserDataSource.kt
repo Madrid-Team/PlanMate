@@ -1,11 +1,11 @@
 package data.source.user
 
-import domain.models.authentication.User
+import data.dto.authentication.UserDto
 
 interface ExternalUserDataSource {
-    suspend fun createNewUser(user: User)
+    suspend fun createNewUser(user: UserDto)
     suspend fun deleteUser(userId: String)
-    suspend fun getUserById(userId: String): User
-    suspend fun getAllUsers(): List<User>
-    suspend fun getUserByName(userName: String): User
+    suspend fun getUserById(userId: String): UserDto?
+    suspend fun getAllUsers(): List<UserDto>
+    suspend fun getUserByName(userName: String): UserDto?
 }

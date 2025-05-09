@@ -3,7 +3,7 @@ package di.modules
 import data.repository.TaskRepositoryImpl
 import data.repository.UserRepositoryImpl
 import data.source.project.ProjectManager
-import data.utils.ProjectRepositoryImpl
+import data.repository.ProjectRepositoryImpl
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.repository.UserRepository

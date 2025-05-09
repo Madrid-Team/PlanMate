@@ -1,11 +1,14 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
+import data.mapper.toDto
 import data.source.user.ExternalUserDataSource
 import domain.models.authentication.User
 import domain.utlis.UserExceptions
 import domain.utlis.UserExceptions.UserExist
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -30,14 +33,14 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
 
-            coEvery { externalUserDataSource.createNewUser(user) } returns Unit
+            coEvery { externalUserDataSource.createNewUser(user.toDto()) } returns Unit
 
             // When/Then - No exception is thrown
             // Verify
             assertDoesNotThrow {
                 userRepositoryImpl.createNewUser(user)
             }
-            coVerify { externalUserDataSource.createNewUser(user) }
+            coVerify { externalUserDataSource.createNewUser(user.toDto()) }
         }
     }
 
@@ -47,7 +50,7 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
             val exception = UserExist()
-            coEvery { externalUserDataSource.createNewUser(user) } throws exception
+            coEvery { externalUserDataSource.createNewUser(user.toDto()) } throws exception
 
             // When/Then
             val thrownException = assertThrows<UserExist> {
@@ -61,18 +64,18 @@ class UserRepositoryImplTest {
 
     @Test
     fun `getUser should return user when found`() {
-       runTest {
-           // Given
-           val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
+        runTest {
+            // Given
+            val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-           coEvery { externalUserDataSource.getUserById("1") } returns user
+            coEvery { externalUserDataSource.getUserById("1") } returns user.toDto()
 
-           // When
-           val result = userRepositoryImpl.getUserById("1")
+            // When
+            val result = userRepositoryImpl.getUserById("1")
 
-           // Then
-           assertThat(result).isEqualTo(user)
-       }
+            // Then
+            assertThat(result).isEqualTo(user)
+        }
     }
 
     @Test
@@ -84,7 +87,7 @@ class UserRepositoryImplTest {
                 User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
             )
 
-            coEvery { externalUserDataSource.getAllUsers() } returns users
+            coEvery { externalUserDataSource.getAllUsers() } returns users.map { it.toDto() }
 
             // When
             val result = userRepositoryImpl.getAllUsers()
@@ -100,7 +103,7 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-            coEvery { externalUserDataSource.getUserByName("username1") } returns user
+            coEvery { externalUserDataSource.getUserByName("username1") } returns user.toDto()
 
             // When
             val result = userRepositoryImpl.getUserByName("username1")
@@ -113,32 +116,32 @@ class UserRepositoryImplTest {
     @Test
     fun `Should delete user successfully`() {
         runTest {
-        // Given
-        val userId = "1"
-        coEvery { externalUserDataSource.deleteUser(userId) } returns Unit
+            // Given
+            val userId = "1"
+            coEvery { externalUserDataSource.deleteUser(userId) } returns Unit
 
-        // When
-        userRepositoryImpl.deleteUser(userId)
+            // When
+            userRepositoryImpl.deleteUser(userId)
 
-        // Then - verify the call was made to the data source
-        coVerify { externalUserDataSource.deleteUser(userId) }
+            // Then - verify the call was made to the data source
+            coVerify { externalUserDataSource.deleteUser(userId) }
         }
     }
 
     @Test
     fun `Should propagate exception from data source when deleting user`() {
         runTest {
-        // Given
-        val userId = "2"
-        val exception = UserExceptions.UserNotFoundException()
-        coEvery { externalUserDataSource.deleteUser(userId) } throws exception
+            // Given
+            val userId = "2"
+            val exception = UserExceptions.UserNotFoundException()
+            coEvery { externalUserDataSource.deleteUser(userId) } throws exception
 
-        // When/Then
-        val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
-            userRepositoryImpl.deleteUser(userId)
-        }
+            // When/Then
+            val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
+                userRepositoryImpl.deleteUser(userId)
+            }
 
-        assertThat(thrownException).isSameInstanceAs(exception)
+            assertThat(thrownException).isSameInstanceAs(exception)
         }
     }
 
