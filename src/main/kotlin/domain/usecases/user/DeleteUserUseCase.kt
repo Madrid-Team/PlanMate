@@ -9,10 +9,8 @@ class DeleteUserUseCase(
 ) {
     suspend fun invoke(userRequestId: String, userToDeleteId: String) {
         val user = userRepository.getUserById(userRequestId)
-            ?: throw UserExceptions.UserNotFoundException()
 
         userRepository.getUserById(userToDeleteId)
-            ?: throw UserExceptions.UserNotFoundException()
 
         if (user.role == UserRole.ADMIN.name) {
             userRepository.deleteUser(userToDeleteId)
