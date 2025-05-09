@@ -2,7 +2,7 @@ package presentation.feature.tasks
 
 
 import domain.usecases.task.DisplayAllTasksUseCase
-import domain.utlis.TaskExceptions
+import domain.utlis.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -20,7 +20,7 @@ class TaskView(
         try {
             val result = displayAllTasksUseCase.display(projectId)
             outputPrinter.printMessage(result)
-        } catch (exception: TaskExceptions) {
+        } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage(exception.message.toString())
         }
     }

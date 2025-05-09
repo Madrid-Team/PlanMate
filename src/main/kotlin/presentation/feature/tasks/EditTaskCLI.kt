@@ -13,10 +13,9 @@ import java.util.*
 class EditTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val taskView: TaskView,
     private val editTaskUseCase: EditTaskUseCase
 ) {
-    suspend fun show() = withContext(Dispatchers.IO){
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Edit Task ===")
 
         val projectId = inputReader.readInput("Enter project ID: ")
@@ -30,7 +29,7 @@ class EditTaskCLI(
             title = title,
             description = description,
             taskState = "",
-            createdBy = CurrentUser.getCurrentUser()?.username ?: "UNKNOWN",
+            createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf()
         )
 

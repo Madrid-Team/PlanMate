@@ -8,7 +8,6 @@ import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -26,10 +25,7 @@ class CreateTaskCLI(
         outputPrinter.printMessage("=== Create Task ===")
         try {
             val task = readTaskInput()
-            val deferredTaskCreation = async {
-                createTaskUseCase.createTask(task)
-            }
-            deferredTaskCreation.await()
+            createTaskUseCase.createTask(task)
             outputPrinter.printMessage("Task created successfully")
         } catch (exception: Exception) {
             outputPrinter.printMessage(exception.message.toString())
@@ -58,13 +54,13 @@ class CreateTaskCLI(
             title = title,
             description = description,
             taskState = selectedState,
-            createdBy = CurrentUser.getCurrentUser()?.username ?: "Unknown",
+            createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf(
                 createLogUseCase.invoke(
                     operationType = OperationType.CREATE,
                     entityName = title,
                     entityType = EntityType.TASK,
-                    username = CurrentUser.getCurrentUser()!!.username,
+                    username = CurrentUser.getCurrentUser().username,
                 )
             ),
             id = UUID.randomUUID()
