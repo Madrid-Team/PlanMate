@@ -29,7 +29,7 @@ class UserMongoDBDataSource(
     }
 
     override suspend fun getUserByName(userName: String): UserDto? {
-        val filter = eq("name", userName)
+        val filter = eq("username", userName)
         return collection.find(filter).firstOrNull()
     }
 }

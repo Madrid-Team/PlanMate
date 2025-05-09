@@ -44,7 +44,7 @@ class TaskMongoDBDataSourceTest {
         testScope = TestScope()
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database)
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,"projects_test","projects")
         runBlocking {
             taskMongoDBDataSource =
                 TaskMongoDBDataSource(database.getCollection<ProjectDto>("projects_test"))
