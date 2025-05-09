@@ -7,6 +7,7 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -18,6 +19,8 @@ class TaskCLITest {
     private lateinit var editTaskCLI: EditTaskCLI
     private lateinit var taskView: TaskView
     private lateinit var taskCLI: TaskCLI
+    private lateinit var taskAuditLogCLI: TaskAuditLogCLI
+
 
     @BeforeEach
     fun setup() {
@@ -27,7 +30,8 @@ class TaskCLITest {
         deleteTaskCLI = mockk(relaxed = true)
         editTaskCLI = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
-        taskCLI = TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskView, outputPrinter, inputReader)
+        taskCLI =
+            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
     }
 
     @Test

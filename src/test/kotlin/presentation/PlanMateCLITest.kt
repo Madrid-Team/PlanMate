@@ -50,7 +50,7 @@ class PlanMateCLITest {
         runTest {
             // Given
             every { inputReader.readInput("Select an option: ") } returns "0"
-            every { CurrentUser.getCurrentUser() } returns null
+            every { CurrentUser.getCurrentUser() } returns mockk()
             // when
             planMateCLI.start()
 
@@ -70,7 +70,7 @@ class PlanMateCLITest {
         runTest {
             // Given
             every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
-            every { CurrentUser.getCurrentUser() } returns null
+            every { CurrentUser.getCurrentUser() } returns mockk()
             // when
             planMateCLI.start()
 
@@ -90,7 +90,7 @@ class PlanMateCLITest {
     fun `should call authenticationCLI login when user selects 1`() {
         runTest {
             every { inputReader.readInput(any()) } returnsMany listOf("1")
-            every { CurrentUser.getCurrentUser() } returns null
+            every { CurrentUser.getCurrentUser() } returns mockk()
 
             planMateCLI.start()
 
