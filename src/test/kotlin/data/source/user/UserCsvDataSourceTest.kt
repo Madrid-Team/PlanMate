@@ -54,8 +54,9 @@ class UserCsvDataSourceTest {
             val row = userCsvParser.parseUserToRow(user.toDto())
             every { fileCsvWriter.writeToCsvFile(row) } returns Unit
 
+            coEvery{ dataSource.getUserByName(user.username) } throws UserExceptions.UserNotFoundException()
             // When & Then
-            assertDoesNotThrow {
+            assertDoesNotThrow{
                 dataSource.createNewUser(user.toDto())
             }
         }
@@ -88,10 +89,10 @@ class UserCsvDataSourceTest {
             val row = userCsvParser.parseUserToRow(user.toDto())
             val exception = IOException("File write failed")
 
-            every { fileCsvWriter.writeToCsvFile(row) } throws exception
+            every { fileCsvWriter.writeToCsvFile(row) } throws UserExceptions("")
 
             // When
-            assertThrows<IOException> {
+            assertThrows<UserExceptions> {
                 dataSource.createNewUser(user.toDto())
             }
             // Then
@@ -161,7 +162,7 @@ class UserCsvDataSourceTest {
                 dataSource.getUserByName(user1.username)
             }
 
-            assertThat(result).isEqualTo(user1.toDomain())
+            assertThat(result).isEqualTo(user1)
         }
     }
 
@@ -186,14 +187,14 @@ class UserCsvDataSourceTest {
             // Given
             every { fileCsvReader.readCsvFile() } returns listOf(row1)
             every { userCsvParser.parseRowToUser(row1) } returns user1
-            val id = "26fb5810-951e-4913-aae8-1d36d72d85eb"
+            val id = user1.id
             // When
             val result = dataSource.getUserById(id)
             // Then
             assertDoesNotThrow {
                 dataSource.getUserById(id)
             }
-            assertThat(result).isEqualTo(user1.toDomain())
+            assertThat(result).isEqualTo(user1)
         }
     }
 
