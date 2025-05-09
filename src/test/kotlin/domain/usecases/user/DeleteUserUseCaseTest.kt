@@ -4,7 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -71,7 +73,7 @@ class DeleteUserUseCaseTest {
             deleteUserUseCase.invoke(mateId, userToDeleteId)
         }
 
-        assertEquals("User is not an admin", exception.message)
+        assertEquals("User is not admin", exception.message)
         coVerify(exactly = 1) { userRepository.getUserById(mateId) }
         coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
         coVerify(exactly = 0) { userRepository.deleteUser(any()) }
