@@ -48,7 +48,7 @@ class PlanMateCLITest {
     fun `should print welcome  and main menu and exit message when app starts when select 0`() {
         // Given
         every { inputReader.readInput("Select an option: ") } returns "0"
-        every { CurrentUser.getCurrentUser() } returns null
+        every { CurrentUser.getCurrentUser() }
         // when
         planMateCLI.start()
 
@@ -67,7 +67,7 @@ class PlanMateCLITest {
     fun `should print invalid option message when app starts when select invalid option`() {
         // Given
         every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
-        every { CurrentUser.getCurrentUser() } returns null
+        every { CurrentUser.getCurrentUser() }
         // when
         planMateCLI.start()
 
@@ -86,7 +86,7 @@ class PlanMateCLITest {
     @Test
     fun `should call authenticationCLI login when user selects 1`() {
         every { inputReader.readInput(any()) } returnsMany listOf("1")
-        every { CurrentUser.getCurrentUser() } returns null
+        every { CurrentUser.getCurrentUser() }
 
         planMateCLI.start()
 

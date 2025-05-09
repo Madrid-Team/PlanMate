@@ -60,7 +60,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = emptyList(),
             projectStates = emptyList(),
-            matesIds = emptyList(),
+            matesUsernames = emptyList(),
             tasks = emptyList()
         )
 
@@ -89,7 +89,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = listOf(),
             projectStates = listOf(),
-            matesIds = listOf(),
+            matesUsernames = listOf(),
             tasks = listOf()
         )
         runTest {
@@ -154,7 +154,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = listOf(),
             projectStates = listOf(),
-            matesIds = listOf(),
+            matesUsernames = listOf(),
             tasks = listOf()
         )
 
@@ -176,7 +176,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = listOf(),
             projectStates = listOf(),
-            matesIds = listOf("user1"),
+            matesUsernames = listOf("user1"),
             tasks = listOf()
         )
 
@@ -197,7 +197,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = listOf(),
             projectStates = listOf(),
-            matesIds = listOf(),
+            matesUsernames = listOf(),
             tasks = listOf()
         )
 
@@ -220,7 +220,7 @@ class ProjectMongoDBDataSourceTest {
             projectState = "active",
             taskStates = emptyList(),
             projectStates = emptyList(),
-            matesIds = emptyList(),
+            matesUsernames = emptyList(),
             tasks = emptyList()
         )
 
