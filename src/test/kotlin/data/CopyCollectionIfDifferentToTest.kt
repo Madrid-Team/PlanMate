@@ -5,10 +5,10 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 
-class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
+class CopyCollectionIfDifferentToTest(val database: MongoDatabase,val copyCollectionName: String , originalCollectionName: String )  {
 
-    val original = database.getCollection<Document>("projects")
-    val copy = database.getCollection<Document>("projects_test")
+    val original = database.getCollection<Document>(originalCollectionName)
+    val copy = database.getCollection<Document>(copyCollectionName)
 
 
      suspend fun copyCollectionIfDifferent(): MongoCollection<Document> {
@@ -22,7 +22,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
                 copy.insertMany(originalDocs)
                 println("projects_test collection refreshed.")
 
-                return   database.getCollection<Document>("projects_test")
+                return   database.getCollection<Document>(copyCollectionName)
             } else {
                 println("Original collection is empty. Nothing to copy.")
                 throw AssertionError("Original collection is empty Can't Copy collection to do testing.")
@@ -30,7 +30,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase)  {
             }
         } else {
             println("No structural difference. Copy not needed.")
-            return database.getCollection<Document>("projects_test")
+            return database.getCollection<Document>(copyCollectionName)
         }
 
     }
