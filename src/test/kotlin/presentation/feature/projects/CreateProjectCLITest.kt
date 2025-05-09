@@ -47,8 +47,8 @@ class CreateProjectCLITest {
             // Given
             every { inputReader.readInput("Enter project name: ") } returns "project name"
             every { inputReader.readInput("Enter project description: ") } returns "description"
-            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "ACTIVE IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter task States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States separated by white space description: ") } returns "ACTIVE IN_PROGRESS DONE"
             every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
@@ -68,14 +68,14 @@ class CreateProjectCLITest {
                 projectLogs = listOf(mockLogString)
             )
 
-            coEvery { createProjectUseCase.createProject(any()) } returns Unit
+            coEvery { createProjectUseCase(any()) } returns Unit
 
             // When
             cli.show()
 
             // Then
             coVerify {
-                createProjectUseCase.createProject(match {
+                createProjectUseCase(match {
                     it.name == project.name &&
                             it.description == project.description &&
                             it.projectState == "ACTIVE" &&
@@ -92,8 +92,8 @@ class CreateProjectCLITest {
             // Given
             every { inputReader.readInput("Enter project name: ") } returns "project name"
             every { inputReader.readInput("Enter project description: ") } returns "description"
-            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter task States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
             every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
@@ -106,13 +106,13 @@ class CreateProjectCLITest {
                 )
             } returns mockLogString
 
-            coEvery { createProjectUseCase.createProject(any()) } throws PlanMateExceptions("failed")
+            coEvery { createProjectUseCase(any()) } throws PlanMateExceptions("failed")
 
             // When
             cli.show()
 
             // Then
-            coVerify { createProjectUseCase.createProject(any()) }
+            coVerify { createProjectUseCase(any()) }
             coVerify { outputPrinter.printMessage("Failed to create project: failed") }
         }
     }
@@ -123,8 +123,8 @@ class CreateProjectCLITest {
             // Given
             every { inputReader.readInput("Enter project name: ") } returns "project name"
             every { inputReader.readInput("Enter project description: ") } returns "description"
-            every { inputReader.readInput("Enter task States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-            every { inputReader.readInput("Enter project States seperated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter task States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
+            every { inputReader.readInput("Enter project States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
 
             // First input invalid, second valid
             every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returnsMany listOf(
@@ -137,13 +137,13 @@ class CreateProjectCLITest {
                 createLogUseCase.invoke(any(), any(), any(), any())
             } returns mockLogString
 
-            coEvery { createProjectUseCase.createProject(any()) } returns mockk()
+            coEvery { createProjectUseCase(any()) } returns mockk()
 
             // When
             cli.show()
 
             // Then
-            coVerify { createProjectUseCase.createProject(any()) }
+            coVerify { createProjectUseCase(any()) }
             coVerify { outputPrinter.printMessage("Project created successfully") }
         }
     }

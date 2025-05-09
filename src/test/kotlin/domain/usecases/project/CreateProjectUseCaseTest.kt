@@ -40,7 +40,7 @@ class CreateProjectUseCaseTest {
             coEvery { projectRepository.createProject(project) } returns Unit
             //When & Then
             assertDoesNotThrow {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
             coVerify { projectRepository.createProject(project) }
         }
@@ -57,7 +57,7 @@ class CreateProjectUseCaseTest {
 
             //When & Then
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }
@@ -72,7 +72,7 @@ class CreateProjectUseCaseTest {
             coEvery { projectRepository.createProject(project) } throws PlanMateExceptions("")
             //When &Then
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }
@@ -88,7 +88,7 @@ class CreateProjectUseCaseTest {
             coEvery { projectRepository.createProject(project) } throws PlanMateExceptions("")
             //When
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }
@@ -106,7 +106,7 @@ class CreateProjectUseCaseTest {
 
             //When
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }
@@ -123,7 +123,7 @@ class CreateProjectUseCaseTest {
 
             //When
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }
@@ -141,7 +141,7 @@ class CreateProjectUseCaseTest {
             coEvery { projectRepository.createProject(project) } throws PlanMateExceptions("")
             //When
             assertThrows<PlanMateExceptions> {
-                createProjectUseCase.createProject(project)
+                createProjectUseCase(project)
             }
         }
     }

@@ -6,9 +6,6 @@ import domain.repository.ProjectRepository
 class CreateProjectUseCase(
     private val projectRepository: ProjectRepository,
 ) {
-
-    suspend fun createProject(project: Project) =
+    suspend operator fun invoke(project: Project) =
         projectRepository.createProject(project)
-
-
 }
