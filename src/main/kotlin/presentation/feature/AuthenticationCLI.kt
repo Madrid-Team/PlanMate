@@ -3,7 +3,6 @@ package presentation.feature
 import data.utils.PasswordHasher
 import domain.models.logs.CurrentUser
 import domain.usecases.user.LoginUserUseCase
-import kotlinx.coroutines.runBlocking
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -12,8 +11,7 @@ class AuthenticationCLI(
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-
-    fun login() {
+    suspend fun login() {
         outputPrinter.printMessage("=== Login ===")
         outputPrinter.printMessage("Enter user name:")
         val userName = inputReader.readInput()
@@ -21,11 +19,9 @@ class AuthenticationCLI(
         val password = inputReader.readInput()
         val passwordHash = PasswordHasher.hash(password)
         try {
-            runBlocking {
-                val success = loginUserUseCase.invoke(userName, passwordHash)
-                outputPrinter.printMessage("Login Success")
-                CurrentUser.setCurrentUser(success)
-            }
+            val success = loginUserUseCase.invoke(userName, passwordHash)
+            outputPrinter.printMessage("Login Success")
+            CurrentUser.setCurrentUser(success)
         } catch (e: Exception) {
             outputPrinter.printMessage(e.message.toString())
             outputPrinter.printMessage("Login error:(")
