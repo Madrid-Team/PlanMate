@@ -6,7 +6,6 @@ import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import kotlin.test.Test
@@ -34,7 +33,7 @@ class TaskAuditLogCLITest {
             val logs = listOf("Log A", "Log B")
 
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase.getTaskLogs("1", taskId) } returns logs
+            coEvery { useCase("1", taskId) } returns logs
 
             cli.show()
 
@@ -50,7 +49,7 @@ class TaskAuditLogCLITest {
             val taskId = "task-empty"
 
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase.getTaskLogs("1", taskId) } returns emptyList()
+            coEvery { useCase("1", taskId) } returns emptyList()
 
             cli.show()
 
@@ -64,7 +63,7 @@ class TaskAuditLogCLITest {
             val taskId = "task-123"
 
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase.getTaskLogs("", taskId) } returns emptyList()
+            coEvery { useCase("", taskId) } returns emptyList()
 
             cli.show()
 
@@ -83,7 +82,7 @@ class TaskAuditLogCLITest {
             val errorMessage = "Task not found"
 
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase.getTaskLogs("", taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
+            coEvery { useCase("", taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
 
             cli.show()
 

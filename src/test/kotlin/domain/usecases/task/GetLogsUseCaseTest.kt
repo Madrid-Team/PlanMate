@@ -30,7 +30,7 @@ class GetLogsUseCaseTest {
             val taskId = 1
             coEvery { taskRepository.getTaskLogsByID("", taskId.toString()) } returns listOf()
 
-            assertDoesNotThrow { getLogsUseCase.getTaskLogs("", taskId.toString()) }
+            assertDoesNotThrow { getLogsUseCase("", taskId.toString()) }
 
         }
     }
@@ -47,7 +47,7 @@ class GetLogsUseCaseTest {
                 )
             } throws TaskExceptions.NoLogsFoundException()
 
-            assertThrows<TaskExceptions.NoLogsFoundException> { getLogsUseCase.getTaskLogs("", projectId.toString()) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { getLogsUseCase("", projectId.toString()) }
 
         }
     }
