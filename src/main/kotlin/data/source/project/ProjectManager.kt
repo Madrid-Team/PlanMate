@@ -20,7 +20,7 @@ class ProjectManager {
     }
 
     fun deleteProject(projectId: String):List<ProjectDto> {
-        projects.removeIf { it.id.toString() == projectId }
+        projects.removeIf { it.id == projectId }
         return projects
     }
 
