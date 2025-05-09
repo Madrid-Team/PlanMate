@@ -89,8 +89,13 @@ class PlanMateCLITest {
     @Test
     fun `should call authenticationCLI login when user selects 1`() {
         runTest {
+            val mockUser = mockk<User> {
+                every { username } returns "testUser"
+                every { role } returns "admin"
+            }
+
             every { inputReader.readInput(any()) } returnsMany listOf("1")
-            every { CurrentUser.getCurrentUser() } returns mockk()
+            every { CurrentUser.getCurrentUser() } returns mockUser
 
             planMateCLI.start()
 
