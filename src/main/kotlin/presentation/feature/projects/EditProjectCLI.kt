@@ -8,7 +8,8 @@ import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -19,83 +20,78 @@ class EditProjectCLI(
     private val getProjectByIdUseCase: GetProjectByIdUseCase,
     private val createLogUseCase: CreateLogUseCase
 ) {
-    fun show() {
-        runBlocking {
-            outputPrinter.printMessage("=== Edit Project ===")
-            val id = inputReader.readInput("Enter the ID of the project to edit:")
-            try {
+    suspend fun show() = withContext(Dispatchers.IO) {
+        outputPrinter.printMessage("=== Edit Project ===")
+        val id = inputReader.readInput("Enter the ID of the project to edit:")
+        try {
+            val currentProject = getProjectByIdUseCase.invoke(id)
+            var updatedProject = currentProject.copy()
 
-                val currentProject = getProjectByIdUseCase.invoke(id)
+            while (true) {
+                outputPrinter.printMessage("Choose fields to edit")
+                outputPrinter.printMessage("1 - Name")
+                outputPrinter.printMessage("2 - Description")
+                outputPrinter.printMessage("3 - Project States")
+                outputPrinter.printMessage("4 - Finish")
 
-                var updatedProject = currentProject.copy()
+                when (inputReader.readInput("Select an option:")) {
+                    "1" -> {
+                        val newName = inputReader.readInput("Enter the new name:")
+                        updatedProject = updatedProject.copy(name = newName)
+                    }
 
-                while (true) {
-                    outputPrinter.printMessage("Choose fields to edit")
-                    outputPrinter.printMessage("1 - Name")
-                    outputPrinter.printMessage("2 - Description")
-                    outputPrinter.printMessage("3 - Project States")
-                    outputPrinter.printMessage("4 - Finish")
+                    "2" -> {
+                        val newDescription = inputReader.readInput("Enter the new description:")
+                        updatedProject = updatedProject.copy(description = newDescription)
+                    }
 
-                    when (inputReader.readInput("Select an option:")) {
-                        "1" -> {
-                            val newName = inputReader.readInput("Enter the new name:")
-                            updatedProject = updatedProject.copy(name = newName)
-                        }
+                    "3" -> {
+                        val taskStatesMenu =
+                            currentProject.projectStates.mapIndexed { index, state -> "${index + 1}. $state" }
+                                .joinToString("\n")
+                        val promptMessage = "Select project State:\n$taskStatesMenu\nEnter number: "
 
-                        "2" -> {
-                            val newDescription = inputReader.readInput("Enter the new description:")
-                            updatedProject = updatedProject.copy(description = newDescription)
-                        }
+                        while (true) {
+                            val projectStateInput = inputReader.readInput(promptMessage)
 
-                        "3" -> {
-                            val taskStatesMenu =
-                                currentProject.projectStates.mapIndexed { index, state -> "${index + 1}. $state" }
-                                    .joinToString("\n")
-                            val promptMessage = "Select project State:\n$taskStatesMenu\nEnter number: "
-
-                            while (true) {
-                                val projectStateInput = inputReader.readInput(promptMessage)
-
-                                val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
-                                if (selectedIndex != null && selectedIndex in 0 until currentProject.projectStates.size) {
-                                    updatedProject =
-                                        updatedProject.copy(projectState = currentProject.projectStates[selectedIndex])
-                                    break
-                                } else {
-                                    println("Invalid selection. Please enter a valid state id ")
-                                }
-                            }
-
-                        }
-
-                        "4" -> {
-                            //no updates entered
-                            if (currentProject == updatedProject) {
+                            val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
+                            if (selectedIndex != null && selectedIndex in 0 until currentProject.projectStates.size) {
+                                updatedProject =
+                                    updatedProject.copy(projectState = currentProject.projectStates[selectedIndex])
+                                break
                             } else {
-                                try {
+                                println("Invalid selection. Please enter a valid state id ")
+                            }
+                        }
 
-                                    editProjectUseCase.editProject(
-                                        updatedProject.copy(
-                                            projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
-                                                currentProject,
-                                                updatedProject
-                                            )
+                    }
+
+                    "4" -> {
+                        //no updates entered
+                        if (currentProject == updatedProject) {
+                            break
+                        } else {
+                            try {
+                                editProjectUseCase.editProject(
+                                    updatedProject.copy(
+                                        projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
+                                            currentProject,
+                                            updatedProject
                                         )
                                     )
-                                    outputPrinter.printMessage("Project edited successfully.")
-
-                                } catch (e: PlanMateExceptions) {
-                                    outputPrinter.printMessage("Failed to edit project: ${e.message}")
-                                }
+                                )
+                                outputPrinter.printMessage("Project edited successfully.")
+                                break
+                            } catch (e: PlanMateExceptions) {
+                                outputPrinter.printMessage("Failed to edit project: ${e.message}")
                             }
                         }
-
-                        else -> outputPrinter.printMessage("Invalid option. Please try again.")
                     }
+                    else -> outputPrinter.printMessage("Invalid option. Please try again.")
                 }
-            } catch (e: ProjectExceptions.ProjectNotFoundException) {
-                outputPrinter.printMessage(e.message ?: "Project not found")
             }
+        } catch (e: ProjectExceptions.ProjectNotFoundException) {
+            outputPrinter.printMessage(e.message ?: "Project not found")
         }
     }
 
@@ -141,8 +137,6 @@ class EditProjectCLI(
                 )
             )
         }
-
-
         return listOfLogs
     }
 }
