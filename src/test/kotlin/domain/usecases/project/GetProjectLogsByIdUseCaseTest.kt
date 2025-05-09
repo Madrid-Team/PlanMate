@@ -3,7 +3,6 @@ package domain.usecases.project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +29,7 @@ class GetProjectLogsByIdUseCaseTest {
 
             //When
             assertDoesNotThrow {
-                getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+                getProjectLogsByIdUseCase(projectId.toString())
             }
         }
     }
@@ -45,7 +44,7 @@ class GetProjectLogsByIdUseCaseTest {
             //When
             assertThrows<PlanMateExceptions> {
 
-                getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+                getProjectLogsByIdUseCase(projectId.toString())
             }
         }
     }

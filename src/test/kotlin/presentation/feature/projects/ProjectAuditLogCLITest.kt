@@ -38,7 +38,7 @@ class ProjectAuditLogCLITest {
             val logs = listOf("Created", "Updated", "Deleted")
 
             every { reader.readInput(any()) } returns projectId
-            coEvery { useCase.getProjectLogsById(projectId) } returns logs
+            coEvery { useCase(projectId) } returns logs
 
             cli.show()
 
@@ -59,7 +59,7 @@ class ProjectAuditLogCLITest {
             val projectId = "456"
 
             every { reader.readInput(any()) } returns projectId
-            coEvery { useCase.getProjectLogsById(projectId) } returns emptyList()
+            coEvery { useCase(projectId) } returns emptyList()
 
             cli.show()
 
@@ -78,7 +78,7 @@ class ProjectAuditLogCLITest {
             val exception = RuntimeException("Something went wrong")
 
             every { reader.readInput(any()) } returns projectId
-            coEvery { useCase.getProjectLogsById(projectId) } throws exception.toProjectException()
+            coEvery { useCase(projectId) } throws exception.toProjectException()
 
             cli.show()
 
