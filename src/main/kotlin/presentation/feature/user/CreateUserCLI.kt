@@ -50,7 +50,7 @@ class CreateUserCLI(
                 id = UUID.randomUUID()
             )
             outputPrinter.printMessage("Creating user...")
-            createUserUseCase.createUser(user)
+            createUserUseCase(user)
             outputPrinter.printMessage("User created successfully")
         } catch (e: UserExceptions.UserExist) {
             outputPrinter.printError(e.message.toString())

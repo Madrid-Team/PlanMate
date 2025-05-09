@@ -22,7 +22,7 @@ class CreateUserUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var createUserUseCase: CreateUserUseCase
     private lateinit var externalUserDataSource: ExternalUserDataSource
-    private  var testScope = TestScope()
+    private var testScope = TestScope()
 
     @BeforeEach
     fun setUp() {
@@ -49,7 +49,7 @@ class CreateUserUseCaseTest {
 
             // When
             assertDoesNotThrow {
-                createUserUseCase.createUser(user)
+                createUserUseCase(user)
             }
 
             // Then
@@ -79,7 +79,7 @@ class CreateUserUseCaseTest {
 
             // When & Then
             val exception = assertThrows<UserExceptions.UserExist> {
-                createUserUseCase.createUser(existingUser)
+                createUserUseCase(existingUser)
             }
 
             assertThat(exception.message).isEqualTo("User already exists")
