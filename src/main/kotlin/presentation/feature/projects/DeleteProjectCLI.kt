@@ -3,7 +3,6 @@ package presentation.feature.projects
 import domain.usecases.project.DeleteProjectUseCase
 import domain.utlis.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -21,12 +20,10 @@ class DeleteProjectCLI(
             val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
             when (confirmed.lowercase()) {
                 "yes" -> {
-                    val deleteProjectUseCase = async {
-                        deleteProjectUseCase.deleteProject(projectId)
-                    }
-                    deleteProjectUseCase.await()
+                    deleteProjectUseCase.deleteProject(projectId)
                     outputPrinter.printMessage("Project deleted successfully.")
                 }
+
                 else -> {
                     outputPrinter.printMessage("Deletion cancelled.")
                 }

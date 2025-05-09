@@ -28,7 +28,7 @@ class EditTaskCLITest {
         outputPrinter = mockk(relaxed = true)
         editTaskUseCase = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
-        editTaskCLI = EditTaskCLI(inputReader, outputPrinter, taskView, editTaskUseCase)
+        editTaskCLI = EditTaskCLI(inputReader, outputPrinter, editTaskUseCase)
         testScope = TestScope()
     }
 

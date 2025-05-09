@@ -5,7 +5,8 @@ import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.usecases.user.CreateUserUseCase
 import domain.utlis.UserExceptions
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -15,7 +16,7 @@ class CreateUserCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create user started ===")
         val userName = collectUsername()
         val password = collectAndValidatePassword()
@@ -40,7 +41,7 @@ class CreateUserCLI(
         return password
     }
 
-    private fun tryCreateUser(userName: String, passwordHash: String) {
+    private suspend fun tryCreateUser(userName: String, passwordHash: String) {
         try {
             val user = User(
                 username = userName,
@@ -49,7 +50,7 @@ class CreateUserCLI(
                 id = UUID.randomUUID()
             )
             outputPrinter.printMessage("Creating user...")
-            runBlocking { createUserUseCase.createUser(user) }
+            createUserUseCase.createUser(user)
             outputPrinter.printMessage("User created successfully")
         } catch (e: UserExceptions.UserExist) {
             outputPrinter.printError(e.message.toString())
@@ -65,7 +66,7 @@ class CreateUserCLI(
         }
     }
 
-    private fun handleUserReadWriteError(
+    private suspend fun handleUserReadWriteError(
         userName: String,
         passwordHash: String,
         e: UserExceptions.UserReadWrightException
@@ -78,7 +79,7 @@ class CreateUserCLI(
         }
     }
 
-    private fun showRetryMessage() {
+    private suspend fun showRetryMessage() {
         outputPrinter.printMessage("Enter 1 to try again or any other key to exit")
         if (inputReader.readInput() == "1") show()
     }

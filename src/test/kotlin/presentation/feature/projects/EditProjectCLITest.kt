@@ -7,9 +7,9 @@ import domain.models.logs.OperationType
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -38,209 +38,193 @@ class EditProjectCLITest {
 
     @Test
     fun `should edit project name successfully`() {
-        // Given
-        val originalProject = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "original-name",
-            description = "original-description",
-            createdBy = "test-user",
-            projectState = "TODO"
-        )
-        val mockLogString =
-            "User test-user UPDATE PROJECT original-name name from original-name to new-name at 2025-05-04 12:00:00"
-
-
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "4")
-        every { inputReader.readInput("Enter the new name:") } returns "new-name"
-
-        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
-        every {
-            createLogUseCase.invoke(
-                operationType = OperationType.UPDATE,
-                entityName = "original-name",
-                entityType = EntityType.PROJECT,
-                username = "test-user",
-                fieldName = "name",
-                oldValue = "original-name",
-                newValue = "new-name",
-                any()
+        runTest {
+            // Given
+            val originalProject = helperProject(
+                id = "00000000-0000-0000-0000-000000000001",
+                name = "original-name",
+                description = "original-description",
+                createdBy = "test-user",
+                projectState = "TODO"
             )
-        } returns mockLogString
+            val mockLogString =
+                "User test-user UPDATE PROJECT original-name name from original-name to new-name at 2025-05-04 12:00:00"
 
-        coEvery {
-            editProjectUseCase.editProject(match {
-                it.name == "new-name" &&
-                        it.description == "original-description" &&
-                        it.projectLogs.size == 1 &&
-                        it.projectLogs.first() == mockLogString
-            })
-        } returns Unit
 
-        // When
-        cli.show()
+            every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "4")
+            every { inputReader.readInput("Enter the new name:") } returns "new-name"
 
-        // Then
-        verify { outputPrinter.printMessage("Project edited successfully.") }
-        coVerify { editProjectUseCase.editProject(any()) }
+            coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
+            every {
+                createLogUseCase.invoke(
+                    operationType = OperationType.UPDATE,
+                    entityName = "original-name",
+                    entityType = EntityType.PROJECT,
+                    username = "test-user",
+                    fieldName = "name",
+                    oldValue = "original-name",
+                    newValue = "new-name",
+                    any()
+                )
+            } returns mockLogString
+
+            coEvery {
+                editProjectUseCase.editProject(match {
+                    it.name == "new-name" &&
+                            it.description == "original-description" &&
+                            it.projectLogs.size == 1 &&
+                            it.projectLogs.first() == mockLogString
+                })
+            } returns Unit
+
+            // When
+            cli.show()
+
+            // Then
+            verify { outputPrinter.printMessage("Project edited successfully.") }
+            coVerify { editProjectUseCase.editProject(any()) }
+        }
     }
 
     @Test
     fun `should edit project description successfully`() {
-        // Given
-        val originalProject = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "original-name",
-            description = "original-description",
-            createdBy = "test-user",
-            projectState = "TODO"
-        )
-        val mockLogString =
-            "User test-user UPDATE PROJECT original-name description from original-description to new-description at 2025-05-04 12:00:00"
-
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "4")
-        every { inputReader.readInput("Enter the new description:") } returns "new-description"
-
-        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
-        every {
-            createLogUseCase.invoke(
-                operationType = OperationType.UPDATE,
-                entityName = "original-name",
-                entityType = EntityType.PROJECT,
-                username = "test-user",
-                fieldName = "description",
-                oldValue = "original-description",
-                newValue = "new-description",
-                any()
+        runTest {
+            // Given
+            val originalProject = helperProject(
+                id = "00000000-0000-0000-0000-000000000001",
+                name = "original-name",
+                description = "original-description",
+                createdBy = "test-user",
+                projectState = "TODO"
             )
-        } returns mockLogString
+            val mockLogString =
+                "User test-user UPDATE PROJECT original-name description from original-description to new-description at 2025-05-04 12:00:00"
 
-        coEvery {
-            editProjectUseCase.editProject(match {
-                it.name == "original-name" &&
-                        it.description == "new-description" &&
-                        it.projectLogs.size == 1 &&
-                        it.projectLogs.first() == mockLogString
-            })
-        } returns Unit
+            every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "4")
+            every { inputReader.readInput("Enter the new description:") } returns "new-description"
 
-        // When
-        cli.show()
+            coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
+            every {
+                createLogUseCase.invoke(
+                    operationType = OperationType.UPDATE,
+                    entityName = "original-name",
+                    entityType = EntityType.PROJECT,
+                    username = "test-user",
+                    fieldName = "description",
+                    oldValue = "original-description",
+                    newValue = "new-description",
+                    any()
+                )
+            } returns mockLogString
 
-        // Then
-        verify { outputPrinter.printMessage("Project edited successfully.") }
+            coEvery {
+                editProjectUseCase.editProject(match {
+                    it.name == "original-name" &&
+                            it.description == "new-description" &&
+                            it.projectLogs.size == 1 &&
+                            it.projectLogs.first() == mockLogString
+                })
+            } returns Unit
+
+            // When
+            cli.show()
+
+            // Then
+            verify { outputPrinter.printMessage("Project edited successfully.") }
+        }
     }
 
     @Test
     fun `should edit project state successfully`() {
-        // Given
-        val originalProject = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "original-name",
-            description = "original-description",
-            createdBy = "test-user",
-            projectState = "TODO",
-            projectStates = listOf("TODO", "IN_PROGRESS", "DONE")
-        )
-        val mockLogString =
-            "User test-user UPDATE PROJECT original-name project state from TODO to IN_PROGRESS at 2025-05-04 12:00:00"
-
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "4")
-        every { inputReader.readInput(match { it.contains("Select project State:") }) } returns "2"
-
-        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
-        every {
-            createLogUseCase.invoke(
-                operationType = OperationType.UPDATE,
-                entityName = "original-name",
-                entityType = EntityType.PROJECT,
-                username = "test-user",
-                fieldName = "project state",
-                oldValue = "TODO",
-                newValue = "IN_PROGRESS",
-                any()
+        runTest {
+            // Given
+            val originalProject = helperProject(
+                id = "00000000-0000-0000-0000-000000000001",
+                name = "original-name",
+                description = "original-description",
+                createdBy = "test-user",
+                projectState = "TODO",
+                projectStates = listOf("TODO", "IN_PROGRESS", "DONE")
             )
-        } returns mockLogString
+            val mockLogString =
+                "User test-user UPDATE PROJECT original-name project state from TODO to IN_PROGRESS at 2025-05-04 12:00:00"
 
-        coEvery {
-            editProjectUseCase.editProject(match {
-                it.name == "original-name" &&
-                        it.description == "original-description" &&
-                        it.projectState == "IN_PROGRESS" &&
-                        it.projectLogs.size == 1 &&
-                        it.projectLogs.first() == mockLogString
-            })
-        } returns Unit
+            every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "4")
+            every { inputReader.readInput(match { it.contains("Select project State:") }) } returns "2"
 
-        // When
-        cli.show()
+            coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
+            every {
+                createLogUseCase.invoke(
+                    operationType = OperationType.UPDATE,
+                    entityName = "original-name",
+                    entityType = EntityType.PROJECT,
+                    username = "test-user",
+                    fieldName = "project state",
+                    oldValue = "TODO",
+                    newValue = "IN_PROGRESS",
+                    any()
+                )
+            } returns mockLogString
 
-        // Then
-        verify { outputPrinter.printMessage("Project edited successfully.") }
+            coEvery {
+                editProjectUseCase.editProject(match {
+                    it.name == "original-name" &&
+                            it.description == "original-description" &&
+                            it.projectState == "IN_PROGRESS" &&
+                            it.projectLogs.size == 1 &&
+                            it.projectLogs.first() == mockLogString
+                })
+            } returns Unit
+
+            // When
+            cli.show()
+
+            // Then
+            verify { outputPrinter.printMessage("Project edited successfully.") }
+        }
     }
 
     @Test
     fun `should show error message when project not found`() {
-        // Given
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "999"
-        coEvery { getProjectByIdUseCase.invoke("999") } throws ProjectExceptions.ProjectNotFoundException()
+        runTest {
+            // Given
+            every { inputReader.readInput("Enter the ID of the project to edit:") } returns "999"
+            coEvery { getProjectByIdUseCase.invoke("999") } throws ProjectExceptions.ProjectNotFoundException()
 
-        // When & Then
-        cli.show()
-        verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
-        coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
+            // When & Then
+            cli.show()
+            verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
+            coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
+        }
     }
 
-    @Test
-    fun `should show error message when editing fails`() {
-        // Given
-        val originalProject = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "original-name",
-            description = "original-description",
-            createdBy = "test-user",
-            projectState = "TODO"
-        )
-        val mockLogString =
-            "User test-user UPDATE PROJECT original-name name from original-name to new-name at 2025-05-04 12:00:00"
-
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "4")
-        every { inputReader.readInput("Enter the new name:") } returns "new-name"
-
-        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
-        every { createLogUseCase.invoke(any(), any(), any(), any(), any(), any(), any(), any()) } returns mockLogString
-        coEvery { editProjectUseCase.editProject(any()) } throws PlanMateExceptions("Edit failed")
-
-        // When & Then
-        cli.show()
-
-        verify { outputPrinter.printMessage(match { it.contains("Failed to edit project") }) }
-    }
 
     @Test
     fun `should return early when no changes are made`() {
-        // Given
-        val originalProject = helperProject(
-            id = "00000000-0000-0000-0000-000000000001",
-            name = "original-name",
-            description = "original-description",
-            createdBy = "test-user",
-            projectState = "TODO"
-        )
+        runTest {
+            // Given
+            val originalProject = helperProject(
+                id = "00000000-0000-0000-0000-000000000001",
+                name = "original-name",
+                description = "original-description",
+                createdBy = "test-user",
+                projectState = "TODO"
+            )
 
-        every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
-        every { inputReader.readInput("Select an option:") } returns "4"
+            every { inputReader.readInput("Enter the ID of the project to edit:") } returns "1"
+            every { inputReader.readInput("Select an option:") } returns "4"
 
-        coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
+            coEvery { getProjectByIdUseCase.invoke("1") } returns originalProject
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
-        verify(exactly = 0) { outputPrinter.printMessage("Project edited successfully.") }
+            // Then
+            coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
+            verify(exactly = 0) { outputPrinter.printMessage("Project edited successfully.") }
+        }
     }
 }

@@ -94,13 +94,10 @@ class TaskCLITest {
     @Test
     fun `should print invalid option message when user selects unknown option`() {
         runTest {
-            // given
-            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+            every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
 
-            // when
             taskCLI.show()
 
-            // then
             verify { outputPrinter.printError("Invalid option.") }
         }
     }
