@@ -36,7 +36,7 @@ class DeleteProjectCLITest {
             // Given
             every { inputReader.readInput(any()) } returns "1" andThen "yes"
             coEvery { getProjectByIdUseCase.invoke("1") } returns mockProject
-            coEvery { deleteUseCase.deleteProject("1") } returns mockk()
+            coEvery { deleteUseCase("1") } returns mockk()
 
             // When
             cli.show()
@@ -58,7 +58,7 @@ class DeleteProjectCLITest {
 
             // Then
             verify { outputPrinter.printMessage("Deletion cancelled.") }
-            coVerify(exactly = 0) { deleteUseCase.deleteProject(any()) }
+            coVerify(exactly = 0) { deleteUseCase(any()) }
         }
     }
 
@@ -68,7 +68,7 @@ class DeleteProjectCLITest {
             // Given
             every { inputReader.readInput(any()) } returns "3" andThen "yes"
             coEvery { getProjectByIdUseCase.invoke("3") } returns mockProject
-            coEvery { deleteUseCase.deleteProject("3") } throws Exception("Not found")
+            coEvery { deleteUseCase("3") } throws Exception("Not found")
 
             // When
             cli.show()
@@ -90,7 +90,7 @@ class DeleteProjectCLITest {
 
             // Then
             verify { outputPrinter.printMessage("Project not found") }
-            coVerify(exactly = 0) { deleteUseCase.deleteProject(any()) }
+            coVerify(exactly = 0) { deleteUseCase(any()) }
         }
     }
 }

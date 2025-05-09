@@ -20,7 +20,7 @@ class DeleteProjectCLI(
             val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
             when (confirmed.lowercase()) {
                 "yes" -> {
-                    deleteProjectUseCase.deleteProject(projectId)
+                    deleteProjectUseCase(projectId)
                     outputPrinter.printMessage("Project deleted successfully.")
                 }
 

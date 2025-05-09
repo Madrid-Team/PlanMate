@@ -5,10 +5,7 @@ import domain.repository.ProjectRepository
 class DeleteProjectUseCase(
     private val projectRepository: ProjectRepository,
 ) {
-
-    suspend fun deleteProject(projectId: String) {
+    suspend operator fun invoke(projectId: String) {
         projectRepository.deleteProject(projectId)
     }
-
-
 }
