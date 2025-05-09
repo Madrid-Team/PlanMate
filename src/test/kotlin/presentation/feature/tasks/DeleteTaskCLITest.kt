@@ -28,22 +28,23 @@ class DeleteTaskCLITest {
 
     @Test
     fun `should show success message when task is deleted successfully`() {
-      testScope.launch {
-          // given
-          every { inputReader.readInput() } returns "1"
-          coEvery { deleteTaskUseCase.deleteTask("1","2") } returns Unit
+        testScope.launch {
+            // given
+            every { inputReader.readInput() } returns "1"
+            coEvery { deleteTaskUseCase("1", "2") } returns Unit
 
-          // when
-          deleteTaskCLI.show()
+            // when
+            deleteTaskCLI.show()
 
-          // then
-          coVerify { deleteTaskUseCase.deleteTask("1","2")
-              outputPrinter.printMessage("=== Delete Task ===")
-              outputPrinter.printMessage("Enter task ID to delete:")
-              deleteTaskUseCase.deleteTask("1","2")
-              outputPrinter.printMessage("Task deleted successfully.")
-          }
-      }
+            // then
+            coVerify {
+                deleteTaskUseCase("1", "2")
+                outputPrinter.printMessage("=== Delete Task ===")
+                outputPrinter.printMessage("Enter task ID to delete:")
+                deleteTaskUseCase("1", "2")
+                outputPrinter.printMessage("Task deleted successfully.")
+            }
+        }
     }
 
     @Test
@@ -51,7 +52,7 @@ class DeleteTaskCLITest {
         // given
         testScope.launch {
             every { inputReader.readInput() } returns "2"
-            coEvery { deleteTaskUseCase.deleteTask("2","1") } throws TaskExceptions.TaskCannotDeleteException()
+            coEvery { deleteTaskUseCase("2", "1") } throws TaskExceptions.TaskCannotDeleteException()
 
             // when
             deleteTaskCLI.show()

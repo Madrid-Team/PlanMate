@@ -7,7 +7,6 @@ import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 

@@ -1,6 +1,5 @@
 package presentation.feature.tasks
 
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 

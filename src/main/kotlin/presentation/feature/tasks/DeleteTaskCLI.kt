@@ -19,7 +19,7 @@ class DeleteTaskCLI(
         outputPrinter.printMessage("Enter task ID to delete:")
         val taskId = inputReader.readInput()
         try {
-            deleteTaskUseCase.deleteTask(projectId, taskId)
+            deleteTaskUseCase(projectId, taskId)
             outputPrinter.printMessage("Task deleted successfully.")
         } catch (exception: TaskExceptions.TaskCannotDeleteException) {
             outputPrinter.printError(exception.message ?: "Task not found or could not be deleted.")

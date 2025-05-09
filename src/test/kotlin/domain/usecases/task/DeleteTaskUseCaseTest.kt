@@ -1,7 +1,6 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions.TaskNotFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.launch
@@ -26,21 +25,21 @@ class DeleteTaskUseCaseTest {
 
     @Test
     fun `deleteTask should execute successfully when TaskRepository delete task`() {
-       testScope.launch {
-           val taskId = UUID.randomUUID().toString()
+        testScope.launch {
+            val taskId = UUID.randomUUID().toString()
 
-           coEvery { taskRepository.deleteTask("",taskId) } returns Unit
+            coEvery { taskRepository.deleteTask("", taskId) } returns Unit
 
-           assertDoesNotThrow { deleteTaskUseCase.deleteTask("",taskId) }
-       }
+            assertDoesNotThrow { deleteTaskUseCase("", taskId) }
+        }
     }
 
     @Test
     fun `deleteTask should throw exception when TaskRepository throw exception`() {
-     testScope.launch {
-         val taskId = UUID.randomUUID().toString()
+        testScope.launch {
+            val taskId = UUID.randomUUID().toString()
 
-         assertThrows<Exception> { deleteTaskUseCase.deleteTask("",taskId) }
-     }
+            assertThrows<Exception> { deleteTaskUseCase("", taskId) }
+        }
     }
 }
