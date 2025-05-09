@@ -33,9 +33,7 @@ class PlanMateCLI(
                 "1" -> {
                     authenticationCLI.login()
                     val user = CurrentUser.getCurrentUser()
-                    if (user != null) {
-                        showMenuForUser(user)
-                    }
+                    showMenuForUser(user)
                     break
                 }
 

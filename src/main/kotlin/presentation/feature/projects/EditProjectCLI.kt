@@ -87,6 +87,7 @@ class EditProjectCLI(
                             }
                         }
                     }
+
                     else -> outputPrinter.printMessage("Invalid option. Please try again.")
                 }
             }
