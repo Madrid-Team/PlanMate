@@ -3,10 +3,7 @@ package presentation.feature.user
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -31,7 +28,7 @@ class DeleteUserCLITest {
         every { inputReader.readInput() } returns "2"
         every { mockCurrentUser.id.toString() } returns "1"
         every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-        every { useCase.invoke("1", "2") } returns Unit
+        coEvery { useCase.invoke("1", "2") } returns Unit
 
         // When
         cli.show()
@@ -52,7 +49,7 @@ class DeleteUserCLITest {
         every { inputReader.readInput() } returnsMany listOf("2", "z")
         every { mockCurrentUser.id.toString() } returns "1"
         every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-        every { useCase.invoke("1", "2") } throws Exception()
+        coEvery { useCase.invoke("1", "2") } throws Exception()
 
         // When
         cli.show()

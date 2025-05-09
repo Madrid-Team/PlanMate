@@ -20,7 +20,7 @@ class ValidateUser(
         return user
     }
 
-    fun generateUUIDValidToNewUser(): UUID {
+    suspend fun generateUUIDValidToNewUser(): UUID {
         val newId = UUID.randomUUID()
 
         return try {

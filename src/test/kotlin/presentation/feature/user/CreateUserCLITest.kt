@@ -1,6 +1,7 @@
 package presentation.feature.user
 
 import domain.usecases.user.CreateUserUseCase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +28,7 @@ class CreateUserCLITest {
         val password = "password"
 
         every { inputReader.readInput() } returnsMany listOf(username, password)
-        every { useCase.createUser(any()) } returns Unit
+        coEvery { useCase.createUser(any()) } returns Unit
         // When
         cli.show()
 
@@ -48,7 +49,7 @@ class CreateUserCLITest {
         val password = "password"
 
         every { inputReader.readInput() } returnsMany listOf(username, password, "z")
-        every { useCase.createUser(any()) } throws Exception()
+        coEvery { useCase.createUser(any()) } throws Exception()
         // When
         cli.show()
 

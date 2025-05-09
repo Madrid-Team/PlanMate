@@ -7,10 +7,8 @@ import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkConstructor
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -33,55 +31,60 @@ class CreateUserUseCaseTest {
 
     @Test
     fun `should create user successfully When User dose not exists before`() {
-        // Given
-        val newUserName = "new user"
-        val user = User(id = UUID.randomUUID(), username = newUserName, passwordHash = "password", role = "MATE")
-        val generateId = UUID.randomUUID()
+        runTest {
+            // Given
+            val newUserName = "new user"
+            val user = User(id = UUID.randomUUID(), username = newUserName, passwordHash = "password", role = "MATE")
+            val generateId = UUID.randomUUID()
 
-        every { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
+            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
 
-        every { externalUserDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
+            coEvery { externalUserDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
 
-        every { externalUserDataSource.createNewUser(any()) } returns Unit
+            coEvery { externalUserDataSource.createNewUser(any()) } returns Unit
 
-        // When
-        assertDoesNotThrow {
-            createUserUseCase.createUser(user)
-        }
+            // When
+            assertDoesNotThrow {
+                createUserUseCase.createUser(user)
+            }
 
-        // Then
-        verify {
-            externalUserDataSource.createNewUser(user.copy(id = generateId))
+            // Then
+            coVerify {
+                externalUserDataSource.createNewUser(user.copy(id = generateId))
+            }
         }
     }
 
     @Test
     fun `Should not create user When user already exists`() {
-        // Given
-        val existingUsername = "existingUser"
-        val existingUser = User(
-            id = UUID.randomUUID(),
-            username = existingUsername,
-            passwordHash = "password",
-            role = "MATE"
-        )
+        runTest {
+            // Given
+            val existingUsername = "existingUser"
+            val existingUser = User(
+                id = UUID.randomUUID(),
+                username = existingUsername,
+                passwordHash = "password",
+                role = "MATE"
+            )
 
-        every { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
+            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
 
-        every { externalUserDataSource.getUserByName(existingUsername) } returns existingUser
+            coEvery { externalUserDataSource.getUserByName(existingUsername) } returns existingUser
 
-        every { externalUserDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
+            coEvery { externalUserDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
 
-        // When & Then
-        val exception = assertThrows<UserExceptions.UserExist> {
-            createUserUseCase.createUser(existingUser)
-        }
+            // When & Then
+            val exception = assertThrows<UserExceptions.UserExist> {
+                createUserUseCase.createUser(existingUser)
+            }
 
-        assertThat(exception.message).isEqualTo("User already exists")
+            assertThat(exception.message).isEqualTo("User already exists")
 
-        // Verify createNewUser was called
-        verify {
-            userRepository.createNewUser(any())
+            // Verify createNewUser was called
+            coVerify {
+                userRepository.createNewUser(any())
+            }
         }
     }
+
 }
