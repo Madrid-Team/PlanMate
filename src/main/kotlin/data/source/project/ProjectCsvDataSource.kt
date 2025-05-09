@@ -91,9 +91,9 @@ class ProjectCsvDataSource(
         }
     }
 
-    override suspend fun getProjectById(id: String): Project {
+    override suspend fun getProjectById(id: String): ProjectDto {
         return try {
-            projectManager.getProjects().find { it.id == id }?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+            projectManager.getProjects().find { it.id == id } ?: throw ProjectExceptions.ProjectNotFoundException()
         } catch (e: Exception) {
             throw e.toProjectException()
         }

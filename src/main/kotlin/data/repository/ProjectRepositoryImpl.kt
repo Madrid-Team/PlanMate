@@ -34,7 +34,7 @@ class ProjectRepositoryImpl(
     }
 
     override suspend fun getProjectById(id: String): Project {
-       return externalProjectDataSource.getProjectById(id)
+       return externalProjectDataSource.getProjectById(id).toDomain()
     }
 
 }
