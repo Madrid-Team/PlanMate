@@ -22,6 +22,7 @@ import org.koin.dsl.module
 import org.madrid.data.source.mongoDb.MongoClientProvider
 import org.madrid.data.source.project.ProjectMongoDBDataSource
 import org.madrid.data.source.task.TaskMongoDBDataSource
+import org.madrid.data.source.user.UserMongoDBDataSource
 import org.madrid.data.utils.PROJECT_COLLECTION
 import org.madrid.data.utils.USER_COLLECTION
 import java.io.File
@@ -61,6 +62,7 @@ val dataSourceModule = module {
     single { get<MongoClientProvider>().getDatabase() }
     single { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
     single { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
+    single<ExternalUserDataSource> { UserMongoDBDataSource(get()) }
 
 
     single { TaskManager() }
