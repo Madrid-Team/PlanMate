@@ -7,6 +7,6 @@ interface ExternalProjectDataSource {
     suspend fun createProject(project: ProjectDto)
     suspend fun deleteProject(projectId: String)
     suspend fun editProject(project: ProjectDto)
-    suspend fun getProjectLogsById(id: String): List<String>
-    suspend fun getProjectById(id: String): ProjectDto
+    suspend fun getProjectLogsById(id: String): List<String>?
+    suspend fun getProjectById(id: String): ProjectDto?
 }

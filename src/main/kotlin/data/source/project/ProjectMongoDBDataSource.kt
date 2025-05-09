@@ -1,15 +1,11 @@
 package org.madrid.data.source.project
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.project.ProjectDto
-import data.mapper.toDomain
 import data.source.project.ExternalProjectDataSource
-import domain.models.project.Project
 import domain.utlis.ProjectExceptions
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 
 class ProjectMongoDBDataSource(
