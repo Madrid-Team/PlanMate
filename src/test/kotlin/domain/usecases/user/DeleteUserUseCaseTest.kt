@@ -26,7 +26,7 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
-    fun `invoke should delete user when requestor is admin`() {
+    fun `invoke should delete user when requester is admin`() {
         runTest {
             // Given
             val adminId = UUID.randomUUID().toString()
@@ -53,35 +53,35 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
-    fun `invoke should fail when requestor is not admin`() {
+    fun `invoke should fail when requester is not admin`() {
         runTest {
-        // Given
-        val mateId = UUID.randomUUID().toString()
-        val userToDeleteId = UUID.randomUUID().toString()
-        val mateUser = User(id = UUID.randomUUID(), "mate", "hash", "MATE")
+            // Given
+            val mateId = UUID.randomUUID().toString()
+            val userToDeleteId = UUID.randomUUID().toString()
+            val mateUser = User(id = UUID.randomUUID(), "mate", "hash", "MATE")
 
-        coEvery { userRepository.getUserById(mateId) } returns mateUser
-        coEvery { userRepository.getUserById(userToDeleteId) } returns User(
-            id = UUID.randomUUID(),
-            "userToDelete",
-            "hash",
-            "MATE"
-        )
+            coEvery { userRepository.getUserById(mateId) } returns mateUser
+            coEvery { userRepository.getUserById(userToDeleteId) } returns User(
+                id = UUID.randomUUID(),
+                "userToDelete",
+                "hash",
+                "MATE"
+            )
 
-        // When/Then
-        val exception = assertThrows<UserExceptions> {
-            deleteUserUseCase.invoke(mateId, userToDeleteId)
-        }
+            // When/Then
+            val exception = assertThrows<UserExceptions> {
+                deleteUserUseCase.invoke(mateId, userToDeleteId)
+            }
 
-        assertEquals("User is not admin", exception.message)
-        coVerify(exactly = 1) { userRepository.getUserById(mateId) }
-        coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
-        coVerify(exactly = 0) { userRepository.deleteUser(any()) }
+            assertEquals("User is not admin", exception.message)
+            coVerify(exactly = 1) { userRepository.getUserById(mateId) }
+            coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
+            coVerify(exactly = 0) { userRepository.deleteUser(any()) }
         }
     }
 
     @Test
-    fun `invoke should fail when requestor user not found`() {
+    fun `invoke should fail when requester user not found`() {
         runTest {
             // Given
             val nonExistentId = "non-existent-id"
