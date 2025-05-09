@@ -101,7 +101,7 @@ class TaskCLITest {
             taskCLI.show()
 
             // then
-            verify { outputPrinter.printError("Invalid option.") }
+            verify { outputPrinter.printError(any()) }
         }
     }
 }

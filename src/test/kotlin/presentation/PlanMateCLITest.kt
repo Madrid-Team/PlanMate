@@ -94,7 +94,7 @@ class PlanMateCLITest {
 
             planMateCLI.start()
 
-            verify { authenticationCLI.login() }
+            coVerify { authenticationCLI.login() }
         }
     }
 
@@ -213,7 +213,7 @@ class PlanMateCLITest {
             planMateCLI.start()
 
             // then
-            verify { userCLI.show() }
+            coVerify { userCLI.show() }
         }
     }
 

@@ -80,7 +80,7 @@ class ProjectCLITest {
             projectCLI.show()
 
             // then
-            verify { editProjectCLI.show() }
+            coVerify { editProjectCLI.show() }
         }
     }
 
