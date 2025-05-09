@@ -6,7 +6,7 @@ import domain.utlis.convertDateIntoReadableDate
 import java.time.LocalDateTime
 
 class CreateLogUseCase {
-    fun invoke(
+    operator fun invoke(
         operationType: OperationType,
         entityName: String,
         entityType: EntityType,

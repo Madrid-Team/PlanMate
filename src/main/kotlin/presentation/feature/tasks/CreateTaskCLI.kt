@@ -56,7 +56,7 @@ class CreateTaskCLI(
             taskState = selectedState,
             createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf(
-                createLogUseCase.invoke(
+                createLogUseCase(
                     operationType = OperationType.CREATE,
                     entityName = title,
                     entityType = EntityType.TASK,
