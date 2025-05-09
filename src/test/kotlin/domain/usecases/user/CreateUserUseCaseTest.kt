@@ -1,6 +1,7 @@
 package domain.usecases.user
 
 import com.google.common.truth.Truth.assertThat
+import data.mapper.toDto
 import data.repository.UserRepositoryImpl
 import data.source.user.ExternalUserDataSource
 import domain.models.authentication.User
@@ -50,7 +51,7 @@ class CreateUserUseCaseTest {
 
             // Then
             coVerify {
-                externalUserDataSource.createNewUser(user.copy(id = generateId))
+                externalUserDataSource.createNewUser(user.copy(id = generateId).toDto())
             }
         }
     }
@@ -69,7 +70,7 @@ class CreateUserUseCaseTest {
 
             coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
 
-            coEvery { externalUserDataSource.getUserByName(existingUsername) } returns existingUser
+            coEvery { externalUserDataSource.getUserByName(existingUsername) } returns existingUser.toDto()
 
             coEvery { externalUserDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
 

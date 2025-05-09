@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.IOException
-import java.util.UUID
+import java.util.*
 
 
 class UserCsvDataSourceTest {
@@ -56,7 +56,7 @@ class UserCsvDataSourceTest {
 
             // When & Then
             assertDoesNotThrow {
-                dataSource.createNewUser(user)
+                dataSource.createNewUser(user.toDto())
             }
         }
     }
@@ -73,7 +73,7 @@ class UserCsvDataSourceTest {
 
             // When
             assertThrows<UserExceptions.UserExist> {
-                dataSource.createNewUser(user)
+                dataSource.createNewUser(user.toDto())
             }
             // Then
             verify(exactly = 0) { fileCsvWriter.writeToCsvFile(row) }
@@ -92,7 +92,7 @@ class UserCsvDataSourceTest {
 
             // When
             assertThrows<IOException> {
-                dataSource.createNewUser(user)
+                dataSource.createNewUser(user.toDto())
             }
             // Then
         }

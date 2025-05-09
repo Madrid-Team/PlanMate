@@ -11,9 +11,8 @@ import data.source.task.ExternalTaskDataSource
 import data.source.task.TaskCsvDataSource
 import data.source.task.TaskCsvParser
 import data.source.task.TaskManager
-import data.source.user.UserCsvDataSource
-import data.source.user.UserCsvParser
 import data.source.user.ExternalUserDataSource
+import data.source.user.UserCsvParser
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.FileValidator
@@ -52,22 +51,38 @@ val dataSourceModule = module {
     single { ProjectCsvParser() }
 
 
-    single<ExternalProjectDataSource> { ProjectCsvDataSource(get(named("projectReader")), get(named("projectWriter")), get(),get()) }
-    single<ExternalProjectDataSource> { ProjectMongoDBDataSource(get()) }
+    single<ExternalProjectDataSource> {
+        ProjectCsvDataSource(
+            get(named("projectReader")),
+            get(named("projectWriter")),
+            get(),
+            get()
+        )
+    }
 
 //    single<ExternalUserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
-    single<ExternalUserDataSource> { UserMongoDBDataSource(get()) }
-    single<ExternalTaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader")),get()) }
+    single<ExternalTaskDataSource> {
+        TaskCsvDataSource(
+            get(),
+            get(named("taskWriter")),
+            get(named("taskReader")),
+            get()
+        )
+    }
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
-    single { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
-    single { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
-    single<ExternalUserDataSource> { UserMongoDBDataSource(get()) }
+
+    single(named("projects")) { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
+    single(named("users")) { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
+
+    single<ExternalUserDataSource> { UserMongoDBDataSource(get(named("users"))) }
 
 
     single { TaskManager() }
     single { ProjectManager() }
-    single<ExternalTaskDataSource> { TaskMongoDBDataSource(get()) }
+    single<ExternalTaskDataSource> { TaskMongoDBDataSource(get(named("projects"))) }
+    single<ExternalProjectDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
+
 
 }
