@@ -2,18 +2,14 @@ package domain.usecases.project
 
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.ProjectExceptions
+import domain.validation.ValidateProjectName
 
-class EditProjectUseCase(private val projectRepository: ProjectRepository) {
-
-    suspend fun editProject(project: Project) {
-        validateName(project)
+class EditProjectUseCase(
+    private val projectRepository: ProjectRepository,
+    private val validateProjectName: ValidateProjectName
+) {
+    suspend operator fun invoke(project: Project) {
+        validateProjectName(project)
         projectRepository.editProject(project)
-    }
-
-    private fun validateName(project: Project) {
-        if (!project.name.matches(Regex("^[A-Za-z ]+$"))) {
-            throw ProjectExceptions.ProjectNameInvalidException()
-        }
     }
 }

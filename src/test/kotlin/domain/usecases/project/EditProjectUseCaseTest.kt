@@ -4,8 +4,8 @@ import domain.repository.ProjectRepository
 import domain.usecases.createProject
 import domain.utlis.PlanMateExceptions
 import domain.utlis.ProjectExceptions
+import domain.validation.ValidateProjectName
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -17,11 +17,13 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
+    private lateinit var validateProjectName: ValidateProjectName
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk()
-        editProjectUseCase = EditProjectUseCase(projectRepository)
+        validateProjectName = mockk()
+        editProjectUseCase = EditProjectUseCase(projectRepository, validateProjectName)
     }
 
     @Test
@@ -38,7 +40,7 @@ class EditProjectUseCaseTest {
             //When
 
             assertDoesNotThrow {
-                editProjectUseCase.editProject(project)
+                editProjectUseCase(project)
             }
         }
     }
@@ -56,7 +58,7 @@ class EditProjectUseCaseTest {
 
             //When
             assertThrows<PlanMateExceptions> {
-                editProjectUseCase.editProject(project)
+                editProjectUseCase(project)
             }
         }
     }
@@ -71,7 +73,7 @@ class EditProjectUseCaseTest {
             )
             //When & Then
             assertThrows<ProjectExceptions.ProjectNameInvalidException> {
-                editProjectUseCase.editProject(project)
+                editProjectUseCase(project)
             }
         }
     }

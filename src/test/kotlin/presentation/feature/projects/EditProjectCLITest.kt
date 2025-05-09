@@ -70,7 +70,7 @@ class EditProjectCLITest {
             } returns mockLogString
 
             coEvery {
-                editProjectUseCase.editProject(match {
+                editProjectUseCase(match {
                     it.name == "new-name" &&
                             it.description == "original-description" &&
                             it.projectLogs.size == 1 &&
@@ -83,7 +83,7 @@ class EditProjectCLITest {
 
             // Then
             verify { outputPrinter.printMessage("Project edited successfully.") }
-            coVerify { editProjectUseCase.editProject(any()) }
+            coVerify { editProjectUseCase(any()) }
         }
     }
 
@@ -120,7 +120,7 @@ class EditProjectCLITest {
             } returns mockLogString
 
             coEvery {
-                editProjectUseCase.editProject(match {
+                editProjectUseCase(match {
                     it.name == "original-name" &&
                             it.description == "new-description" &&
                             it.projectLogs.size == 1 &&
@@ -170,7 +170,7 @@ class EditProjectCLITest {
             } returns mockLogString
 
             coEvery {
-                editProjectUseCase.editProject(match {
+                editProjectUseCase(match {
                     it.name == "original-name" &&
                             it.description == "original-description" &&
                             it.projectState == "IN_PROGRESS" &&
@@ -197,7 +197,7 @@ class EditProjectCLITest {
             // When & Then
             cli.show()
             verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
-            coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
+            coVerify(exactly = 0) { editProjectUseCase(any()) }
         }
     }
 
@@ -223,7 +223,7 @@ class EditProjectCLITest {
             cli.show()
 
             // Then
-            coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
+            coVerify(exactly = 0) { editProjectUseCase(any()) }
             verify(exactly = 0) { outputPrinter.printMessage("Project edited successfully.") }
         }
     }

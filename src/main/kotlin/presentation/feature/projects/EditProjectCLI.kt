@@ -72,7 +72,7 @@ class EditProjectCLI(
                             break
                         } else {
                             try {
-                                editProjectUseCase.editProject(
+                                editProjectUseCase(
                                     updatedProject.copy(
                                         projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
                                             currentProject,
