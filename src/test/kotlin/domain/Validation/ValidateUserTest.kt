@@ -111,7 +111,7 @@ class ValidateUserTest {
     fun `should generate a unique UUID When UUID is in use`() {
         runTest {
             // Given
-            val newUUID = UUID.randomUUID()
+            val newUUID = UUID.randomUUID().toString()
             coEvery { userRepository.getUserById(any()) } returns mockk()
 
             // When

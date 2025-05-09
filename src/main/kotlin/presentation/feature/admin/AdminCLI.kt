@@ -4,7 +4,7 @@ import presentation.feature.projects.ProjectAuditLogCLI
 import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 
 class AdminCLI(private val projectAuditLogCLI: ProjectAuditLogCLI, private val taskAuditLogCLI: TaskAuditLogCLI) {
-    fun showAdminMenu() {
+    suspend fun showAdminMenu() {
         while (true) {
             println("=== Admin Tools ===")
             println("1. View Project Logs")

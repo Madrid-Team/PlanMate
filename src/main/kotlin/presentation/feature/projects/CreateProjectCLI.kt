@@ -7,7 +7,7 @@ import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utlis.PlanMateExceptions
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -18,7 +18,7 @@ class CreateProjectCLI(
     private val createProjectUseCase: CreateProjectUseCase,
     private val createLogUseCase: CreateLogUseCase
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Project ===")
         val name = inputReader.readInput("Enter project name: ")
         val description = inputReader.readInput("Enter project description: ")
@@ -27,7 +27,8 @@ class CreateProjectCLI(
 
 
         val currentProjectStates = projectStates.split(" ")
-        val statesMenu = currentProjectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
+        val statesMenu =
+            currentProjectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
         val promptMessage = "Select project State:\n$statesMenu\nEnter number: "
 
         var projectState: String
@@ -55,22 +56,20 @@ class CreateProjectCLI(
             id = UUID.randomUUID()
         )
         try {
-            runBlocking {
-                createProjectUseCase.createProject(
-                    project.copy(
-                        projectLogs = listOf(
-                            createLogUseCase.invoke(
-                                operationType = OperationType.CREATE,
-                                entityName = project.name,
-                                entityType = EntityType.PROJECT,
-                                username = project.createdBy,
-                            )
-                        )
-                    )
+            val logUseCase = async {
+                createLogUseCase.invoke(
+                    operationType = OperationType.CREATE,
+                    entityName = project.name,
+                    entityType = EntityType.PROJECT,
+                    username = project.createdBy,
                 )
-                outputPrinter.printMessage("Project created successfully")
             }
-
+            val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
+            val projectCreation = async {
+                createProjectUseCase.createProject(projectWithLog)
+            }
+            projectCreation.await()
+            outputPrinter.printMessage("Project created successfully")
         } catch (e: PlanMateExceptions) {
             outputPrinter.printMessage("Failed to create project: ${e.message}")
         }

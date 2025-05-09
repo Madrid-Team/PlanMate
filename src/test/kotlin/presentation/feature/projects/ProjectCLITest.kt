@@ -1,10 +1,8 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetAllProjectsUseCase
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -31,79 +29,100 @@ class ProjectCLITest {
         projectView = mockk(relaxed = true)
         getAllProjectsUseCase = mockk(relaxed = true)
         projectAuditLogCLI = mockk(relaxed = true)
-        projectCLI = ProjectCLI(inputReader, outputPrinter, createProjectCLI, deleteProjectCLI, editProjectCLI, projectAuditLogCLI, projectView, getAllProjectsUseCase)
+        projectCLI = ProjectCLI(
+            inputReader,
+            outputPrinter,
+            createProjectCLI,
+            deleteProjectCLI,
+            editProjectCLI,
+            projectAuditLogCLI,
+            projectView,
+            getAllProjectsUseCase
+        )
     }
 
     @Test
     fun `should show projects when user selects 1`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
-        coEvery { getAllProjectsUseCase.getAllProjects() } returns emptyList()
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
+            coEvery { getAllProjectsUseCase.getAllProjects() } returns emptyList()
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { projectView.projectList(any()) }
+            // then
+            verify { projectView.projectList(any()) }
+        }
     }
 
     @Test
     fun `should navigate to CreateProjectCLI when user selects 2`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "0")
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("2", "0")
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { createProjectCLI.show() }
+            // then
+            coVerify { createProjectCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to EditProjectCLI when user selects 3`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "0")
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("3", "0")
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { editProjectCLI.show() }
+            // then
+            verify { editProjectCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to DeleteProjectCLI when user selects 4`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("4", "0")
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("4", "0")
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { deleteProjectCLI.show() }
+            // then
+            coVerify { deleteProjectCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to ProjectAuditLogCLI when user selects 5`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("5", "0")
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("5", "0")
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { projectAuditLogCLI.show() }
+            // then
+            coVerify { projectAuditLogCLI.show() }
+        }
     }
 
     @Test
     fun `should print invalid option message when user selects unknown option`() {
-        // given
-        every { inputReader.readInput("Select an option:") } returnsMany listOf("9", "0")
+        runTest {
+            // given
+            every { inputReader.readInput("Select an option:") } returnsMany listOf("9", "0")
 
-        // when
-        projectCLI.show()
+            // when
+            projectCLI.show()
 
-        // then
-        verify { outputPrinter.printMessage("Invalid option. Please try again.") }
+            // then
+            verify { outputPrinter.printMessage("Invalid option. Please try again.") }
+        }
     }
 }

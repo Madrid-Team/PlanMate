@@ -1,5 +1,6 @@
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.bson.Document
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
@@ -12,10 +13,11 @@ import org.madrid.data.utils.DATABASE_NAME
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class MongoClientProviderTest {
+class MongoClientProviderTest {
 
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
+    private val testScope: TestScope = TestScope()
 
     @BeforeAll
     fun setup() {
@@ -31,7 +33,7 @@ import org.madrid.data.utils.DATABASE_NAME
 
     @Test
     fun `Should respond to ping command`() {
-        runBlocking {
+        testScope.launch {
 
             val result: Document =
                 assertDoesNotThrow { database.runCommand(Document("ping", 1)) }

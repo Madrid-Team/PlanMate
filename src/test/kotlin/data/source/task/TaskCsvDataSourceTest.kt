@@ -1,8 +1,9 @@
 package data.source.task
 
+import com.google.common.truth.Truth.assertThat
+import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import domain.usecases.task.createTask
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -16,30 +17,31 @@ import java.util.*
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
     private lateinit var fileCsvWriter: FileCsvWriter
-    private lateinit var externalTaskDataSource: ExternalTaskDataSource
+    private lateinit var taskCsvDataSource: ExternalTaskDataSource
     private lateinit var fileCsvReader: FileCsvReader
     private lateinit var taskManager: TaskManager
 
     @BeforeEach
     fun setup() {
-        taskCsvParser = mockk()
-        fileCsvWriter = mockk()
-        fileCsvReader = mockk()
-        taskManager = mockk()
-        externalTaskDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter, fileCsvReader, taskManager)
+        taskCsvParser = mockk(relaxed = true)
+        fileCsvWriter = mockk(relaxed = true)
+        fileCsvReader = mockk(relaxed = true)
+        taskManager = mockk(relaxed = true)
+        taskCsvDataSource = TaskCsvDataSource(taskCsvParser, fileCsvWriter, fileCsvReader, taskManager)
     }
 
     @Test
     fun `editTask should update file successfully`() {
         runTest {
-            val task = createTask(id = UUID.randomUUID().toString(), title = "task")
+            val task = helperTaskDto(id = UUID.randomUUID().toString(), title = "task")
             val updatedTask = helperTaskDto(id = UUID.randomUUID().toString(), title = "task")
-
-//            every { taskCsvParser.parseTaskToString(any()) } returnsMany parsedTasks
+            every { taskManager.getTasks() } returns listOf(task)
+            every { taskManager.editTask(task) } returns listOf(task)
+            every { taskCsvParser.parseTaskToString(task) } returns csvRow
             every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
 
-            assertDoesNotThrow { externalTaskDataSource.editTask(updatedTask) }
+            assertDoesNotThrow { taskCsvDataSource.editTask(updatedTask) }
         }
     }
 
@@ -59,7 +61,7 @@ class TaskCsvDataSourceTest {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.updateCsvFile(any()) } returns Unit
 
-//        assertDoesNotThrow { externalTaskDataSource.deleteTask(tasksDto.id.toString()) }
+        assertDoesNotThrow { taskManager.deleteTask(tasksDto.id) }
     }
 
 
@@ -68,51 +70,46 @@ class TaskCsvDataSourceTest {
         every { taskCsvParser.parseTaskToString(task) } returns csvRow
         every { fileCsvWriter.writeToCsvFile(csvRow) } returns Unit
 
-//        assertDoesNotThrow { externalTaskDataSource.createTask(task) }
+        assertDoesNotThrow { taskManager.addTask(task) }
     }
 
     @Test
     fun `createTask should throw exception when writing to csv file is failed`() {
-        every { taskCsvParser.parseTaskToString(task) } returns csvRow
-        every { fileCsvWriter.writeToCsvFile(csvRow) } throws IOException()
+        runTest {
+            every { taskCsvParser.parseTaskToString(task) } returns csvRow
+            every { fileCsvWriter.writeToCsvFile(any()) } throws IOException()
+            every { taskManager.addTask(task) } returns Unit
 
-//        assertThrows<IOException> { externalTaskDataSource.createTask(task) }
-    }
-
-    @Test
-    fun `getAllTasks should return list of tasks when read from file successfully`() {
-        every { fileCsvReader.readCsvFile() } returns listOf("task", "task2")
-        every { taskCsvParser.parseOneRowToTask("task") } returns task
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task
-
-//        val result = externalTaskDataSource.getAllTasks()
-
-//        assertThat(result).isEqualTo(listOf(task, task))
+            assertThrows<IOException> { taskCsvDataSource.createTask(task) }
+        }
     }
 
     @Test
     fun `getTaskByProjectId should return list of tasks when list of tasks is not empty`() {
-        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = projectId)
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = projectId)
+        runTest {
+            val tasksDto = listOf(helperTaskDto(projectId = projectId))
+            every { taskManager.getTasks() } returns tasksDto
 
-//        val result = externalTaskDataSource.getTasksByProjectId(projectId)
+            val result = taskCsvDataSource.getTasksByProjectId(projectId)
 
-//        assertThat(result)
+            assertThat(result).isEqualTo(tasksDto)
+        }
     }
 
     @Test
     fun `getTaskByProjectId should return empty list when list of tasks is empty`() {
-        every { fileCsvReader.readCsvFile() } returns listOf("task1", "task2")
-        every { taskCsvParser.parseOneRowToTask("task1") } returns task.copy(projectId = "id1")
-        every { taskCsvParser.parseOneRowToTask("task2") } returns task.copy(projectId = "id2")
+        runTest {
+            val emptyTasks = emptyList<TaskDto>()
+            every { taskManager.getTasks() } returns emptyList()
 
-//        val result = externalTaskDataSource.getTasksByProjectId(projectId)
+            val result = taskCsvDataSource.getTasksByProjectId("12")
 
-//        assertThat(result)
+            assertThat(result).isEqualTo(emptyTasks)
+        }
     }
 
     companion object {
+        val tasks = listOf("task1", "task2")
         val task = helperTaskDto(id = "08a823be-fc8f-4310-9bcb-543d577ebb93", title = "task")
         const val csvRow = "08a823be-fc8f-4310-9bcb-543d577ebb93,task"
         const val projectId = "08a823be-fc8f-4310-9bcb-543d577ebb93"

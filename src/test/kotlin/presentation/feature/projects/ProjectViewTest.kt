@@ -5,10 +5,9 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import presentation.components.OutputPrinter
-import java.util.UUID
+import java.util.*
 
 class ProjectViewTest {
-
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val projectView = ProjectView(outputPrinter)
 

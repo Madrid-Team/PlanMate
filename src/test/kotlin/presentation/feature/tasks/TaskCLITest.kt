@@ -1,8 +1,10 @@
 package presentation.feature.tasks
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
@@ -19,6 +21,7 @@ class TaskCLITest {
     private lateinit var taskCLI: TaskCLI
     private lateinit var taskAuditLogCLI: TaskAuditLogCLI
 
+
     @BeforeEach
     fun setup() {
         inputReader = mockk()
@@ -28,66 +31,77 @@ class TaskCLITest {
         editTaskCLI = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
         taskAuditLogCLI = mockk(relaxed = true)
-        taskCLI = TaskCLI(createTaskCLI,editTaskCLI,deleteTaskCLI,taskAuditLogCLI, taskView,outputPrinter,inputReader)
+        taskCLI =
+            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
     }
 
     @Test
     fun `should navigate to CreateProjectCLI when user selects 1`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { createTaskCLI.show() }
+            // then
+            coVerify { createTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to EditTaskCLI when user selects 2`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { editTaskCLI.show() }
+            // then
+            coVerify { editTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to DeleteTaskCLI when user selects 3`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { deleteTaskCLI.show() }
+            // then
+            coVerify { deleteTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to TaskView when user selects 4`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { taskView.show() }
+            // then
+            coVerify { taskView.show() }
+        }
     }
 
     @Test
     fun `should print invalid option message when user selects unknown option`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { outputPrinter.printError("Invalid option.") }
+            // then
+            verify { outputPrinter.printError("Invalid option.") }
+        }
     }
 }

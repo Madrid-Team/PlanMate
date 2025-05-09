@@ -3,9 +3,9 @@ package presentation.feature.tasks
 import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
-import domain.utlis.PlanMateExceptions
 import domain.utlis.TaskExceptions
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -16,7 +16,7 @@ class EditTaskCLI(
     private val taskView: TaskView,
     private val editTaskUseCase: EditTaskUseCase
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO){
         outputPrinter.printMessage("=== Edit Task ===")
 
         val projectId = inputReader.readInput("Enter project ID: ")
@@ -35,10 +35,8 @@ class EditTaskCLI(
         )
 
         try {
-            runBlocking {
-                editTaskUseCase.editTask(updatedTask)
-                outputPrinter.printMessage("Task updated successfully")
-            }
+            editTaskUseCase.editTask(updatedTask)
+            outputPrinter.printMessage("Task updated successfully")
         } catch (exception: TaskExceptions.TaskCannotEditException) {
             outputPrinter.printError(exception.message ?: "Failed to update task")
         }
