@@ -39,9 +39,9 @@ class ProjectMongoDBDataSource(
         return collection.find(filter).toList().flatMap { it.projectLogs }
     }
 
-    override suspend fun getProjectById(id: String): ProjectDto {
+    override suspend fun getProjectById(id: String): ProjectDto? {
         val filter = eq("_id", id)
-        return collection.find(filter).firstOrNull() ?: throw ProjectExceptions.ProjectNotFoundException()
+        return collection.find(filter).firstOrNull()
     }
 
 }
