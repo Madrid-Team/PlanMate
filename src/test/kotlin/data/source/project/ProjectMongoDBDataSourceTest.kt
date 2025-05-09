@@ -37,7 +37,7 @@ class ProjectMongoDBDataSourceTest {
     fun setup() {
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database)
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,"projects_test","projects")
         runBlocking {
             projectMongoDBDataSource =
                 ProjectMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
