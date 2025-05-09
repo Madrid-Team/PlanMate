@@ -72,7 +72,7 @@ class TaskMongoDBDataSourceTest {
         projectState = "active",
         taskStates = emptyList(),
         projectStates = emptyList(),
-        matesIds = emptyList(),
+        matesUsernames = emptyList(),
         tasks = listOf(sampleTask)
     )
     @Test
