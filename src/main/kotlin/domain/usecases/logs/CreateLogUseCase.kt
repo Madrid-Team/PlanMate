@@ -20,6 +20,6 @@ class CreateLogUseCase {
         if (operationType == OperationType.UPDATE) {
             changeHappened = "$fieldName from $oldValue to $newValue"
         }
-        return "User $username ${operationType.toString()} ${entityType.toString()} $entityName $changeHappened at $timestamp"
+        return "User $username $operationType $entityType $entityName $changeHappened at $timestamp"
     }
 }

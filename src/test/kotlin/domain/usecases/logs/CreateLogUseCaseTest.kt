@@ -46,7 +46,7 @@ class CreateLogUseCaseTest {
             timestamp = timestamp
         )
 
-        val expected = "User $username ${operationType.toString()} ${entityType.toString()} $entityName $fieldName from $oldValue to $newValue at $timestamp"
+        val expected = "User $username $operationType $entityType $entityName $fieldName from $oldValue to $newValue at $timestamp"
 
         assertEquals(expected, result)
     }
