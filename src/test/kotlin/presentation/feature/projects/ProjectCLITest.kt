@@ -46,7 +46,7 @@ class ProjectCLITest {
         runTest {
             // given
             every { inputReader.readInput("Select an option:") } returnsMany listOf("1", "0")
-            coEvery { getAllProjectsUseCase.getAllProjects() } returns emptyList()
+            coEvery { getAllProjectsUseCase() } returns emptyList()
 
             // when
             projectCLI.show()

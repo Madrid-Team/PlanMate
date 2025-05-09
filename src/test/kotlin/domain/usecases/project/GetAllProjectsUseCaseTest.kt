@@ -4,10 +4,9 @@ import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utlis.PlanMateExceptions
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -31,10 +30,10 @@ class GetAllProjectsUseCaseTest {
             coEvery { projectRepository.getAllProjects() } returns mockProjects
 
             // When
-            val result = getAllProjectsUseCase.getAllProjects()
+            val result = getAllProjectsUseCase()
 
             // Then
-            assertDoesNotThrow { getAllProjectsUseCase.getAllProjects() }
+            assertDoesNotThrow { getAllProjectsUseCase() }
             assertEquals(mockProjects, result)
         }
     }
@@ -47,7 +46,7 @@ class GetAllProjectsUseCaseTest {
 
             // When & Then
             assertThrows<PlanMateExceptions> {
-                getAllProjectsUseCase.getAllProjects()
+                getAllProjectsUseCase()
             }
         }
     }
