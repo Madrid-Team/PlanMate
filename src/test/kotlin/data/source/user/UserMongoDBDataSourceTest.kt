@@ -108,10 +108,10 @@ class UserMongoDBDataSourceTest {
         runTest {
             //Given
             val userId = userMongoDBDataSource.getAllUsers().first().id
-            var userListSizeBeforeDelete = userMongoDBDataSource.getAllUsers().size
+            val userListSizeBeforeDelete = userMongoDBDataSource.getAllUsers().size
 
             // When
-            userMongoDBDataSource.deleteUser(userId.toString())
+            userMongoDBDataSource.deleteUser(userId)
 
             // Then
             assertEquals(userListSizeBeforeDelete-1, userMongoDBDataSource.getAllUsers().size)
@@ -142,7 +142,6 @@ class UserMongoDBDataSourceTest {
         }
     }
 
-    val expectedUser = userDto
     @Test
     fun `getUserById returns user when found`()  {
         val collection = mockk<MongoCollection<UserDto>>()
@@ -177,9 +176,10 @@ class UserMongoDBDataSourceTest {
         val collection = mockk<MongoCollection<UserDto>>()
 
         val userName = userTest.username
-        val findFlow = mockk<FindFlow<UserDto>>()
-        coEvery { findFlow.firstOrNull() } returns userTest
-        coEvery { collection.find(eq("username", userName)) } returns findFlow
+
+        val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
+        coEvery { mockFlow.firstOrNull() } returns userTest
+        coEvery { collection.find(eq("username", userName)) } returns mockFlow
 
         // Act
         copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
@@ -190,7 +190,7 @@ class UserMongoDBDataSourceTest {
         assertEquals(userTest, result)
        testScope.launch {
         coVerify { collection.find(eq("username", userName)) }
-        coVerify { findFlow.firstOrNull() }
+        coVerify { mockFlow.firstOrNull() }
     }
     }
 
@@ -214,9 +214,9 @@ class UserMongoDBDataSourceTest {
         // Arrange
         val collection = mockk<MongoCollection<UserDto>>()
         val userId = "user1"
-        val findFlow = mockk<FindFlow<UserDto>>()
-        coEvery { findFlow.firstOrNull() } throws RuntimeException("DB error")
-        coEvery { collection.find(eq("_id", userId)) } returns findFlow
+        val mockFlow = mockk<FindFlow<UserDto>>(relaxed = true)
+        coEvery { mockFlow.firstOrNull() } throws RuntimeException("DB error")
+        coEvery { collection.find(eq("_id", userId)) } returns mockFlow
 
         // Act & Assert
 
@@ -224,7 +224,7 @@ class UserMongoDBDataSourceTest {
 
         testScope.launch {
             coVerify { collection.find(eq("_id", userId)) }
-            coVerify { findFlow.firstOrNull() }
+            coVerify { mockFlow.firstOrNull() }
         }
 
     }
