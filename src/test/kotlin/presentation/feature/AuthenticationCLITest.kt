@@ -108,7 +108,7 @@ class AuthenticationCLITest {
     }
 
     @Test
-    fun `shouldn't retry login when exception occurs and user don't enters 1`() {
+    fun `should not retry login when exception occurs and user don't enters 1`() {
         runTest {
             // Given
             val incorrectUsername = "user name 2"

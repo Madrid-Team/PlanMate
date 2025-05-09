@@ -7,8 +7,7 @@ import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
 
 class LoginUserUseCase(private val userRepository: UserRepository) {
-
-    suspend fun invoke(userName: String?, passwordHash: String?): User {
+    suspend operator fun invoke(userName: String?, passwordHash: String?): User {
         return if (userName.isNullOrEmpty() || passwordHash.isNullOrEmpty()) {
             throw UserExceptions.UserNameOrPasswordError()
         } else {

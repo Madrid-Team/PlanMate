@@ -5,7 +5,6 @@ import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
