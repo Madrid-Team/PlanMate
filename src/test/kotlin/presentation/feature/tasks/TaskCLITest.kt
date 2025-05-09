@@ -30,6 +30,7 @@ class TaskCLITest {
         deleteTaskCLI = mockk(relaxed = true)
         editTaskCLI = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
+        taskAuditLogCLI = mockk(relaxed = true)
         taskCLI =
             TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
     }
