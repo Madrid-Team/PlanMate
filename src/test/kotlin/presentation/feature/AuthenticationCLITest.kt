@@ -3,9 +3,11 @@ package presentation.feature
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.usecases.user.LoginUserUseCase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -32,7 +34,7 @@ class AuthenticationCLITest {
         val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
 
         every { inputReader.readInput() } returnsMany listOf(username, password)
-        every { useCase.invoke(username, passwordHash) } returns user
+        coEvery { useCase.invoke(username, passwordHash) } returns user
 
         // When
         cli.login()
@@ -55,7 +57,7 @@ class AuthenticationCLITest {
         val passwordHash = PasswordHasher.hash(password)
 
         every { inputReader.readInput() } returnsMany listOf(username, password, "z") // 2 = don't retry
-        every { useCase.invoke(username, passwordHash) } throws Exception()
+        coEvery { useCase.invoke(username, passwordHash) } throws Exception()
 
         // When
         cli.login()
@@ -85,8 +87,8 @@ class AuthenticationCLITest {
             correctUsername,
             correctPassword
         )
-        every { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
-        every { useCase.invoke(correctUsername, correctHash) } returns user
+        coEvery { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
+        coEvery { useCase.invoke(correctUsername, correctHash) } returns user
 
         // When
         cli.login()
@@ -107,7 +109,7 @@ class AuthenticationCLITest {
         val incorrectHash = PasswordHasher.hash(incorrectPassword)
 
         every { inputReader.readInput() } returnsMany listOf(incorrectUsername, incorrectPassword, "z")
-        every { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
+        coEvery { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
 
         // When
         cli.login()

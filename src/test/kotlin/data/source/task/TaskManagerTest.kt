@@ -3,22 +3,21 @@ package data.source.task
 import com.google.common.truth.Truth.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import presentation.feature.tasks.helperTask
 import java.util.*
 import kotlin.test.assertTrue
 
-class TaskMemoryDataSourceTest {
+class TaskManagerTest {
 
-    private lateinit var taskMemoryDataSource: TaskMemoryDataSource
+    private lateinit var taskManager: TaskManager
 
     @BeforeEach
     fun setUp() {
-        taskMemoryDataSource = TaskMemoryDataSource()
+        taskManager = TaskManager()
     }
 
     @Test
     fun `getTasks should return empty list initially`() {
-        val tasks = taskMemoryDataSource.getTasks()
+        val tasks = taskManager.getTasks()
         assertThat(tasks).isEmpty()
     }
 
@@ -28,29 +27,29 @@ class TaskMemoryDataSourceTest {
         val taskId1 = UUID.randomUUID().toString()
         val taskId2 = UUID.randomUUID().toString()
         val tasks = listOf(
-            helperTask(id = taskId1),
-            helperTask(id = taskId2)
+            helperTaskDto(id = taskId1),
+            helperTaskDto(id = taskId2)
         )
-        taskMemoryDataSource.setTasks(tasks)
+        taskManager.setTasks(tasks)
 
-        assertThat(taskMemoryDataSource.getTasks()).isNotEmpty()
-        assertThat(taskMemoryDataSource.getTasks()).containsExactly(tasks[0], tasks[1])
+        assertThat(taskManager.getTasks()).isNotEmpty()
+        assertThat(taskManager.getTasks()).containsExactly(tasks[0], tasks[1])
     }
 
     @Test
     fun `setTasks should add multiple tasks`() {
-        val task1 = helperTask()
-        val task2 = helperTask()
-        taskMemoryDataSource.setTasks(listOf(task1, task2))
-        val result = taskMemoryDataSource.getTasks()
+        val task1 = helperTaskDto()
+        val task2 = helperTaskDto()
+        taskManager.setTasks(listOf(task1, task2))
+        val result = taskManager.getTasks()
         assertThat(result.size).isEqualTo(2)
     }
 
     @Test
     fun `addTask should add single task`() {
-        val task = helperTask()
+        val task = helperTaskDto()
         org.junit.jupiter.api.assertDoesNotThrow {
-            taskMemoryDataSource.addTask(task)
+            taskManager.addTask(task)
         }
     }
 
@@ -59,11 +58,11 @@ class TaskMemoryDataSourceTest {
         val taskId1 = UUID.randomUUID().toString()
         val taskId2 = UUID.randomUUID().toString()
         val tasks = listOf(
-            helperTask(id = taskId1),
-            helperTask(id = taskId2)
+            helperTaskDto(id = taskId1),
+            helperTaskDto(id = taskId2)
         )
-        taskMemoryDataSource.setTasks(tasks)
-        val updatedTasks = taskMemoryDataSource.deleteTask(taskId1)
+        taskManager.setTasks(tasks)
+        val updatedTasks = taskManager.deleteTask(taskId1)
         assertThat(updatedTasks.size).isEqualTo(1)
     }
 
@@ -72,22 +71,22 @@ class TaskMemoryDataSourceTest {
         val taskId1 = UUID.randomUUID().toString()
         val taskId2 = UUID.randomUUID().toString()
         val tasks = listOf(
-            helperTask(id = taskId1, title = "Old task"),
-            helperTask(id = taskId2)
+            helperTaskDto(id = taskId1, title = "Old task"),
+            helperTaskDto(id = taskId2)
         )
-        taskMemoryDataSource.setTasks(tasks)
+        taskManager.setTasks(tasks)
 
-        val result = taskMemoryDataSource.editTask(tasks[0].copy(title = "Updated task"))
+        val result = taskManager.editTask(tasks[0].copy(title = "Updated task"))
         assertThat(result.find { it.id.toString() == taskId1 }!!.title).isEqualTo("Updated task")
     }
 
     @Test
     fun `addTask should add a new task to the list`() {
         val taskId1 = UUID.randomUUID().toString()
-        val task = helperTask(id = taskId1, title = "Added task")
-        taskMemoryDataSource.addTask(task)
+        val task = helperTaskDto(id = taskId1, title = "Added task")
+        taskManager.addTask(task)
 
-        val result = taskMemoryDataSource.getTasks()
+        val result = taskManager.getTasks()
         assertThat(result.size).isEqualTo(1)
         assertThat(result[0].id.toString()).isEqualTo(taskId1)
     }
@@ -95,10 +94,10 @@ class TaskMemoryDataSourceTest {
     @Test
     fun `addTask should add a new task`() {
         val taskId1 = UUID.randomUUID().toString()
-        val task = helperTask(id = taskId1)
-        taskMemoryDataSource.addTask(task)
+        val task = helperTaskDto(id = taskId1)
+        taskManager.addTask(task)
 
-        val tasks = taskMemoryDataSource.getTasks()
+        val tasks = taskManager.getTasks()
         assertThat( tasks.size).isEqualTo(1)
         assertThat(tasks[0].id.toString()).isEqualTo(taskId1)
     }
@@ -106,20 +105,20 @@ class TaskMemoryDataSourceTest {
     @Test
     fun `deleteTask should remove a task by ID`() {
         val taskId1 = UUID.randomUUID().toString()
-        val task = helperTask(id = taskId1)
+        val task = helperTaskDto(id = taskId1)
 
-        taskMemoryDataSource.addTask(task)
-        val updatedTasks = taskMemoryDataSource.deleteTask(taskId1)
+        taskManager.addTask(task)
+        val updatedTasks = taskManager.deleteTask(taskId1)
         assertTrue { updatedTasks.isEmpty() }
     }
 
     @Test
     fun `editTask should update an existing task`() {
         val taskId1 = UUID.randomUUID().toString()
-        val task = helperTask(id = taskId1, title = "New task")
-        taskMemoryDataSource.addTask(task)
+        val task = helperTaskDto(id = taskId1, title = "New task")
+        taskManager.addTask(task)
 
-        val result = taskMemoryDataSource.editTask(task.copy(title = "Updated task"))
+        val result = taskManager.editTask(task.copy(title = "Updated task"))
         assertThat(result.find { it.id.toString() == taskId1 }?.title).isEqualTo("Updated task")
     }
 }

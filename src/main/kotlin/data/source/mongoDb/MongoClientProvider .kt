@@ -21,4 +21,8 @@ class MongoClientProvider {
     private val mongoClient = MongoClient.create(mongoClientSettings)
 
     fun getDatabase() = mongoClient.getDatabase(DATABASE_NAME)
+
+    fun close() {
+        mongoClient.close() // Safely closes all resources
+    }
 }

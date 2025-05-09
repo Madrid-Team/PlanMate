@@ -10,21 +10,26 @@ class ValidateUser(
 ) {
     fun validateUserToLogin(users: List<User>?, username: String, passwordHash: String): User {
         if (users == null || users.isEmpty()) {
-            throw UserExceptions.NotFoundUser("Not found user or wrong username")
+            throw UserExceptions.UserNotFoundException("Not found user or wrong username")
         }
         val user = users.find { it.username == username }
-            ?: throw UserExceptions.NotFoundUser("Not found user or wrong username")
+            ?: throw UserExceptions.UserNotFoundException("Not found user or wrong username")
         if (user.passwordHash != passwordHash) {
             throw UserExceptions.WrongPasswordOrUserName("Wrong  password")
         }
         return user
     }
 
-    fun generateUUIDValidToNewUser(): UUID {
+    suspend fun generateUUIDValidToNewUser(): UUID {
         val newId = UUID.randomUUID()
-        return when (userRepository.getUserById(newId.toString()).getOrNull()) {
-            null -> newId
-            else -> generateUUIDValidToNewUser()
+
+        return try {
+            userRepository.getUserById(newId.toString())
+            generateUUIDValidToNewUser()
+        } catch (_: UserExceptions.UserNotFoundException) {
+            newId
+        }catch (e: Exception) {
+            throw e
         }
     }
 }

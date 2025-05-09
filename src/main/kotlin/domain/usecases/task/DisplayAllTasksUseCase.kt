@@ -24,16 +24,17 @@ class DisplayAllTasksUseCase(
         val builder = StringBuilder()
 
         for (state in states) {
-            builder.append("$state:\n")
             val tasks = swimlanesMap[state].orEmpty()
             if (tasks.isEmpty()) {
                 builder.append("\n")
             } else {
+                builder.append("$state:\n")
                 for (task in tasks) {
-                    builder.append("- $task\n")
+                    builder.append("  - $task\n")
                 }
-                builder.append("\n")
             }
+            builder.append("\n")
+
         }
         return builder.toString().trimEnd()
     }

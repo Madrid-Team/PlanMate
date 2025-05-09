@@ -2,7 +2,7 @@ package di.modules
 
 import data.repository.TaskRepositoryImpl
 import data.repository.UserRepositoryImpl
-import data.source.project.ProjectMemoryDataSource
+import data.source.project.ProjectManager
 import data.utils.ProjectRepositoryImpl
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
@@ -11,10 +11,10 @@ import org.koin.dsl.module
 
 val repositoryModule = module {
 
-    single<ProjectRepository> { ProjectRepositoryImpl(get(), get(), get()) }
+    single<ProjectRepository> { ProjectRepositoryImpl(get()) }
     single<TaskRepository> { TaskRepositoryImpl(get()) }
-    single<UserRepository> { UserRepositoryImpl(get(), get()) }
+    single<UserRepository> { UserRepositoryImpl(get()) }
 
-    single  { ProjectMemoryDataSource() }
+    single  { ProjectManager() }
 
 }

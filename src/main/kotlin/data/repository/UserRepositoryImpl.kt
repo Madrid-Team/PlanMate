@@ -1,33 +1,44 @@
 package data.repository
 
-import data.mapper.toDto
-import data.source.user.UserCsvParser
-import data.source.user.UserDataSource
+import data.source.user.ExternalUserDataSource
+import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
 
 class UserRepositoryImpl(
-    private val userDataSource: UserDataSource,
-    private val userCsvParser: UserCsvParser,
+    private val externalUserDataSource: ExternalUserDataSource,
 ) : UserRepository {
-    override fun deleteUser(userId: String){
-        return userDataSource.deleteUser(userId)
+    override suspend fun deleteUser(userId: String) = executeUserOperation {
+        externalUserDataSource.deleteUser(userId)
     }
 
-    override fun createNewUser(user: User): Result<Unit> {
-        val row: String = userCsvParser.parseUserToRow(user.toDto())
-        return userDataSource.createNewUser(row)
+    override suspend fun createNewUser(user: User) = executeUserOperation {
+        externalUserDataSource.createNewUser(user)
     }
 
-    override fun getUserById(userId: String): Result<User?> {
-        return userDataSource.getUserById(userId)
+
+    override suspend fun getUserById(userId: String): User =
+        executeUserOperation {
+            externalUserDataSource.getUserById(userId)
+        }
+
+
+    override suspend fun getAllUsers(): List<User> = executeUserOperation {
+        externalUserDataSource.getAllUsers()
     }
 
-    override fun getAllUsers(): Result<List<User>> {
-        return userDataSource.getAllUsers()
-    }
+    override suspend fun getUserByName(userName: String): User =
+        executeUserOperation {
+            externalUserDataSource.getUserByName(userName)
+        }
 
-    override fun getUserByName(userName: String): Result<User?> {
-        return userDataSource.getUserByName(userName)
+
+    private suspend fun <T> executeUserOperation(operation: suspend () -> T): T {
+        try {
+            return operation()
+        } catch (e: Exception) {
+            throw e.toUserException()
+        }
     }
 }
+

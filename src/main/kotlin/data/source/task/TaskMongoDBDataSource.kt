@@ -3,18 +3,16 @@ package org.madrid.data.source.task
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Updates
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
+import data.source.task.ExternalTaskDataSource
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
-import org.madrid.data.utils.PROJECT_COLLECTION
 
 class TaskMongoDBDataSource(
-    database: MongoDatabase
-
-) : RemoteTaskDataSource {
-    private val collection = database.getCollection<ProjectDto>(PROJECT_COLLECTION)
+    private val collection: MongoCollection<ProjectDto>
+) : ExternalTaskDataSource {
     override suspend fun editTask(task: TaskDto) {
         val filter = Filters.and(
             eq("_id", task.projectId),
@@ -44,7 +42,7 @@ class TaskMongoDBDataSource(
     }
 
     override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
-        val projectFilter = eq("id", projectId)
+        val projectFilter = eq("_id", projectId)
         return collection.find(projectFilter).toList().flatMap { it.tasks }.flatMap { it.logs }.toList()
 
     }

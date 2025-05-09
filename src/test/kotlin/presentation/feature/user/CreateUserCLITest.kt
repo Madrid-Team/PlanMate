@@ -1,6 +1,7 @@
 package presentation.feature.user
 
 import domain.usecases.user.CreateUserUseCase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +28,7 @@ class CreateUserCLITest {
         val password = "password"
 
         every { inputReader.readInput() } returnsMany listOf(username, password)
-        every { useCase.createUser(any()) } returns Result.success(Unit)
+        coEvery { useCase.createUser(any()) } returns Unit
         // When
         cli.show()
 
@@ -35,8 +36,8 @@ class CreateUserCLITest {
         verify {
             outputPrinter.printMessage("=== Create user started ===")
             outputPrinter.printMessage("Enter user name:")
-            outputPrinter.printMessage("Enter password:")
-            outputPrinter.printMessage("Login Success")
+            outputPrinter.printMessage("Enter password (minimum 6 characters):")
+            outputPrinter.printMessage("User created successfully")
         }
         verify(exactly = 0) { outputPrinter.printMessage("Creating User Failed") }
     }
@@ -48,7 +49,7 @@ class CreateUserCLITest {
         val password = "password"
 
         every { inputReader.readInput() } returnsMany listOf(username, password, "z")
-        every { useCase.createUser(any()) } throws Exception()
+        coEvery { useCase.createUser(any()) } throws Exception()
         // When
         cli.show()
 
@@ -56,9 +57,9 @@ class CreateUserCLITest {
         verify {
             outputPrinter.printMessage("=== Create user started ===")
             outputPrinter.printMessage("Enter user name:")
-            outputPrinter.printMessage("Enter password:")
-            outputPrinter.printMessage("Creating User Failed")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            outputPrinter.printMessage("Enter password (minimum 6 characters):")
+            outputPrinter.printMessage("Creating user...")
+            outputPrinter.printMessage("Enter 1 to try again or any other key to exit")
         }
     }
 }

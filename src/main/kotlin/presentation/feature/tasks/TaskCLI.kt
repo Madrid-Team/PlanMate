@@ -1,5 +1,6 @@
 package presentation.feature.tasks
 
+import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -7,6 +8,7 @@ class TaskCLI(
     private val createTaskCLI: CreateTaskCLI,
     private val editTaskCLI: EditTaskCLI,
     private val deleteTaskCLI: DeleteTaskCLI,
+    private val taskAuditLogCLI: TaskAuditLogCLI,
     private val taskView: TaskView,
     private val outputPrinter: OutputPrinter,
     private val inputReader: InputReader
@@ -18,6 +20,7 @@ class TaskCLI(
             outputPrinter.printMessage("2. Edit Task")
             outputPrinter.printMessage("3. Delete Task")
             outputPrinter.printMessage("4. Display all tasks within a specific project")
+            outputPrinter.printMessage("5. Display Task Audit Log by ID")
             outputPrinter.printMessage("0. Back")
 
             when (inputReader.readInput("Select an option: ")) {
@@ -25,6 +28,7 @@ class TaskCLI(
                 "2" -> editTaskCLI.show()
                 "3" -> deleteTaskCLI.show()
                 "4" -> taskView.show()
+                "5" -> taskAuditLogCLI.show()
                 "0" -> return
                 else -> outputPrinter.printError("Invalid option.")
             }

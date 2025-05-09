@@ -1,18 +1,20 @@
 package org.madrid.data.source.project
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
+import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
-import data.source.project.ProjectDataSource
+import data.mapper.toDomain
+import data.source.project.ExternalProjectDataSource
+import domain.models.project.Project
+import domain.utlis.ProjectExceptions
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
-import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.utils.PROJECT_COLLECTION
 
 class ProjectMongoDBDataSource(
     private val collection: MongoCollection<ProjectDto>
-) : RemoteProjectDataSource {
+) : ExternalProjectDataSource {
 
     override suspend fun getProjects(): List<ProjectDto> {
         return collection.find().toList()
@@ -23,15 +25,25 @@ class ProjectMongoDBDataSource(
     }
 
     override suspend fun deleteProject(projectId: String) {
-        val query = Filters.eq("_id", projectId)
+        val query = eq("_id", projectId)
         collection.deleteOne(query)
     }
 
     override suspend fun editProject(project: ProjectDto) {
-        val query = Filters.eq("_id", project.id)
-        val updateSet = Updates.set("id", project.id)
 
-        collection.updateOne(filter = query, update = updateSet)
+        val query = eq("_id", project.id)
+
+        collection.replaceOne( query, project)
+    }
+
+    override suspend fun getProjectLogsById(id: String): List<String> {
+        val filter = eq("_id", id)
+        return collection.find(filter).toList().flatMap { it.projectLogs }
+    }
+
+    override suspend fun getProjectById(id: String): Project {
+        val filter = eq("_id", id)
+        return collection.find(filter).firstOrNull()?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
 }

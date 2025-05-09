@@ -5,10 +5,8 @@ import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkConstructor
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.BeforeTest
@@ -86,7 +84,7 @@ class ValidateUserTest {
         }
 
         //Then
-        assertTrue(exception is UserExceptions.NotFoundUser)
+        assertTrue(exception is UserExceptions.UserNotFoundException)
     }
 
 
@@ -102,7 +100,7 @@ class ValidateUserTest {
         val users = listOf(user)
 
         // When + Then
-        val exception = assertThrows<UserExceptions.NotFoundUser> {
+        val exception = assertThrows<UserExceptions.UserNotFoundException> {
             validateUser.validateUserToLogin(users, "nonexistentUser", "hashed123")
         }
 
@@ -111,16 +109,18 @@ class ValidateUserTest {
 
     @Test
     fun `should generate a unique UUID When UUID is in use`() {
-        // Given
-        val newUUID = UUID.randomUUID()
-        every { userRepository.getUserById(any()) } returns Result.success(null)
+        runTest {
+            // Given
+            val newUUID = UUID.randomUUID()
+            coEvery { userRepository.getUserById(any()) } returns mockk()
 
-        // When
-        val generatedUUID = validateUser.generateUUIDValidToNewUser()
+            // When
+            val generatedUUID = validateUser.generateUUIDValidToNewUser()
 
-        // Then
-        assertThat(generatedUUID).isNotEqualTo(newUUID)
-        verify(exactly = 1) { userRepository.getUserById(any()) }
+            // Then
+            assertThat(generatedUUID).isNotEqualTo(newUUID)
+            coVerify(exactly = 1) { userRepository.getUserById(any()) }
+        }
     }
 
 }
