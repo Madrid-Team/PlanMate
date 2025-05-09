@@ -3,7 +3,6 @@ package domain.usecases.task
 import domain.repository.TaskRepository
 import domain.utlis.TaskExceptions.TaskTitleIsEmptyException
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -30,7 +29,7 @@ class CreateTaskUseCaseTest {
             val task = createTask(title = "new task", description = "description")
             coEvery { taskRepository.createTask(task) } returns Unit
 
-            assertDoesNotThrow { createTaskUseCase.createTask(task) }
+            assertDoesNotThrow { createTaskUseCase(task) }
         }
     }
 

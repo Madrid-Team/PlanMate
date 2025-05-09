@@ -5,7 +5,7 @@ import java.io.*
 import kotlin.test.assertTrue
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
+import presentation.feature.tasks.TaskAuditLogCLI
 import presentation.feature.projects.ProjectAuditLogCLI
 
 class AdminCLITest {

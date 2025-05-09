@@ -48,7 +48,7 @@ class CreateTaskCLITest {
             )
             val project = helperProject(id = UUID.randomUUID().toString())
             val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-            coEvery { createTaskUseCase.createTask(task) } returns Unit
+            coEvery { createTaskUseCase(task) } returns Unit
 
             // When
             cli.show()
@@ -65,7 +65,7 @@ class CreateTaskCLITest {
         testScope.launch {
             every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
             val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-            coEvery { createTaskUseCase.createTask(task) } returns Unit
+            coEvery { createTaskUseCase(task) } returns Unit
 
             // When
             cli.show()

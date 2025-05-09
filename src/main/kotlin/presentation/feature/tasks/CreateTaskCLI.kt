@@ -25,7 +25,7 @@ class CreateTaskCLI(
         outputPrinter.printMessage("=== Create Task ===")
         try {
             val task = readTaskInput()
-            createTaskUseCase.createTask(task)
+            createTaskUseCase(task)
             outputPrinter.printMessage("Task created successfully")
         } catch (exception: Exception) {
             outputPrinter.printMessage(exception.message.toString())
