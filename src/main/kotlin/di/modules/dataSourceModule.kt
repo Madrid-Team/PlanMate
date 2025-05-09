@@ -55,7 +55,8 @@ val dataSourceModule = module {
     single<ExternalProjectDataSource> { ProjectCsvDataSource(get(named("projectReader")), get(named("projectWriter")), get(),get()) }
     single<ExternalProjectDataSource> { ProjectMongoDBDataSource(get()) }
 
-    single<ExternalUserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
+//    single<ExternalUserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
+    single<ExternalUserDataSource> { UserMongoDBDataSource(get()) }
     single<ExternalTaskDataSource> { TaskCsvDataSource(get(), get(named("taskWriter")), get(named("taskReader")),get()) }
 
     single { MongoClientProvider() }
