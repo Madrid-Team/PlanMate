@@ -9,6 +9,8 @@ import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 import domain.validation.ValidateUser
 import io.mockk.*
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -20,6 +22,7 @@ class CreateUserUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var createUserUseCase: CreateUserUseCase
     private lateinit var externalUserDataSource: ExternalUserDataSource
+    private  var testScope = TestScope()
 
     @BeforeEach
     fun setUp() {
@@ -82,10 +85,11 @@ class CreateUserUseCaseTest {
             assertThat(exception.message).isEqualTo("User already exists")
 
             // Verify createNewUser was called
-            coVerify {
-                userRepository.createNewUser(any())
+            testScope.launch {
+                coVerify {
+                    userRepository.createNewUser(any())
+                }
             }
         }
     }
-
 }
