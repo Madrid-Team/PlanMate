@@ -7,7 +7,8 @@ import domain.utlis.ProjectExceptions
 import domain.validation.ValidateProjectName
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -18,6 +19,7 @@ class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
     private lateinit var validateProjectName: ValidateProjectName
+    private val testScope: TestScope = TestScope()
 
     @BeforeEach
     fun setUp() {
@@ -28,7 +30,7 @@ class EditProjectUseCaseTest {
 
     @Test
     fun `editProject should return true when project is updated successfully in projectRepository`() {
-        runTest {
+        testScope.launch {
             //Given
             val project = createProject(
                 id = UUID.randomUUID().toString(),
@@ -47,7 +49,7 @@ class EditProjectUseCaseTest {
 
     @Test
     fun `editProject should return false when id is not found`() {
-        runTest {
+        testScope.launch {
             //Given
             val project = createProject(
                 id = UUID.randomUUID().toString(),
@@ -66,7 +68,7 @@ class EditProjectUseCaseTest {
 
     @Test
     fun `editProject should return false when updated name is invalid`() {
-        runTest {
+        testScope.launch {
             //Given
             val project = createProject(
                 name = "123&",

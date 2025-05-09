@@ -34,7 +34,7 @@ class EditTaskCLI(
         )
 
         try {
-            editTaskUseCase.editTask(updatedTask)
+            editTaskUseCase(updatedTask)
             outputPrinter.printMessage("Task updated successfully")
         } catch (exception: TaskExceptions.TaskCannotEditException) {
             outputPrinter.printError(exception.message ?: "Failed to update task")

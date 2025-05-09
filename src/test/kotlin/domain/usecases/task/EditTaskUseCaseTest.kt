@@ -3,7 +3,6 @@ package domain.usecases.task
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -39,42 +38,42 @@ class EditTaskUseCaseTest {
         description: String,
         createdBy: String,
     ) {
-       testScope.launch {
-           //given
-           val oldTask = Task(
-               id = UUID.randomUUID(),
-               projectId = "11",
-               title = "title",
-               description = "description",
-               taskState = "TO Do",
-               createdBy = "created by",
-               logs = listOf()
-           )
+        testScope.launch {
+            //given
+            val oldTask = Task(
+                id = UUID.randomUUID(),
+                projectId = "11",
+                title = "title",
+                description = "description",
+                taskState = "TO Do",
+                createdBy = "created by",
+                logs = listOf()
+            )
 
-           val newTask = oldTask.copy(
-               title = title.ifBlank { oldTask.title },
-               description = description.ifBlank { oldTask.description },
-               createdBy = createdBy.ifBlank { oldTask.createdBy }
-           )
+            val newTask = oldTask.copy(
+                title = title.ifBlank { oldTask.title },
+                description = description.ifBlank { oldTask.description },
+                createdBy = createdBy.ifBlank { oldTask.createdBy }
+            )
 
-           coEvery { taskRepository.editTask(any()) } returns Unit
+            coEvery { taskRepository.editTask(any()) } returns Unit
 
-           assertDoesNotThrow { editTaskUseCase.editTask(newTask) }
-       }
+            assertDoesNotThrow { editTaskUseCase(newTask) }
+        }
     }
 
     @Test
     fun `editTask should return throw exception when id is not found`() {
         //given
-       testScope.launch {
-           val task = createTask(
-               id = UUID.randomUUID().toString(),
-               title = "title"
-           )
+        testScope.launch {
+            val task = createTask(
+                id = UUID.randomUUID().toString(),
+                title = "title"
+            )
 
-           assertThrows<Exception> {
-               editTaskUseCase.editTask(task)
-           }
-       }
+            assertThrows<Exception> {
+                editTaskUseCase(task)
+            }
+        }
     }
 }

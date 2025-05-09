@@ -47,7 +47,7 @@ class EditTaskCLITest {
                 title = "New Title",
                 description = "New Description"
             )
-            coEvery { editTaskUseCase.editTask(updatedTask) } returns Unit
+            coEvery { editTaskUseCase(updatedTask) } returns Unit
 
             editTaskCLI.show()
 
@@ -70,7 +70,7 @@ class EditTaskCLITest {
                 title = "New Title",
                 description = "New Description"
             )
-            coEvery { editTaskUseCase.editTask(any()) } throws TaskExceptions.TaskCannotEditException()
+            coEvery { editTaskUseCase(any()) } throws TaskExceptions.TaskCannotEditException()
 
             editTaskCLI.show()
 
