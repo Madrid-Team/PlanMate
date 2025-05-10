@@ -2,18 +2,18 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.user.ExternalUserDataSource
+import data.source.user.UserExternalDataSource
 import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
 
 class UserRepositoryImpl(
-    private val externalUserDataSource: ExternalUserDataSource,
+    private val userExternalDataSource: UserExternalDataSource,
 ) : UserRepository {
     override suspend fun deleteUser(userId: String) = executeUserOperation {
         try {
-            externalUserDataSource.deleteUser(userId)
+            userExternalDataSource.deleteUser(userId)
         }catch (e : Exception){
             throw e.toUserException()
         }
@@ -21,7 +21,7 @@ class UserRepositoryImpl(
 
     override suspend fun createNewUser(user: User) = executeUserOperation {
         try {
-            externalUserDataSource.createNewUser(user.toDto())
+            userExternalDataSource.createNewUser(user.toDto())
         }catch (e : Exception){
             throw e.toUserException()
         }
@@ -32,7 +32,7 @@ class UserRepositoryImpl(
         return try {
 
             executeUserOperation {
-                externalUserDataSource.getUserById(userId)
+                userExternalDataSource.getUserById(userId)
             }?.toDomain() ?: throw UserExceptions.UserNotFoundException()
 
         }catch (e:Exception){
@@ -44,7 +44,7 @@ class UserRepositoryImpl(
     override suspend fun getAllUsers(): List<User> {
         return try {
             val users = executeUserOperation {
-                externalUserDataSource.getAllUsers()
+                userExternalDataSource.getAllUsers()
             }.map { it.toDomain() }
             users.ifEmpty { throw UserExceptions.UserNotFoundException() }
         }catch (e:Exception){
@@ -55,7 +55,7 @@ class UserRepositoryImpl(
     override suspend fun getUserByName(userName: String): User {
        return try {
             executeUserOperation {
-                externalUserDataSource.getUserByName(userName)
+                userExternalDataSource.getUserByName(userName)
             }?.toDomain() ?: throw UserExceptions.UserNotFoundException()
         }catch (e:Exception){
             throw e.toUserException()

@@ -13,7 +13,7 @@ class MongoClientProvider {
         .version(ServerApiVersion.V1)
         .build()
     private val mongoClientSettings = MongoClientSettings.builder()
-        .applyConnectionString(ConnectionString(System.getenv("MONGO_URL")))
+        .applyConnectionString(ConnectionString(System.getenv("ASHRAF_MONGO_URL")))
         .serverApi(serverApi)
         .build()
 

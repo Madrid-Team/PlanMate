@@ -2,7 +2,6 @@ package data.source.user
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.mapper.toDomain
 import data.mapper.toDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
@@ -28,7 +27,7 @@ class UserCsvDataSourceTest {
     private lateinit var fileCsvReader: FileCsvReader
     private lateinit var userCsvParser: UserCsvParser
     private lateinit var dataSource: UserCsvDataSource
-    private lateinit var externalUserDataSource: ExternalUserDataSource
+    private lateinit var externalUserDataSource: UserExternalDataSource
 
     private val user1 =
         UserDto("126fb5810-951e-4913-aae8-1d36d72d85eb", "username1", "passwordhash1", UserRole.ADMIN.name)

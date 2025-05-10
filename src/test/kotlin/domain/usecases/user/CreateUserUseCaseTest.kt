@@ -3,7 +3,7 @@ package domain.usecases.user
 import com.google.common.truth.Truth.assertThat
 import data.mapper.toDto
 import data.repository.UserRepositoryImpl
-import data.source.user.ExternalUserDataSource
+import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utlis.UserExceptions
@@ -21,14 +21,14 @@ import kotlin.test.Test
 class CreateUserUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var createUserUseCase: CreateUserUseCase
-    private lateinit var externalUserDataSource: ExternalUserDataSource
+    private lateinit var userExternalDataSource: UserExternalDataSource
     private var testScope = TestScope()
 
     @BeforeEach
     fun setUp() {
         // Mock the data source
-        externalUserDataSource = mockk<ExternalUserDataSource>(relaxed = false)
-        userRepository = UserRepositoryImpl(externalUserDataSource)
+        userExternalDataSource = mockk<UserExternalDataSource>(relaxed = false)
+        userRepository = UserRepositoryImpl(userExternalDataSource)
         mockkConstructor(ValidateUser::class)
         createUserUseCase = CreateUserUseCase(userRepository)
     }
@@ -43,9 +43,9 @@ class CreateUserUseCaseTest {
 
             coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
 
-            coEvery { externalUserDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
+            coEvery { userExternalDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
 
-            coEvery { externalUserDataSource.createNewUser(any()) } returns Unit
+            coEvery { userExternalDataSource.createNewUser(any()) } returns Unit
 
             // When
             assertDoesNotThrow {
@@ -54,7 +54,7 @@ class CreateUserUseCaseTest {
 
             // Then
             coVerify {
-                externalUserDataSource.createNewUser(user.copy(id = generateId).toDto())
+                userExternalDataSource.createNewUser(user.copy(id = generateId).toDto())
             }
         }
     }
@@ -73,9 +73,9 @@ class CreateUserUseCaseTest {
 
             coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
 
-            coEvery { externalUserDataSource.getUserByName(existingUsername) } returns existingUser.toDto()
+            coEvery { userExternalDataSource.getUserByName(existingUsername) } returns existingUser.toDto()
 
-            coEvery { externalUserDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
+            coEvery { userExternalDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
 
             // When & Then
             val exception = assertThrows<UserExceptions.UserExist> {

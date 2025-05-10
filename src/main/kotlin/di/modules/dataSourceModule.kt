@@ -11,7 +11,7 @@ import data.source.task.TaskExternalDataSource
 import data.source.task.TaskCsvDataSource
 import data.source.task.TaskCsvParser
 import data.source.task.TaskManager
-import data.source.user.ExternalUserDataSource
+import data.source.user.UserExternalDataSource
 import data.source.user.UserCsvParser
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
@@ -76,7 +76,7 @@ val dataSourceModule = module {
     single(named("projects")) { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
     single(named("users")) { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
 
-    single<ExternalUserDataSource> { UserMongoDBDataSource(get(named("users"))) }
+    single<UserExternalDataSource> { UserMongoDBDataSource(get(named("users"))) }
 
 
     single { TaskManager() }

@@ -9,7 +9,7 @@ class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
-) : ExternalUserDataSource {
+) : UserExternalDataSource {
     override suspend fun createNewUser(user: UserDto) {
         val row: String = userCsvParser.parseUserToRow(user)
         try {

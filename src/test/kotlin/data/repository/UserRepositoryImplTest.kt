@@ -2,7 +2,7 @@ package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.mapper.toDto
-import data.source.user.ExternalUserDataSource
+import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.utlis.UserExceptions
 import domain.utlis.UserExceptions.UserExist
@@ -18,13 +18,13 @@ import kotlin.test.Test
 
 class UserRepositoryImplTest {
 
-    private lateinit var externalUserDataSource: ExternalUserDataSource
+    private lateinit var userExternalDataSource: UserExternalDataSource
     private lateinit var userRepositoryImpl: UserRepositoryImpl
 
     @BeforeEach
     fun setUp() {
-        externalUserDataSource = mockk()
-        userRepositoryImpl = UserRepositoryImpl(externalUserDataSource)
+        userExternalDataSource = mockk()
+        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource)
     }
 
     @Test
@@ -33,14 +33,14 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
 
-            coEvery { externalUserDataSource.createNewUser(user.toDto()) } returns Unit
+            coEvery { userExternalDataSource.createNewUser(user.toDto()) } returns Unit
 
             // When/Then - No exception is thrown
             // Verify
             assertDoesNotThrow {
                 userRepositoryImpl.createNewUser(user)
             }
-            coVerify { externalUserDataSource.createNewUser(user.toDto()) }
+            coVerify { userExternalDataSource.createNewUser(user.toDto()) }
         }
     }
 
@@ -50,7 +50,7 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
             val exception = UserExist()
-            coEvery { externalUserDataSource.createNewUser(user.toDto()) } throws exception
+            coEvery { userExternalDataSource.createNewUser(user.toDto()) } throws exception
 
             // When/Then
             val thrownException = assertThrows<UserExist> {
@@ -68,7 +68,7 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-            coEvery { externalUserDataSource.getUserById("1") } returns user.toDto()
+            coEvery { userExternalDataSource.getUserById("1") } returns user.toDto()
 
             // When
             val result = userRepositoryImpl.getUserById("1")
@@ -87,7 +87,7 @@ class UserRepositoryImplTest {
                 User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
             )
 
-            coEvery { externalUserDataSource.getAllUsers() } returns users.map { it.toDto() }
+            coEvery { userExternalDataSource.getAllUsers() } returns users.map { it.toDto() }
 
             // When
             val result = userRepositoryImpl.getAllUsers()
@@ -103,7 +103,7 @@ class UserRepositoryImplTest {
             // Given
             val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-            coEvery { externalUserDataSource.getUserByName("username1") } returns user.toDto()
+            coEvery { userExternalDataSource.getUserByName("username1") } returns user.toDto()
 
             // When
             val result = userRepositoryImpl.getUserByName("username1")
@@ -118,13 +118,13 @@ class UserRepositoryImplTest {
         runTest {
             // Given
             val userId = "1"
-            coEvery { externalUserDataSource.deleteUser(userId) } returns Unit
+            coEvery { userExternalDataSource.deleteUser(userId) } returns Unit
 
             // When
             userRepositoryImpl.deleteUser(userId)
 
             // Then - verify the call was made to the data source
-            coVerify { externalUserDataSource.deleteUser(userId) }
+            coVerify { userExternalDataSource.deleteUser(userId) }
         }
     }
 
@@ -134,7 +134,7 @@ class UserRepositoryImplTest {
             // Given
             val userId = "2"
             val exception = UserExceptions.UserNotFoundException()
-            coEvery { externalUserDataSource.deleteUser(userId) } throws exception
+            coEvery { userExternalDataSource.deleteUser(userId) } throws exception
 
             // When/Then
             val thrownException = assertThrows<UserExceptions.UserNotFoundException> {

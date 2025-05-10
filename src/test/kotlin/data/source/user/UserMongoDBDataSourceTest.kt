@@ -18,7 +18,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.madrid.data.source.mongoDb.MongoClientProvider
@@ -33,7 +32,7 @@ import kotlin.test.assertNotNull
 class UserMongoDBDataSourceTest {
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
-    private lateinit var userMongoDBDataSource: ExternalUserDataSource
+    private lateinit var userMongoDBDataSource: UserExternalDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     private lateinit var userDtoCollection: MongoCollection<UserDto>
     private var testScope: TestScope = TestScope()
