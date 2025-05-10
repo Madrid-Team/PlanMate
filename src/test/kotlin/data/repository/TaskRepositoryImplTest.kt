@@ -1,6 +1,6 @@
 package data.repository
 
-import data.source.task.ExternalTaskDataSource
+import data.source.task.TaskExternalDataSource
 import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class TaskRepositoryImplTest {
-    private lateinit var taskDataSource: ExternalTaskDataSource
+    private lateinit var taskDataSource: TaskExternalDataSource
     private lateinit var taskRepository: TaskRepository
     private lateinit var testScope:TestScope
 

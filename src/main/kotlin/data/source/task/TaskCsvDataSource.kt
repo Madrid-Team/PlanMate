@@ -10,7 +10,7 @@ class TaskCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val fileCsvReader: FileCsvReader,
     private val taskManager: TaskManager
-) : ExternalTaskDataSource {
+) : TaskExternalDataSource {
 
     init {
         getAllTasks()

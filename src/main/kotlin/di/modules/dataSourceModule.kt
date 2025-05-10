@@ -7,7 +7,7 @@ import data.source.project.ProjectExternalDataSource
 import data.source.project.ProjectCsvDataSource
 import data.source.project.ProjectCsvParser
 import data.source.project.ProjectManager
-import data.source.task.ExternalTaskDataSource
+import data.source.task.TaskExternalDataSource
 import data.source.task.TaskCsvDataSource
 import data.source.task.TaskCsvParser
 import data.source.task.TaskManager
@@ -61,7 +61,7 @@ val dataSourceModule = module {
     }
 
 //    single<ExternalUserDataSource> { UserCsvDataSource(get(named("userReader")), get(named("userWriter")), get()) }
-    single<ExternalTaskDataSource> {
+    single<TaskExternalDataSource> {
         TaskCsvDataSource(
             get(),
             get(named("taskWriter")),
@@ -81,7 +81,7 @@ val dataSourceModule = module {
 
     single { TaskManager() }
     single { ProjectManager() }
-    single<ExternalTaskDataSource> { TaskMongoDBDataSource(get(named("projects"))) }
+    single<TaskExternalDataSource> { TaskMongoDBDataSource(get(named("projects"))) }
     single<ProjectExternalDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
 
 

@@ -2,7 +2,7 @@ package data.source.task
 
 import data.dto.task.TaskDto
 
-interface ExternalTaskDataSource {
+interface TaskExternalDataSource {
     suspend fun editTask(task: TaskDto)
     suspend fun deleteTask(projectId: String, taskId: String)
     suspend fun createTask(task: TaskDto)

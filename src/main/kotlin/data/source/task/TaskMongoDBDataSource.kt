@@ -6,13 +6,13 @@ import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
-import data.source.task.ExternalTaskDataSource
+import data.source.task.TaskExternalDataSource
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 
 class TaskMongoDBDataSource(
     private val collection: MongoCollection<ProjectDto>
-) : ExternalTaskDataSource {
+) : TaskExternalDataSource {
     override suspend fun editTask(task: TaskDto) {
         val filter = Filters.and(
             eq("_id", task.projectId),

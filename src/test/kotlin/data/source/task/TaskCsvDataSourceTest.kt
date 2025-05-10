@@ -17,7 +17,7 @@ import java.util.*
 class TaskCsvDataSourceTest {
     private lateinit var taskCsvParser: TaskCsvParser
     private lateinit var fileCsvWriter: FileCsvWriter
-    private lateinit var taskCsvDataSource: ExternalTaskDataSource
+    private lateinit var taskCsvDataSource: TaskExternalDataSource
     private lateinit var fileCsvReader: FileCsvReader
     private lateinit var taskManager: TaskManager
 
