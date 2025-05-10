@@ -10,7 +10,7 @@ class ProjectCsvDataSource(
     private val fileCsvWriter: FileCsvWriter,
     private val projectCsvParser: ProjectCsvParser,
     private val projectManager: ProjectManager,
-) : ExternalProjectDataSource {
+) : ProjectExternalDataSource {
 
     init {
         readProjectManagerListFromFile()

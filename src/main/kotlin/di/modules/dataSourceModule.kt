@@ -3,7 +3,7 @@ package di.modules
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
-import data.source.project.ExternalProjectDataSource
+import data.source.project.ProjectExternalDataSource
 import data.source.project.ProjectCsvDataSource
 import data.source.project.ProjectCsvParser
 import data.source.project.ProjectManager
@@ -51,7 +51,7 @@ val dataSourceModule = module {
     single { ProjectCsvParser() }
 
 
-    single<ExternalProjectDataSource> {
+    single<ProjectExternalDataSource> {
         ProjectCsvDataSource(
             get(named("projectReader")),
             get(named("projectWriter")),
@@ -82,7 +82,7 @@ val dataSourceModule = module {
     single { TaskManager() }
     single { ProjectManager() }
     single<ExternalTaskDataSource> { TaskMongoDBDataSource(get(named("projects"))) }
-    single<ExternalProjectDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
+    single<ProjectExternalDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
 
 
 }

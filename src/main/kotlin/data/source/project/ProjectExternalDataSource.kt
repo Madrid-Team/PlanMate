@@ -2,7 +2,7 @@ package data.source.project
 
 import data.dto.project.ProjectDto
 
-interface ExternalProjectDataSource {
+interface ProjectExternalDataSource {
     suspend fun getProjects(): List<ProjectDto>
     suspend fun createProject(project: ProjectDto)
     suspend fun deleteProject(projectId: String)

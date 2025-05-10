@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.project.ExternalProjectDataSource
+import data.source.project.ProjectExternalDataSource
 import data.source.project.ProjectManager
 import domain.models.project.Project
 import domain.utlis.PlanMateExceptions
@@ -20,19 +20,19 @@ import java.util.*
 import kotlin.test.assertNotNull
 
 class ProjectRepositoryImplTest {
-    private lateinit var externalProjectDataSource: ExternalProjectDataSource
+    private lateinit var projectExternalDataSource: ProjectExternalDataSource
     private lateinit var repository: ProjectRepositoryImpl
     private lateinit var projectManager: ProjectManager
-    private lateinit var remoteProjectDataSource: ExternalProjectDataSource
+    private lateinit var remoteProjectDataSource: ProjectExternalDataSource
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
-        externalProjectDataSource = mockk(relaxed = true)
+        projectExternalDataSource = mockk(relaxed = true)
         projectManager = mockk(relaxed = true)
         remoteProjectDataSource = mockk(relaxed = true)
         repository = ProjectRepositoryImpl(
-            externalProjectDataSource,
+            projectExternalDataSource,
         )
         testScope = TestScope()
     }
@@ -71,7 +71,7 @@ class ProjectRepositoryImplTest {
         testScope.runTest {
             // Given
             val project = createProject(name = "test")
-            coEvery { externalProjectDataSource.createProject(project) } returns Unit
+            coEvery { projectExternalDataSource.createProject(project) } returns Unit
             coEvery { projectManager.addProject(project) } returns Unit
 
             // When
@@ -92,7 +92,7 @@ class ProjectRepositoryImplTest {
                 createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
             )
             every { projectManager.deleteProject(projectId) } returns projects
-            coEvery { externalProjectDataSource.getProjects() } returns projects
+            coEvery { projectExternalDataSource.getProjects() } returns projects
 
             // When & Then
             assertDoesNotThrow {
@@ -111,7 +111,7 @@ class ProjectRepositoryImplTest {
                 createProject(id = "26fb5810-951e-4913-aae8-1d36d72d85eb", name = "test2")
             )
             every { projectManager.editProject(project) } returns projects
-            coEvery { externalProjectDataSource.getProjects() } returns projects
+            coEvery { projectExternalDataSource.getProjects() } returns projects
 
 
             // When & Then

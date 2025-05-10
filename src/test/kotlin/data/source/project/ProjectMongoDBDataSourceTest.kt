@@ -30,7 +30,7 @@ import kotlin.test.*
 class ProjectMongoDBDataSourceTest {
     private lateinit var mongoClientProvider: MongoClientProvider
     private lateinit var database: MongoDatabase
-    private lateinit var projectMongoDBDataSource: ExternalProjectDataSource
+    private lateinit var projectMongoDBDataSource: ProjectExternalDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     val testScope = TestScope()
 
