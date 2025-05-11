@@ -3,10 +3,9 @@ package domain.usecases.task
 import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,7 +26,7 @@ class GetTasksByProjectIdUseCaseTest {
 
     @Test
     fun `GetTasksByProjectIdUseCase should return the tasks when project id is found`() {
-        testScope.launch {
+        testScope.runTest {
             val projectId = "12"
             val firstTask = createTask(projectId = projectId)
             val secondTask = createTask(projectId = projectId)
@@ -41,7 +40,7 @@ class GetTasksByProjectIdUseCaseTest {
 
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
-       testScope.launch {
+       testScope.runTest {
 //           coEvery { taskRepository.getAllTasks() } throws Exception()
 
            assertThrows<Exception> { getTasksByProjectIdUseCase(UUID.randomUUID().toString()) }

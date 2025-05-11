@@ -3,8 +3,8 @@ package domain.usecases.task
 import domain.repository.TaskRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -25,7 +25,7 @@ class DeleteTaskUseCaseTest {
 
     @Test
     fun `deleteTask should execute successfully when TaskRepository delete task`() {
-        testScope.launch {
+        testScope.runTest {
             val taskId = UUID.randomUUID().toString()
 
             coEvery { taskRepository.deleteTask("", taskId) } returns Unit
@@ -36,7 +36,7 @@ class DeleteTaskUseCaseTest {
 
     @Test
     fun `deleteTask should throw exception when TaskRepository throw exception`() {
-        testScope.launch {
+        testScope.runTest {
             val taskId = UUID.randomUUID().toString()
 
             assertThrows<Exception> { deleteTaskUseCase("", taskId) }
