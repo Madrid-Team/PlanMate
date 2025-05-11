@@ -10,13 +10,13 @@ class DeleteUserCLI(
     private val outputPrinter: OutputPrinter,
     private val deleteUserUseCase: DeleteUserUseCase
 ) {
-    fun show() {
+    suspend fun show() {
         outputPrinter.printMessage("=== Delete user started ===")
         outputPrinter.printMessage("Enter user id:")
         val userId = inputReader.readInput()
         try {
-            val requiredId = CurrentUser.getCurrentUser()?.id
-            deleteUserUseCase.invoke(requiredId.toString(), userId)
+            val requiredId = CurrentUser.getCurrentUser().id
+            deleteUserUseCase(requiredId.toString(), userId)
             outputPrinter.printMessage("Deleted Success")
         } catch (_: Exception) {
             outputPrinter.printMessage("Deleted Failed")

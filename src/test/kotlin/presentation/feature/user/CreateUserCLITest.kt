@@ -1,9 +1,11 @@
 package presentation.feature.user
 
 import domain.usecases.user.CreateUserUseCase
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -22,43 +24,48 @@ class CreateUserCLITest {
 
     @Test
     fun `should create user success when user name and password is correct`() {
-        // Given
-        val username = "username"
-        val password = "password"
+        runTest {
+            // Given
+            val username = "username"
+            val password = "password"
 
-        every { inputReader.readInput() } returnsMany listOf(username, password)
-        every { useCase.createUser(any()) } returns Result.success(Unit)
-        // When
-        cli.show()
+            every { inputReader.readInput() } returnsMany listOf(username, password)
+            coEvery { useCase(any()) } returns Unit
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Create user started ===")
-            outputPrinter.printMessage("Enter user name:")
-            outputPrinter.printMessage("Enter password:")
-            outputPrinter.printMessage("Login Success")
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Create user started ===")
+                outputPrinter.printMessage("Enter user name:")
+                outputPrinter.printMessage("Enter password (minimum 6 characters):")
+                outputPrinter.printMessage("User created successfully")
+            }
+            verify(exactly = 0) { outputPrinter.printMessage("Creating User Failed") }
         }
-        verify(exactly = 0) { outputPrinter.printMessage("Creating User Failed") }
     }
 
     @Test
     fun `should show error message when user name and password is incorrect`() {
-        // Given
-        val username = "username"
-        val password = "password"
+        runTest {
 
-        every { inputReader.readInput() } returnsMany listOf(username, password, "z")
-        every { useCase.createUser(any()) } throws Exception()
-        // When
-        cli.show()
+            // Given
+            val username = "username"
+            val password = "password"
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Create user started ===")
-            outputPrinter.printMessage("Enter user name:")
-            outputPrinter.printMessage("Enter password:")
-            outputPrinter.printMessage("Creating User Failed")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            every { inputReader.readInput() } returnsMany listOf(username, password, "z")
+            coEvery { useCase(any()) } throws Exception()
+            // When
+            cli.show()
+
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Create user started ===")
+                outputPrinter.printMessage("Enter user name:")
+                outputPrinter.printMessage("Enter password (minimum 6 characters):")
+                outputPrinter.printMessage("Creating user...")
+                outputPrinter.printMessage("Enter 1 to try again or any other key to exit")
+            }
         }
     }
 }

@@ -1,59 +1,50 @@
 package data.source.user
 
-import data.mapper.toDomain
-import data.mapper.toDto
+import data.dto.authentication.UserDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
-import domain.models.authentication.User
+import domain.utils.UserExceptions
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
     private val userCsvParser: UserCsvParser
-) : UserDataSource {
-    override fun createNewUser(row: String): Result<Unit> {
+) : UserExternalDataSource {
+    override suspend fun createNewUser(user: UserDto) {
+        val row: String = userCsvParser.parseUserToRow(user)
         try {
+            getUserByName(user.username)
+            throw UserExceptions.UserExist()
+        } catch (_: UserExceptions.UserNotFoundException) {
             fileCsvWriter.writeToCsvFile(row)
-            return Result.success(Unit)
         } catch (e: Exception) {
-            return Result.failure(e)
+            throw e
         }
     }
 
-    override fun deleteUser(userId: String) {
-        val allUsers = getAllUsers().getOrThrow()
-        val updatedUsers = allUsers.filter { it.id.toString() != userId }
+    override suspend fun deleteUser(userId: String) {
+        val allUsers = getAllUsers()
+        if (allUsers.isEmpty()) throw UserExceptions.UserNotFoundException()
+        val updatedUsers = allUsers.filter { it.id != userId }
         val userRows = updatedUsers.map { user ->
-            userCsvParser.parseUserToRow(user.toDto())
+            userCsvParser.parseUserToRow(user)
         }
         fileCsvWriter.updateCsvFile(if (userRows.isEmpty()) "" else userRows.joinToString("\n"))
     }
 
-    override fun getUserById(userId: String): Result<User?> {
-        return try {
-            val user = getAllUsers().getOrThrow().firstOrNull { userId == it.id.toString() }
-            Result.success(user)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong"))
-        }
+    override suspend fun getUserById(userId: String): UserDto? {
+        return getAllUsers().firstOrNull { userId == it.id }
+
     }
 
-    override fun getAllUsers(): Result<List<User>> {
-        return try {
-            val rows = fileCsvReader.readCsvFile()
-            val users = rows.map { userCsvParser.parseRowToUser(it).toDomain() }
-            return Result.success(users)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong in csv file"))
-        }
+    override suspend fun getAllUsers(): List<UserDto> {
+        val rows = fileCsvReader.readCsvFile()
+        val users = rows.map { userCsvParser.parseRowToUser(it)}
+        return users
+
     }
 
-    override fun getUserByName(userName: String): Result<User?> {
-        return try {
-            val user = getAllUsers().getOrThrow().firstOrNull { userName == it.username }
-            Result.success(user)
-        } catch (_: Exception) {
-            Result.failure(Exception("Something went wrong"))
-        }
+    override suspend fun getUserByName(userName: String): UserDto? {
+        return getAllUsers().firstOrNull { userName == it.username }
     }
 }

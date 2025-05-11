@@ -1,4 +1,4 @@
-package domain.utlis
+package domain.utils
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -11,8 +11,3 @@ fun LocalDateTime.convertDateIntoReadableDate(): String {
 
     return formattedDateTime
 }
-
-//fun String.isValidString(): Boolean {
-//    val regex = Regex("^[a-zA-Z0-9_-]{3,30}$")
-//    return this.matches(regex)
-//}

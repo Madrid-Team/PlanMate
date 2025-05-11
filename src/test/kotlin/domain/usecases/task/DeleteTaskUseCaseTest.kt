@@ -1,46 +1,45 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions.TaskNotFoundException
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 import java.util.*
-import kotlin.test.assertTrue
 
 class DeleteTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk()
         deleteTaskUseCase = DeleteTaskUseCase(taskRepository)
+        testScope = TestScope()
     }
 
     @Test
-    fun `deleteTask should return success when TaskRepository return success`() {
-        //given
-        val taskId = UUID.randomUUID().toString()
-        every { taskRepository.getAllTasks() } returns Result.success(listOf(createTask(id = taskId)))
-        every { taskRepository.deleteTask(taskId) } returns Result.success(Unit)
+    fun `deleteTask should execute successfully when TaskRepository delete task`() {
+        testScope.runTest {
+            val taskId = UUID.randomUUID().toString()
 
-        //when
-        val result = deleteTaskUseCase.deleteTask(taskId)
+            coEvery { taskRepository.deleteTask("", taskId) } returns Unit
 
-        //then
-        assertTrue { result.isSuccess }
+            assertDoesNotThrow { deleteTaskUseCase("", taskId) }
+        }
     }
 
     @Test
-    fun `deleteTask should return failure when TaskRepository return failure`() {
-        //given
-        val taskId = UUID.randomUUID().toString()
-        every { taskRepository.getAllTasks() } throws TaskNotFoundException()
+    fun `deleteTask should throw exception when TaskRepository throw exception`() {
+        testScope.runTest {
+            val taskId = UUID.randomUUID().toString()
 
-        val result = deleteTaskUseCase.deleteTask(taskId)
-
-        assertTrue { result.isFailure }
+            assertThrows<Exception> { deleteTaskUseCase("", taskId) }
+        }
     }
 }

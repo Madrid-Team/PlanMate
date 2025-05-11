@@ -4,75 +4,64 @@ import data.dto.task.TaskDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import data.utils.taskHeader
-import domain.utlis.TaskExceptions
 
 class TaskCsvDataSource(
     private val taskCsvParser: TaskCsvParser,
     private val fileCsvWriter: FileCsvWriter,
-    private val fileCsvReader: FileCsvReader
-) : TaskDataSource {
-    override fun editTask(tasks: List<TaskDto>): Result<Unit> {
-        return try {
-            var taskAfterUpdate = String.taskHeader
-            tasks.forEach {
-                val taskAsString = taskCsvParser.parseTaskToString(it)
-                taskAfterUpdate += taskAsString
-            }
-            fileCsvWriter.updateCsvFile(taskAfterUpdate)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+    private val fileCsvReader: FileCsvReader,
+    private val taskManager: TaskManager
+) : TaskExternalDataSource {
+
+    init {
+        getAllTasks()
     }
 
-    override fun deleteTask(task: List<TaskDto>): Result<Unit> {
-        return try {
-            var tasksFileContentAfterDeletion = String.taskHeader
-            task.forEach {
-                val projectAsString = taskCsvParser.parseTaskToString(it)
-                tasksFileContentAfterDeletion += projectAsString
-            }
-            fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+    private fun getAllTasks(): List<TaskDto> {
 
-    override fun createTask(task: TaskDto): Result<Unit> {
-        return try {
-            val taskRow = taskCsvParser.parseTaskToString(task)
-            fileCsvWriter.writeToCsvFile(taskRow)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+        if (taskManager.getTasks().isEmpty()) {
 
-    override fun getAllTasks(): Result<List<TaskDto>> {
-        val tasks = mutableListOf<TaskDto>()
-
-        return try {
-
+            val tasks = mutableListOf<TaskDto>()
             fileCsvReader.readCsvFile().forEach { row ->
                 if (row.isNotEmpty()) {
                     tasks.add(taskCsvParser.parseOneRowToTask(row))
                 }
             }
-
-            Result.success(tasks)
-
-        } catch (e: Exception) {
-            Result.failure(e)
+            taskManager.setTasks(tasks)
         }
+        return taskManager.getTasks()
     }
 
-    override fun getTasksByProjectId(projectId: String): Result<List<TaskDto>> {
-        val allTasks = getAllTasks().getOrNull()
-        return if (!allTasks.isNullOrEmpty()) {
-            Result.success(allTasks)
-        } else {
-            Result.failure(TaskExceptions.TaskNotFoundException("Tasks not found"))
+    override suspend fun editTask(task: TaskDto) {
+        val taskListAfterEditTask = taskManager.editTask(task)
+        var tasksFileContentAfterDeletion = String.taskHeader
+        taskListAfterEditTask.forEach {
+            val projectAsString = taskCsvParser.parseTaskToString(it)
+            tasksFileContentAfterDeletion += projectAsString
         }
+        fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
+    }
+
+    override suspend fun deleteTask(projectId: String, taskId: String) {
+        val taskListAfterDeleteTask = taskManager.deleteTask(taskId)
+        var tasksFileContentAfterDeletion = String.taskHeader
+        taskListAfterDeleteTask.forEach {
+            val projectAsString = taskCsvParser.parseTaskToString(it)
+            tasksFileContentAfterDeletion += projectAsString
+        }
+        fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
+    }
+
+    override suspend fun createTask(task: TaskDto) {
+        val taskRow = taskCsvParser.parseTaskToString(task)
+        fileCsvWriter.writeToCsvFile(taskRow)
+        taskManager.addTask(task)
+    }
+
+    override suspend fun getTasksByProjectId(projectId: String): List<TaskDto> {
+        return taskManager.getTasks().filter { task -> task.projectId == projectId }
+    }
+
+    override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
+        return taskManager.getTasks().filter { it.id == taskId }.flatMap { it.logs }
     }
 }

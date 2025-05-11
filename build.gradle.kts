@@ -15,6 +15,7 @@ dependencies {
     // TEST
     testImplementation(kotlin("test"))
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     // KOIN
     implementation("io.insert-koin:koin-core:3.5.3")
     // JUPITER
@@ -29,6 +30,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     // SERIALIZATION
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    //mongoDB
+    implementation(platform("org.mongodb:mongodb-driver-bom:5.4.0"))
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine")
+    implementation("org.mongodb:bson-kotlinx:5.4.0")
+
+
 }
 
 tasks.test {
@@ -49,7 +56,7 @@ val excludedClasses = listOf(
     "**/data/utils/**",
     "**/domain/models/**",
     "**/domain/utils/**",
-    "**/presentation/Main.kt",
+    "**/presentation/Main*"
 )
 
 tasks.jacocoTestReport {

@@ -2,52 +2,48 @@ package domain.usecases.task
 
 import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertTrue
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.util.*
 
 class GetTasksByProjectIdUseCaseTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var getTasksByProjectIdUseCase: GetTasksByProjectIdUseCase
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk()
         getTasksByProjectIdUseCase = GetTasksByProjectIdUseCase(taskRepository)
+        testScope = TestScope()
     }
 
 
     @Test
     fun `GetTasksByProjectIdUseCase should return the tasks when project id is found`() {
-        val projectId = "12"
-        val firstTask = createTask(projectId = projectId)
-        val secondTask = createTask(projectId = projectId)
-        every { taskRepository.getTasksByProjectId(projectId) } returns Result.success(
-            listOf(
-                firstTask,
-                secondTask
-            )
-        )
+        testScope.runTest {
+            val projectId = "12"
+            val firstTask = createTask(projectId = projectId)
+            val secondTask = createTask(projectId = projectId)
+            coEvery { taskRepository.getTasksByProjectId(projectId) } returns listOf(firstTask, secondTask)
 
-        val result = getTasksByProjectIdUseCase(projectId)
+            val result = getTasksByProjectIdUseCase(projectId)
 
-        assertThat(result)
+            assertThat(result)
+        }
     }
 
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
-        val projectId = "12"
-        every { taskRepository.getAllTasks() } returns Result.success(
-            listOf(
-                createTask(),
-                createTask(),
-            )
-        )
+       testScope.runTest {
+//           coEvery { taskRepository.getAllTasks() } throws Exception()
 
-        val result = getTasksByProjectIdUseCase(projectId)
-
-        assertTrue(result.isFailure)
+           assertThrows<Exception> { getTasksByProjectIdUseCase(UUID.randomUUID().toString()) }
+       }
     }
 }

@@ -4,9 +4,9 @@ import domain.models.project.Project
 import domain.repository.ProjectRepository
 
 class GetAllProjectsUseCase(
-    private val projectRepository : ProjectRepository
+    private val projectRepository: ProjectRepository
 ) {
-    fun getAllProjects() : Result<List<Project>> {
+    suspend operator fun invoke(): List<Project> {
         return projectRepository.getAllProjects()
     }
 }

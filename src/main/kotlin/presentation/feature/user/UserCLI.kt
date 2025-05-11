@@ -1,5 +1,7 @@
 package presentation.feature.user
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
@@ -9,7 +11,7 @@ class UserCLI(
     private val createUserCLI: CreateUserCLI,
     private val deleteUserCLI: DeleteUserCLI
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO) {
         while (true) {
             outputPrinter.printMessage("=== Manage users ===")
             outputPrinter.printMessage("1. Create new user")
@@ -18,7 +20,7 @@ class UserCLI(
             when (inputReader.readInput("Select an option: ")) {
                 "1" -> createUserCLI.show()
                 "2" -> deleteUserCLI.show()
-                "0" -> return
+                "0" -> return@withContext
                 else -> outputPrinter.printError("Invalid option.")
             }
         }

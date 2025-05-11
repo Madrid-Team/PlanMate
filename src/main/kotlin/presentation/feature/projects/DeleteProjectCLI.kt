@@ -1,42 +1,38 @@
 package presentation.feature.projects
 
 import domain.usecases.project.DeleteProjectUseCase
-import domain.usecases.project.GetProjectByIdUseCase
+import domain.utils.ProjectExceptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
 class DeleteProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val deleteProjectUseCase: DeleteProjectUseCase,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase,
-    ) {
-    fun show() {
+    private val deleteProjectUseCase: DeleteProjectUseCase
+) {
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Delete Project ===")
         val projectId = inputReader.readInput("Enter project ID to delete: ")
 
-        val result = getProjectByIdUseCase.invoke(projectId)
-        if (result.isSuccess) {
+        try {
             val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
-
             when (confirmed.lowercase()) {
                 "yes" -> {
-                    val result = deleteProjectUseCase.deleteProject(projectId)
-                    result.onSuccess {
-                        outputPrinter.printMessage("Project deleted successfully.")
-                    }.onFailure {
-                        outputPrinter.printMessage("Failed to delete project: ${it.message}")
-                    }
+                    deleteProjectUseCase(projectId)
+                    outputPrinter.printMessage("Project deleted successfully.")
                 }
 
                 else -> {
                     outputPrinter.printMessage("Deletion cancelled.")
-
                 }
-
             }
-        }else {
-            outputPrinter.printMessage(result.exceptionOrNull()?.message ?: "Project not found")
+        } catch (e: ProjectExceptions.ProjectNotFoundException) {
+            outputPrinter.printMessage(e.message ?: "Project not found")
+        } catch (e: Exception) {
+            outputPrinter.printMessage("Failed to delete project: ${e.message}")
         }
     }
 }
+

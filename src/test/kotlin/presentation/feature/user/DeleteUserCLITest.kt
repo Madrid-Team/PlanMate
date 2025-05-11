@@ -3,10 +3,8 @@ package presentation.feature.user
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.verify
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -26,45 +24,47 @@ class DeleteUserCLITest {
 
     @Test
     fun `should delete user successfully when userId is exist`() {
-        // Given
-        val mockCurrentUser = mockk<User>()
-        every { inputReader.readInput() } returns "2"
-        every { mockCurrentUser.id.toString() } returns "1"
-        every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-        every { useCase.invoke("1", "2") } returns Result.success(Unit)
+        runTest {
+            // Given
+            val mockCurrentUser = mockk<User>()
+            every { inputReader.readInput() } returns "2"
+            every { mockCurrentUser.id.toString() } returns "1"
+            every { CurrentUser.getCurrentUser() } returns mockCurrentUser
+            coEvery { useCase.invoke("1", "2") } returns Unit
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Delete user started ===")
-            outputPrinter.printMessage("Enter user id:")
-            outputPrinter.printMessage("Deleted Success")
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Delete user started ===")
+                outputPrinter.printMessage("Enter user id:")
+                outputPrinter.printMessage("Deleted Success")
+            }
+            verify(exactly = 0) { outputPrinter.printMessage("Deleted Failed") }
         }
-        verify(exactly = 0) { outputPrinter.printMessage("Deleted Failed") }
     }
 
     @Test
     fun `should show error message when delete user fails`() {
-        // Given
-        val mockCurrentUser = mockk<User>()
-        every { inputReader.readInput() } returnsMany listOf("2", "z")
-        every { mockCurrentUser.id.toString() } returns "1"
-        every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-        every { useCase.invoke("1", "2") } throws Exception()
+        runTest {
+            // Given
+            val mockCurrentUser = mockk<User>()
+            every { inputReader.readInput() } returnsMany listOf("2", "z")
+            every { mockCurrentUser.id.toString() } returns "1"
+            every { CurrentUser.getCurrentUser() } returns mockCurrentUser
+            coEvery { useCase.invoke("1", "2") } throws Exception()
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Delete user started ===")
-            outputPrinter.printMessage("Enter user id:")
-            outputPrinter.printMessage("Deleted Failed")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Delete user started ===")
+                outputPrinter.printMessage("Enter user id:")
+                outputPrinter.printMessage("Deleted Failed")
+                outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            }
         }
     }
-
-
 }

@@ -11,8 +11,7 @@ class AuthenticationCLI(
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-
-    fun login() {
+    suspend fun login() {
         outputPrinter.printMessage("=== Login ===")
         outputPrinter.printMessage("Enter user name:")
         val userName = inputReader.readInput()

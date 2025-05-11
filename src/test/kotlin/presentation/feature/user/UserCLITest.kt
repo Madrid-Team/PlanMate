@@ -1,8 +1,10 @@
 package presentation.feature.user
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -22,74 +24,80 @@ class UserCLITest {
 
     @Test
     fun `should show menu and create user when enter 1`() {
-        // Given
-        every { inputReader.readInput("Select an option: ") } returns "1" andThen "0"
+        runTest {
+            // Given
+            every { inputReader.readInput("Select an option: ") } returns "1" andThen "0"
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Manage users ===")
-            outputPrinter.printMessage("1. Create new user")
-            outputPrinter.printMessage("2. Delete new user")
-            outputPrinter.printMessage("0. Back")
-            createUserCLI.show()
+            // Then
+            coVerify {
+                outputPrinter.printMessage("=== Manage users ===")
+                outputPrinter.printMessage("1. Create new user")
+                outputPrinter.printMessage("2. Delete new user")
+                outputPrinter.printMessage("0. Back")
+                createUserCLI.show()
+            }
         }
     }
 
     @Test
     fun `should show menu and delete user when enter 2`() {
-        // Given
-        every { inputReader.readInput("Select an option: ") } returns "2" andThen "0"
+        runTest {
+            // Given
+            every { inputReader.readInput("Select an option: ") } returns "2" andThen "0"
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Manage users ===")
-            outputPrinter.printMessage("1. Create new user")
-            outputPrinter.printMessage("2. Delete new user")
-            outputPrinter.printMessage("0. Back")
-            deleteUserCLI.show()
+            // Then
+            coVerify {
+                outputPrinter.printMessage("=== Manage users ===")
+                outputPrinter.printMessage("1. Create new user")
+                outputPrinter.printMessage("2. Delete new user")
+                outputPrinter.printMessage("0. Back")
+                deleteUserCLI.show()
+            }
         }
     }
 
     @Test
     fun `should back when enter 0`() {
-        // Given
-        every { inputReader.readInput("Select an option: ") } returns "0"
+        runTest {
+            // Given
+            every { inputReader.readInput("Select an option: ") } returns "0"
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Manage users ===")
-            outputPrinter.printMessage("1. Create new user")
-            outputPrinter.printMessage("2. Delete new user")
-            outputPrinter.printMessage("0. Back")
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Manage users ===")
+                outputPrinter.printMessage("1. Create new user")
+                outputPrinter.printMessage("2. Delete new user")
+                outputPrinter.printMessage("0. Back")
+            }
         }
     }
 
     @Test
     fun `should show error message when enter input incorrectly`() {
-        // Given
-        every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
+        runTest {
+            // Given
+            every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
 
-        // When
-        cli.show()
+            // When
+            cli.show()
 
-        // Then
-        verify {
-            outputPrinter.printMessage("=== Manage users ===")
-            outputPrinter.printMessage("1. Create new user")
-            outputPrinter.printMessage("2. Delete new user")
-            outputPrinter.printError("Invalid option.")
-            outputPrinter.printMessage("0. Back")
+            // Then
+            verify {
+                outputPrinter.printMessage("=== Manage users ===")
+                outputPrinter.printMessage("1. Create new user")
+                outputPrinter.printMessage("2. Delete new user")
+                outputPrinter.printError("Invalid option.")
+                outputPrinter.printMessage("0. Back")
+            }
         }
     }
-
-
 }

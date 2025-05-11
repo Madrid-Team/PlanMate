@@ -7,6 +7,8 @@ import domain.models.task.Task
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -17,25 +19,26 @@ class CreateTaskCLI(
     private val createTaskUseCase: CreateTaskUseCase,
     private val createLogUseCase: CreateLogUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
-
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Task ===")
         try {
             val task = readTaskInput()
-            createTaskUseCase.createTask(task)
+            createTaskUseCase(task)
             outputPrinter.printMessage("Task created successfully")
         } catch (exception: Exception) {
             outputPrinter.printMessage(exception.message.toString())
             outputPrinter.printMessage("Failed to create task")
         }
+
     }
 
-    private fun readTaskInput(): Task {
+    private suspend fun readTaskInput(): Task {
         val projectId = inputReader.readInput("Enter project ID: ")
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
-        val project = getProjectByIdUseCase.invoke(projectId).getOrThrow()
+
+        val project = getProjectByIdUseCase.invoke(projectId)
 
         outputPrinter.printMessage("Available task states:")
         project.taskStates.forEachIndexed { index, state ->
@@ -50,13 +53,13 @@ class CreateTaskCLI(
             title = title,
             description = description,
             taskState = selectedState,
-            createdBy = CurrentUser.getCurrentUser()?.username ?: "Unknown",
+            createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf(
-                createLogUseCase.invoke(
+                createLogUseCase(
                     operationType = OperationType.CREATE,
                     entityName = title,
                     entityType = EntityType.TASK,
-                    username = CurrentUser.getCurrentUser()!!.username,
+                    username = CurrentUser.getCurrentUser().username,
                 )
             ),
             id = UUID.randomUUID()

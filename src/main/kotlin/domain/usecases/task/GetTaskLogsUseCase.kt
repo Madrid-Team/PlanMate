@@ -5,8 +5,8 @@ import domain.repository.TaskRepository
 class GetTaskLogsUseCase(
     private val taskRepository: TaskRepository
 ) {
-    fun getTaskLogs(taskId : String) : Result<List<String>>{
-        return taskRepository.getTaskLogsByID(taskId)
+    suspend operator fun invoke(projectId: String,taskId: String): List<String> {
+        return taskRepository.getTaskLogsByID(projectId,taskId)
     }
 
 }

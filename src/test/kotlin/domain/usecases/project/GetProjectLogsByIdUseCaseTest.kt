@@ -1,11 +1,14 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utlis.PlanMateExceptions
-import io.mockk.every
+import domain.utils.PlanMateExceptions
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class GetProjectLogsByIdUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -19,29 +22,31 @@ class GetProjectLogsByIdUseCaseTest {
 
     @Test
     fun `getProjectLogs should return true when project repository called and return success result`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.getProjectLogsById(projectId.toString()) } returns Result.success(listOf<String>())
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.getProjectLogsById(projectId.toString()) } returns listOf()
 
-        //When
-        val result = getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
-
-        //Then
-        kotlin.test.assertTrue { result.isSuccess }
-
+            //When
+            assertDoesNotThrow {
+                getProjectLogsByIdUseCase(projectId.toString())
+            }
+        }
     }
 
     @Test
     fun `getProjectLogs should return false when project repository called and return failure result`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.getProjectLogsById(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.getProjectLogsById(projectId.toString()) } throws PlanMateExceptions("")
 
-        //When
-        val result = getProjectLogsByIdUseCase.getProjectLogsById(projectId.toString())
+            //When
+            assertThrows<PlanMateExceptions> {
 
-        //Then
-        kotlin.test.assertFalse { result.isSuccess }
-
+                getProjectLogsByIdUseCase(projectId.toString())
+            }
+        }
     }
+
 }

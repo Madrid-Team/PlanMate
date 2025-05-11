@@ -1,7 +1,7 @@
 package data.utils
 
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
+import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.FileNotFoundException

@@ -1,8 +1,10 @@
 package presentation.feature.tasks
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -16,6 +18,8 @@ class TaskCLITest {
     private lateinit var editTaskCLI: EditTaskCLI
     private lateinit var taskView: TaskView
     private lateinit var taskCLI: TaskCLI
+    private lateinit var taskAuditLogCLI: TaskAuditLogCLI
+
 
     @BeforeEach
     fun setup() {
@@ -25,66 +29,88 @@ class TaskCLITest {
         deleteTaskCLI = mockk(relaxed = true)
         editTaskCLI = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
-        taskCLI = TaskCLI(createTaskCLI,editTaskCLI,deleteTaskCLI,taskView,outputPrinter,inputReader)
+        taskAuditLogCLI = mockk(relaxed = true)
+        taskCLI =
+            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
     }
 
     @Test
-    fun `should navigate to CreateProjectCLI when user selects 1`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
+    fun `should navigate to CreateTaskCLI when user selects 1`() {
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { createTaskCLI.show() }
+            // then
+            coVerify { createTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to EditTaskCLI when user selects 2`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { editTaskCLI.show() }
+            // then
+            coVerify { editTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to DeleteTaskCLI when user selects 3`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { deleteTaskCLI.show() }
+            // then
+            coVerify { deleteTaskCLI.show() }
+        }
     }
 
     @Test
     fun `should navigate to TaskView when user selects 4`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
 
-        // when
-        taskCLI.show()
+            // when
+            taskCLI.show()
 
-        // then
-        verify { taskView.show() }
+            // then
+            coVerify { taskView.show() }
+        }
+    }
+
+    @Test
+    fun `should navigate to taskAuditLogCLI when user selects 5`() {
+        runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { taskAuditLogCLI.show() }
+        }
     }
 
     @Test
     fun `should print invalid option message when user selects unknown option`() {
-        // given
-        every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+        runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
 
-        // when
-        taskCLI.show()
+            taskCLI.show()
 
-        // then
-        verify { outputPrinter.printError("Invalid option.") }
+            verify { outputPrinter.printError("Invalid option.") }
+        }
     }
 }

@@ -1,13 +1,17 @@
 package presentation.feature.tasks
 
+import domain.models.authentication.User
+import domain.models.authentication.UserRole
+import domain.models.logs.CurrentUser
 import domain.usecases.task.EditTaskUseCase
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import domain.utils.TaskExceptions
+import io.mockk.*
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import java.util.UUID
+import java.util.*
 import kotlin.test.Test
 
 class EditTaskCLITest {
@@ -16,6 +20,7 @@ class EditTaskCLITest {
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var taskView: TaskView
     private lateinit var editTaskCLI: EditTaskCLI
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
@@ -23,49 +28,53 @@ class EditTaskCLITest {
         outputPrinter = mockk(relaxed = true)
         editTaskUseCase = mockk(relaxed = true)
         taskView = mockk(relaxed = true)
-        editTaskCLI = EditTaskCLI(inputReader, outputPrinter, taskView, editTaskUseCase)
+        editTaskCLI = EditTaskCLI(inputReader, outputPrinter, editTaskUseCase)
+        testScope = TestScope()
+
+        val testUser = User(id = UUID.randomUUID(), "hhdhdh", "sgsgsggs", UserRole.ADMIN.name)
+        mockkObject(CurrentUser)
+        every { CurrentUser.getCurrentUser() } returns testUser
     }
+
 
     @Test
     fun `should edit task successfully when call edit task`() {
-        every { inputReader.readInput(any()) } returnsMany listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            "New Title",
-            "New Description"
-        )
-        val updatedTask = helperTask(
-            projectId = UUID.randomUUID().toString(),
-            id = UUID.randomUUID().toString(),
-            title = "New Title",
-            description = "New Description"
-        )
-        every { editTaskUseCase.editTask(updatedTask) } returns Result.success(Unit)
+        testScope.runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "New Title",
+                "New Description"
+            )
+            val updatedTask = helperTask(
+                projectId = UUID.randomUUID().toString(),
+                id = UUID.randomUUID().toString(),
+                title = "New Title",
+                description = "New Description"
+            )
+            coEvery { editTaskUseCase(updatedTask) } returns Unit
 
-        editTaskCLI.show()
+            editTaskCLI.show()
 
-        verify { outputPrinter.printMessage("Task updated successfully") }
+            verify { outputPrinter.printMessage("Task updated successfully") }
+        }
     }
 
     @Test
     fun `should show error message when task update fails`() {
-        every { inputReader.readInput(any()) } returnsMany listOf(
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString(),
-            "New Title",
-            "New Description"
-        )
-        val updatedTask = helperTask(
-            projectId = UUID.randomUUID().toString(),
-            id = UUID.randomUUID().toString(),
-            title = "New Title",
-            description = "New Description"
-        )
-        every { editTaskUseCase.editTask(any()) } returns Result.failure(Exception())
+        testScope.runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
+                "New Title",
+                "New Description"
+            )
 
-        editTaskCLI.show()
+            coEvery { editTaskUseCase(any()) } throws TaskExceptions.TaskCannotEditException()
 
-        verify { outputPrinter.printError("Failed to update task") }
+            editTaskCLI.show()
 
+            verify { outputPrinter.printError(TaskExceptions.TaskCannotEditException().message!!) }
+        }
     }
 }

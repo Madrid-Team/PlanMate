@@ -1,7 +1,11 @@
 package presentation.feature.tasks
 
+import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
+import domain.utils.TaskExceptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -9,10 +13,9 @@ import java.util.*
 class EditTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val taskView: TaskView,
     private val editTaskUseCase: EditTaskUseCase
 ) {
-    fun show() {
+    suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Edit Task ===")
 
         val projectId = inputReader.readInput("Enter project ID: ")
@@ -26,17 +29,15 @@ class EditTaskCLI(
             title = title,
             description = description,
             taskState = "",
-            createdBy = "",
+            createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf()
         )
 
-        val result = editTaskUseCase.editTask(updatedTask)
-
-        if (result.isSuccess) {
+        try {
+            editTaskUseCase(updatedTask)
             outputPrinter.printMessage("Task updated successfully")
-        } else {
-            outputPrinter.printError("Failed to update task")
+        } catch (exception: TaskExceptions.TaskCannotEditException) {
+            outputPrinter.printError(exception.message ?: "Failed to update task")
         }
-
     }
 }

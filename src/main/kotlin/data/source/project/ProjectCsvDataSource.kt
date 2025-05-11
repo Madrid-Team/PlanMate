@@ -8,65 +8,77 @@ import data.utils.projectHeader
 class ProjectCsvDataSource(
     private val fileCsvReader: FileCsvReader,
     private val fileCsvWriter: FileCsvWriter,
-    private val projectCsvParser: ProjectCsvParser
-) : ProjectDataSource {
-    override fun getProjects(): Result<List<ProjectDto>> {
+    private val projectCsvParser: ProjectCsvParser,
+    private val projectManager: ProjectManager,
+) : ProjectExternalDataSource {
 
-        val projects = mutableListOf<ProjectDto>()
+    init {
+        readProjectManagerListFromFile()
+    }
 
-        return try {
+    private fun readProjectManagerListFromFile() {
+        if (projectManager.getProjects().isEmpty()) {
+            val projects = mutableListOf<ProjectDto>()
 
             fileCsvReader.readCsvFile().forEach { row ->
                 if (row.isNotEmpty()) {
                     projects.add(projectCsvParser.parseOneRowToProject(row))
                 }
             }
-
-            Result.success(projects)
-
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-
-    }
-
-    override fun createProject(project: ProjectDto): Result<Unit> {
-        return try {
-
-            val row = projectCsvParser.parseProjectToString(project)
-            fileCsvWriter.writeToCsvFile(row)
-
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
+            projectManager.setProjects(projects)
         }
     }
 
-    override fun deleteProject(projects: List<ProjectDto>): Result<Unit> {
-        return try {
-            var projectFileContentAfterDeletion = String.projectHeader
-            projects.forEach {
+    override suspend fun getProjects(): List<ProjectDto> {
+        return projectManager.getProjects()
+    }
+
+    override suspend fun createProject(project: ProjectDto) {
+        val row = projectCsvParser.parseProjectToString(project)
+        fileCsvWriter.writeToCsvFile(row)
+        projectManager.addProject(project)
+    }
+
+    override suspend fun deleteProject(projectId: String) {
+        val projectWillDeleted = projectManager.getProjects().find { project -> project.id == projectId }
+
+        try {
+            var projectListAfterDeletion = projectManager.deleteProject(projectId)
+            var stringAfterDelete = String.projectHeader
+            projectListAfterDeletion.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
-                projectFileContentAfterDeletion += projectAsString
+                stringAfterDelete += projectAsString
             }
-            fileCsvWriter.updateCsvFile(projectFileContentAfterDeletion)
-            Result.success(Unit)
+            fileCsvWriter.updateCsvFile(stringAfterDelete)
         } catch (e: Exception) {
-            Result.failure(e)
+            projectWillDeleted?.let { projectManager.addProject(projectWillDeleted) }
+            throw e
         }
+
     }
 
-    override fun editProject(projects: List<ProjectDto>): Result<Unit> {
-        return try {
+    override suspend fun editProject(project: ProjectDto) {
+
+        try {
+            var projectListAfterEdition = projectManager.editProject(project)
+
             var projectAfterUpdate = String.projectHeader
-            projects.forEach {
+            projectListAfterEdition.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
                 projectAfterUpdate += projectAsString
             }
             fileCsvWriter.updateCsvFile(projectAfterUpdate)
-            Result.success(Unit)
         } catch (e: Exception) {
-            Result.failure(e)
+            projectManager.addProject(project)
+            throw e
         }
+    }
+
+    override suspend fun getProjectLogsById(id: String): List<String>? {
+        return projectManager.getProjects().find { it.id == id }?.projectLogs
+    }
+
+    override suspend fun getProjectById(id: String): ProjectDto? {
+        return projectManager.getProjects().find { it.id == id }
     }
 }

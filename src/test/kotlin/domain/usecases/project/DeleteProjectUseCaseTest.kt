@@ -1,13 +1,14 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utlis.PlanMateExceptions
-import io.mockk.every
+import domain.utils.PlanMateExceptions
+import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.assertThrows
 
 class DeleteProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
@@ -21,31 +22,30 @@ class DeleteProjectUseCaseTest {
 
     @Test
     fun `deleteProject should return a success result when project deleted successfully`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.deleteProject(projectId.toString()) } returns Result.success(Unit)
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.deleteProject(projectId.toString()) } returns Unit
 
-        //When
-        val result = deleteProjectUseCase.deleteProject(projectId.toString())
-
-        //Then
-        assertTrue { result.isSuccess }
-
+            //When
+            assertDoesNotThrow {
+                deleteProjectUseCase(projectId.toString())
+            }
+        }
     }
 
     @Test
     fun `deleteProject should return a failure result when project not deleted successfully`() {
-        //Given
-        val projectId = 1
-        every { projectRepository.deleteProject(projectId.toString()) } returns Result.failure(PlanMateExceptions(""))
+        runTest {
+            //Given
+            val projectId = 1
+            coEvery { projectRepository.deleteProject(projectId.toString()) } throws PlanMateExceptions("")
 
-        //When
-        val result = deleteProjectUseCase.deleteProject(projectId.toString())
-
-        //Then
-        assertFalse { result.isSuccess }
-
-
+            //When
+            assertThrows<PlanMateExceptions> {
+                deleteProjectUseCase(projectId.toString())
+            }
+        }
     }
 
 }

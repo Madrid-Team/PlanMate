@@ -1,33 +1,75 @@
 package data.repository
 
+import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.user.UserCsvParser
-import data.source.user.UserDataSource
+import data.source.user.UserExternalDataSource
+import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.utils.UserExceptions
 
 class UserRepositoryImpl(
-    private val userDataSource: UserDataSource,
-    private val userCsvParser: UserCsvParser,
+    private val userExternalDataSource: UserExternalDataSource,
 ) : UserRepository {
-    override fun deleteUser(userId: String){
-        return userDataSource.deleteUser(userId)
+    override suspend fun deleteUser(userId: String) = executeUserOperation {
+        try {
+            userExternalDataSource.deleteUser(userId)
+        }catch (e : Exception){
+            throw e.toUserException()
+        }
     }
 
-    override fun createNewUser(user: User): Result<Unit> {
-        val row: String = userCsvParser.parseUserToRow(user.toDto())
-        return userDataSource.createNewUser(row)
+    override suspend fun createNewUser(user: User) = executeUserOperation {
+        try {
+            userExternalDataSource.createNewUser(user.toDto())
+        }catch (e : Exception){
+            throw e.toUserException()
+        }
     }
 
-    override fun getUserById(userId: String): Result<User?> {
-        return userDataSource.getUserById(userId)
+
+    override suspend fun getUserById(userId: String): User {
+        return try {
+
+            executeUserOperation {
+                userExternalDataSource.getUserById(userId)
+            }?.toDomain() ?: throw UserExceptions.UserNotFoundException()
+
+        }catch (e:Exception){
+            throw e.toUserException()
+        }
     }
 
-    override fun getAllUsers(): Result<List<User>> {
-        return userDataSource.getAllUsers()
+
+    override suspend fun getAllUsers(): List<User> {
+        return try {
+            val users = executeUserOperation {
+                userExternalDataSource.getAllUsers()
+            }.map { it.toDomain() }
+            users.ifEmpty { throw UserExceptions.UserNotFoundException() }
+        }catch (e:Exception){
+            throw e.toUserException()
+        }
     }
 
-    override fun getUserByName(userName: String): Result<User?> {
-        return userDataSource.getUserByName(userName)
+    override suspend fun getUserByName(userName: String): User {
+       return try {
+            executeUserOperation {
+                userExternalDataSource.getUserByName(userName)
+            }?.toDomain() ?: throw UserExceptions.UserNotFoundException()
+        }catch (e:Exception){
+            throw e.toUserException()
+        }
+    }
+
+
+
+    private suspend fun <T> executeUserOperation(operation: suspend () -> T): T {
+        try {
+            return operation()
+        } catch (e: Exception) {
+            throw e.toUserException()
+        }
     }
 }
+

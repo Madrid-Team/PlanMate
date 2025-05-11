@@ -4,10 +4,9 @@ package domain.repository
 import domain.models.task.Task
 
 interface TaskRepository {
-    fun editTask(task: Task): Result<Unit>
-    fun deleteTask(taskId: String): Result<Unit>
-    fun createTask(task: Task): Result<Unit>
-    fun getAllTasks():  Result<List<Task>>
-    fun getTasksByProjectId(projectId: String): Result<List<Task>>
-    fun getTaskLogsByID(taskId: String): Result<List<String>>
+    suspend fun editTask(task: Task)
+    suspend fun deleteTask(projectId: String,taskId: String)
+    suspend fun createTask(task: Task)
+    suspend fun getTasksByProjectId(projectId: String): List<Task>
+    suspend fun getTaskLogsByID(projectId: String,taskId: String): List<String>
 }

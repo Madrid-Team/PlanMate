@@ -4,10 +4,10 @@ import domain.models.project.Project
 
 interface ProjectRepository {
 
-    fun getAllProjects(): Result<List<Project>>
-    fun createProject(project: Project): Result<Unit>
-    fun deleteProject(projectId: String): Result<Unit>
-    fun editProject(project: Project): Result<Unit>
-    fun getProjectLogsById(id: String): Result<List<String>>
-    fun getProjectById(id: String):Project?
+    suspend fun getAllProjects(): List<Project>
+    suspend fun createProject(project: Project)
+    suspend fun deleteProject(projectId: String)
+    suspend fun editProject(project: Project)
+    suspend fun getProjectLogsById(id: String): List<String>
+    suspend fun getProjectById(id: String):Project
 }

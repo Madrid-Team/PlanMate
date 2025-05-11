@@ -5,9 +5,6 @@ import java.io.IOException
 class FileCsvReader(
     private val fileValidator: FileValidator
 ) {
-//    fun readProjectCsvFile(): List<String> {
-//        return fileValidator.checkFile().readLines().dropHeader()
-//    }
 
     fun readCsvFile(): List<String> {
         return try {

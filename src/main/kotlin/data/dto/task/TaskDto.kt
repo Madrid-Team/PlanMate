@@ -1,6 +1,8 @@
 package data.dto.task
 
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class TaskDto(
     val id: String,
     val projectId: String,

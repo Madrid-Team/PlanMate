@@ -11,7 +11,7 @@ object CurrentUser {
         }
     }
 
-    fun getCurrentUser():User? {
+    fun getCurrentUser():User {
         return user
     }
 

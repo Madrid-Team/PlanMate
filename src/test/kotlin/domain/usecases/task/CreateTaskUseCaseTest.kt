@@ -1,61 +1,63 @@
 package domain.usecases.task
 
-import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions.CannotCreateTaskException
-import domain.utlis.TaskExceptions.TaskTitleIsEmptyException
-import io.mockk.every
+import domain.utils.TaskExceptions.TaskTitleIsEmptyException
+import io.mockk.coEvery
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
 class CreateTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var createTaskUseCase: CreateTaskUseCase
+    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
         taskRepository = mockk()
         createTaskUseCase = CreateTaskUseCase(taskRepository)
+        testScope = TestScope()
     }
 
     @Test
-    fun `createTask should return true when task is saved successfully`() {
-        // given
-        val task = createTask(title = "new task", description = "description")
-        every { taskRepository.createTask(task) } returns Result.success(Unit)
+    fun `createTask should execute successfully when task is saved successfully`() {
+        testScope.runTest {
+            val task = createTask(title = "new task", description = "description")
+            coEvery { taskRepository.createTask(task) } returns Unit
 
-        // when
-        val result = createTaskUseCase.createTask(task)
-
-        // then
-        verify { taskRepository.createTask(task) }
-        assertThat(result)
+            assertDoesNotThrow { createTaskUseCase(task) }
+        }
     }
 
     @Test
-    fun `createTask should return false when task saving fails`() {
-        // given
-        val task = createTask(title = "new task")
-        every { taskRepository.createTask(task) } throws CannotCreateTaskException()
+    fun `createTask should throw exception when task saving fails`() {
+        testScope.runTest {
+            // given
+            val task = createTask(title = "new task")
+            coEvery { taskRepository.createTask(task) } throws Exception()
 
-        // when && then
-        assertThrows<CannotCreateTaskException> {
-            taskRepository.createTask(task)
+            // when && then
+            assertThrows<Exception> {
+                taskRepository.createTask(task)
+            }
         }
     }
 
     @Test
     fun `createTask should return false when task title is empty`() {
-        // given
-        val task = createTask(title = "")
-        every { taskRepository.createTask(task) } throws TaskTitleIsEmptyException()
+       testScope.runTest {
+           // given
+           val task = createTask(title = "")
+           coEvery { taskRepository.createTask(task) } throws TaskTitleIsEmptyException()
 
-        // when && then
-        assertThrows<TaskTitleIsEmptyException> {
-            taskRepository.createTask(task)
-        }
+           // when && then
+           assertThrows<TaskTitleIsEmptyException> {
+               taskRepository.createTask(task)
+           }
+       }
     }
 }

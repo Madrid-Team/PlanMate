@@ -4,7 +4,8 @@ import org.junit.jupiter.api.*
 import java.io.*
 import kotlin.test.assertTrue
 import io.mockk.*
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
+import kotlinx.coroutines.test.runTest
+import presentation.feature.tasks.TaskAuditLogCLI
 import presentation.feature.projects.ProjectAuditLogCLI
 
 class AdminCLITest {
@@ -25,6 +26,7 @@ class AdminCLITest {
         printStream = PrintStream(outputStream)
         System.setOut(printStream)
     }
+
     private fun provideInput(vararg lines: String) {
         val input = lines.joinToString("\n")
         inputStream = ByteArrayInputStream(input.toByteArray())
@@ -33,32 +35,38 @@ class AdminCLITest {
 
     @Test
     fun `should call projectAuditLogCLI when user selects 1`() {
-        provideInput("1", "0")
+        runTest {
+            provideInput("1", "0")
 
-        val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
-        adminCLI.showAdminMenu()
+            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            adminCLI.showAdminMenu()
 
-        verify(exactly = 1) { projectAuditLogCLI.show() }
+            coVerify(exactly = 1) { projectAuditLogCLI.show() }
+        }
     }
 
     @Test
     fun `should call taskAuditLogCLI when user selects 2`() {
-        provideInput("2", "0")
+        runTest {
+            provideInput("2", "0")
 
-        val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
-        adminCLI.showAdminMenu()
+            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            adminCLI.showAdminMenu()
 
-        verify(exactly = 1) { taskAuditLogCLI.show() }
+            coVerify(exactly = 1) { taskAuditLogCLI.show() }
+        }
     }
 
     @Test
     fun `should print invalid option when input is invalid`() {
-        provideInput("99", "0")
+        runTest {
+            provideInput("99", "0")
 
-        val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
-        adminCLI.showAdminMenu()
+            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            adminCLI.showAdminMenu()
 
-        val output = outputStream.toString()
-        assertTrue(output.contains("Invalid option!"))
+            val output = outputStream.toString()
+            assertTrue(output.contains("Invalid option!"))
+        }
     }
 }

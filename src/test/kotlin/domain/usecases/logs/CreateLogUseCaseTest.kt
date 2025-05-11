@@ -2,7 +2,7 @@ package domain.usecases.logs
 
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.utlis.convertDateIntoReadableDate
+import domain.utils.convertDateIntoReadableDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -46,7 +46,7 @@ class CreateLogUseCaseTest {
             timestamp = timestamp
         )
 
-        val expected = "User $username ${operationType.toString()} ${entityType.toString()} $entityName $fieldName from $oldValue to $newValue at $timestamp"
+        val expected = "User $username $operationType $entityType $entityName $fieldName from $oldValue to $newValue at $timestamp"
 
         assertEquals(expected, result)
     }

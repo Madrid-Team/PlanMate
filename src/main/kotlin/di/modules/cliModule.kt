@@ -7,7 +7,6 @@ import presentation.components.ConsoleOutputPrinter
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import org.madrid.presentation.feature.tasks.TaskAuditLogCLI
 import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.*
 import presentation.feature.tasks.*
@@ -21,8 +20,8 @@ val cliModule = module {
 
     single { CreateTaskCLI(get(), get(), get(), get(), get()) }
     single { DeleteTaskCLI(get(), get(), get()) }
-    single { EditTaskCLI(get(), get(), get(), get()) }
-    single { TaskCLI(get(), get(), get(), get(), get(), get()) }
+    single { EditTaskCLI(get(), get(), get()) }
+    single { TaskCLI(get(), get(), get(), get(), get(), get(), get()) }
     single { TaskView(get(), get(), get()) }
     single { ProjectAuditLogCLI(get(), get(), get()) }
     single { TaskAuditLogCLI(get(), get(), get()) }
@@ -30,7 +29,7 @@ val cliModule = module {
     single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CreateProjectCLI(get(), get(), get(), get()) }
-    single { DeleteProjectCLI(get(), get(), get(), get()) }
+    single { DeleteProjectCLI(get(), get(), get()) }
     single { EditProjectCLI(get(), get(), get(), get(), get()) }
     single { UserCLI(get(), get(), get(), get()) }
     single { CreateUserCLI(get(), get(), get()) }

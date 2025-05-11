@@ -2,138 +2,147 @@ package data.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.mapper.toDto
-import data.source.user.UserCsvParser
-import data.source.user.UserDataSource
+import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
-import domain.utlis.UserExceptions.NotFoundUser
-import domain.utlis.UserExceptions.UserExist
-import io.mockk.every
+import domain.utils.UserExceptions
+import domain.utils.UserExceptions.UserExist
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
 
 class UserRepositoryImplTest {
 
-    private lateinit var userDataSource: UserDataSource
-    private lateinit var userCsvParser: UserCsvParser
+    private lateinit var userExternalDataSource: UserExternalDataSource
     private lateinit var userRepositoryImpl: UserRepositoryImpl
 
     @BeforeEach
     fun setUp() {
-        userDataSource = mockk()
-        userCsvParser = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userDataSource, userCsvParser)
+        userExternalDataSource = mockk()
+        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource)
     }
 
     @Test
     fun `Should add user successfully`() {
-        // Given
-        val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
-        val userRow = "1,username1,hash,ADMIN"
+        runTest {
+            // Given
+            val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
 
-        every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Result.success(Unit)
+            coEvery { userExternalDataSource.createNewUser(user.toDto()) } returns Unit
 
-        // When
-        val result = userRepositoryImpl.createNewUser(user)
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
+            // When/Then - No exception is thrown
+            // Verify
+            assertDoesNotThrow {
+                userRepositoryImpl.createNewUser(user)
+            }
+            coVerify { userExternalDataSource.createNewUser(user.toDto()) }
+        }
     }
 
     @Test
     fun `Should fail to add user when datasource fails`() {
-        // Given
-        val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
-        val userRow = "2,username2,hash2,MATE"
+        runTest {
+            // Given
+            val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
+            val exception = UserExist()
+            coEvery { userExternalDataSource.createNewUser(user.toDto()) } throws exception
 
-        every { userCsvParser.parseUserToRow(user.toDto()) } returns userRow
-        every { userDataSource.createNewUser(userRow) } returns Result.failure(UserExist("User already exists"))
+            // When/Then
+            val thrownException = assertThrows<UserExist> {
+                userRepositoryImpl.createNewUser(user)
+            }
 
-        // When
-        val result = userRepositoryImpl.createNewUser(user)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(UserExist::class.java)
+            // Verify exception is wrapped
+            assertThat(thrownException).isSameInstanceAs(exception)
+        }
     }
 
     @Test
     fun `getUser should return user when found`() {
-        // Given
-        val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
+        runTest {
+            // Given
+            val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-        every { userDataSource.getUserById("1") } returns Result.success(user)
+            coEvery { userExternalDataSource.getUserById("1") } returns user.toDto()
 
-        // When
-        val result = userRepositoryImpl.getUserById("1")
+            // When
+            val result = userRepositoryImpl.getUserById("1")
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user)
+            // Then
+            assertThat(result).isEqualTo(user)
+        }
     }
 
     @Test
     fun `getAllUsers should return user when found`() {
-        // Given
-        val users = listOf(
-            User(id = UUID.randomUUID(), "username1", "hash1", "MATE"),
-            User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
-        )
+        runTest {
+            // Given
+            val users = listOf(
+                User(id = UUID.randomUUID(), "username1", "hash1", "MATE"),
+                User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
+            )
 
-        every { userDataSource.getAllUsers() } returns Result.success(users)
+            coEvery { userExternalDataSource.getAllUsers() } returns users.map { it.toDto() }
 
-        // When
-        val result = userRepositoryImpl.getAllUsers()
+            // When
+            val result = userRepositoryImpl.getAllUsers()
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).containsExactlyElementsIn(users)
+            // Then
+            assertThat(result).containsExactlyElementsIn(users)
+        }
     }
 
     @Test
     fun `getUserByName should return user when found`() {
-        // Given
-        val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
+        runTest {
+            // Given
+            val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
 
-        every { userDataSource.getUserByName("username1") } returns Result.success(user)
+            coEvery { userExternalDataSource.getUserByName("username1") } returns user.toDto()
 
-        // When
-        val result = userRepositoryImpl.getUserByName("username1")
+            // When
+            val result = userRepositoryImpl.getUserByName("username1")
 
-        // Then
-        assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrNull()).isEqualTo(user)
+            // Then
+            assertThat(result).isEqualTo(user)
+        }
     }
 
     @Test
     fun `Should delete user successfully`() {
-        // Given
-        val userId = "1"
-        every { userDataSource.deleteUser(userId) } returns Unit
+        runTest {
+            // Given
+            val userId = "1"
+            coEvery { userExternalDataSource.deleteUser(userId) } returns Unit
 
-        // When
-        userRepositoryImpl.deleteUser(userId)
+            // When
+            userRepositoryImpl.deleteUser(userId)
 
-        // Then - verify the call was made to the data source
-        verify { userDataSource.deleteUser(userId) }
+            // Then - verify the call was made to the data source
+            coVerify { userExternalDataSource.deleteUser(userId) }
+        }
     }
 
     @Test
     fun `Should propagate exception from data source when deleting user`() {
-        // Given
-        val userId = "2"
-        val exception = NotFoundUser("User not found")
-        every { userDataSource.deleteUser(userId) } throws exception
+        runTest {
+            // Given
+            val userId = "2"
+            val exception = UserExceptions.UserNotFoundException()
+            coEvery { userExternalDataSource.deleteUser(userId) } throws exception
 
-        // When/Then
-        val thrownException = assertThrows<NotFoundUser> {
-            userRepositoryImpl.deleteUser(userId)
+            // When/Then
+            val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
+                userRepositoryImpl.deleteUser(userId)
+            }
+
+            assertThat(thrownException).isSameInstanceAs(exception)
         }
-
-        assertThat(thrownException).isSameInstanceAs(exception)
     }
+
 }

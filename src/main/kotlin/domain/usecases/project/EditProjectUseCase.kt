@@ -1,30 +1,15 @@
 package domain.usecases.project
 
-import data.dto.project.ProjectDto
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.*
+import domain.validation.ValidateProjectName
 
-class EditProjectUseCase(private val projectRepository: ProjectRepository) {
-
-    fun editProject(project: Project): Result<Unit> {
-
-        try {
-            validateName(project)
-            val result = projectRepository.editProject(project)
-            return if (result.isSuccess) {
-                Result.success(Unit)
-            } else {
-                Result.failure(result.exceptionOrNull()!!)
-            }
-        } catch (e: PlanMateExceptions) {
-            return Result.failure(e)
-        }
-    }
-
-    private fun validateName(project: Project) {
-        if (!project.name.matches(Regex("^[A-Za-z ]+$"))) {
-            throw ProjectExceptions.ProjectNameInvalidException()
-        }
+class EditProjectUseCase(
+    private val projectRepository: ProjectRepository,
+    private val validateProjectName: ValidateProjectName
+) {
+    suspend operator fun invoke(project: Project) {
+        validateProjectName(project)
+        projectRepository.editProject(project)
     }
 }

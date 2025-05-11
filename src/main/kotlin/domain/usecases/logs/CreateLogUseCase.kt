@@ -2,11 +2,11 @@ package domain.usecases.logs
 
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.utlis.convertDateIntoReadableDate
+import domain.utils.convertDateIntoReadableDate
 import java.time.LocalDateTime
 
 class CreateLogUseCase {
-    fun invoke(
+    operator fun invoke(
         operationType: OperationType,
         entityName: String,
         entityType: EntityType,
@@ -20,6 +20,6 @@ class CreateLogUseCase {
         if (operationType == OperationType.UPDATE) {
             changeHappened = "$fieldName from $oldValue to $newValue"
         }
-        return "User $username ${operationType.toString()} ${entityType.toString()} $entityName $changeHappened at $timestamp"
+        return "User $username $operationType $entityType $entityName $changeHappened at $timestamp"
     }
 }

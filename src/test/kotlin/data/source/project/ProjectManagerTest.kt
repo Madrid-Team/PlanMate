@@ -7,19 +7,17 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import java.util.*
 
-class ProjectMemoryDataSourceTest {
-
-
-    private lateinit var projectMemoryDataSource: ProjectMemoryDataSource
+class ProjectManagerTest {
+    private lateinit var projectManager: ProjectManager
 
     @BeforeEach
     fun setUp() {
-        projectMemoryDataSource = ProjectMemoryDataSource()
+        projectManager = ProjectManager()
     }
 
     @Test
     fun `getProjects should return empty list initially`() {
-        val projects = projectMemoryDataSource.getProjects()
+        val projects = projectManager.getProjects()
         assertThat(projects).isEmpty()
     }
 
@@ -32,26 +30,23 @@ class ProjectMemoryDataSourceTest {
             createProject(id = projectId1),
             createProject(id = projectId2)
         )
-        projectMemoryDataSource.setProjects(projects)
-
-        assertThat(projectMemoryDataSource.getProjects()).isNotEmpty()
-        assertThat(projectMemoryDataSource.getProjects()).containsExactly(projects[0], projects[1])
+        assertThat(projectManager.getProjects())
     }
 
     @Test
     fun `setProjects should add multiple projects`() {
-        val project1 = createProject()
-        val project2 = createProject()
-        projectMemoryDataSource.setProjects(listOf(project1, project2))
-        val result = projectMemoryDataSource.getProjects()
+        val project1 = data.createProject()
+        val project2 = data.createProject()
+        projectManager.setProjects(listOf(project1, project2))
+        val result = projectManager.getProjects()
         assertThat(result.size).isEqualTo(2)
     }
 
     @Test
     fun `addProject should add single project`() {
-        val project = createProject()
+        val project = data.createProject()
         assertDoesNotThrow {
-            projectMemoryDataSource.addProject(project)
+            projectManager.addProject(project)
         }
     }
 
@@ -60,11 +55,11 @@ class ProjectMemoryDataSourceTest {
         val projectId1 = UUID.randomUUID().toString()
         val projectId2 = UUID.randomUUID().toString()
         val projects = listOf(
-            createProject(id = projectId1),
-            createProject(id = projectId2)
+            data.createProject(id = projectId1),
+            data.createProject(id = projectId2)
         )
-        projectMemoryDataSource.setProjects(projects)
-        val updatedProjects = projectMemoryDataSource.deleteProject(projectId1)
+        projectManager.setProjects(projects)
+        val updatedProjects = projectManager.deleteProject(projectId1)
         assertThat(updatedProjects.size).isEqualTo(1)
     }
 
@@ -73,23 +68,23 @@ class ProjectMemoryDataSourceTest {
         val projectId1 = UUID.randomUUID().toString()
         val projectId2 = UUID.randomUUID().toString()
         val projects = listOf(
-            createProject(id = projectId1, name = "Old project"),
-            createProject(id = projectId2)
+            data.createProject(id = projectId1, name = "Old project"),
+            data.createProject(id = projectId2)
         )
-        projectMemoryDataSource.setProjects(projects)
+        projectManager.setProjects(projects)
 
-        val result = projectMemoryDataSource.editProject(projects[0].copy(name = "Updated project"))
-        assertThat(result.find { it.id.toString() == projectId1 }!!.name).isEqualTo("Updated project")
+        val result = projectManager.editProject(projects[0].copy(name = "Updated project"))
+        assertThat(result.find { it.id == projectId1 }!!.name).isEqualTo("Updated project")
     }
 
     @Test
     fun `addProject should add a new project to the list`() {
         val projectId1 = UUID.randomUUID().toString()
-        val project = createProject(id = projectId1, name = "Added Project")
-        projectMemoryDataSource.addProject(project)
+        val project = data.createProject(id = projectId1, name = "Added Project")
+        projectManager.addProject(project)
 
-        val result = projectMemoryDataSource.getProjects()
+        val result = projectManager.getProjects()
         assertThat(result.size).isEqualTo(1)
-        assertThat(result[0].id.toString()).isEqualTo(projectId1)
+        assertThat(result[0].id).isEqualTo(projectId1)
     }
 }

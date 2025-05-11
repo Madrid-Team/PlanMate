@@ -11,7 +11,7 @@ class ProjectView(private val outputPrinter: OutputPrinter) {
         }
         outputPrinter.printMessage("=== Projects List ===")
 
-// Data Rows
+        // Data Rows
         projects.forEach { project ->
             outputPrinter.printMessage(
                 "ID : ${project.id}\n" +
