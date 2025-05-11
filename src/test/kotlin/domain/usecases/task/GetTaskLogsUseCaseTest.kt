@@ -4,33 +4,33 @@ import domain.repository.TaskRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
-class GetLogsUseCaseTest {
+class GetTaskLogsUseCaseTest {
     private lateinit var taskRepository: TaskRepository
-    private lateinit var getLogsUseCase: GetTaskLogsUseCase
+    private lateinit var getTaskLogsUseCase: GetTaskLogsUseCase
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
-        getLogsUseCase = GetTaskLogsUseCase(taskRepository)
+        getTaskLogsUseCase = GetTaskLogsUseCase(taskRepository)
         testScope = TestScope()
     }
 
     @Test
     fun `get TaskLogs should return list of logs when task repository return list of logs`() {
         //Given
-        testScope.launch {
+        testScope.runTest {
             val taskId = 1
             coEvery { taskRepository.getTaskLogsByID("", taskId.toString()) } returns listOf()
 
-            assertDoesNotThrow { getLogsUseCase("", taskId.toString()) }
+            assertDoesNotThrow { getTaskLogsUseCase("", taskId.toString()) }
 
         }
     }
@@ -38,7 +38,7 @@ class GetLogsUseCaseTest {
     @Test
     fun `get Task Logs should throw exception when project repository throw exception`() {
         //Given
-        testScope.launch {
+        testScope.runTest {
             val projectId = 1
             coEvery {
                 taskRepository.getTaskLogsByID(
@@ -47,7 +47,7 @@ class GetLogsUseCaseTest {
                 )
             } throws TaskExceptions.NoLogsFoundException()
 
-            assertThrows<TaskExceptions.NoLogsFoundException> { getLogsUseCase("", projectId.toString()) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { getTaskLogsUseCase("", projectId.toString()) }
 
         }
     }
