@@ -56,7 +56,7 @@ val excludedClasses = listOf(
     "**/data/utils/**",
     "**/domain/models/**",
     "**/domain/utils/**",
-    "**/presentation/Main.kt",
+    "**/presentation/Main*"
 )
 
 tasks.jacocoTestReport {
