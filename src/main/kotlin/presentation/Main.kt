@@ -6,7 +6,7 @@ import org.koin.java.KoinJavaComponent.getKoin
 
 
 suspend fun main() {
-    startKoin { modules(cliModule, useCasesModule, repositoryModule, dataSourceModule, coroutineModule) }
+    startKoin { modules(cliModule, useCasesModule, repositoryModule, dataSourceModule) }
 
     val planMateCLI: PlanMateCLI = getKoin().get()
     planMateCLI.start()

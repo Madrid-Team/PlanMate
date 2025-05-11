@@ -4,8 +4,8 @@ import domain.models.task.Task
 import domain.repository.TaskRepository
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -38,7 +38,7 @@ class EditTaskUseCaseTest {
         description: String,
         createdBy: String,
     ) {
-        testScope.launch {
+        testScope.runTest {
             //given
             val oldTask = Task(
                 id = UUID.randomUUID(),
@@ -65,7 +65,7 @@ class EditTaskUseCaseTest {
     @Test
     fun `editTask should return throw exception when id is not found`() {
         //given
-        testScope.launch {
+        testScope.runTest {
             val task = createTask(
                 id = UUID.randomUUID().toString(),
                 title = "title"

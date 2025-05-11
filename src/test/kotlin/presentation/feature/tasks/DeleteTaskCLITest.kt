@@ -26,7 +26,7 @@ class DeleteTaskCLITest {
         outputPrinter = mockk(relaxed = true)
         deleteTaskUseCase = mockk(relaxed = true)
         coroutineScope = CoroutineScope(Dispatchers.IO)
-        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase, coroutineScope)
+        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase)
         testScope = TestScope()
     }
 
