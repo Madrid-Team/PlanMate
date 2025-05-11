@@ -1,13 +1,13 @@
 package presentation.feature.tasks
 
+import domain.models.authentication.User
+import domain.models.authentication.UserRole
+import domain.models.logs.CurrentUser
 import domain.usecases.task.EditTaskUseCase
 import domain.utils.TaskExceptions
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import kotlinx.coroutines.launch
+import io.mockk.*
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -30,11 +30,16 @@ class EditTaskCLITest {
         taskView = mockk(relaxed = true)
         editTaskCLI = EditTaskCLI(inputReader, outputPrinter, editTaskUseCase)
         testScope = TestScope()
+
+        val testUser = User(id = UUID.randomUUID(), "hhdhdh", "sgsgsggs", UserRole.ADMIN.name)
+        mockkObject(CurrentUser)
+        every { CurrentUser.getCurrentUser() } returns testUser
     }
+
 
     @Test
     fun `should edit task successfully when call edit task`() {
-        testScope.launch {
+        testScope.runTest {
             every { inputReader.readInput(any()) } returnsMany listOf(
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
@@ -57,19 +62,14 @@ class EditTaskCLITest {
 
     @Test
     fun `should show error message when task update fails`() {
-        testScope.launch {
+        testScope.runTest {
             every { inputReader.readInput(any()) } returnsMany listOf(
                 UUID.randomUUID().toString(),
                 UUID.randomUUID().toString(),
                 "New Title",
                 "New Description"
             )
-            val updatedTask = helperTask(
-                projectId = UUID.randomUUID().toString(),
-                id = UUID.randomUUID().toString(),
-                title = "New Title",
-                description = "New Description"
-            )
+
             coEvery { editTaskUseCase(any()) } throws TaskExceptions.TaskCannotEditException()
 
             editTaskCLI.show()
