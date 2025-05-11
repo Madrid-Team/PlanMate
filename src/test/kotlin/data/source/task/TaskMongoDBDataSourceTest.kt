@@ -44,23 +44,22 @@ class TaskMongoDBDataSourceTest {
             taskMongoDBDataSource =
                 TaskMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
         }
-
-
     }
+    val task = TaskDto(
+        id = "task-id",
+        projectId = "project-id",
+        title = "Updated Task",
+        description = "Updated Desc",
+        taskState = "in-progress",
+        createdBy = "user",
+        logs = listOf("edited log")
+    )
+
 
     @Test
     fun `editTask should update the matching task in the project`()=runTest  {
         // Arrange
         val collection = mockk<MongoCollection<ProjectDto>>(relaxed = true)
-        val task = TaskDto(
-            id = "task-id",
-            projectId = "project-id",
-            title = "Updated Task",
-            description = "Updated Desc",
-            taskState = "in-progress",
-            createdBy = "user",
-            logs = listOf("edited log")
-        )
 
         val filter = Filters.and(
             eq("_id", task.projectId),

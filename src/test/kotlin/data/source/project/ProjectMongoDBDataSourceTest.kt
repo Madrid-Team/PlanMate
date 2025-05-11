@@ -47,23 +47,23 @@ class ProjectMongoDBDataSourceTest {
 
     }
 
-
+    val testProject = ProjectDto(
+        id = UUID.randomUUID().toString(),
+        name = "Test Project For create",
+        description = "A test description",
+        createdBy = "tester",
+        projectLogs = emptyList(),
+        projectState = "active",
+        taskStates = emptyList(),
+        projectStates = emptyList(),
+        matesUsernames = emptyList(),
+        tasks = emptyList()
+    )
     @Test
     fun `createProject should call insertOne with correct project`() = runTest {
         // Arrange
         val collection = mockk<MongoCollection<ProjectDto>>()
-        val testProject = ProjectDto(
-            id = UUID.randomUUID().toString(),
-            name = "Test Project For create",
-            description = "A test description",
-            createdBy = "tester",
-            projectLogs = emptyList(),
-            projectState = "active",
-            taskStates = emptyList(),
-            projectStates = emptyList(),
-            matesUsernames = emptyList(),
-            tasks = emptyList()
-        )
+
 
         coEvery {
             collection.insertOne(eq(testProject), any())
