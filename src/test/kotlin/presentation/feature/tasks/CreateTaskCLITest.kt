@@ -7,8 +7,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -39,7 +39,7 @@ class CreateTaskCLITest {
 
     @Test
     fun `should create task successfully when valid input is provided`() {
-        testScope.launch {
+        testScope.runTest {
             // Given
             every { inputReader.readInput(any()) } returnsMany listOf(
                 UUID.randomUUID().toString(),
@@ -62,7 +62,7 @@ class CreateTaskCLITest {
     @Test
     fun `should show error message when project ID is not found and not create task`() {
         // Given
-        testScope.launch {
+        testScope.runTest {
             every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
             val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
             coEvery { createTaskUseCase(task) } returns Unit
