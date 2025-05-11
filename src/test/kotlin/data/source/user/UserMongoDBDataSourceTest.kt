@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.madrid.data.source.mongoDb.MongoClientProvider
@@ -228,5 +229,9 @@ class UserMongoDBDataSourceTest {
         }
 
     }
+    @AfterAll
+    fun cleanup() {
+        mongoClientProvider.close()
 
+    }
 }

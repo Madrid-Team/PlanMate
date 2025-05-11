@@ -10,6 +10,7 @@ import data.dto.project.ProjectDto
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
+import domain.utlis.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -21,7 +22,6 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.source.project.ProjectMongoDBDataSource
 import java.util.*
 import kotlin.test.*
 
@@ -49,22 +49,39 @@ class ProjectMongoDBDataSourceTest {
     }
 
 
+    val projectId = UUID.randomUUID().toString()
+    val logs = listOf("Log 1", "Log 2")
+    val project = ProjectDto(
+        id = projectId,
+        name = "Existing Project",
+        description = "Test project",
+        createdBy = "tester",
+        projectLogs = logs,
+        projectState = "active",
+        taskStates = emptyList(),
+        projectStates = emptyList(),
+        matesUsernames = emptyList(),
+        tasks = emptyList()
+    )
+    val testProject = ProjectDto(
+        id = UUID.randomUUID().toString(),
+        name = "Test Project For create",
+        description = "A test description",
+        createdBy = "tester",
+        projectLogs = emptyList(),
+        projectState = "active",
+        taskStates = emptyList(),
+        projectStates = emptyList(),
+        matesUsernames = emptyList(),
+        tasks = emptyList()
+    )
+
+
     @Test
     fun `createProject should call insertOne with correct project`() = runTest {
         // Arrange
         val collection = mockk<MongoCollection<ProjectDto>>()
-        val testProject = ProjectDto(
-            id = UUID.randomUUID().toString(),
-            name = "Test Project For create",
-            description = "A test description",
-            createdBy = "tester",
-            projectLogs = emptyList(),
-            projectState = "active",
-            taskStates = emptyList(),
-            projectStates = emptyList(),
-            matesUsernames = emptyList(),
-            tasks = emptyList()
-        )
+
 
         coEvery {
             collection.insertOne(eq(testProject), any())
@@ -79,13 +96,98 @@ class ProjectMongoDBDataSourceTest {
         }
     }
 
+
     @Test
     fun `createProject adds a project and getProjects returns it`() {
-        testScope.launch {
-            var projects: List<ProjectDto> = emptyList()
+
+            var projects: List<ProjectDto>
             val newProject = ProjectDto(
                 id = UUID.randomUUID().toString(),
                 name = "Test Project",
+                description = "A test description",
+                createdBy = "Abdo",
+                projectLogs = listOf(),
+                projectState = "active",
+                taskStates = listOf(),
+                projectStates = listOf(),
+                matesUsernames = listOf(),
+                tasks = listOf()
+            )
+
+            val testUser = User(id = UUID.randomUUID(), "Abdo", "sgsgsggs", UserRole.ADMIN.name)
+        CurrentUser.setCurrentUser(user = testUser)
+        runTest {
+
+            projectMongoDBDataSource.createProject(newProject)
+
+            projects = projectMongoDBDataSource.getProjects()
+            println(projects)
+
+            assertEquals(true, projects.any { it.name == "Test Project" })
+
+        }
+
+       }
+
+
+    @Test
+    fun `createProject should insert successfully the project into the collection`() {
+            val testProject = ProjectDto(
+                id = "test123",
+                name = "Test Project",
+                description = "Test description",
+                createdBy = "tester",
+                projectLogs = listOf(),
+                projectState = "active",
+                taskStates = listOf(),
+                projectStates = listOf(),
+                matesUsernames = listOf("user1"),
+                tasks = listOf()
+            )
+        testScope.launch {
+            projectMongoDBDataSource.createProject(testProject)
+
+            val stored = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "test123"))
+            assertNotNull(stored)
+        }
+    }
+
+    @Test
+    fun ` Shouldn't createProject allow duplicate project if _id uniqueness `() {
+        val projectId = UUID.randomUUID().toString()
+        val logs = listOf("Log 1", "Log 2")
+        val project = ProjectDto(
+            id = projectId,
+            name = "Existing Project",
+            description = "Test project",
+            createdBy = "tester",
+            projectLogs = logs,
+            projectState = "active",
+            taskStates = emptyList(),
+            projectStates = emptyList(),
+            matesUsernames = emptyList(),
+            tasks = emptyList()
+        )
+        runTest {
+            projectMongoDBDataSource.createProject(project)
+
+            assertFailsWith<MongoWriteException> { projectMongoDBDataSource.createProject(project) }
+
+            val foundProjects =
+                copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "duplicate123"))
+                    .toList()
+            assertEquals(0, foundProjects.size)
+        }
+    }
+
+
+    @Test
+    fun `editProject should not update if project does not exist`() {
+
+            // Given
+            val nonExistentProject = ProjectDto(
+                id = "ghost",
+                name = "Test Project5",
                 description = "A test description",
                 createdBy = "tester",
                 projectLogs = listOf(),
@@ -95,16 +197,47 @@ class ProjectMongoDBDataSourceTest {
                 matesUsernames = listOf(),
                 tasks = listOf()
             )
-            val testUser = User(id = UUID.randomUUID(), "hhdhdh", "sgsgsggs", UserRole.ADMIN.name)
-            mockkObject(CurrentUser)
-            every { CurrentUser.getCurrentUser() } returns testUser
+        runTest {
+            // When
+            val result = projectMongoDBDataSource.editProject(nonExistentProject)
 
-            projectMongoDBDataSource.createProject(newProject)
+            // Then
+            val found =
+                copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "ghost"))
+                    .firstOrNull()
+            assertNull(found)
+        }
+    }
 
-            projects = projectMongoDBDataSource.getProjects()
+    @Test
+    fun `editProject should call replaceOne with correct query and project`() = runTest {
+        val collection = mockk<MongoCollection<ProjectDto>>()
+        val testProject = ProjectDto(
+            id = UUID.randomUUID().toString(),
+            name = "Edited Project",
+            description = "Updated description",
+            createdBy = "tester",
+            projectLogs = emptyList(),
+            projectState = "active",
+            taskStates = emptyList(),
+            projectStates = emptyList(),
+            matesUsernames = emptyList(),
+            tasks = emptyList()
+        )
 
-            assertEquals(true, projects.any { it.name == "Test Project" })
+        val expectedQuery = Filters.eq("_id", testProject.id)
 
+
+        coEvery {
+            collection.replaceOne(expectedQuery, testProject, any())
+        } returns mockk()
+
+        val dataSource = ProjectMongoDBDataSource(collection)
+
+        dataSource.editProject(testProject)
+
+        coVerify(exactly = 1) {
+            collection.replaceOne(expectedQuery, testProject, any())
         }
     }
 
@@ -155,112 +288,60 @@ class ProjectMongoDBDataSourceTest {
 
 
     @Test
-    fun `editProject should not update if project does not exist`() {
-        testScope.launch {
-            // Given
-            val nonExistentProject = ProjectDto(
-                id = "ghost",
-                name = "Test Project5",
-                description = "A test description",
-                createdBy = "tester",
-                projectLogs = listOf(),
-                projectState = "active",
-                taskStates = listOf(),
-                projectStates = listOf(),
-                matesUsernames = listOf(),
-                tasks = listOf()
-            )
-
-            // When
-            val result = projectMongoDBDataSource.editProject(nonExistentProject)
-
-            // Then
-            val found =
-                copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "ghost"))
-                    .firstOrNull()
-            assertNull(found)
-        }
-    }
-    @Test
-    fun `createProject should insert the project into the collection`() {
-        testScope.launch {
-            val testProject = ProjectDto(
-                id = "test123",
-                name = "Test Project",
-                description = "Test description",
-                createdBy = "tester",
-                projectLogs = listOf(),
-                projectState = "active",
-                taskStates = listOf(),
-                projectStates = listOf(),
-                matesUsernames = listOf("user1"),
-                tasks = listOf()
-            )
-
-            projectMongoDBDataSource.createProject(testProject)
-
-            val stored = copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "test123"))
-            assertNotNull(stored)
-        }
-    }
-
-    @Test
-    fun ` Shouldn't createProject allow duplicate project if _id uniqueness `() {
-        testScope.launch {
-            val project = ProjectDto(
-                id = "ghost2",
-                name = "Test Project5",
-                description = "A test description",
-                createdBy = "tester",
-                projectLogs = listOf(),
-                projectState = "active",
-                taskStates = listOf(),
-                projectStates = listOf(),
-                matesUsernames = listOf(),
-                tasks = listOf()
-            )
-
-            projectMongoDBDataSource.createProject(project)
-
-            assertFailsWith<MongoWriteException> { projectMongoDBDataSource.createProject(project) }
-
-            val foundProjects =
-                copyCollectionIfDifferentToTest.copyCollectionIfDifferent().find(Filters.eq("_id", "duplicate123"))
-                    .toList()
-            assertEquals(0, foundProjects.size)
-        }
-    }
-    @Test
-    fun `editProject should call replaceOne with correct query and project`() = runTest {
-        val collection = mockk<MongoCollection<ProjectDto>>()
-        val testProject = ProjectDto(
-            id = UUID.randomUUID().toString(),
-            name = "Edited Project",
-            description = "Updated description",
+    fun `getProjectLogsById should returns logs when project exists`() = runTest {
+        val projectId = UUID.randomUUID().toString()
+        val logs = listOf("Log 5", "Log 7")
+        val project = ProjectDto(
+            id = projectId,
+            name = "Existing Project",
+            description = "Test project",
             createdBy = "tester",
-            projectLogs = emptyList(),
+            projectLogs = logs,
             projectState = "active",
             taskStates = emptyList(),
             projectStates = emptyList(),
             matesUsernames = emptyList(),
             tasks = emptyList()
         )
+        projectMongoDBDataSource.createProject(project)
 
-        val expectedQuery = Filters.eq("_id", testProject.id)
+        val resultLogs = projectMongoDBDataSource.getProjectLogsById(projectId)
 
-
-        coEvery {
-            collection.replaceOne(expectedQuery, testProject, any())
-        } returns mockk()
-
-        val dataSource = ProjectMongoDBDataSource(collection)
-
-        dataSource.editProject(testProject)
-
-        coVerify(exactly = 1) {
-            collection.replaceOne(expectedQuery, testProject, any())
-        }
+        assertEquals(logs, resultLogs)
     }
+    @Test
+    fun `getProjectLogsById returns empty list when project does not exist`() = runTest {
+        val nonExistentId = UUID.randomUUID().toString()
+
+        val logs = projectMongoDBDataSource.getProjectLogsById(nonExistentId)
+
+        assertTrue(logs?.isEmpty() ?: false)
+    }
+
+
+    @Test
+    fun `getProjectById returns the correct project when it exists`() = runTest {
+
+
+        projectMongoDBDataSource.createProject(project)
+
+        val retrieved = projectMongoDBDataSource.getProjectById(projectId)
+
+        assertEquals(projectId, retrieved?.id)
+        assertEquals("Existing Project", retrieved?.name)
+    }
+
+    @Test
+    fun `getProjectById throws ProjectNotFoundException when project does not exist`() = runTest {
+        val nonExistentId = "id Dose not exist-different format from UUID-"
+
+        val exception  = assertFailsWith<ProjectExceptions.ProjectNotFoundException> {
+            projectMongoDBDataSource.getProjectById(nonExistentId)
+        }
+
+        assertTrue(exception is ProjectExceptions.ProjectNotFoundException)
+    }
+
 
     @AfterAll
     fun cleanup() {
