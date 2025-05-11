@@ -19,7 +19,6 @@ class CreateTaskCLI(
     private val createTaskUseCase: CreateTaskUseCase,
     private val createLogUseCase: CreateLogUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
-
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Task ===")

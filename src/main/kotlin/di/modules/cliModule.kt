@@ -1,6 +1,5 @@
 package di.modules
 
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import presentation.PlanMateCLI
 import presentation.components.ConsoleInputReader
@@ -8,7 +7,6 @@ import presentation.components.ConsoleOutputPrinter
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
-import presentation.feature.tasks.TaskAuditLogCLI
 import presentation.feature.admin.AdminCLI
 import presentation.feature.projects.*
 import presentation.feature.tasks.*
@@ -21,7 +19,7 @@ val cliModule = module {
     single<OutputPrinter> { ConsoleOutputPrinter() }
 
     single { CreateTaskCLI(get(), get(), get(), get(), get()) }
-    single { DeleteTaskCLI(get(), get(), get(), get(named("Dispatcher IO"))) }
+    single { DeleteTaskCLI(get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get(), get()) }
     single { TaskView(get(), get(), get()) }
