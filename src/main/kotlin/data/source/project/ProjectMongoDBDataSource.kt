@@ -1,9 +1,8 @@
-package org.madrid.data.source.project
+package data.source.project
 
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.project.ProjectDto
-import data.source.project.ProjectExternalDataSource
 import domain.models.logs.CurrentUser
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
