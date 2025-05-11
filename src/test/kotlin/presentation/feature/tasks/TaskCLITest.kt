@@ -35,7 +35,7 @@ class TaskCLITest {
     }
 
     @Test
-    fun `should navigate to CreateProjectCLI when user selects 1`() {
+    fun `should navigate to CreateTaskCLI when user selects 1`() {
         runTest {
             // given
             every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
@@ -87,6 +87,19 @@ class TaskCLITest {
 
             // then
             coVerify { taskView.show() }
+        }
+    }
+
+    @Test
+    fun `should navigate to taskAuditLogCLI when user selects 5`() {
+        runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { taskAuditLogCLI.show() }
         }
     }
 
