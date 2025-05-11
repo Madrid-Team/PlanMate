@@ -54,6 +54,7 @@ val excludedClasses = listOf(
     "**/data/dto/**",
     "**/data/mapper/**",
     "**/data/utils/**",
+    "**/data/source/mongoDb/**",
     "**/domain/models/**",
     "**/domain/utils/**",
     "**/presentation/Main*"
