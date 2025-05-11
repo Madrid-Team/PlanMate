@@ -18,12 +18,12 @@ import data.utils.FileCsvWriter
 import data.utils.FileValidator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.source.project.ProjectMongoDBDataSource
-import org.madrid.data.source.task.TaskMongoDBDataSource
-import org.madrid.data.source.user.UserMongoDBDataSource
-import org.madrid.data.utils.PROJECT_COLLECTION
-import org.madrid.data.utils.USER_COLLECTION
+import data.source.mongoDb.MongoClientProvider
+import data.source.project.ProjectMongoDBDataSource
+import data.source.task.TaskMongoDBDataSource
+import data.source.user.UserMongoDBDataSource
+import data.utils.PROJECT_COLLECTION
+import data.utils.USER_COLLECTION
 import java.io.File
 
 val dataSourceModule = module {

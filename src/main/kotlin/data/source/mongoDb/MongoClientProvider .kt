@@ -1,12 +1,12 @@
-package org.madrid.data.source.mongoDb
+package data.source.mongoDb
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import org.madrid.data.utils.CONNECTION_STRING
-import org.madrid.data.utils.DATABASE_NAME
+import data.utils.CONNECTION_STRING
+import data.utils.DATABASE_NAME
 
 class MongoClientProvider {
 

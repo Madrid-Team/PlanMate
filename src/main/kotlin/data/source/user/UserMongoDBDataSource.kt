@@ -1,4 +1,4 @@
-package org.madrid.data.source.user
+package data.source.user
 
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection

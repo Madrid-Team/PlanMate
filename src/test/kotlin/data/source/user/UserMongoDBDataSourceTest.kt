@@ -20,8 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
-import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.source.user.UserMongoDBDataSource
+import data.source.mongoDb.MongoClientProvider
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
