@@ -21,7 +21,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
-import org.madrid.data.source.mongoDb.MongoClientProvider
+import data.source.mongoDb.MongoClientProvider
 import java.util.*
 import kotlin.test.*
 

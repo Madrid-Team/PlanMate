@@ -22,8 +22,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
-import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.source.task.TaskMongoDBDataSource
+import data.source.mongoDb.MongoClientProvider
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

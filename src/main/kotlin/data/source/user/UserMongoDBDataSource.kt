@@ -1,9 +1,8 @@
-package org.madrid.data.source.user
+package data.source.user
 
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.authentication.UserDto
-import data.source.user.ExternalUserDataSource
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 

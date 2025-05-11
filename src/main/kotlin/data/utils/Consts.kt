@@ -1,4 +1,4 @@
-package org.madrid.data.utils
+package data.utils
 
 
 const val CONNECTION_STRING =

@@ -8,8 +8,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertDoesNotThrow
-import org.madrid.data.source.mongoDb.MongoClientProvider
-import org.madrid.data.utils.DATABASE_NAME
+import data.source.mongoDb.MongoClientProvider
+import data.utils.DATABASE_NAME
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
