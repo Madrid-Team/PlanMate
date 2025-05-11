@@ -3,8 +3,10 @@ package presentation.feature.tasks
 import domain.usecases.task.DeleteTaskUseCase
 import domain.utils.TaskExceptions
 import io.mockk.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -16,21 +18,23 @@ class DeleteTaskCLITest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
     private lateinit var deleteTaskCLI: DeleteTaskCLI
     private lateinit var testScope: TestScope
+    private lateinit var coroutineScope: CoroutineScope
 
     @BeforeEach
     fun setUp() {
-        inputReader = mockk()
+        inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
-        deleteTaskUseCase = mockk()
-        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase)
+        deleteTaskUseCase = mockk(relaxed = true)
+        coroutineScope = CoroutineScope(Dispatchers.IO)
+        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase, coroutineScope)
         testScope = TestScope()
     }
 
     @Test
     fun `should show success message when task is deleted successfully`() {
-        testScope.launch {
+        testScope.runTest {
             // given
-            every { inputReader.readInput() } returns "1"
+            every { inputReader.readInput() } returnsMany listOf("1", "2")
             coEvery { deleteTaskUseCase("1", "2") } returns Unit
 
             // when
@@ -50,8 +54,8 @@ class DeleteTaskCLITest {
     @Test
     fun `should show fail message when task deletion fails`() {
         // given
-        testScope.launch {
-            every { inputReader.readInput() } returns "2"
+        testScope.runTest {
+            every { inputReader.readInput() } returnsMany listOf("2", "1")
             coEvery { deleteTaskUseCase("2", "1") } throws TaskExceptions.TaskCannotDeleteException()
 
             // when

@@ -2,17 +2,17 @@ package presentation.feature.tasks
 
 import domain.usecases.task.DeleteTaskUseCase
 import domain.utils.TaskExceptions
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
 class DeleteTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val deleteTaskUseCase: DeleteTaskUseCase
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val coroutineScope: CoroutineScope
 ) {
-    suspend fun show() = withContext(Dispatchers.IO) {
+    fun show() = coroutineScope.launch {
         outputPrinter.printMessage("=== Delete Task ===")
         outputPrinter.printMessage("Enter Project ID:")
         val projectId = inputReader.readInput()
