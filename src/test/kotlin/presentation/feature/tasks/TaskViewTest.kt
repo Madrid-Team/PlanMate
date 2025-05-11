@@ -1,10 +1,12 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DisplayAllTasksUseCase
+import domain.utils.ProjectExceptions
 import domain.utils.TaskExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
@@ -91,10 +93,11 @@ class TaskViewTest {
 
     @Test
     fun `should display tasks when display is successful`() {
-        testScope.launch {
+        testScope.runTest {
             val projectId = "project-123"
+            val tasksOutput = "Task1\nTask2"
             every { inputReader.readInput(any()) } returns projectId
-            coEvery { displayAllTasksUseCase.display(projectId) } returns "Task 1\nTask 2"
+            coEvery { displayAllTasksUseCase.display(projectId) } returns tasksOutput
 
             taskView.show()
 
@@ -102,7 +105,26 @@ class TaskViewTest {
                 outputPrinter.printMessage("=== Display Tasks ===")
                 inputReader.readInput("Enter project ID: ")
                 displayAllTasksUseCase.display(projectId)
-                outputPrinter.printMessage("Task 1\nTask 2")
+                outputPrinter.printMessage(tasksOutput)
+            }
+        }
+    }
+
+
+    @Test
+    fun `should print error message when ProjectExceptions is thrown`() {
+        runTest {
+            val projectId = "project-123"
+            val exception = ProjectExceptions("Project not found")
+
+            every { inputReader.readInput(any()) } returns projectId
+            coEvery { displayAllTasksUseCase.display(projectId) } throws exception
+
+            taskView.show()
+
+            verify {
+                outputPrinter.printMessage("=== Display Tasks ===")
+                outputPrinter.printMessage("Project not found")
             }
         }
     }
