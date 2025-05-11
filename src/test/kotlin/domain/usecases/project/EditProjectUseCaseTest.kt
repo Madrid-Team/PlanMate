@@ -2,8 +2,8 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
+import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import domain.validation.ValidateProjectName
 import io.mockk.coEvery
 import io.mockk.mockk

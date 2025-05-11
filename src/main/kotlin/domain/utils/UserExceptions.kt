@@ -1,4 +1,4 @@
-package domain.utlis
+package domain.utils
 
 open class UserExceptions(message: String) : PlanMateExceptions(message) {
     class UserNameOrPasswordError : UserExceptions("Wrong password or user name")

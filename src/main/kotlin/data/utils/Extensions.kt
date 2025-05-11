@@ -1,9 +1,9 @@
 package data.utils
 
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
-import domain.utlis.TaskExceptions
-import domain.utlis.UserExceptions
+import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
+import domain.utils.TaskExceptions
+import domain.utils.UserExceptions
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException

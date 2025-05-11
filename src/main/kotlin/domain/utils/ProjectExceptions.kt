@@ -1,4 +1,4 @@
-package domain.utlis
+package domain.utils
 
 open class ProjectExceptions(message: String) : PlanMateExceptions(message){
     class ProjectNotFoundException : ProjectExceptions("Project not found")

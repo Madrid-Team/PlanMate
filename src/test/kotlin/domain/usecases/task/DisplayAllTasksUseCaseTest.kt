@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.usecases.createProject
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

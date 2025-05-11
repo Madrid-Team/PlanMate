@@ -7,7 +7,7 @@ import domain.models.logs.OperationType
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach

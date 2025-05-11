@@ -1,7 +1,7 @@
 package domain.validation
 
 import domain.models.project.Project
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 
 class ValidateProjectName {
     operator fun invoke(project: Project) {

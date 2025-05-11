@@ -2,7 +2,7 @@ package domain.usecases.logs
 
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.utlis.convertDateIntoReadableDate
+import domain.utils.convertDateIntoReadableDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime

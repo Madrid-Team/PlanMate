@@ -3,7 +3,7 @@ package domain.usecases.user
 import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.EditTaskUseCase
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

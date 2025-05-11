@@ -1,4 +1,4 @@
-package domain.utlis
+package domain.utils
 
 open class TaskExceptions(message: String) : PlanMateExceptions(message) {
     class TaskNotFoundException(error: String? = "This task not found") : TaskExceptions(error ?: "This task not found")

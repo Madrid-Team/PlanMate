@@ -1,7 +1,7 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.launch

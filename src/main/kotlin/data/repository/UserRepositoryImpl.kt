@@ -6,7 +6,7 @@ import data.source.user.UserExternalDataSource
 import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 
 class UserRepositoryImpl(
     private val userExternalDataSource: UserExternalDataSource,

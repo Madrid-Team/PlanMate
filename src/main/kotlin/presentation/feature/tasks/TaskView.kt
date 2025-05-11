@@ -2,7 +2,7 @@ package presentation.feature.tasks
 
 
 import domain.usecases.task.DisplayAllTasksUseCase
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

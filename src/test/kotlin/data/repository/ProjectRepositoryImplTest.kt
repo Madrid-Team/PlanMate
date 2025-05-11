@@ -7,8 +7,8 @@ import data.mapper.toDto
 import data.source.project.ProjectExternalDataSource
 import data.source.project.ProjectManager
 import domain.models.project.Project
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
+import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest

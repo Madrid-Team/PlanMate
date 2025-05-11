@@ -2,7 +2,7 @@ package domain.validation
 
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import java.util.*
 
 class ValidateUser(

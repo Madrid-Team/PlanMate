@@ -6,7 +6,7 @@ import data.repository.UserRepositoryImpl
 import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import domain.validation.ValidateUser
 import io.mockk.*
 import kotlinx.coroutines.launch

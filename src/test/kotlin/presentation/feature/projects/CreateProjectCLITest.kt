@@ -6,7 +6,7 @@ import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

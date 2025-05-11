@@ -6,8 +6,8 @@ import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utlis.PlanMateExceptions
-import domain.utlis.ProjectExceptions
+import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

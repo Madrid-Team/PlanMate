@@ -4,8 +4,8 @@ import com.google.common.truth.Truth.assertThat
 import data.mapper.toDto
 import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
-import domain.utlis.UserExceptions
-import domain.utlis.UserExceptions.UserExist
+import domain.utils.UserExceptions
+import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

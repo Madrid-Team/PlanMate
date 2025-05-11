@@ -1,4 +1,4 @@
-package domain.utlis
+package domain.utils
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

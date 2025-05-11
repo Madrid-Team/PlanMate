@@ -2,7 +2,7 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest

@@ -6,7 +6,7 @@ import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import kotlinx.coroutines.*
 import presentation.components.InputReader
 import presentation.components.OutputPrinter

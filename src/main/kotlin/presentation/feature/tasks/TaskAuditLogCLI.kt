@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.GetTaskLogsUseCase
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

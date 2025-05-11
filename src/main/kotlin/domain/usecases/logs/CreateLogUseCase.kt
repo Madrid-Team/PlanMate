@@ -2,7 +2,7 @@ package domain.usecases.logs
 
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.utlis.convertDateIntoReadableDate
+import domain.utils.convertDateIntoReadableDate
 import java.time.LocalDateTime
 
 class CreateLogUseCase {

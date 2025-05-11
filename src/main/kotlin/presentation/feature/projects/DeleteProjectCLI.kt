@@ -1,7 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.DeleteProjectUseCase
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

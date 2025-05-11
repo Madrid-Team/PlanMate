@@ -1,7 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetAllProjectsUseCase
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 

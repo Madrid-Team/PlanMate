@@ -5,7 +5,7 @@ import data.source.task.helperTaskDto
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.task.createTask
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import io.mockk.mockk
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

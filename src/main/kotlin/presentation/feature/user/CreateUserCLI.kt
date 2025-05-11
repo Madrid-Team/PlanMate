@@ -4,7 +4,7 @@ import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.usecases.user.CreateUserUseCase
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

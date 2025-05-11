@@ -11,7 +11,7 @@ import data.CopyCollectionIfDifferentToTest
 import data.dto.authentication.UserDto
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

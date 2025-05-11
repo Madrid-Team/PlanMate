@@ -3,7 +3,7 @@ package presentation.feature.tasks
 import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader

@@ -6,7 +6,7 @@ import data.source.project.ProjectExternalDataSource
 import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 
 class ProjectRepositoryImpl(
     private val projectExternalDataSource: ProjectExternalDataSource,

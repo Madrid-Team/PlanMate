@@ -3,7 +3,7 @@ package domain.usecases.user
 
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 import domain.validation.ValidateUser
 
 class LoginUserUseCase(private val userRepository: UserRepository) {

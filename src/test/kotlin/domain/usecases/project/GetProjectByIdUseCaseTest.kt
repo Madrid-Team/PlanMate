@@ -3,9 +3,8 @@ package domain.usecases.project
 import com.google.common.truth.Truth.assertThat
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach

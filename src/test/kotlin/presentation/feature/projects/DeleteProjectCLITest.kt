@@ -3,7 +3,7 @@ package presentation.feature.projects
 import domain.models.project.Project
 import domain.usecases.project.DeleteProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utlis.ProjectExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DeleteTaskUseCase
-import domain.utlis.TaskExceptions
+import domain.utils.TaskExceptions
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

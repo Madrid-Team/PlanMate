@@ -2,7 +2,7 @@ package domain.usecases.user
 
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.utlis.UserExceptions
+import domain.utils.UserExceptions
 
 class DeleteUserUseCase(
     private val userRepository: UserRepository

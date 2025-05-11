@@ -1,7 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetProjectLogsByIdUseCase
-import domain.utlis.PlanMateExceptions
+import domain.utils.PlanMateExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
