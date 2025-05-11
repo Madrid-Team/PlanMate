@@ -3,8 +3,8 @@ package presentation.feature.tasks
 import domain.usecases.task.GetTaskLogsUseCase
 import domain.utils.TaskExceptions
 import io.mockk.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -13,7 +13,7 @@ import kotlin.test.Test
 class TaskAuditLogCLITest {
     private lateinit var reader: InputReader
     private lateinit var printer: OutputPrinter
-    private lateinit var useCase: GetTaskLogsUseCase
+    private lateinit var getTaskLogUseCase: GetTaskLogsUseCase
     private lateinit var cli: TaskAuditLogCLI
     private lateinit var testScope: TestScope
 
@@ -21,35 +21,36 @@ class TaskAuditLogCLITest {
     fun setup() {
         reader = mockk()
         printer = mockk(relaxed = true)
-        useCase = mockk()
-        cli = TaskAuditLogCLI(reader, printer, useCase)
+        getTaskLogUseCase = mockk(relaxed = true)
+        cli = TaskAuditLogCLI(reader, printer, getTaskLogUseCase)
         testScope = TestScope()
     }
 
     @Test
     fun `show should print audit logs when logs exist`() {
-        testScope.launch {
-            val taskId = "task-123"
-            val logs = listOf("Log A", "Log B")
-
-            every { reader.readInput(any()) } returns taskId
-            coEvery { useCase("1", taskId) } returns logs
+        testScope.runTest {
+            every { reader.readInput("Enter Project ID:") } returns projectId
+            every { reader.readInput("Enter Task ID to view audit logs: ") } returns taskId
+            coEvery { getTaskLogUseCase(projectId = projectId, taskId = taskId) } returns logs
 
             cli.show()
 
-            verify { printer.printMessage("Audit logs for task id: $taskId\n") }
-            verify { printer.printMessage("- Log A\n") }
-            verify { printer.printMessage("- Log B\n") }
+            verifySequence {
+                printer.printMessage("=== Task Audit Log ===")
+                reader.readInput("Enter Project ID:")
+                reader.readInput("Enter Task ID to view audit logs: ")
+                printer.printMessage("Audit logs for task id: $taskId\n")
+                printer.printMessage("- Log A\n")
+                printer.printMessage("- Log B\n")
+            }
         }
     }
 
     @Test
     fun `show should print no logs message when logs are empty`() {
-        testScope.launch {
-            val taskId = "task-empty"
-
+        testScope.runTest {
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase("1", taskId) } returns emptyList()
+            coEvery { getTaskLogUseCase("1", taskId) } returns emptyList()
 
             cli.show()
 
@@ -59,16 +60,15 @@ class TaskAuditLogCLITest {
 
     @Test
     fun `should print message when no logs are found`() {
-        testScope.launch {
-            val taskId = "task-123"
-
+        testScope.runTest {
             every { reader.readInput(any()) } returns taskId
-            coEvery { useCase("", taskId) } returns emptyList()
+            coEvery { getTaskLogUseCase("", taskId) } returns emptyList()
 
             cli.show()
 
             verifySequence {
                 printer.printMessage("=== Task Audit Log ===")
+                reader.readInput("Enter Project ID:")
                 reader.readInput("Enter Task ID to view audit logs: ")
                 printer.printMessage("No audit logs found for this task id : $taskId\n")
             }
@@ -77,21 +77,22 @@ class TaskAuditLogCLITest {
 
     @Test
     fun `should print error message when exception is thrown`() {
-        testScope.launch {
-            val taskId = "task-123"
-            val errorMessage = "Task not found"
-
-            every { reader.readInput(any()) } returns taskId
-            coEvery { useCase("", taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
+        testScope.runTest {
+            every { reader.readInput("Enter Project ID:") } returns projectId
+            every { reader.readInput("Enter Task ID to view audit logs: ") } returns taskId
+            coEvery { getTaskLogUseCase(projectId, taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
 
             cli.show()
 
             verifySequence {
                 printer.printMessage("=== Task Audit Log ===")
-                reader.readInput("Enter Task ID to view audit logs: ")
-                printer.printError(errorMessage = "Failed to fetch audit logs : ${errorMessage}\n")
-
+                printer.printError("Failed to fetch audit logs : $errorMessage\n")
             }
         }
     }
+
+    val projectId = "proj-123"
+    private val taskId = "task-123"
+    val logs = listOf("Log A", "Log B")
+    private val errorMessage = "Task not found"
 }
