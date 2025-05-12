@@ -68,6 +68,17 @@ class UserRepositoryImpl(
         }
     }
 
+    override suspend fun login(username: String, password: String): User {
+        return try {
+            executeUserOperation {
+                val user =userExternalDataSource.login(username,password)
+                user?.let { currentUserProvider.setCurrentUser(it) }
+                user ?: throw UserExceptions.UserNotFoundException()
+            }.toDomain()
+        }catch (e:Exception){
+            throw e.toUserException()
+        }
+    }
 
 
     private suspend fun <T> executeUserOperation(operation: suspend () -> T): T {

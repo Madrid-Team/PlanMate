@@ -1,8 +1,10 @@
 package data.source.user
 
+import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.dto.authentication.UserDto
+import data.utils.PASSWORD
 import data.utils.USER_ID
 import data.utils.USER_NAME
 import kotlinx.coroutines.flow.firstOrNull
@@ -29,8 +31,16 @@ class UserMongoDBDataSource(
         return collection.find().toList()
     }
 
-    override suspend fun getUserByName(userName: String): UserDto? {
-        val filter = eq(USER_NAME, userName)
+    override suspend fun login(username: String, password: String): UserDto? {
+        val filter = and(
+            eq(USER_NAME, username),
+            eq(PASSWORD, password)
+        )
+        return collection.find(filter).firstOrNull()
+    }
+
+    override suspend fun getUserByName(username: String): UserDto? {
+        val filter = eq(USER_NAME, username)
         return collection.find(filter).firstOrNull()
     }
 }

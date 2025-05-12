@@ -18,6 +18,7 @@ const val TASK_ID = "_id"
 
 const val USER_ID = "_id"
 const val USER_NAME = "username"
+const val PASSWORD = "passwordHash"
 
 
 const val MATES_USER_NAMES = "matesUsernames"
