@@ -4,6 +4,7 @@ import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.projects.ProjectCLI
 import presentation.feature.tasks.TaskCLI
+import presentation.utils.*
 
 class MateCLI(
     private val inputReader: InputReader,
@@ -13,16 +14,13 @@ class MateCLI(
     ) {
     suspend fun showMateMenu() {
         while (true) {
-            outputPrinter.printMessage("=== Mate Menu ===")
-            outputPrinter.printMessage("1. View my tasks")
-            outputPrinter.printMessage("2. View projects")
-            outputPrinter.printMessage("0. Log out")
+            outputPrinter.printMenuItems(listOf(String.mateMenu, String.viewTaskMenu, String.viewProjects, String.logout))
 
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> taskCLI.show()
-                "2" -> projectCLI.showProjects()
-                "0" -> return
-                else -> outputPrinter.printError("Invalid option.")
+            when (inputReader.readInput(String.selectOption)) {
+                String.selectionOne -> taskCLI.show()
+                String.selectionTwo -> projectCLI.showProjects()
+                String.selectionZero -> return
+                else -> outputPrinter.printError(String.invalidOption)
             }
         }
     }
