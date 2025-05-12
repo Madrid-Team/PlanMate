@@ -18,7 +18,7 @@ class TaskAuditLogCLI(
         try {
             val projectId = inputReader.readInput(String.enterProjectId)
             val taskId = inputReader.readInput(String.enterTaskIdToViewLogs)
-            val logs = getTaskLogsUseCase(projectId, taskId)
+            val logs = getTaskLogsUseCase.getTaskLogs(projectId, taskId)
             if (logs.isEmpty()) {
                 outputPrinter.printMessage(String.taskLogNotFound.format(taskId))
             } else {
