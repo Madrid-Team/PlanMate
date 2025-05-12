@@ -6,7 +6,7 @@ import domain.repository.ProjectRepository
 class GetAllProjectsUseCase(
     private val projectRepository: ProjectRepository
 ) {
-    suspend operator fun invoke(): List<Project> {
+    suspend fun execute(): List<Project> {
         return projectRepository.getAllProjects()
     }
 }

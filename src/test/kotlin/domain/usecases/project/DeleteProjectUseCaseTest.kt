@@ -1,7 +1,7 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -12,40 +12,42 @@ import org.junit.jupiter.api.assertThrows
 
 class DeleteProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
+    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
     private lateinit var deleteProjectUseCase: DeleteProjectUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk()
-        deleteProjectUseCase = DeleteProjectUseCase(projectRepository)
+        getProjectByIdUseCase = mockk()
+        deleteProjectUseCase = DeleteProjectUseCase(projectRepository, getProjectByIdUseCase)
     }
 
     @Test
-    fun `deleteProject should return a success result when project deleted successfully`() {
+    fun `should delete project when it exists`() {
         runTest {
             //Given
-            val projectId = 1
-            coEvery { projectRepository.deleteProject(projectId.toString()) } returns Unit
+            val projectId = "project-123"
+            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
+            coEvery { projectRepository.deleteProject(projectId) } returns Unit
 
             //When
             assertDoesNotThrow {
-                deleteProjectUseCase(projectId.toString())
+                deleteProjectUseCase.execute(projectId)
             }
         }
     }
 
     @Test
-    fun `deleteProject should return a failure result when project not deleted successfully`() {
+    fun `should throw exception when project does not exist`() {
         runTest {
             //Given
-            val projectId = 1
-            coEvery { projectRepository.deleteProject(projectId.toString()) } throws PlanMateExceptions("")
+            val projectId = "not-found"
+            coEvery { getProjectByIdUseCase.getById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             //When
-            assertThrows<PlanMateExceptions> {
-                deleteProjectUseCase(projectId.toString())
+            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+                deleteProjectUseCase.execute(projectId)
             }
         }
     }
-
 }

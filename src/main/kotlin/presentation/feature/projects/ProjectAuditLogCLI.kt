@@ -16,7 +16,7 @@ class ProjectAuditLogCLI(
         printer.printMessage("=== Project Audit Log ===")
         val projectId = reader.readInput("Enter Project ID to view audit logs: ")
         try {
-            val logs = getProjectLogsByIdUseCase(projectId)
+            val logs = getProjectLogsByIdUseCase.execute(projectId)
             if (logs.isEmpty()) {
                 printer.printMessage("No audit logs found for project ID: $projectId\n")
             } else {

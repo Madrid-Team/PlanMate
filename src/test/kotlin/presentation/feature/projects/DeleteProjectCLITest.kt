@@ -1,12 +1,8 @@
 package presentation.feature.projects
 
-import domain.models.project.Project
 import domain.usecases.project.DeleteProjectUseCase
-import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
@@ -17,80 +13,69 @@ class DeleteProjectCLITest {
 
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
-    private val deleteUseCase = mockk<DeleteProjectUseCase>()
-    private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>()
-    private val mockProject = mockk<Project>()
-    private lateinit var testScope: TestScope
+    private val deleteProjectUseCase = mockk<DeleteProjectUseCase>()
 
     private lateinit var cli: DeleteProjectCLI
 
     @BeforeEach
     fun setUp() {
-        cli = DeleteProjectCLI(inputReader, outputPrinter, deleteUseCase)
-        testScope = TestScope()
+        cli = DeleteProjectCLI(inputReader, outputPrinter, deleteProjectUseCase)
     }
 
     @Test
-    fun `show function should print Project deleted successfully when project deleted`() {
-        runTest {
-            // Given
-            every { inputReader.readInput(any()) } returns "1" andThen "yes"
-            coEvery { getProjectByIdUseCase.invoke("1") } returns mockProject
-            coEvery { deleteUseCase("1") } returns mockk()
+    fun `should delete project when user confirms`() = runTest {
+        // Given
+        every { inputReader.readInput("Enter project ID to delete: ") } returns "project-123"
+        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
+        coEvery { deleteProjectUseCase.execute("project-123") } just runs
 
-            // When
-            cli.show()
+        // When
+        cli.show()
 
-            // Then
-            verify { outputPrinter.printMessage("Project deleted successfully.") }
-        }
+        // Then
+        verify { outputPrinter.printMessage("Project deleted successfully.") }
+        coVerify { deleteProjectUseCase.execute("project-123") }
     }
 
     @Test
-    fun `show function should print Deletion cancelled when cancel project deletion`() {
-        runTest {
-            // Given
-            every { inputReader.readInput(any()) } returns "2" andThen "no"
-            coEvery { getProjectByIdUseCase.invoke("2") } returns mockProject
+    fun `should cancel deletion when user does not confirm`() = runTest {
+        // Given
+        every { inputReader.readInput("Enter project ID to delete: ") } returns "project-123"
+        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "no"
 
-            // When
-            cli.show()
+        // When
+        cli.show()
 
-            // Then
-            verify { outputPrinter.printMessage("Deletion cancelled.") }
-            coVerify(exactly = 0) { deleteUseCase(any()) }
-        }
+        // Then
+        verify { outputPrinter.printMessage("Deletion cancelled.") }
+        coVerify(exactly = 0) { deleteProjectUseCase.execute(any()) }
     }
 
     @Test
-    fun `show function should print Failed to delete project Not found when can't delete project`() {
-        testScope.launch {
-            // Given
-            every { inputReader.readInput(any()) } returns "3" andThen "yes"
-            coEvery { getProjectByIdUseCase.invoke("3") } returns mockProject
-            coEvery { deleteUseCase("3") } throws Exception("Not found")
+    fun `should show error message when project not found`() = runTest {
+        // Given
+        every { inputReader.readInput("Enter project ID to delete: ") } returns "invalid-id"
+        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
+        coEvery { deleteProjectUseCase.execute("invalid-id") } throws ProjectExceptions.ProjectNotFoundException()
 
-            // When
-            cli.show()
+        // When
+        cli.show()
 
-            // Then
-            verify { outputPrinter.printMessage("Failed to delete project: Not found") }
-        }
+        // Then
+        verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
     }
 
     @Test
-    fun `show function should print Project not found when project not found`() {
-        testScope.launch {
-            // Given
-            every { inputReader.readInput(any()) } returns "4"
-            coEvery { getProjectByIdUseCase.invoke("4") } throws ProjectExceptions.ProjectNotFoundException()
+    fun `should show error message when other exception occurs`() = runTest {
+        // Given
+        every { inputReader.readInput("Enter project ID to delete: ") } returns "error-id"
+        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
+        coEvery { deleteProjectUseCase.execute("error-id") } throws Exception("Unexpected error")
 
-            // When
-            cli.show()
+        // When
+        cli.show()
 
-            // Then
-            verify { outputPrinter.printMessage("Project not found") }
-            coVerify(exactly = 0) { deleteUseCase(any()) }
-        }
+        // Then
+        verify { outputPrinter.printMessage("Failed to delete project: Unexpected error") }
     }
 }

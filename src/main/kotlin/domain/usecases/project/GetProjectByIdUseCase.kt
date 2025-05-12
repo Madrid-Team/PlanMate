@@ -2,9 +2,15 @@ package domain.usecases.project
 
 import domain.models.project.Project
 import domain.repository.ProjectRepository
+import domain.utils.ProjectExceptions
 
 class GetProjectByIdUseCase(
     private val projectRepository: ProjectRepository
 ) {
-    suspend fun invoke(id: String): Project = projectRepository.getProjectById(id)
+    suspend fun getById(id: String): Project {
+        if (id.isBlank()) {
+            throw ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty")
+        }
+        return projectRepository.getProjectById(id)
+    }
 }

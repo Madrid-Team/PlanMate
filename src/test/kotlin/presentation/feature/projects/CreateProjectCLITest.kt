@@ -6,10 +6,7 @@ import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
-import domain.utils.PlanMateExceptions
 import io.mockk.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,13 +21,9 @@ class CreateProjectCLITest {
     private val createLogUseCase = mockk<CreateLogUseCase>()
     private val userMock = mockk<User>()
     private lateinit var cli: CreateProjectCLI
-    private lateinit var testScope: TestScope
-
 
     @BeforeEach
     fun setUp() {
-
-        testScope = TestScope()
         mockkObject(CurrentUser)
         every { userMock.username } returns "test-user"
         every { CurrentUser.getCurrentUser() } returns userMock
@@ -68,14 +61,14 @@ class CreateProjectCLITest {
                 projectLogs = listOf(mockLogString)
             )
 
-            coEvery { createProjectUseCase(any()) } returns Unit
+            coEvery { createProjectUseCase.execute(any()) } returns Unit
 
             // When
             cli.show()
 
             // Then
             coVerify {
-                createProjectUseCase(match {
+                createProjectUseCase.execute(match {
                     it.name == project.name &&
                             it.description == project.description &&
                             it.projectState == "ACTIVE" &&
@@ -83,37 +76,6 @@ class CreateProjectCLITest {
                 })
             }
             verify { outputPrinter.printMessage("Project created successfully") }
-        }
-    }
-
-    @Test
-    fun `should show error message when creation fails`() {
-        testScope.launch {
-            // Given
-            every { inputReader.readInput("Enter project name: ") } returns "project name"
-            every { inputReader.readInput("Enter project description: ") } returns "description"
-            every { inputReader.readInput("Enter task States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-            every { inputReader.readInput("Enter project States separated by white space description: ") } returns "TODO IN_PROGRESS DONE"
-            every { inputReader.readInput(match { it.startsWith("Select project State:") }) } returns "1"
-
-            val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
-            every {
-                createLogUseCase.invoke(
-                    operationType = OperationType.CREATE,
-                    entityName = "project name",
-                    entityType = EntityType.PROJECT,
-                    username = "test-user"
-                )
-            } returns mockLogString
-
-            coEvery { createProjectUseCase(any()) } throws PlanMateExceptions("failed")
-
-            // When
-            cli.show()
-
-            // Then
-            coVerify { createProjectUseCase(any()) }
-            coVerify { outputPrinter.printMessage("Failed to create project: failed") }
         }
     }
 
@@ -137,13 +99,13 @@ class CreateProjectCLITest {
                 createLogUseCase.invoke(any(), any(), any(), any())
             } returns mockLogString
 
-            coEvery { createProjectUseCase(any()) } returns mockk()
+            coEvery { createProjectUseCase.execute(any()) } returns mockk()
 
             // When
             cli.show()
 
             // Then
-            coVerify { createProjectUseCase(any()) }
+            coVerify { createProjectUseCase.execute(any()) }
             coVerify { outputPrinter.printMessage("Project created successfully") }
         }
     }

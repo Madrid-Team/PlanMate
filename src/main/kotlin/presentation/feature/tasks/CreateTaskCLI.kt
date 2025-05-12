@@ -38,7 +38,7 @@ class CreateTaskCLI(
         val title = inputReader.readInput("Enter task title: ")
         val description = inputReader.readInput("Enter task description: ")
 
-        val project = getProjectByIdUseCase.invoke(projectId)
+        val project = getProjectByIdUseCase.getById(projectId)
 
         outputPrinter.printMessage("Available task states:")
         project.taskStates.forEachIndexed { index, state ->

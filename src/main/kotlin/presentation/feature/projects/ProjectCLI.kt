@@ -39,7 +39,7 @@ class ProjectCLI(
 
     suspend fun showProjects() {
         try {
-            getAllProjectsUseCase().also {
+            getAllProjectsUseCase.execute().also {
                 projectView.projectList(it)
             }
         } catch (e: PlanMateExceptions) {

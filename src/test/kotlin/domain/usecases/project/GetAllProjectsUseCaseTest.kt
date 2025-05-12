@@ -2,7 +2,7 @@ package domain.usecases.project
 
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -30,10 +30,10 @@ class GetAllProjectsUseCaseTest {
             coEvery { projectRepository.getAllProjects() } returns mockProjects
 
             // When
-            val result = getAllProjectsUseCase()
+            val result = getAllProjectsUseCase.execute()
 
             // Then
-            assertDoesNotThrow { getAllProjectsUseCase() }
+            assertDoesNotThrow { getAllProjectsUseCase.execute() }
             assertEquals(mockProjects, result)
         }
     }
@@ -42,11 +42,11 @@ class GetAllProjectsUseCaseTest {
     fun `should throw exception when repository fails`() {
         runTest {
             // Given
-            coEvery { projectRepository.getAllProjects() } throws PlanMateExceptions("Failed to fetch projects")
+            coEvery { projectRepository.getAllProjects() } throws ProjectExceptions("Failed to fetch projects")
 
             // When & Then
-            assertThrows<PlanMateExceptions> {
-                getAllProjectsUseCase()
+            assertThrows<ProjectExceptions> {
+                getAllProjectsUseCase.execute()
             }
         }
     }

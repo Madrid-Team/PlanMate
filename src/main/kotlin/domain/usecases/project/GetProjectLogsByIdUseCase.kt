@@ -3,8 +3,12 @@ package domain.usecases.project
 import domain.repository.ProjectRepository
 
 class GetProjectLogsByIdUseCase(
-    private val projectRepository: ProjectRepository
+    private val projectRepository: ProjectRepository,
+    private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
-    suspend operator fun invoke(id: String): List<String> =
-        projectRepository.getProjectLogsById(id)
+    suspend fun execute(id: String): List<String> {
+        getProjectByIdUseCase.getById(id)
+
+        return projectRepository.getProjectLogsById(id)
+    }
 }

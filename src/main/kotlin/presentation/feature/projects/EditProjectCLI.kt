@@ -1,10 +1,8 @@
 package presentation.feature.projects
 
-import domain.models.logs.EntityType
-import domain.models.logs.OperationType
-import domain.models.project.Project
-import domain.usecases.logs.CreateLogUseCase
-import domain.usecases.project.EditProjectUseCase
+import domain.usecases.project.EditProjectDescriptionUseCase
+import domain.usecases.project.EditProjectNameUseCase
+import domain.usecases.project.EditProjectStateUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
@@ -16,16 +14,17 @@ import presentation.components.OutputPrinter
 class EditProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val editProjectUseCase: EditProjectUseCase,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase,
-    private val createLogUseCase: CreateLogUseCase
+    private val editProjectNameUseCase: EditProjectNameUseCase,
+    private val editProjectDescriptionUseCase: EditProjectDescriptionUseCase,
+    private val editProjectStateUseCase: EditProjectStateUseCase,
+    private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Edit Project ===")
         val id = inputReader.readInput("Enter the ID of the project to edit:")
         try {
-            val currentProject = getProjectByIdUseCase.invoke(id)
-            var updatedProject = currentProject.copy()
+            val currentProject = getProjectByIdUseCase.getById(id)
+            var hasChanges = false
 
             while (true) {
                 outputPrinter.printMessage("Choose fields to edit")
@@ -37,12 +36,24 @@ class EditProjectCLI(
                 when (inputReader.readInput("Select an option:")) {
                     "1" -> {
                         val newName = inputReader.readInput("Enter the new name:")
-                        updatedProject = updatedProject.copy(name = newName)
+                        try {
+                            editProjectNameUseCase.execute(currentProject.id, newName)
+                            outputPrinter.printMessage("Project name updated successfully.")
+                            hasChanges = true
+                        } catch (e: PlanMateExceptions) {
+                            outputPrinter.printMessage("Failed to update project name: ${e.message}")
+                        }
                     }
 
                     "2" -> {
                         val newDescription = inputReader.readInput("Enter the new description:")
-                        updatedProject = updatedProject.copy(description = newDescription)
+                        try {
+                            editProjectDescriptionUseCase.execute(currentProject.id, newDescription)
+                            outputPrinter.printMessage("Project description updated successfully.")
+                            hasChanges = true
+                        } catch (e: PlanMateExceptions) {
+                            outputPrinter.printMessage("Failed to update project description: ${e.message}")
+                        }
                     }
 
                     "3" -> {
@@ -56,36 +67,28 @@ class EditProjectCLI(
 
                             val selectedIndex = projectStateInput.toIntOrNull()?.minus(1)
                             if (selectedIndex != null && selectedIndex in 0 until currentProject.projectStates.size) {
-                                updatedProject =
-                                    updatedProject.copy(projectState = currentProject.projectStates[selectedIndex])
+                                val newState = currentProject.projectStates[selectedIndex]
+                                try {
+                                    editProjectStateUseCase.execute(currentProject.id, newState)
+                                    outputPrinter.printMessage("Project state updated successfully.")
+                                    hasChanges = true
+                                } catch (e: PlanMateExceptions) {
+                                    outputPrinter.printMessage("Failed to update project state: ${e.message}")
+                                }
                                 break
                             } else {
                                 println("Invalid selection. Please enter a valid state id ")
                             }
                         }
-
                     }
 
                     "4" -> {
-                        //no updates entered
-                        if (currentProject == updatedProject) {
-                            break
+                        if (hasChanges) {
+                            outputPrinter.printMessage("Project edited successfully.")
                         } else {
-                            try {
-                                editProjectUseCase(
-                                    updatedProject.copy(
-                                        projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
-                                            currentProject,
-                                            updatedProject
-                                        )
-                                    )
-                                )
-                                outputPrinter.printMessage("Project edited successfully.")
-                                break
-                            } catch (e: PlanMateExceptions) {
-                                outputPrinter.printMessage("Failed to edit project: ${e.message}")
-                            }
+                            outputPrinter.printMessage("No changes were made to the project.")
                         }
+                        break
                     }
 
                     else -> outputPrinter.printMessage("Invalid option. Please try again.")
@@ -93,51 +96,8 @@ class EditProjectCLI(
             }
         } catch (e: ProjectExceptions.ProjectNotFoundException) {
             outputPrinter.printMessage(e.message ?: "Project not found")
+        }catch (e: ProjectExceptions.NoChangesException){
+            outputPrinter.printMessage(e.message ?: "No changes were made to the project")
         }
-    }
-
-    private fun getLogsForAllChangesInUpdatedProject(currentProject: Project, updatedProject: Project): List<String> {
-        val listOfLogs = mutableListOf<String>()
-        if (updatedProject.name != currentProject.name) {
-            listOfLogs.add(
-                createLogUseCase.invoke(
-                    operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
-                    fieldName = "name",
-                    oldValue = currentProject.name,
-                    newValue = updatedProject.name,
-                )
-            )
-        }
-
-        if (updatedProject.description != currentProject.description) {
-            listOfLogs.add(
-                createLogUseCase.invoke(
-                    operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
-                    fieldName = "description",
-                    oldValue = currentProject.description,
-                    newValue = updatedProject.description,
-                )
-            )
-        }
-        if (updatedProject.projectState != currentProject.projectState) {
-            listOfLogs.add(
-                createLogUseCase.invoke(
-                    operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
-                    fieldName = "project state",
-                    oldValue = currentProject.projectState,
-                    newValue = updatedProject.projectState,
-                )
-            )
-        }
-        return listOfLogs
     }
 }

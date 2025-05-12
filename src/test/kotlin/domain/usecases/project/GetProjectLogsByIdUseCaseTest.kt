@@ -1,52 +1,55 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
 class GetProjectLogsByIdUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
+    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
     private lateinit var getProjectLogsByIdUseCase: GetProjectLogsByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk()
-        getProjectLogsByIdUseCase = GetProjectLogsByIdUseCase(projectRepository)
+        getProjectByIdUseCase = mockk()
+        getProjectLogsByIdUseCase = GetProjectLogsByIdUseCase(projectRepository, getProjectByIdUseCase)
     }
 
     @Test
-    fun `getProjectLogs should return true when project repository called and return success result`() {
+    fun `should return project logs when project exists`() {
         runTest {
             //Given
-            val projectId = 1
-            coEvery { projectRepository.getProjectLogsById(projectId.toString()) } returns listOf()
+            val projectId = "project-123"
+            val expectedLogs = listOf("Log 1", "Log 2")
+
+            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
+            coEvery { projectRepository.getProjectLogsById(projectId) } returns expectedLogs
 
             //When
-            assertDoesNotThrow {
-                getProjectLogsByIdUseCase(projectId.toString())
-            }
+            val result = getProjectLogsByIdUseCase.execute(projectId)
+
+            //Then
+            assert(result == expectedLogs)
         }
     }
 
     @Test
-    fun `getProjectLogs should return false when project repository called and return failure result`() {
+    fun `should throw exception when project does not exist`() {
         runTest {
             //Given
-            val projectId = 1
-            coEvery { projectRepository.getProjectLogsById(projectId.toString()) } throws PlanMateExceptions("")
+            val projectId = "not-found"
+            coEvery { getProjectByIdUseCase.getById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             //When
-            assertThrows<PlanMateExceptions> {
-
-                getProjectLogsByIdUseCase(projectId.toString())
+            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+                getProjectLogsByIdUseCase.execute(projectId)
             }
         }
     }
-
 }

@@ -6,8 +6,6 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
@@ -20,7 +18,6 @@ class ProjectAuditLogCLITest {
     private lateinit var printer: OutputPrinter
     private lateinit var useCase: GetProjectLogsByIdUseCase
     private lateinit var cli: ProjectAuditLogCLI
-    private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
@@ -28,7 +25,6 @@ class ProjectAuditLogCLITest {
         printer = mockk(relaxed = true)
         useCase = mockk()
         cli = ProjectAuditLogCLI(reader, printer, useCase)
-        testScope = TestScope()
     }
 
     @Test
@@ -38,7 +34,7 @@ class ProjectAuditLogCLITest {
             val logs = listOf("Created", "Updated", "Deleted")
 
             every { reader.readInput(any()) } returns projectId
-            coEvery { useCase(projectId) } returns logs
+            coEvery { useCase.execute(projectId) } returns logs
 
             cli.show()
 
@@ -59,7 +55,7 @@ class ProjectAuditLogCLITest {
             val projectId = "456"
 
             every { reader.readInput(any()) } returns projectId
-            coEvery { useCase(projectId) } returns emptyList()
+            coEvery { useCase.execute(projectId) } returns emptyList()
 
             cli.show()
 
@@ -72,21 +68,19 @@ class ProjectAuditLogCLITest {
     }
 
     @Test
-    fun `show should print error when use case fails`() {
-        testScope.launch {
-            val projectId = "789"
-            val exception = RuntimeException("Something went wrong")
+    fun `show should print error when use case fails`() = runTest {
+        val projectId = "789"
+        val exception = RuntimeException("Something went wrong")
 
-            every { reader.readInput(any()) } returns projectId
-            coEvery { useCase(projectId) } throws exception.toProjectException()
+        every { reader.readInput(any()) } returns projectId
+        coEvery { useCase.execute(projectId) } throws exception.toProjectException()
 
-            cli.show()
+        cli.show()
 
-            verifySequence {
-                printer.printMessage("=== Project Audit Log ===")
-                reader.readInput("Enter Project ID to view audit logs: ")
-                printer.printError("Failed to fetch audit logs: Something went wrong\n")
-            }
+        verifySequence {
+            printer.printMessage("=== Project Audit Log ===")
+            reader.readInput("Enter Project ID to view audit logs: ")
+            printer.printError("Failed to fetch audit logs: Something went wrong\n")
         }
     }
 }
