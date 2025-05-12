@@ -1,5 +1,6 @@
 package data.source.project
 
+import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
@@ -29,7 +30,7 @@ class ProjectCsvDataSource(
         }
     }
 
-    override suspend fun getProjects(): List<ProjectDto> {
+    override suspend fun getProjects(user: UserDto): List<ProjectDto> {
         return projectManager.getProjects()
     }
 
@@ -43,7 +44,7 @@ class ProjectCsvDataSource(
         val projectWillDeleted = projectManager.getProjects().find { project -> project.id == projectId }
 
         try {
-            var projectListAfterDeletion = projectManager.deleteProject(projectId)
+            val projectListAfterDeletion = projectManager.deleteProject(projectId)
             var stringAfterDelete = String.projectHeader
             projectListAfterDeletion.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
@@ -60,7 +61,7 @@ class ProjectCsvDataSource(
     override suspend fun editProject(project: ProjectDto) {
 
         try {
-            var projectListAfterEdition = projectManager.editProject(project)
+            val projectListAfterEdition = projectManager.editProject(project)
 
             var projectAfterUpdate = String.projectHeader
             projectListAfterEdition.forEach {
