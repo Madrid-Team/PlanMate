@@ -19,7 +19,7 @@ class TaskMongoDBDataSource(
         collection.replaceOne(filter, task)
     }
 
-    override suspend fun deleteTask(projectId: String, taskId: String) {
+    override suspend fun deleteTask(taskId: String) {
         val filter = eq(TASK_ID, taskId)
         collection.deleteOne(filter)
     }
@@ -33,7 +33,7 @@ class TaskMongoDBDataSource(
         return collection.find(filter).toList()
     }
 
-    override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
+    override suspend fun getTaskLogsByID(taskId: String): List<String> {
         val projectFilter = eq(TASK_ID, taskId)
         return collection.find(projectFilter).toList().flatMap { it.logs }.toList()
     }

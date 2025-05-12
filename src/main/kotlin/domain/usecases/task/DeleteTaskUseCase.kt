@@ -5,7 +5,7 @@ import domain.repository.TaskRepository
 class DeleteTaskUseCase(
     private val taskRepository: TaskRepository
 ) {
-    suspend operator fun invoke(projectId: String,taskId: String) {
-        taskRepository.deleteTask(projectId,taskId)
+    suspend operator fun invoke(taskId: String) {
+        taskRepository.deleteTask(taskId)
     }
 }
