@@ -18,9 +18,9 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun deleteTask(projectId: String,taskId: String) {
+    override suspend fun deleteTask(taskId: String) {
         return try {
-            taskExternalDataSource.deleteTask(projectId,taskId)
+            taskExternalDataSource.deleteTask(taskId)
         }catch (e:Exception){
             throw e.toTaskException()
         }
@@ -42,9 +42,9 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun getTaskLogsByID(projectId: String,taskId: String): List<String> {
+    override suspend fun getTaskLogsByID(taskId: String): List<String> {
         return try {
-            taskExternalDataSource.getTaskLogsByID(projectId , taskId)
+            taskExternalDataSource.getTaskLogsByID(taskId)
         }catch (e:Exception){
             throw e.toTaskException()
         }
