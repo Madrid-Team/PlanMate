@@ -23,7 +23,6 @@ val cliModule = module {
     single { DeleteTaskCLI(get(), get(), get()) }
     single { EditTaskCLI(get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get(), get()) }
-    single { TaskView(get(), get(), get()) }
     single { ProjectAuditLogCLI(get(), get(), get()) }
     single { TaskAuditLogCLI(get(), get(), get()) }
     single { AuthenticationCLI(get(), get(), get()) }
