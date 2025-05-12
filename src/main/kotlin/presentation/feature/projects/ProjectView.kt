@@ -1,31 +1,39 @@
 package presentation.feature.projects
 
 import domain.models.project.Project
+import domain.usecases.project.GetAllProjectsUseCase
+import domain.utils.PlanMateExceptions
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
-class ProjectView(private val outputPrinter: OutputPrinter) {
+class ProjectView(
+    private val outputPrinter: OutputPrinter
+) {
     fun projectList(projects: List<Project>) {
         if (projects.isEmpty()) {
-            outputPrinter.printMessage("No projects to display.")
+            outputPrinter.printMessage(String.noProjects)
             return
         }
-        outputPrinter.printMessage("=== Projects List ===")
+        outputPrinter.printMessage(String.projectsList)
 
         // Data Rows
         projects.forEach { project ->
-            outputPrinter.printMessage(
-                "ID : ${project.id}\n" +
-                        "Name : ${project.name}\n" +
-                        "Description : ${project.description}\n" +
-                        "Project State : ${project.projectState}\n" +
-                        "Created By : ${project.createdBy}\n" +
-                        "Project Logs :\n ${project.projectLogs.map { log -> "     -- $log" }.joinToString("\n")}\n" +
-                        "Project States : ${project.projectStates.joinToString(", ")}\n" +
-                        "Task States : ${project.taskStates.joinToString(", ")}\n"
-            )
-
-            outputPrinter.printMessage("+--------------------------------------+")
+            outputPrinter.printMessage(formatProjectDetails(project))
+            outputPrinter.printMessage(String.projectSeparator)
         }
 
+    }
+
+    private fun formatProjectDetails(project: Project): String {
+        return listOf(
+            "${String.projectId} : ${project.id}",
+            "${String.projectName} : ${project.name}",
+            "${String.projectDescription} : ${project.description}",
+            "${String.projectState} : ${project.projectState}",
+            "${String.createdBy} : ${project.createdBy}",
+            "${String.projectLogs} :\n${project.projectLogs.joinToString("\n") { "     -- $it" }}",
+            "${String.projectStates} : ${project.projectStates.joinToString(", ")}",
+            "${String.taskStates} : ${project.taskStates.joinToString(", ")}"
+        ).joinToString("\n")
     }
 }

@@ -38,6 +38,26 @@ val String.Companion.displayTasks get() = "4. Display all tasks within a specifi
 val String.Companion.displayTaskLogs get() = "5. Display Task Audit Log by ID"
 
 
+val String.Companion.projectMenuHeader get() = "=== Project Menu ==="
+val String.Companion.displayProjects get() = "1. Display all projects"
+val String.Companion.createProject get() = "2. Create Project"
+val String.Companion.editProject get() = "3. Edit Project"
+val String.Companion.deleteProject get() = "4. Delete Project"
+val String.Companion.displayProjectLogs get() = "5. Display Projects Audit Log by ID"
+val String.Companion.failedLoadProjects get() = "Failed to load projects:"
+val String.Companion.noProjects get() = "No projects to display."
+val String.Companion.projectsList get() = "=== Projects List ==="
+
+val String.Companion.projectId get() = "ID"
+val String.Companion.projectName get() = "Name"
+val String.Companion.projectDescription get() = "Description"
+val String.Companion.projectState get() = "Project State"
+val String.Companion.createdBy get() = "Created By"
+val String.Companion.projectLogs get() = "Project Logs"
+val String.Companion.projectStates get() = "Project States"
+val String.Companion.taskStates get() = "Task States"
+val String.Companion.projectSeparator get() = "+--------------------------------------+"
+
 val String.Companion.loginHeader get() = "=== Login ==="
 val String.Companion.enterUserName get() = "Enter user name:"
 val String.Companion.enterPassword get() = "Enter password:"
