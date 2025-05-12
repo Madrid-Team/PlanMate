@@ -2,7 +2,7 @@ package domain.usecases.user
 
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.validation.ValidateUser
+import domain.usecases.user.ValidateUser
 
 class CreateUserUseCase(
     private val userRepository: UserRepository
