@@ -3,6 +3,7 @@ package di.modules
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
+import data.dto.task.TaskDto
 import data.source.project.ProjectExternalDataSource
 import data.source.project.ProjectCsvDataSource
 import data.source.project.ProjectCsvParser
@@ -13,17 +14,13 @@ import data.source.task.TaskCsvParser
 import data.source.task.TaskManager
 import data.source.user.UserExternalDataSource
 import data.source.user.UserCsvParser
-import data.utils.FileCsvReader
-import data.utils.FileCsvWriter
-import data.utils.FileValidator
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import data.source.mongoDb.MongoClientProvider
 import data.source.project.ProjectMongoDBDataSource
 import data.source.task.TaskMongoDBDataSource
 import data.source.user.UserMongoDBDataSource
-import data.utils.PROJECT_COLLECTION
-import data.utils.USER_COLLECTION
+import data.utils.*
 import java.io.File
 
 val dataSourceModule = module {
@@ -72,16 +69,18 @@ val dataSourceModule = module {
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
+    
+    single { TaskManager() }
+    single { ProjectManager() }
 
     single(named("projects")) { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
     single(named("users")) { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
+    single(named("tasks")) { get<MongoDatabase>().getCollection<TaskDto>(TASKS_COLLECTION) }
+
+
 
     single<UserExternalDataSource> { UserMongoDBDataSource(get(named("users"))) }
-
-
-    single { TaskManager() }
-    single { ProjectManager() }
-    single<TaskExternalDataSource> { TaskMongoDBDataSource(get(named("projects"))) }
+    single<TaskExternalDataSource> { TaskMongoDBDataSource(get(named("tasks"))) }
     single<ProjectExternalDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
 
 

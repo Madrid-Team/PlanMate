@@ -10,39 +10,29 @@ import kotlinx.coroutines.flow.toList
 import org.bson.Document
 
 class TaskMongoDBDataSource(
-    private val collection: MongoCollection<ProjectDto>
+    private val collection: MongoCollection<TaskDto>
 ) : TaskExternalDataSource {
     override suspend fun editTask(task: TaskDto) {
-        val filter = Filters.and(
-            eq("_id", task.projectId),
-            eq("tasks.id", task.id)
-        )
-        val update = Updates.set("tasks.$", task)
-        collection.updateOne(filter, update)
+        val filter = eq("_id", task.projectId)
+        collection.replaceOne(filter, task)
     }
 
     override suspend fun deleteTask(projectId: String, taskId: String) {
-        val filter = eq("_id", projectId)
-        val update = Updates.pull("tasks", Document("id", taskId))
-        collection.updateOne(filter, update)
+        val filter = eq("_id", taskId)
+        collection.deleteOne(filter)
     }
 
     override suspend fun createTask(task: TaskDto) {
-
-        val filter = eq("_id", task.projectId)
-        val update = Updates.push("tasks", task)
-
-        collection.updateOne(filter, update)
+        collection.insertOne(task)
     }
 
     override suspend fun getTasksByProjectId(projectId: String): List<TaskDto> {
-        val filter = eq("_id", projectId)
-        return collection.find(filter).toList().flatMap { it.tasks }
+        val filter = eq("projectId", projectId)
+        return collection.find(filter).toList()
     }
 
     override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
-        val projectFilter = eq("_id", projectId)
-        return collection.find(projectFilter).toList().flatMap { it.tasks }.flatMap { it.logs }.toList()
-
+        val projectFilter = eq("_id", taskId)
+        return collection.find(projectFilter).toList().flatMap { it.logs }.toList()
     }
 }
