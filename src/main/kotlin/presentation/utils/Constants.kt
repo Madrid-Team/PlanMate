@@ -69,7 +69,6 @@ val String.Companion.pleaseTryAgain get() = "Please try again:"
 val String.Companion.enterProjectId get() = "Enter Project ID:"
 
 
-
 val String.Companion.taskAuditLogHeader get() = "=== Task Audit Log ==="
 val String.Companion.enterTaskIdToViewLogs get() = "Enter Task ID to view audit logs: "
 val String.Companion.taskLogNotFound get() = "No audit logs found for this task id : %s\n"
@@ -81,3 +80,12 @@ val String.Companion.deleteTaskHeader get() = "=== Delete Task ==="
 val String.Companion.enterTaskIdToDelete get() = "Enter task ID to delete:"
 val String.Companion.deleteTaskSuccess get() = "Task deleted successfully."
 val String.Companion.deleteTaskException get() = "Failed to delete task : %s\n"
+
+
+val String.Companion.deleteProjectHeader get() = "=== Delete Project ==="
+val String.Companion.enterProjectIdToDelete get() = "Enter project ID to delete: "
+val String.Companion.sureYouWantToDeleteThisProject get() = "Are you sure you want to delete this project? enter 1 to say yes: "
+val String.Companion.deleteProjectSuccess get() = "Project deleted successfully."
+val String.Companion.deletionCancelled get() = "Deletion cancelled."
+val String.Companion.deleteProjectNotFoundException get() = "Project not found : %s\n"
+val String.Companion.deleteProjectException get() = "Failed to delete project : %s\n"
