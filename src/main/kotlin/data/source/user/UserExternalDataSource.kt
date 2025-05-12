@@ -7,5 +7,6 @@ interface UserExternalDataSource {
     suspend fun deleteUser(userId: String)
     suspend fun getUserById(userId: String): UserDto?
     suspend fun getAllUsers(): List<UserDto>
-    suspend fun getUserByName(userName: String): UserDto?
+    suspend fun getUserByName(username: String): UserDto?
+    suspend fun login(username: String, password: String): UserDto?
 }

@@ -3,6 +3,7 @@ package data.repository
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.project.ProjectExternalDataSource
+import data.source.user.CurrentUserProvider
 import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
@@ -10,12 +11,13 @@ import domain.utils.ProjectExceptions
 
 class ProjectRepositoryImpl(
     private val projectExternalDataSource: ProjectExternalDataSource,
+    private val currentUserProvider: CurrentUserProvider
 ) : ProjectRepository {
 
 
     override suspend fun getAllProjects(): List<Project> {
        return try {
-           projectExternalDataSource.getProjects().map { it.toDomain() }
+           projectExternalDataSource.getProjects(currentUserProvider.getCurrentUser()).map { it.toDomain() }
        }catch (e:Exception){
            throw e.toProjectException()
        }

@@ -1,5 +1,6 @@
 package data.source.project
 
+import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
@@ -29,7 +30,7 @@ class ProjectCsvDataSource(
         }
     }
 
-    override suspend fun getProjects(): List<ProjectDto> {
+    override suspend fun getProjects(user: UserDto): List<ProjectDto> {
         return projectManager.getProjects()
     }
 

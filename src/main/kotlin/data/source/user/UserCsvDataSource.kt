@@ -44,7 +44,11 @@ class UserCsvDataSource(
 
     }
 
-    override suspend fun getUserByName(userName: String): UserDto? {
-        return getAllUsers().firstOrNull { userName == it.username }
+    override suspend fun getUserByName(username: String): UserDto? {
+        return getAllUsers().firstOrNull { username == it.username }
+    }
+
+    override suspend fun login(username: String, password: String): UserDto? {
+        TODO("Not yet implemented")
     }
 }
