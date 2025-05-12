@@ -60,21 +60,22 @@ class ProjectMongoDBDataSourceTest {
         tasks = emptyList()
     )
     @Test
-    fun `createProject should call insertOne with correct project`() = runTest {
-        // Arrange
-        val collection = mockk<MongoCollection<ProjectDto>>()
+    fun `createProject should call insertOne with correct project`() {
+        runTest {
+            // Arrange
+            val collection = mockk<MongoCollection<ProjectDto>>()
 
+            coEvery {
+                collection.insertOne(eq(testProject), any())
+            } returns mockk()
 
-        coEvery {
-            collection.insertOne(eq(testProject), any())
-        } returns mockk()
+            val dataSource = ProjectMongoDBDataSource(collection)
 
-        val dataSource = ProjectMongoDBDataSource(collection)
+            dataSource.createProject(testProject)
 
-        dataSource.createProject(testProject)
-
-        coVerify(exactly = 1) {
-            collection.insertOne(eq(testProject), any())
+            coVerify(exactly = 1) {
+                collection.insertOne(eq(testProject), any())
+            }
         }
     }
 
