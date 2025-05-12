@@ -5,7 +5,6 @@ import com.mongodb.MongoClientSettings
 import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.kotlin.client.coroutine.MongoClient
-import data.utils.CONNECTION_STRING
 import data.utils.DATABASE_NAME
 
 class MongoClientProvider {
@@ -14,7 +13,7 @@ class MongoClientProvider {
         .version(ServerApiVersion.V1)
         .build()
     private val mongoClientSettings = MongoClientSettings.builder()
-        .applyConnectionString(ConnectionString(System.getenv("MONGO_URI") ?: CONNECTION_STRING))
+        .applyConnectionString(ConnectionString(System.getenv("MONGO_URI")))
         .serverApi(serverApi)
         .build()
 

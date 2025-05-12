@@ -41,7 +41,7 @@ class TaskCsvDataSource(
         fileCsvWriter.updateCsvFile(tasksFileContentAfterDeletion)
     }
 
-    override suspend fun deleteTask(projectId: String, taskId: String) {
+    override suspend fun deleteTask(taskId: String) {
         val taskListAfterDeleteTask = taskManager.deleteTask(taskId)
         var tasksFileContentAfterDeletion = String.taskHeader
         taskListAfterDeleteTask.forEach {
@@ -61,7 +61,7 @@ class TaskCsvDataSource(
         return taskManager.getTasks().filter { task -> task.projectId == projectId }
     }
 
-    override suspend fun getTaskLogsByID(projectId: String, taskId: String): List<String> {
+    override suspend fun getTaskLogsByID(taskId: String): List<String> {
         return taskManager.getTasks().filter { it.id == taskId }.flatMap { it.logs }
     }
 }

@@ -3,8 +3,6 @@ package data.dto.project
 import data.dto.task.TaskDto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.bson.codecs.pojo.annotations.BsonId
-import java.util.*
 
 
 @Serializable

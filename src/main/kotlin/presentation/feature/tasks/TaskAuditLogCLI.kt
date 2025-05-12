@@ -11,14 +11,13 @@ import presentation.utils.*
 class TaskAuditLogCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val getTaskLogsUseCase: GetTaskLogsUseCase
+    private val getTaskLogsByIdUseCase: GetTaskLogsUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage(String.taskAuditLogHeader)
         try {
-            val projectId = inputReader.readInput(String.enterProjectId)
             val taskId = inputReader.readInput(String.enterTaskIdToViewLogs)
-            val logs = getTaskLogsUseCase.getTaskLogs(projectId, taskId)
+            val logs = getTaskLogsByIdUseCase(taskId)
             if (logs.isEmpty()) {
                 outputPrinter.printMessage(String.taskLogNotFound.format(taskId))
             } else {
