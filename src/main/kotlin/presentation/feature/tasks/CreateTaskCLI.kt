@@ -11,6 +11,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.availableTaskStates
+import presentation.utils.createTaskHeader
+import presentation.utils.enterProjectId
+import presentation.utils.enterTaskDescription
+import presentation.utils.enterTaskTitle
+import presentation.utils.selectTaskState
+import presentation.utils.taskCreatedSuccessfully
+import presentation.utils.taskCreatedUnsuccessfully
 import java.util.*
 
 class CreateTaskCLI(
@@ -21,31 +29,31 @@ class CreateTaskCLI(
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        outputPrinter.printMessage("=== Create Task ===")
+        outputPrinter.printMessage(String.createTaskHeader)
         try {
             val task = readTaskInput()
-            createTaskUseCase(task)
-            outputPrinter.printMessage("Task created successfully")
+            createTaskUseCase.createTask(task)
+            outputPrinter.printMessage(String.taskCreatedSuccessfully)
         } catch (exception: Exception) {
             outputPrinter.printMessage(exception.message.toString())
-            outputPrinter.printMessage("Failed to create task")
+            outputPrinter.printMessage(String.taskCreatedUnsuccessfully)
         }
 
     }
 
     private suspend fun readTaskInput(): Task {
-        val projectId = inputReader.readInput("Enter project ID: ")
-        val title = inputReader.readInput("Enter task title: ")
-        val description = inputReader.readInput("Enter task description: ")
+        val projectId = inputReader.readInput(String.enterProjectId)
+        val title = inputReader.readInput(String.enterTaskTitle)
+        val description = inputReader.readInput(String.enterTaskDescription)
 
         val project = getProjectByIdUseCase.getById(projectId)
 
-        outputPrinter.printMessage("Available task states:")
+        outputPrinter.printMessage(String.availableTaskStates)
         project.taskStates.forEachIndexed { index, state ->
             outputPrinter.printMessage("${index + 1}. $state")
         }
 
-        val selectIndex = inputReader.readInput("Select task state: ").toIntOrNull() ?: 1
+        val selectIndex = inputReader.readInput(String.selectTaskState).toIntOrNull() ?: 1
         val selectedState = project.taskStates.getOrElse(selectIndex - 1) { project.taskStates.first() }
 
         return Task(

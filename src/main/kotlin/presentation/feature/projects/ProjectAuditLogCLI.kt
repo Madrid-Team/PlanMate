@@ -6,6 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.auditLogException
+import presentation.utils.auditLogsForProjectId
+import presentation.utils.enterProjectIDToViewAudit
+import presentation.utils.projectAuditLogHeader
 
 class ProjectAuditLogCLI(
     private val reader: InputReader,
@@ -13,20 +17,16 @@ class ProjectAuditLogCLI(
     private val getProjectLogsByIdUseCase: GetProjectLogsByIdUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        printer.printMessage("=== Project Audit Log ===")
-        val projectId = reader.readInput("Enter Project ID to view audit logs: ")
+        printer.printMessage(String.projectAuditLogHeader)
+        val projectId = reader.readInput(String.enterProjectIDToViewAudit)
         try {
             val logs = getProjectLogsByIdUseCase.execute(projectId)
-            if (logs.isEmpty()) {
-                printer.printMessage("No audit logs found for project ID: $projectId\n")
-            } else {
-                printer.printMessage("Audit logs for project ID: $projectId\n")
-                logs.forEach { log ->
-                    printer.printMessage("- $log\n")
-                }
+            printer.printMessage(String.auditLogsForProjectId.format(projectId))
+            logs.forEach { log ->
+                printer.printMessage("- $log\n")
             }
         } catch (e: PlanMateExceptions) {
-            printer.printError("Failed to fetch audit logs: ${e.message}\n")
+            printer.printError(String.auditLogException.format(e.message))
         }
     }
 }

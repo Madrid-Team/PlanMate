@@ -48,6 +48,10 @@ val String.Companion.taskUpdatedUnsuccessfully get() = "Failed to update task"
 val String.Companion.createTaskHeader get() = "=== Create Task ==="
 val String.Companion.taskCreatedSuccessfully get() = "Task created successfully"
 val String.Companion.taskCreatedUnsuccessfully get() = "Failed to create task"
+val String.Companion.enterTaskTitle get() = "Enter task title: "
+val String.Companion.enterTaskDescription get() = "Enter task description: "
+val String.Companion.availableTaskStates get() = "Available task states:"
+val String.Companion.selectTaskState get() = "Select task state: "
 
 
 val String.Companion.projectMenuHeader get() = "=== Project Menu ==="
@@ -87,6 +91,7 @@ val String.Companion.taskAuditLogHeader get() = "=== Task Audit Log ==="
 val String.Companion.enterTaskIdToViewLogs get() = "Enter Task ID to view audit logs: "
 val String.Companion.taskLogNotFound get() = "No audit logs found for this task id : %s\n"
 val String.Companion.auditLogsForTaskId get() = "Audit logs for task id: %s\n"
+val String.Companion.auditLogsForProjectId get() = "Audit logs for project id: %s\n"
 val String.Companion.auditLogException get() = "Failed to fetch audit logs : %s\n"
 
 
