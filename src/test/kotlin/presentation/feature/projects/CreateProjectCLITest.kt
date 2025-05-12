@@ -1,10 +1,10 @@
 package presentation.feature.projects
 
 import domain.models.authentication.User
+import domain.models.logs.AuditLog
 import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
-import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -18,8 +18,7 @@ class CreateProjectCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val createProjectUseCase = mockk<CreateProjectUseCase>()
-    private val createLogUseCase = mockk<CreateLogUseCase>()
-    private val userMock = mockk<User>()
+     private val userMock = mockk<User>()
     private lateinit var cli: CreateProjectCLI
 
     @BeforeEach
@@ -28,7 +27,7 @@ class CreateProjectCLITest {
         every { userMock.username } returns "test-user"
         every { CurrentUser.getCurrentUser() } returns userMock
 
-        cli = CreateProjectCLI(inputReader, outputPrinter, createProjectUseCase, createLogUseCase)
+        cli = CreateProjectCLI(inputReader, outputPrinter, createProjectUseCase)
 
         mockkStatic(UUID::class)
         every { UUID.randomUUID() } returns UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -46,12 +45,12 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(
+                AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = "project name",
                     entityType = EntityType.PROJECT,
                     username = "test-user"
-                )
+                ).toString()
             } returns mockLogString
 
             val project = helperProject(
@@ -96,7 +95,7 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(any(), any(), any(), any())
+               AuditLog(any(), any(), any(), any()).toString()
             } returns mockLogString
 
             coEvery { createProjectUseCase.execute(any()) } returns mockk()
