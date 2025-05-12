@@ -26,8 +26,8 @@ class AuthenticationCLI(
         } catch (e: Exception) {
             outputPrinter.printMenuItems(
                 listOf(
-                    e.message.toString(),
                     String.loginError,
+                    e.message.toString(),
                     String.pleaseTryAgain
                 )
             )
