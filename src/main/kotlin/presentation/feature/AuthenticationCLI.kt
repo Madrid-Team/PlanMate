@@ -5,6 +5,7 @@ import domain.models.logs.CurrentUser
 import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class AuthenticationCLI(
     private val inputReader: InputReader,
@@ -12,20 +13,24 @@ class AuthenticationCLI(
     private val loginUserUseCase: LoginUserUseCase
 ) {
     suspend fun login() {
-        outputPrinter.printMessage("=== Login ===")
-        outputPrinter.printMessage("Enter user name:")
+        outputPrinter.printMessage(String.loginHeader)
+        outputPrinter.printMessage(String.enterUserName)
         val userName = inputReader.readInput()
-        outputPrinter.printMessage("Enter password:")
+        outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
         val passwordHash = PasswordHasher.hash(password)
         try {
             val success = loginUserUseCase.invoke(userName, passwordHash)
-            outputPrinter.printMessage("Login Success")
+            outputPrinter.printMessage(String.loginSuccess)
             CurrentUser.setCurrentUser(success)
         } catch (e: Exception) {
-            outputPrinter.printMessage(e.message.toString())
-            outputPrinter.printMessage("Login error:(")
-            outputPrinter.printMessage("Please try again:")
+            outputPrinter.printMenuItems(
+                listOf(
+                    e.message.toString(),
+                    String.loginError,
+                    String.pleaseTryAgain
+                )
+            )
             login()
         }
     }
