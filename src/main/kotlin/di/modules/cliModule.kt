@@ -8,6 +8,7 @@ import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.admin.AdminCLI
+import presentation.feature.mate.MateCLI
 import presentation.feature.projects.*
 import presentation.feature.tasks.*
 import presentation.feature.user.CreateUserCLI
@@ -26,7 +27,7 @@ val cliModule = module {
     single { ProjectAuditLogCLI(get(), get(), get()) }
     single { TaskAuditLogCLI(get(), get(), get()) }
     single { AuthenticationCLI(get(), get(), get()) }
-    single { PlanMateCLI(get(), get(), get(), get(), get(), get(), get()) }
+    single { PlanMateCLI(get(), get(), get(), get(), get()) }
     single { ProjectCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CreateProjectCLI(get(), get(), get(), get()) }
     single { DeleteProjectCLI(get(), get(), get()) }
@@ -35,5 +36,7 @@ val cliModule = module {
     single { CreateUserCLI(get(), get(), get()) }
     single { DeleteUserCLI(get(), get(), get()) }
     single { ProjectView(get()) }
-    single { AdminCLI(get(), get()) }
+    single { AdminCLI(get(), get(), get(), get(), get(), get(), get()) }
+    single { MateCLI(get(), get(), get(), get()) }
+
 }
