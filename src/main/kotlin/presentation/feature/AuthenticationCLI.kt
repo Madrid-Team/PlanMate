@@ -25,9 +25,8 @@ class AuthenticationCLI(
         } catch (e: Exception) {
             outputPrinter.printMessage(e.message.toString())
             outputPrinter.printMessage("Login error:(")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
-            val userOption = inputReader.readInput()
-            if (userOption == "1") login()
+            outputPrinter.printMessage("Please try again:")
+            login()
         }
     }
 }
