@@ -1,7 +1,5 @@
 package presentation.feature
 
-import data.utils.PasswordHasher
-import domain.models.logs.CurrentUser
 import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -18,11 +16,9 @@ class AuthenticationCLI(
         val userName = inputReader.readInput()
         outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
-        val passwordHash = PasswordHasher.hash(password)
         try {
-            val success = loginUserUseCase.login(userName, passwordHash)
+            loginUserUseCase.login(userName, password)
             outputPrinter.printMessage(String.loginSuccess)
-            CurrentUser.setCurrentUser(success)
         } catch (e: Exception) {
             outputPrinter.printMenuItems(
                 listOf(
