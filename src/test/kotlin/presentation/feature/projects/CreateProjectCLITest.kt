@@ -46,7 +46,7 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(
+                createLogUseCase.createLog(
                     operationType = OperationType.CREATE,
                     entityName = "project name",
                     entityType = EntityType.PROJECT,
@@ -61,14 +61,14 @@ class CreateProjectCLITest {
                 projectLogs = listOf(mockLogString)
             )
 
-            coEvery { createProjectUseCase.execute(any()) } returns Unit
+            coEvery { createProjectUseCase.createProject(any()) } returns Unit
 
             // When
             cli.show()
 
             // Then
             coVerify {
-                createProjectUseCase.execute(match {
+                createProjectUseCase.createProject(match {
                     it.name == project.name &&
                             it.description == project.description &&
                             it.projectState == "ACTIVE" &&
@@ -96,16 +96,16 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(any(), any(), any(), any())
+                createLogUseCase.createLog(any(), any(), any(), any())
             } returns mockLogString
 
-            coEvery { createProjectUseCase.execute(any()) } returns mockk()
+            coEvery { createProjectUseCase.createProject(any()) } returns mockk()
 
             // When
             cli.show()
 
             // Then
-            coVerify { createProjectUseCase.execute(any()) }
+            coVerify { createProjectUseCase.createProject(any()) }
             coVerify { outputPrinter.printMessage("Project created successfully") }
         }
     }

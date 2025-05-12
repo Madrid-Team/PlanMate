@@ -2,9 +2,7 @@ package presentation.feature.projects
 
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
-import domain.usecases.project.EditProjectDescriptionUseCase
-import domain.usecases.project.EditProjectNameUseCase
-import domain.usecases.project.EditProjectStateUseCase
+import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
@@ -18,9 +16,7 @@ import kotlin.test.Test
 class EditProjectCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
-    private val editProjectNameUseCase = mockk<EditProjectNameUseCase>()
-    private val editProjectDescriptionUseCase = mockk<EditProjectDescriptionUseCase>()
-    private val editProjectStateUseCase = mockk<EditProjectStateUseCase>()
+    private val editProjectUseCase = mockk<EditProjectUseCase>()
     private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>()
     private val userMock = mockk<User>()
 
@@ -36,9 +32,7 @@ class EditProjectCLITest {
         cli = EditProjectCLI(
             inputReader,
             outputPrinter,
-            editProjectNameUseCase,
-            editProjectDescriptionUseCase,
-            editProjectStateUseCase,
+            editProjectUseCase,
             getProjectByIdUseCase
         )
     }
@@ -61,7 +55,7 @@ class EditProjectCLITest {
 
             coEvery { getProjectByIdUseCase.getById("1") } returns originalProject
             coEvery {
-                editProjectNameUseCase.execute(originalProject.id, "new-name")
+                editProjectUseCase.editProject(originalProject.copy(name = "new-name"))
             } just runs
 
             // When
@@ -70,7 +64,7 @@ class EditProjectCLITest {
             // Then
             verify { outputPrinter.printMessage("Project name updated successfully.") }
             verify { outputPrinter.printMessage("Project edited successfully.") }
-            coVerify { editProjectNameUseCase.execute(originalProject.id, "new-name") }
+            coVerify { editProjectUseCase.editProject(originalProject.copy(name = "new-name")) }
         }
     }
 
@@ -92,7 +86,7 @@ class EditProjectCLITest {
 
             coEvery { getProjectByIdUseCase.getById("1") } returns originalProject
             coEvery {
-                editProjectDescriptionUseCase.execute(originalProject.id, "new-description")
+                editProjectUseCase.editProject(originalProject.copy(description = "new-description"))
             } just runs
 
             // When
@@ -101,7 +95,7 @@ class EditProjectCLITest {
             // Then
             verify { outputPrinter.printMessage("Project description updated successfully.") }
             verify { outputPrinter.printMessage("Project edited successfully.") }
-            coVerify { editProjectDescriptionUseCase.execute(originalProject.id, "new-description") }
+            coVerify { editProjectUseCase.editProject(originalProject.copy(description = "new-description")) }
         }
     }
 
@@ -124,7 +118,7 @@ class EditProjectCLITest {
 
             coEvery { getProjectByIdUseCase.getById("1") } returns originalProject
             coEvery {
-                editProjectStateUseCase.execute(originalProject.id, "IN_PROGRESS")
+                editProjectUseCase.editProject(originalProject.copy(projectState = "IN_PROGRESS"))
             } just runs
 
             // When
@@ -133,7 +127,7 @@ class EditProjectCLITest {
             // Then
             verify { outputPrinter.printMessage("Project state updated successfully.") }
             verify { outputPrinter.printMessage("Project edited successfully.") }
-            coVerify { editProjectStateUseCase.execute(originalProject.id, "IN_PROGRESS") }
+            coVerify { editProjectUseCase.editProject(originalProject.copy(projectState = "IN_PROGRESS")) }
         }
     }
 
@@ -147,9 +141,7 @@ class EditProjectCLITest {
             // When & Then
             cli.show()
             verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
-            coVerify(exactly = 0) { editProjectNameUseCase.execute(any(), any()) }
-            coVerify(exactly = 0) { editProjectDescriptionUseCase.execute(any(), any()) }
-            coVerify(exactly = 0) { editProjectStateUseCase.execute(any(), any()) }
+            coVerify(exactly = 0) { editProjectUseCase.editProject(any()) }
         }
     }
 
@@ -171,7 +163,7 @@ class EditProjectCLITest {
 
             coEvery { getProjectByIdUseCase.getById("1") } returns originalProject
             coEvery {
-                editProjectNameUseCase.execute(originalProject.id, "original-name")
+                editProjectUseCase.editProject(originalProject.copy(name = "original-name"))
             } throws ProjectExceptions.NoChangesException("Project name is unchanged")
 
             // When
@@ -202,8 +194,8 @@ class EditProjectCLITest {
             every { inputReader.readInput("Enter the new description:") } returns "new-description"
 
             coEvery { getProjectByIdUseCase.getById("1") } returns originalProject
-            coEvery { editProjectNameUseCase.execute(originalProject.id, "new-name") } just runs
-            coEvery { editProjectDescriptionUseCase.execute(originalProject.id, "new-description") } just runs
+            coEvery { editProjectUseCase.editProject(originalProject.copy(name = "new-name")) } just runs
+            coEvery { editProjectUseCase.editProject(originalProject.copy(description = "new-description")) } just runs
 
             // When
             cli.show()

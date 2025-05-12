@@ -32,7 +32,7 @@ class DeleteProjectUseCaseTest {
 
             //When
             assertDoesNotThrow {
-                deleteProjectUseCase.execute(projectId)
+                deleteProjectUseCase.deleteProject(projectId)
             }
         }
     }
@@ -46,7 +46,7 @@ class DeleteProjectUseCaseTest {
 
             //When
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                deleteProjectUseCase.execute(projectId)
+                deleteProjectUseCase.deleteProject(projectId)
             }
         }
     }

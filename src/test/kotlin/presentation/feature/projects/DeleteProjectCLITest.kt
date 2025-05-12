@@ -27,14 +27,14 @@ class DeleteProjectCLITest {
         // Given
         every { inputReader.readInput("Enter project ID to delete: ") } returns "project-123"
         every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.execute("project-123") } just runs
+        coEvery { deleteProjectUseCase.deleteProject("project-123") } just runs
 
         // When
         cli.show()
 
         // Then
         verify { outputPrinter.printMessage("Project deleted successfully.") }
-        coVerify { deleteProjectUseCase.execute("project-123") }
+        coVerify { deleteProjectUseCase.deleteProject("project-123") }
     }
 
     @Test
@@ -48,7 +48,7 @@ class DeleteProjectCLITest {
 
         // Then
         verify { outputPrinter.printMessage("Deletion cancelled.") }
-        coVerify(exactly = 0) { deleteProjectUseCase.execute(any()) }
+        coVerify(exactly = 0) { deleteProjectUseCase.deleteProject(any()) }
     }
 
     @Test
@@ -56,7 +56,7 @@ class DeleteProjectCLITest {
         // Given
         every { inputReader.readInput("Enter project ID to delete: ") } returns "invalid-id"
         every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.execute("invalid-id") } throws ProjectExceptions.ProjectNotFoundException()
+        coEvery { deleteProjectUseCase.deleteProject("invalid-id") } throws ProjectExceptions.ProjectNotFoundException()
 
         // When
         cli.show()
@@ -70,7 +70,7 @@ class DeleteProjectCLITest {
         // Given
         every { inputReader.readInput("Enter project ID to delete: ") } returns "error-id"
         every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.execute("error-id") } throws Exception("Unexpected error")
+        coEvery { deleteProjectUseCase.deleteProject("error-id") } throws Exception("Unexpected error")
 
         // When
         cli.show()

@@ -10,19 +10,19 @@ import domain.usecases.task.*
 import org.koin.dsl.module
 
 val useCasesModule = module {
-    single { CreateLogUseCase() }
+    single { CreateLogUseCase(get  ()) }
     single { CreateProjectUseCase(get(), get()) }
     single { DeleteProjectUseCase(get(), get()) }
     single { EditProjectUseCase(get(), get(), get(), get()) }
     single { GetAllProjectsUseCase(get()) }
     single { GetProjectLogsByIdUseCase(get(), get()) }
     single { GetProjectByIdUseCase(get()) }
-    single { CreateUserUseCase(get()) }
+    single { CreateUserUseCase(get(),get()) }
     single { DeleteUserUseCase(get()) }
     single { LoginUserUseCase(get()) }
     single { DeleteTaskUseCase(get(),get(),get()) }
     single { CreateTaskUseCase(get(),get(),get(),) }
-    single { DisplayAllTasksUseCase(get()) }
+    single { DisplayAllTasksUseCase(get(),get()) }
     single { EditTaskUseCase(get(),get(),get(),get()) }
     single { GetTaskLogsUseCase(get(),get(),get()) }
     single { GetTasksByProjectIdUseCase(get()) }

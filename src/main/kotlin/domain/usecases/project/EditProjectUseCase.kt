@@ -13,7 +13,9 @@ class EditProjectUseCase(
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun editProject(updatedProject: Project) {
-        projectValidator.validateName(updatedProject)
+        with(projectValidator) {
+            validate(updatedProject)
+        }
         val currentProject = getProjectByIdUseCase.getById(updatedProject.id.toString())
         projectRepository.editProject(
             updatedProject.copy(
@@ -27,6 +29,7 @@ class EditProjectUseCase(
 
     private fun getLogsForAllChangesInUpdatedProject(currentProject: Project, updatedProject: Project): List<String> {
         val listOfLogs = mutableListOf<String>()
+
         if (updatedProject.name != currentProject.name) {
             listOfLogs.add(
                 createLogUseCase.createLog(
@@ -54,6 +57,7 @@ class EditProjectUseCase(
                 )
             )
         }
+
         if (updatedProject.projectState != currentProject.projectState) {
             listOfLogs.add(
                 createLogUseCase.createLog(

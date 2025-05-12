@@ -4,7 +4,6 @@ import domain.repository.ProjectRepository
 import domain.usecases.createProject
 import domain.usecases.logs.CreateLogUseCase
 import domain.utils.ProjectExceptions
-import domain.validation.ValidateProjectName
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -17,17 +16,17 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
-    private lateinit var validateProjectName: ValidateProjectName
+    private lateinit var projectValidator: ProjectValidator
     private lateinit var createLogUseCase: CreateLogUseCase
     private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
-        validateProjectName = mockk(relaxed = true)
+        projectValidator = mockk(relaxed = true)
         createLogUseCase = mockk(relaxed = true)
         getProjectByIdUseCase = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository, validateProjectName, createLogUseCase, getProjectByIdUseCase)
+        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, createLogUseCase, getProjectByIdUseCase)
     }
 
     @Test
@@ -72,7 +71,7 @@ class EditProjectUseCaseTest {
             description = "Project description"
         )
         coEvery { getProjectByIdUseCase.getById(any()) } returns project
-        coEvery { validateProjectName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
+        coEvery { projectValidator.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
 
         //When & Then
         assertThrows<ProjectExceptions.ProjectNameInvalidException> {

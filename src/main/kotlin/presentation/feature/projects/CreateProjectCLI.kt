@@ -66,7 +66,7 @@ class CreateProjectCLI(
             }
             val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
             val projectCreation = async {
-                createProjectUseCase.execute(projectWithLog)
+                createProjectUseCase.createProject(projectWithLog)
             }
             projectCreation.await()
             outputPrinter.printMessage("Project created successfully")

@@ -42,7 +42,7 @@ class CreateProjectUseCaseTest {
 
         //When & Then
         assertDoesNotThrow {
-            createProjectUseCase.execute(project)
+            createProjectUseCase.createProject(project)
         }
         coVerify { projectRepository.createProject(project) }
     }
@@ -57,7 +57,7 @@ class CreateProjectUseCaseTest {
 
         //When & Then
         assertThrows<ProjectExceptions.ProjectNameInvalidException> {
-            createProjectUseCase.execute(project)
+            createProjectUseCase.createProject(project)
         }
     }
 
@@ -72,7 +72,7 @@ class CreateProjectUseCaseTest {
 
         //When & Then
         assertThrows<PlanMateExceptions> {
-            createProjectUseCase.execute(project)
+            createProjectUseCase.createProject(project)
         }
     }
 
@@ -88,7 +88,7 @@ class CreateProjectUseCaseTest {
 
         //When & Then
         assertThrows<PlanMateExceptions> {
-            createProjectUseCase.execute(project)
+            createProjectUseCase.createProject(project)
         }
     }
 
@@ -105,7 +105,7 @@ class CreateProjectUseCaseTest {
 
         //When & Then
         assertThrows<PlanMateExceptions> {
-            createProjectUseCase.execute(project)
+            createProjectUseCase.createProject(project)
         }
     }
 }
