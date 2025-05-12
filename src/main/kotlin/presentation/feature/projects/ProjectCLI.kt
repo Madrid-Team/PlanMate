@@ -1,7 +1,7 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetAllProjectsUseCase
-import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.utils.*
@@ -42,10 +42,10 @@ class ProjectCLI(
     suspend fun showProjects() {
         outputPrinter.printMessage(String.displayProjects)
         try {
-            getAllProjectsUseCase.execute().also {
+            getAllProjectsUseCase.getProjects().also {
                 projectView.projectList(it)
             }
-        } catch (e: PlanMateExceptions) {
+        } catch (e: ProjectExceptions) {
             outputPrinter.printError("${String.failedLoadProjects} ${e.message}")
         }
     }

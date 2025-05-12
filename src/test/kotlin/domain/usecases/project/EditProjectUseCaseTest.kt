@@ -2,7 +2,6 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
-import domain.usecases.logs.CreateLogUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -16,17 +15,15 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
-    private lateinit var projectValidator: ProjectValidator
-    private lateinit var createLogUseCase: CreateLogUseCase
-    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
+    private lateinit var projectValidator:ProjectValidator
+      private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
         projectValidator = mockk(relaxed = true)
-        createLogUseCase = mockk(relaxed = true)
         getProjectByIdUseCase = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, createLogUseCase, getProjectByIdUseCase)
+        editProjectUseCase = EditProjectUseCase(projectRepository,     projectValidator,getProjectByIdUseCase)
     }
 
     @Test

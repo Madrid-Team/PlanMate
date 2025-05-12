@@ -35,17 +35,17 @@ class DeleteTaskCLITest {
         testScope.runTest {
             // given
             every { inputReader.readInput() } returnsMany listOf("1", "2")
-            coEvery { deleteTaskUseCase("1", "2") } returns Unit
+            coEvery { deleteTaskUseCase.deleteTask("1", "2") } returns Unit
 
             // when
             deleteTaskCLI.show()
 
             // then
             coVerify {
-                deleteTaskUseCase("1", "2")
+                deleteTaskUseCase.deleteTask("1", "2")
                 outputPrinter.printMessage("=== Delete Task ===")
                 outputPrinter.printMessage("Enter task ID to delete:")
-                deleteTaskUseCase("1", "2")
+                deleteTaskUseCase.deleteTask("1", "2")
                 outputPrinter.printMessage("Task deleted successfully.")
             }
         }
@@ -56,7 +56,7 @@ class DeleteTaskCLITest {
         // given
         testScope.runTest {
             every { inputReader.readInput() } returnsMany listOf("2", "1")
-            coEvery { deleteTaskUseCase("2", "1") } throws TaskExceptions.TaskCannotDeleteException()
+            coEvery { deleteTaskUseCase.deleteTask("2", "1") } throws TaskExceptions.TaskCannotDeleteException()
 
             // when
             deleteTaskCLI.show()

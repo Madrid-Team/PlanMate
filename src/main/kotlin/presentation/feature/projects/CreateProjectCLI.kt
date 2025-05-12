@@ -1,13 +1,15 @@
 package presentation.feature.projects
 
+import domain.models.logs.AuditLog
 import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
-import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utils.PlanMateExceptions
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
@@ -16,7 +18,6 @@ class CreateProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val createProjectUseCase: CreateProjectUseCase,
-    private val createLogUseCase: CreateLogUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Project ===")
@@ -57,12 +58,12 @@ class CreateProjectCLI(
         )
         try {
             val logUseCase = async {
-                createLogUseCase.createLog(
+                    AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = project.name,
                     entityType = EntityType.PROJECT,
                     username = project.createdBy,
-                )
+                 ).toString()
             }
             val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
             val projectCreation = async {

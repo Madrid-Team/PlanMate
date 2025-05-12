@@ -30,10 +30,10 @@ class GetAllProjectsUseCaseTest {
             coEvery { projectRepository.getAllProjects() } returns mockProjects
 
             // When
-            val result = getAllProjectsUseCase.execute()
+            val result = getAllProjectsUseCase.getProjects()
 
             // Then
-            assertDoesNotThrow { getAllProjectsUseCase.execute() }
+            assertDoesNotThrow { getAllProjectsUseCase.getProjects() }
             assertEquals(mockProjects, result)
         }
     }
@@ -46,7 +46,7 @@ class GetAllProjectsUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions> {
-                getAllProjectsUseCase.execute()
+                getAllProjectsUseCase.getProjects()
             }
         }
     }
