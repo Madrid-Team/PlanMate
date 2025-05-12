@@ -1,7 +1,6 @@
 package data.source.task
 
 import data.dto.task.TaskDto
-import domain.models.task.Task
 
 class TaskManager {
 
@@ -20,7 +19,7 @@ class TaskManager {
     }
 
     fun deleteTask(taskId: String): List<TaskDto> {
-        tasks.removeIf { it.id.toString() == taskId }
+        tasks.removeIf { it.id == taskId }
         return tasks
     }
 
@@ -30,8 +29,4 @@ class TaskManager {
         return tasks
     }
 
-    fun getTaskLogsById(taskId: String): List<String> {
-        return tasks.find { it.id.toString() == taskId }
-            ?.logs ?: emptyList()
-    }
 }
