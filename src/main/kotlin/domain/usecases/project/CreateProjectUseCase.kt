@@ -2,8 +2,6 @@ package domain.usecases.project
 
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utils.PlanMateExceptions
-import domain.validation.ValidateProjectName
 
 class CreateProjectUseCase(
     private val projectRepository: ProjectRepository,

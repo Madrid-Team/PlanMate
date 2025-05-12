@@ -5,7 +5,6 @@ import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.usecases.logs.CreateLogUseCase
-import domain.validation.ValidateProjectName
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
