@@ -11,10 +11,17 @@ class MateCLI(
     private val outputPrinter: OutputPrinter,
     private val taskCLI: TaskCLI,
     private val projectCLI: ProjectCLI,
-    ) {
+) {
     suspend fun showMateMenu() {
         while (true) {
-            outputPrinter.printMenuItems(listOf(String.mateMenu, String.viewTaskMenu, String.viewProjects, String.logout))
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.mateMenu,
+                    String.viewTaskMenu,
+                    String.viewProjects,
+                    String.logout
+                )
+            )
 
             when (inputReader.readInput(String.selectOption)) {
                 String.selectionOne -> taskCLI.show()

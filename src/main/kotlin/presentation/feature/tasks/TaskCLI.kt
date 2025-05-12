@@ -2,6 +2,7 @@ package presentation.feature.tasks
 
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class TaskCLI(
     private val createTaskCLI: CreateTaskCLI,
@@ -14,22 +15,25 @@ class TaskCLI(
 ) {
     suspend fun show() {
         while (true) {
-            outputPrinter.printMessage("=== Task Menu ===")
-            outputPrinter.printMessage("1. Create Task")
-            outputPrinter.printMessage("2. Edit Task")
-            outputPrinter.printMessage("3. Delete Task")
-            outputPrinter.printMessage("4. Display all tasks within a specific project")
-            outputPrinter.printMessage("5. Display Task Audit Log by ID")
-            outputPrinter.printMessage("0. Back")
-
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> createTaskCLI.show()
-                "2" -> editTaskCLI.show()
-                "3" -> deleteTaskCLI.show()
-                "4" -> taskView.show()
-                "5" -> taskAuditLogCLI.show()
-                "0" -> return
-                else -> outputPrinter.printError("Invalid option.")
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.taskMenuHeader,
+                    String.createTask,
+                    String.editTask,
+                    String.deleteTask,
+                    String.displayTasks,
+                    String.displayTaskLogs,
+                    String.back
+                )
+            )
+            when (inputReader.readInput(String.selectOption)) {
+                String.selectionOne -> createTaskCLI.show()
+                String.selectionTwo -> editTaskCLI.show()
+                String.selectionThree -> deleteTaskCLI.show()
+                String.selectionFour -> taskView.show()
+                String.selectionFive -> taskAuditLogCLI.show()
+                String.selectionZero -> return
+                else -> outputPrinter.printError( String.invalidOption)
             }
         }
     }
