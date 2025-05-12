@@ -19,8 +19,10 @@ import org.koin.dsl.module
 import data.source.mongoDb.MongoClientProvider
 import data.source.project.ProjectMongoDBDataSource
 import data.source.task.TaskMongoDBDataSource
+import data.source.user.CurrentUserProvider
 import data.source.user.UserMongoDBDataSource
 import data.utils.*
+import data.dto.authentication.CurrentUser
 import java.io.File
 
 val dataSourceModule = module {
@@ -72,6 +74,7 @@ val dataSourceModule = module {
     
     single { TaskManager() }
     single { ProjectManager() }
+    single<CurrentUserProvider> { CurrentUser() }
 
     single(named("projects")) { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
     single(named("users")) { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
