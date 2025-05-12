@@ -101,7 +101,7 @@ class ProjectMongoDBDataSourceTest {
 
             projectMongoDBDataSource.createProject(newProject)
 
-            projects = projectMongoDBDataSource.getProjects()
+            projects = projectMongoDBDataSource.getProjects(mockk())
 
             assertEquals(true, projects.any { it.name == "Test Project" })
 
@@ -119,14 +119,14 @@ class ProjectMongoDBDataSourceTest {
 
 
             //Given
-            val projectId = projectMongoDBDataSource.getProjects().first().id
+            val projectId = projectMongoDBDataSource.getProjects(mockk()).first().id
 
 
             // When
             projectMongoDBDataSource.deleteProject(projectId)
 
             // Then
-            assertEquals(0, projectMongoDBDataSource.getProjects().size)
+            assertEquals(0, projectMongoDBDataSource.getProjects(mockk()).size)
 
         }
     }

@@ -34,17 +34,19 @@ class TaskMongoDBDataSourceTest {
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     private lateinit var testScope: TestScope
     private val collection = mockk<MongoCollection<TaskDto>>()
+
     @BeforeAll
     fun setup() {
         testScope = TestScope()
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,"projects_test","projects")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "projects_test", "projects")
         runBlocking {
-            taskMongoDBDataSource =
-                TaskMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
+//            taskMongoDBDataSource =
+//                TaskMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
         }
     }
+
     val task = TaskDto(
         id = "task-id",
         projectId = "project-id",
@@ -57,7 +59,7 @@ class TaskMongoDBDataSourceTest {
 
 
     @Test
-    fun `editTask should update the matching task in the project`()=runTest  {
+    fun `editTask should update the matching task in the project`() = runTest {
         // Arrange
         val collection = mockk<MongoCollection<ProjectDto>>(relaxed = true)
 
@@ -71,14 +73,14 @@ class TaskMongoDBDataSourceTest {
         coEvery { updateResult.modifiedCount } returns 1L
         coEvery { collection.updateOne(filter, update) } returns updateResult
 
-        val dataSource = TaskMongoDBDataSource(collection)
+        val dataSource = TaskMongoDBDataSource(mockk())
 
         // Act
         dataSource.editTask(task)
         testScope.launch {
-        // Assert
-        coVerify(exactly = 1) { collection.updateOne(filter, update) }
-    }
+            // Assert
+            coVerify(exactly = 1) { collection.updateOne(filter, update) }
+        }
     }
 
     @Test
@@ -95,15 +97,16 @@ class TaskMongoDBDataSourceTest {
         coEvery { updateResult.modifiedCount } returns 1L
         coEvery { collection.updateOne(filter, update) } returns updateResult
 
-        val dataSource = TaskMongoDBDataSource(collection)
+        val dataSource = TaskMongoDBDataSource(mockk())
 
         // Act
-        dataSource.deleteTask(projectId, taskId)
+        dataSource.deleteTask(taskId)
         testScope.launch {
             // Assert
             coVerify(exactly = 1) { collection.updateOne(filter, update) }
         }
     }
+
     @Test
     fun `createTask should push task to the correct project`() = runTest {
         // Arrange
@@ -125,14 +128,14 @@ class TaskMongoDBDataSourceTest {
 
         coEvery { collection.updateOne(filter, update) } returns updateResult
 
-        val dataSource = TaskMongoDBDataSource(collection)
+        val dataSource = TaskMongoDBDataSource(mockk())
 
         // Act
         dataSource.createTask(task)
         testScope.launch {
-        // Assert
-        coVerify(exactly = 1) { collection.updateOne(filter, update) }
-    }
+            // Assert
+            coVerify(exactly = 1) { collection.updateOne(filter, update) }
+        }
 
     }
 
@@ -141,7 +144,7 @@ class TaskMongoDBDataSourceTest {
         // Given
         val projectId = "nonexistent"
         val collection = mockk<MongoCollection<ProjectDto>>()
-        val taskMongoDBDataSource = TaskMongoDBDataSource(collection)
+        val taskMongoDBDataSource = TaskMongoDBDataSource(mockk())
 
         val mockFlow = mockk<FindFlow<ProjectDto>>(relaxed = true)
         coEvery { collection.find(eq("_id", projectId)) } returns mockFlow
@@ -160,28 +163,33 @@ class TaskMongoDBDataSourceTest {
 
 
     @Test
-    fun `deleteTask does nothing when project does not exist`()  {
+    fun `deleteTask does nothing when project does not exist`() {
         // Arrange
         val projectId = "nonexistent"
         val taskId = "task1"
         val updateResult = mockk<UpdateResult>()
         coEvery { updateResult.modifiedCount } returns 0L
 
-        coEvery { collection.updateOne(eq("_id", projectId), Updates.pull("tasks", Document("id", taskId))) } returns updateResult
-
-        testScope.launch {
-            // Act
-        taskMongoDBDataSource.deleteTask(projectId, taskId)
-
-        // Assert
-        coVerify {
+        coEvery {
             collection.updateOne(
                 eq("_id", projectId),
                 Updates.pull("tasks", Document("id", taskId))
             )
+        } returns updateResult
+
+        testScope.launch {
+            // Act
+            taskMongoDBDataSource.deleteTask(taskId)
+
+            // Assert
+            coVerify {
+                collection.updateOne(
+                    eq("_id", projectId),
+                    Updates.pull("tasks", Document("id", taskId))
+                )
+            }
+            assertEquals(0L, updateResult.modifiedCount)
         }
-        assertEquals(0L, updateResult.modifiedCount)
-    }
     }
 
     @Test
@@ -189,61 +197,60 @@ class TaskMongoDBDataSourceTest {
         // Arrange
         val projectId = "project1"
         val taskId = "task1"
-       testScope.launch {
-           coEvery {
-               collection.updateOne(
-                   eq("_id", projectId),
-                   Updates.pull("tasks", Document("id", taskId))
-               )
-           } throws RuntimeException("DB error")
+        testScope.launch {
+            coEvery {
+                collection.updateOne(
+                    eq("_id", projectId),
+                    Updates.pull("tasks", Document("id", taskId))
+                )
+            } throws RuntimeException("DB error")
 
-           // Act & Assert
-           val thrown = assertThrows<RuntimeException> {
-               taskMongoDBDataSource.deleteTask(projectId, taskId)
-           }
-           assertEquals("DB error", thrown.message)
-           coVerify {
-               collection.updateOne(
-                   eq("_id", projectId),
-                   Updates.pull("tasks", Document("id", taskId))
-               )
-           }
-       }
+            // Act & Assert
+            val thrown = assertThrows<RuntimeException> {
+                taskMongoDBDataSource.deleteTask(taskId)
+            }
+            assertEquals("DB error", thrown.message)
+            coVerify {
+                collection.updateOne(
+                    eq("_id", projectId),
+                    Updates.pull("tasks", Document("id", taskId))
+                )
+            }
+        }
     }
-
 
 
     @Test
-    fun `createTask does nothing when project does not exist`()  {
-    // Arrange
-    val projectId = "nonexistent"
-    val task = TaskDto(
-        id = "task1",
-        projectId = projectId,
-        title = "Task 1",
-        description = "Description 1",
-        taskState = "TODO",
-        createdBy = "user1",
-        logs = listOf("log1", "log2")
-    )
-    val updateResult = mockk<UpdateResult>()
-    coEvery { updateResult.modifiedCount } returns 0L
-    testScope.launch {
-        coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } returns updateResult
+    fun `createTask does nothing when project does not exist`() {
+        // Arrange
+        val projectId = "nonexistent"
+        val task = TaskDto(
+            id = "task1",
+            projectId = projectId,
+            title = "Task 1",
+            description = "Description 1",
+            taskState = "TODO",
+            createdBy = "user1",
+            logs = listOf("log1", "log2")
+        )
+        val updateResult = mockk<UpdateResult>()
+        coEvery { updateResult.modifiedCount } returns 0L
+        testScope.launch {
+            coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } returns updateResult
 
-        // Act
-        taskMongoDBDataSource.createTask(task)
+            // Act
+            taskMongoDBDataSource.createTask(task)
 
-        // Assert
-        coVerify {
-            collection.updateOne(
-                eq("_id", projectId),
-                Updates.push("tasks", task)
-            )
+            // Assert
+            coVerify {
+                collection.updateOne(
+                    eq("_id", projectId),
+                    Updates.push("tasks", task)
+                )
+            }
+            assertEquals(0L, updateResult.modifiedCount)
         }
-        assertEquals(0L, updateResult.modifiedCount)
     }
-}
 
     @Test
     fun `createTask throws exception on database error`() {
@@ -259,9 +266,9 @@ class TaskMongoDBDataSourceTest {
             logs = listOf("log1", "log2")
         )
 
-            coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } throws RuntimeException(
-                "DB error"
-            )
+        coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } throws RuntimeException(
+            "DB error"
+        )
         testScope.launch {
             // Act & Assert
             val thrown = assertThrows<RuntimeException> {
@@ -276,6 +283,7 @@ class TaskMongoDBDataSourceTest {
             }
         }
     }
+
     @AfterAll
     fun cleanup() {
         mongoClientProvider.close()
