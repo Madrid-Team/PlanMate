@@ -30,7 +30,7 @@ val cliModule = module {
     single { ProjectCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
     single { CreateProjectCLI(get(), get(), get(), get()) }
     single { DeleteProjectCLI(get(), get(), get()) }
-    single { EditProjectCLI(get(), get(), get(), get(), get(), get()) }
+    single { EditProjectCLI(get(), get(), get(), get()) }
     single { UserCLI(get(), get(), get(), get()) }
     single { CreateUserCLI(get(), get(), get()) }
     single { DeleteUserCLI(get(), get(), get()) }

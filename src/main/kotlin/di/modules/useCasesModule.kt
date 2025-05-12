@@ -26,4 +26,8 @@ val useCasesModule = module {
     single { EditTaskUseCase(get(),get(),get(),get()) }
     single { GetTaskLogsUseCase(get(),get(),get()) }
     single { GetTasksByProjectIdUseCase(get()) }
+    single { TaskValidator() }
+    single { ProjectValidator() }
+    single { GetTaskByIdUseCase(get()) }
+
 }
