@@ -24,7 +24,7 @@ class UserRepositoryImplTest {
     @BeforeEach
     fun setUp() {
         userExternalDataSource = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource)
+        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource, mockk())
     }
 
     @Test
