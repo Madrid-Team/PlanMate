@@ -40,7 +40,7 @@ class PlanMateCLITest {
         userCLI = mockk(relaxed = true)
         adminCLI = mockk(relaxed = true)
         projectAuditLogCLI = mockk(relaxed = true)
-        planMateCLI = PlanMateCLI(inputReader, outputPrinter, authenticationCLI, taskCLI, projectCLI, userCLI, adminCLI)
+        planMateCLI = PlanMateCLI(inputReader, outputPrinter, authenticationCLI, adminCLI, mockk())
         mockkObject(CurrentUser)
         mockkStatic(UUID::class)
     }

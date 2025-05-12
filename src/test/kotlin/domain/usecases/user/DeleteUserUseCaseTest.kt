@@ -43,7 +43,7 @@ class DeleteUserUseCaseTest {
             coEvery { userRepository.deleteUser(userToDeleteId) } returns Unit
 
             // When - Should not throw exception
-            deleteUserUseCase.invoke(adminId, userToDeleteId)
+            deleteUserUseCase.deleteUser(adminId, userToDeleteId)
 
             // Then
             coVerify(exactly = 1) { userRepository.getUserById(adminId) }
@@ -70,7 +70,7 @@ class DeleteUserUseCaseTest {
 
             // When/Then
             val exception = assertThrows<UserExceptions> {
-                deleteUserUseCase.invoke(mateId, userToDeleteId)
+                deleteUserUseCase.deleteUser(mateId, userToDeleteId)
             }
 
             assertEquals("User is not admin", exception.message)
@@ -91,7 +91,7 @@ class DeleteUserUseCaseTest {
 
             // When/Then
             val exception = assertThrows<UserExceptions.UserNotFoundException> {
-                deleteUserUseCase.invoke(nonExistentId, userToDeleteId)
+                deleteUserUseCase.deleteUser(nonExistentId, userToDeleteId)
             }
 
             coVerify(exactly = 1) { userRepository.getUserById(nonExistentId) }
@@ -111,7 +111,7 @@ class DeleteUserUseCaseTest {
 
             // When/Then
             val exception = assertThrows<UserExceptions.UserNotFoundException> {
-                deleteUserUseCase.invoke(adminId, userToDeleteId)
+                deleteUserUseCase.deleteUser(adminId, userToDeleteId)
             }
 
             coVerify(exactly = 1) { userRepository.getUserById(adminId) }
@@ -141,7 +141,7 @@ class DeleteUserUseCaseTest {
 
             // When/Then
             val exception = assertThrows<Exception> {
-                deleteUserUseCase.invoke(adminId, userToDeleteId)
+                deleteUserUseCase.deleteUser(adminId, userToDeleteId)
             }
 
             assertEquals(databaseException, exception)

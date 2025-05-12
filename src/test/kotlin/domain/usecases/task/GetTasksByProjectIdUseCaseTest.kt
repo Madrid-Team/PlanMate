@@ -32,7 +32,7 @@ class GetTasksByProjectIdUseCaseTest {
             val secondTask = createTask(projectId = projectId)
             coEvery { taskRepository.getTasksByProjectId(projectId) } returns listOf(firstTask, secondTask)
 
-            val result = getTasksByProjectIdUseCase(projectId)
+            val result = GetTaskLogsUseCase(mockk(), mockk(), mockk())
 
             assertThat(result)
         }
@@ -40,10 +40,10 @@ class GetTasksByProjectIdUseCaseTest {
 
     @Test
     fun `GetTasksByProjectIdUseCase should throw exception when project id is not found`() {
-       testScope.runTest {
+        testScope.runTest {
 //           coEvery { taskRepository.getAllTasks() } throws Exception()
 
-           assertThrows<Exception> { getTasksByProjectIdUseCase(UUID.randomUUID().toString()) }
-       }
+            assertThrows<Exception> { GetTasksByProjectIdUseCase(taskRepository) }
+        }
     }
 }

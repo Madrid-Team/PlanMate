@@ -46,7 +46,7 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(
+                createLogUseCase.createLog(
                     operationType = OperationType.CREATE,
                     entityName = "project name",
                     entityType = EntityType.PROJECT,
@@ -96,7 +96,7 @@ class CreateProjectCLITest {
 
             val mockLogString = "User test-user CREATE PROJECT project name  at 2025-05-04 12:00:00"
             every {
-                createLogUseCase.invoke(any(), any(), any(), any())
+                createLogUseCase.createLog(any(), any(), any(), any())
             } returns mockLogString
 
             coEvery { createProjectUseCase.execute(any()) } returns mockk()

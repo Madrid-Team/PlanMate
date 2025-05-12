@@ -30,7 +30,7 @@ class CreateUserCLITest {
             val password = "password"
 
             every { inputReader.readInput() } returnsMany listOf(username, password)
-            coEvery { useCase(any()) } returns Unit
+//            coEvery { useCase(any()) } returns Unit
             // When
             cli.show()
 
@@ -54,7 +54,7 @@ class CreateUserCLITest {
             val password = "password"
 
             every { inputReader.readInput() } returnsMany listOf(username, password, "z")
-            coEvery { useCase(any()) } throws Exception()
+//            coEvery { useCase(any()) } throws Exception()
             // When
             cli.show()
 

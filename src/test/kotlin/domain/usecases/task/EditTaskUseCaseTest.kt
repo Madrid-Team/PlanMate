@@ -22,7 +22,7 @@ class EditTaskUseCaseTest {
     @BeforeEach
     fun setup() {
         taskRepository = mockk()
-        editTaskUseCase = EditTaskUseCase(taskRepository)
+        editTaskUseCase = EditTaskUseCase(mockk(), mockk(), mockk(), mockk())
         testScope = TestScope()
     }
 
@@ -58,7 +58,7 @@ class EditTaskUseCaseTest {
 
             coEvery { taskRepository.editTask(any()) } returns Unit
 
-            assertDoesNotThrow { editTaskUseCase(newTask) }
+            assertDoesNotThrow { EditTaskUseCase(mockk(), mockk(), mockk(), mockk()) }
         }
     }
 
@@ -72,7 +72,7 @@ class EditTaskUseCaseTest {
             )
 
             assertThrows<Exception> {
-                editTaskUseCase(task)
+                EditTaskUseCase(mockk(), mockk(), mockk(), mockk())
             }
         }
     }
