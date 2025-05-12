@@ -17,12 +17,15 @@ class AdminCLI(
 
     suspend fun showAdminMenu() {
         while (true) {
-            outputPrinter.printMessage(String.adminMenu)
-            outputPrinter.printMessage(String.manageTasks)
-            outputPrinter.printMessage(String.manageProjects)
-            outputPrinter.printMessage(String.manageUsers)
-            outputPrinter.printMessage(String.logout)
-
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.adminMenu,
+                    String.manageTasks,
+                    String.manageProjects,
+                    String.manageUsers,
+                    String.logout
+                )
+            )
             when (inputReader.readInput(String.selectOption)) {
                 String.selectionOne -> taskCLI.show()
                 String.selectionTwo -> projectCLI.show()
