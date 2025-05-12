@@ -36,7 +36,7 @@ val cliModule = module {
     single { CreateUserCLI(get(), get(), get()) }
     single { DeleteUserCLI(get(), get(), get()) }
     single { ProjectView(get()) }
-    single { AdminCLI(get(), get(), get(), get(), get(), get(), get()) }
+    single { AdminCLI(get(), get(), get(), get(), get()) }
     single { MateCLI(get(), get(), get(), get()) }
 
 }
