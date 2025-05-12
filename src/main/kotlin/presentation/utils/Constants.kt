@@ -108,3 +108,10 @@ val String.Companion.deleteProjectSuccess get() = "Project deleted successfully.
 val String.Companion.deletionCancelled get() = "Deletion cancelled."
 val String.Companion.deleteProjectNotFoundException get() = "Project not found : %s\n"
 val String.Companion.deleteProjectException get() = "Failed to delete project : %s\n"
+
+
+val String.Companion.editProjectHeader get() = "=== Edit Project ==="
+val String.Companion.enterProjectIdToEdit get() = "Enter the ID of the project to edit: "
+val String.Companion.chooseFieldsEditProject get() = "Choose fields to edit\n1 - Name\n2 - Description\n3 - Project States\n4 - Finish"
+
+val String.Companion.editProjectException get() = "\"Failed to edit project name: %s"
