@@ -34,8 +34,20 @@ val String.Companion.taskMenuHeader get() = "=== Task Menu ==="
 val String.Companion.createTask get() = "1. Create Task"
 val String.Companion.editTask get() = "2. Edit Task"
 val String.Companion.deleteTask get() = "3. Delete Task"
-val String.Companion.displayTasks get() = "4. Display all tasks within a specific project"
+val String.Companion.displayAllTasksOption get() = "4. Display all tasks within a specific project"
 val String.Companion.displayTaskLogs get() = "5. Display Task Audit Log by ID"
+val String.Companion.displayAllTask get() = "=== Display All Tasks ==="
+val String.Companion.enterProjectId get() = "Enter project ID: "
+val String.Companion.enterTaskId get() = "Enter task ID: "
+val String.Companion.enterNewTitle get() = "Enter new title: "
+val String.Companion.enterNewDescription get() = "Enter new description: "
+val String.Companion.empty get() = ""
+val String.Companion.editTaskHeader get() = "=== Edit Task ==="
+val String.Companion.taskUpdatedSuccessfully get() = "Task updated successfully"
+val String.Companion.taskUpdatedUnsuccessfully get() = "Failed to update task"
+val String.Companion.createTaskHeader get() = "=== Create Task ==="
+val String.Companion.taskCreatedSuccessfully get() = "Task created successfully"
+val String.Companion.taskCreatedUnsuccessfully get() = "Failed to create task"
 
 
 val String.Companion.projectMenuHeader get() = "=== Project Menu ==="
@@ -66,8 +78,10 @@ val String.Companion.loginError get() = "Login error:("
 
 
 val String.Companion.pleaseTryAgain get() = "Please try again:"
-val String.Companion.enterProjectId get() = "Enter Project ID:"
 
+
+val String.Companion.projectAuditLogHeader get() = "=== Project Audit Log ==="
+val String.Companion.enterProjectIDToViewAudit get() = "Enter Project ID to view audit logs: "
 
 val String.Companion.taskAuditLogHeader get() = "=== Task Audit Log ==="
 val String.Companion.enterTaskIdToViewLogs get() = "Enter Task ID to view audit logs: "

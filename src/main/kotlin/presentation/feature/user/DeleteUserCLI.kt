@@ -18,9 +18,8 @@ class DeleteUserCLI(
             val requiredId = CurrentUser.getCurrentUser().id
             deleteUserUseCase(requiredId.toString(), userId)
             outputPrinter.printMessage(String.deletedSuccess)
-        } catch (_: Exception) {
-            outputPrinter.printMessage(String.deletedFailed)
-            outputPrinter.printMessage(String.pressOneToTryAgain)
+        } catch (e: Exception) {
+            outputPrinter.printMenuItems(listOf(String.deletedFailed, e.message.toString(), String.pressOneToTryAgain))
             val userOption = inputReader.readInput()
             if (userOption == String.selectionOne) show()
         }

@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 import java.util.*
 
 class EditTaskCLI(
@@ -16,28 +17,28 @@ class EditTaskCLI(
     private val editTaskUseCase: EditTaskUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        outputPrinter.printMessage("=== Edit Task ===")
+        outputPrinter.printMessage(String.editTaskHeader)
 
-        val projectId = inputReader.readInput("Enter project ID: ")
-        val taskId = inputReader.readInput("Enter task ID: ")
-        val title = inputReader.readInput("Enter new title: ")
-        val description = inputReader.readInput("Enter new description: ")
+        val projectId = inputReader.readInput(String.enterProjectId)
+        val taskId = inputReader.readInput(String.enterTaskId)
+        val title = inputReader.readInput(String.enterNewTitle)
+        val description = inputReader.readInput(String.enterNewDescription)
 
         val updatedTask = Task(
             id = UUID.fromString(taskId),
             projectId = projectId,
             title = title,
             description = description,
-            taskState = "",
+            taskState = String.empty,
             createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf()
         )
 
         try {
-            editTaskUseCase(updatedTask)
-            outputPrinter.printMessage("Task updated successfully")
+            editTaskUseCase.editTask(updatedTask)
+            outputPrinter.printMessage(String.taskUpdatedSuccessfully)
         } catch (exception: TaskExceptions.TaskCannotEditException) {
-            outputPrinter.printError(exception.message ?: "Failed to update task")
+            outputPrinter.printMenuItems(listOf(String.taskUpdatedUnsuccessfully, exception.message.toString()))
         }
     }
 }
