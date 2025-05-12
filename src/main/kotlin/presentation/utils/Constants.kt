@@ -113,5 +113,3 @@ val String.Companion.deleteProjectException get() = "Failed to delete project : 
 val String.Companion.editProjectHeader get() = "=== Edit Project ==="
 val String.Companion.enterProjectIdToEdit get() = "Enter the ID of the project to edit: "
 val String.Companion.chooseFieldsEditProject get() = "Choose fields to edit\n1 - Name\n2 - Description\n3 - Project States\n4 - Finish"
-
-val String.Companion.editProjectException get() = "\"Failed to edit project name: %s"
