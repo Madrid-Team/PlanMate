@@ -10,3 +10,7 @@ const val TASKS_COLLECTION = "tasks"
 
 const val CREATED_BY = "createdBy"
 const val PROJECT_ID = "_id"
+
+
+const val TASK_PROJECT_ID = "projectId"
+const val TASK_ID = "_id"
