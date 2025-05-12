@@ -9,12 +9,12 @@ import domain.validation.ValidateProjectName
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val validateProjectName: ValidateProjectName,
+    private val projectValidator: ProjectValidator,
     private val createLogUseCase: CreateLogUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun editProject(updatedProject: Project) {
-        validateProjectName(updatedProject)
+        projectValidator.validateName(updatedProject)
         val currentProject = getProjectByIdUseCase.getById(updatedProject.id.toString())
         projectRepository.editProject(
             updatedProject.copy(
@@ -30,7 +30,7 @@ class EditProjectUseCase(
         val listOfLogs = mutableListOf<String>()
         if (updatedProject.name != currentProject.name) {
             listOfLogs.add(
-                createLogUseCase.invoke(
+                createLogUseCase.createLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
@@ -44,7 +44,7 @@ class EditProjectUseCase(
 
         if (updatedProject.description != currentProject.description) {
             listOfLogs.add(
-                createLogUseCase.invoke(
+                createLogUseCase.createLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
@@ -57,7 +57,7 @@ class EditProjectUseCase(
         }
         if (updatedProject.projectState != currentProject.projectState) {
             listOfLogs.add(
-                createLogUseCase.invoke(
+                createLogUseCase.createLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
