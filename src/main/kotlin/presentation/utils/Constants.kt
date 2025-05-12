@@ -24,11 +24,11 @@ val String.Companion.manageUsers get() = "3. Manage users"
 val String.Companion.deleteUserStarted get() = "=== Delete user started ==="
 val String.Companion.enterUserId get() = "Enter user id:"
 val String.Companion.deletedSuccess get() = "Deleted Success"
-val String.Companion.deletedFailed get() ="Deleted Failed"
-val String.Companion.pressOneToTryAgain get() ="if you want to try again enter \"1\" else enter anything"
-val String.Companion.manageUsersMenu get() ="=== Manage users menu ==="
-val String.Companion.createNewUser get() ="1. Create new user"
-val String.Companion.deleteUser get() ="2. Delete user"
+val String.Companion.deletedFailed get() = "Deleted Failed"
+val String.Companion.pressOneToTryAgain get() = "if you want to try again enter \"1\" else enter anything"
+val String.Companion.manageUsersMenu get() = "=== Manage users menu ==="
+val String.Companion.createNewUser get() = "1. Create new user"
+val String.Companion.deleteUser get() = "2. Delete user"
 val String.Companion.back get() = "0. Back"
 val String.Companion.taskMenuHeader get() = "=== Task Menu ==="
 val String.Companion.createTask get() = "1. Create Task"
@@ -37,16 +37,27 @@ val String.Companion.deleteTask get() = "3. Delete Task"
 val String.Companion.displayTasks get() = "4. Display all tasks within a specific project"
 val String.Companion.displayTaskLogs get() = "5. Display Task Audit Log by ID"
 
+
 val String.Companion.loginHeader get() = "=== Login ==="
 val String.Companion.enterUserName get() = "Enter user name:"
 val String.Companion.enterPassword get() = "Enter password:"
 val String.Companion.loginSuccess get() = "Login Success"
 val String.Companion.loginError get() = "Login error:("
-val String.Companion.pleaseTryAgain get() = "Please try again:"
 
-val String.Companion.taskAuditLog get() = "=== Task Audit Log ==="
+
+val String.Companion.pleaseTryAgain get() = "Please try again:"
 val String.Companion.enterProjectId get() = "Enter Project ID:"
-val String.Companion.enterTaskId get() = "Enter Task ID to view audit logs: "
+
+
+
+val String.Companion.taskAuditLogHeader get() = "=== Task Audit Log ==="
+val String.Companion.enterTaskIdToViewLogs get() = "Enter Task ID to view audit logs: "
 val String.Companion.taskLogNotFound get() = "No audit logs found for this task id : %s\n"
 val String.Companion.auditLogsForTaskId get() = "Audit logs for task id: %s\n"
 val String.Companion.auditLogException get() = "Failed to fetch audit logs : %s\n"
+
+
+val String.Companion.deleteTaskHeader get() = "=== Delete Task ==="
+val String.Companion.enterTaskIdToDelete get() = "Enter task ID to delete:"
+val String.Companion.deleteTaskSuccess get() = "Task deleted successfully."
+val String.Companion.deleteTaskException get() = "Failed to delete task : %s\n"

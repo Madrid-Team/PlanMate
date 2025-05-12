@@ -14,10 +14,10 @@ class TaskAuditLogCLI(
     private val getTaskLogsUseCase: GetTaskLogsUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        outputPrinter.printMessage(String.taskAuditLog)
+        outputPrinter.printMessage(String.taskAuditLogHeader)
         try {
             val projectId = inputReader.readInput(String.enterProjectId)
-            val taskId = inputReader.readInput(String.enterTaskId)
+            val taskId = inputReader.readInput(String.enterTaskIdToViewLogs)
             val logs = getTaskLogsUseCase(projectId, taskId)
             if (logs.isEmpty()) {
                 outputPrinter.printMessage(String.taskLogNotFound.format(taskId))
