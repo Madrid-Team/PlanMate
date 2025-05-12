@@ -4,7 +4,7 @@ import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.task.Task
-import domain.usecases.logs.CreateLogUseCase
+import domain.models.logs.AuditLog
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,6 @@ class CreateTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val createTaskUseCase: CreateTaskUseCase,
-    private val createLogUseCase: CreateLogUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
@@ -63,12 +62,12 @@ class CreateTaskCLI(
             taskState = selectedState,
             createdBy = CurrentUser.getCurrentUser().username,
             logs = listOf(
-                createLogUseCase.createLog(
+                AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = title,
                     entityType = EntityType.TASK,
                     username = CurrentUser.getCurrentUser().username,
-                )
+                ).toString()
             ),
             id = UUID.randomUUID()
         )

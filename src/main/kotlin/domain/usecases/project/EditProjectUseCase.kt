@@ -4,13 +4,12 @@ import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.usecases.logs.CreateLogUseCase
+import domain.models.logs.AuditLog
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val projectValidator: ProjectValidator,
-    private val createLogUseCase: CreateLogUseCase,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase
+     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun editProject(updatedProject: Project) {
         projectValidator.validateName(updatedProject)
@@ -29,7 +28,7 @@ class EditProjectUseCase(
         val listOfLogs = mutableListOf<String>()
         if (updatedProject.name != currentProject.name) {
             listOfLogs.add(
-                createLogUseCase.createLog(
+                    AuditLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
@@ -37,13 +36,13 @@ class EditProjectUseCase(
                     fieldName = "name",
                     oldValue = currentProject.name,
                     newValue = updatedProject.name,
-                )
+                ).toString()
             )
         }
 
         if (updatedProject.description != currentProject.description) {
             listOfLogs.add(
-                createLogUseCase.createLog(
+                AuditLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
@@ -51,12 +50,12 @@ class EditProjectUseCase(
                     fieldName = "description",
                     oldValue = currentProject.description,
                     newValue = updatedProject.description,
-                )
+                ).toString()
             )
         }
         if (updatedProject.projectState != currentProject.projectState) {
             listOfLogs.add(
-                createLogUseCase.createLog(
+                AuditLog(
                     operationType = OperationType.UPDATE,
                     entityName = currentProject.name,
                     entityType = EntityType.PROJECT,
@@ -64,7 +63,7 @@ class EditProjectUseCase(
                     fieldName = "project state",
                     oldValue = currentProject.projectState,
                     newValue = updatedProject.projectState,
-                )
+                ).toString()
             )
         }
         return listOfLogs
