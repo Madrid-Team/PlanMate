@@ -27,7 +27,7 @@ class CreateUserUseCaseTest {
     fun setUp() {
         // Mock the data source
         userExternalDataSource = mockk<UserExternalDataSource>(relaxed = false)
-        userRepository = UserRepositoryImpl(userExternalDataSource)
+        userRepository = UserRepositoryImpl(mockk(), mockk())
         mockkConstructor(ValidateUser::class)
         createUserUseCase = CreateUserUseCase(userRepository)
     }

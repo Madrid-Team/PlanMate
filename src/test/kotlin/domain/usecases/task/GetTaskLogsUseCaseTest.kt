@@ -20,7 +20,7 @@ class GetTaskLogsUseCaseTest {
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
-        getTaskLogsUseCase = GetTaskLogsUseCase(mockk(), mockk(), mockk())
+        getTaskLogsUseCase = GetTaskLogsUseCase(mockk())
         testScope = TestScope()
     }
 
@@ -29,9 +29,9 @@ class GetTaskLogsUseCaseTest {
         //Given
         testScope.runTest {
             val taskId = 1
-            coEvery { taskRepository.getTaskLogsByID("", taskId.toString()) } returns listOf()
+            coEvery { taskRepository.getTaskLogsByID(taskId.toString()) } returns listOf()
 
-            assertDoesNotThrow { GetTaskLogsUseCase(mockk(), mockk(), mockk()) }
+            assertDoesNotThrow { GetTaskLogsUseCase(mockk()) }
 
         }
     }
@@ -43,12 +43,11 @@ class GetTaskLogsUseCaseTest {
             val projectId = 1
             coEvery {
                 taskRepository.getTaskLogsByID(
-                    "",
                     projectId.toString()
                 )
             } throws TaskExceptions.NoLogsFoundException()
 
-            assertThrows<TaskExceptions.NoLogsFoundException> { GetTaskLogsUseCase(mockk(), mockk(), mockk()) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { GetTaskLogsUseCase(mockk()) }
 
         }
     }

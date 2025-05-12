@@ -31,7 +31,7 @@ class LoginUserUseCaseTest {
             coEvery { userRepository.getAllUsers() } returns listOf(user)
 
             // When
-            val result = loginUser.login("user1", "pass123")
+            val result = loginUser.invoke("user1", "pass123")
 
             // Then
             assertTrue { result != null }
@@ -47,7 +47,7 @@ class LoginUserUseCaseTest {
 
             // When
             assertThrows<UserExceptions.WrongPasswordOrUserName> {
-                loginUser.login("user1", "wrongPass")
+                loginUser.invoke("user1", "wrongPass")
             } // Should throw
         }
     }
@@ -62,7 +62,7 @@ class LoginUserUseCaseTest {
             coEvery { userRepository.createNewUser(user) } returns Unit
 
             // When && Then
-            assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.login("", "PASSWORD_HASH_1") }
+            assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.invoke("", "PASSWORD_HASH_1") }
         }
     }
 }

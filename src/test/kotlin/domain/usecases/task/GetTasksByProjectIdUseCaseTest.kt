@@ -32,7 +32,7 @@ class GetTasksByProjectIdUseCaseTest {
             val secondTask = createTask(projectId = projectId)
             coEvery { taskRepository.getTasksByProjectId(projectId) } returns listOf(firstTask, secondTask)
 
-            val result = GetTaskLogsUseCase(mockk(), mockk(), mockk())
+            val result = GetTaskLogsUseCase(mockk())
 
             assertThat(result)
         }
