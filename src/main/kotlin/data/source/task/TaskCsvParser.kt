@@ -8,9 +8,8 @@ import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_ID
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_LOGS
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_STATES
 import data.utils.PlanMateColumnIndex.TaskColumnsIndex.TASK_TITLE
-import domain.models.task.Task
 
-class TaskCsvParser() {
+class TaskCsvParser {
     fun parseOneRowToTask(row: String): TaskDto {
         val result = row.split(",")
         return TaskDto(

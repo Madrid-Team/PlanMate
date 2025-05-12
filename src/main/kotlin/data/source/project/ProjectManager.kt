@@ -1,7 +1,6 @@
 package data.source.project
 
 import data.dto.project.ProjectDto
-import domain.models.project.Project
 
 class ProjectManager {
 

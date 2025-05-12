@@ -43,7 +43,7 @@ class ProjectCsvDataSource(
         val projectWillDeleted = projectManager.getProjects().find { project -> project.id == projectId }
 
         try {
-            var projectListAfterDeletion = projectManager.deleteProject(projectId)
+            val projectListAfterDeletion = projectManager.deleteProject(projectId)
             var stringAfterDelete = String.projectHeader
             projectListAfterDeletion.forEach {
                 val projectAsString = projectCsvParser.parseProjectToString(it)
@@ -60,7 +60,7 @@ class ProjectCsvDataSource(
     override suspend fun editProject(project: ProjectDto) {
 
         try {
-            var projectListAfterEdition = projectManager.editProject(project)
+            val projectListAfterEdition = projectManager.editProject(project)
 
             var projectAfterUpdate = String.projectHeader
             projectListAfterEdition.forEach {
