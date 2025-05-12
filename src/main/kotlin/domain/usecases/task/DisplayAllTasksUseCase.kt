@@ -9,7 +9,6 @@ class DisplayAllTasksUseCase(
 ) {
     suspend fun display(projectId: String): String {
         val project = projectRepository.getProjectById(projectId)
-
         val tasks = taskRepository.getTasksByProjectId(projectId)
         val states = project.taskStates
         val swimlanesMap = states.associateWith { mutableListOf<String>() }
