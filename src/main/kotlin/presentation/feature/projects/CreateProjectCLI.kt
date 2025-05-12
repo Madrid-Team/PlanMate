@@ -57,7 +57,7 @@ class CreateProjectCLI(
         )
         try {
             val logUseCase = async {
-                createLogUseCase(
+                createLogUseCase.createLog(
                     operationType = OperationType.CREATE,
                     entityName = project.name,
                     entityType = EntityType.PROJECT,

@@ -20,7 +20,7 @@ class AuthenticationCLI(
         val password = inputReader.readInput()
         val passwordHash = PasswordHasher.hash(password)
         try {
-            val success = loginUserUseCase.invoke(userName, passwordHash)
+            val success = loginUserUseCase.login(userName, passwordHash)
             outputPrinter.printMessage(String.loginSuccess)
             CurrentUser.setCurrentUser(success)
         } catch (e: Exception) {

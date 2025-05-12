@@ -50,17 +50,11 @@ class CreateUserCLI(
                 id = UUID.randomUUID()
             )
             outputPrinter.printMessage("Creating user...")
-            createUserUseCase(user)
+            createUserUseCase.createUser(user)
             outputPrinter.printMessage("User created successfully")
-        } catch (e: UserExceptions.UserExist) {
-            outputPrinter.printError(e.message.toString())
-            showRetryMessage()
-        } catch (e: UserExceptions.UserReadWrightException) {
+        }catch (e: UserExceptions.UserReadWriteException) {
             handleUserReadWriteError(userName, passwordHash, e)
-        } catch (_: UserExceptions.UserNotFoundException) {
-            outputPrinter.printError("Users file not found")
-            showRetryMessage()
-        } catch (e: Exception) {
+        } catch (e: UserExceptions) {
             outputPrinter.printError("Unexpected error: ${e.message}")
             showRetryMessage()
         }
@@ -69,7 +63,7 @@ class CreateUserCLI(
     private suspend fun handleUserReadWriteError(
         userName: String,
         passwordHash: String,
-        e: UserExceptions.UserReadWrightException
+        e: UserExceptions.UserReadWriteException
     ) {
         outputPrinter.printError(e.message.toString())
         outputPrinter.printMessage("1 - Try again with same data\n2 - Enter new data\nAny other key - Exit")

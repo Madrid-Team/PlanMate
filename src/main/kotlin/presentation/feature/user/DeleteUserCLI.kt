@@ -16,7 +16,7 @@ class DeleteUserCLI(
         val userId = inputReader.readInput()
         try {
             val requiredId = CurrentUser.getCurrentUser().id
-            deleteUserUseCase(requiredId.toString(), userId)
+            deleteUserUseCase.deleteUser(requiredId.toString(), userId)
             outputPrinter.printMessage(String.deletedSuccess)
         } catch (e: Exception) {
             outputPrinter.printMenuItems(listOf(String.deletedFailed, e.message.toString(), String.pressOneToTryAgain))

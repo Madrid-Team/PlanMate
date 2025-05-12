@@ -1,9 +1,7 @@
 package presentation.feature.projects
 
 import domain.models.project.Project
-import domain.usecases.project.EditProjectDescriptionUseCase
-import domain.usecases.project.EditProjectNameUseCase
-import domain.usecases.project.EditProjectStateUseCase
+import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.PlanMateExceptions
 import kotlinx.coroutines.Dispatchers
@@ -15,9 +13,7 @@ import presentation.utils.*
 class EditProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val editProjectNameUseCase: EditProjectNameUseCase,
-    private val editProjectDescriptionUseCase: EditProjectDescriptionUseCase,
-    private val editProjectStateUseCase: EditProjectStateUseCase,
+    private val editProjectUseCase: EditProjectUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     var hasChanges = false
@@ -51,7 +47,8 @@ class EditProjectCLI(
     suspend fun editProjectName(currentProject: Project) {
         val newName = inputReader.readInput("Enter the new name:")
         try {
-            editProjectNameUseCase.execute(currentProject.id, newName)
+            val newProject = currentProject.copy(name = newName)
+            editProjectUseCase.editProject(newProject)
             outputPrinter.printMessage("Project name updated successfully.")
             hasChanges = true
         } catch (exception: PlanMateExceptions) {
@@ -62,7 +59,8 @@ class EditProjectCLI(
     suspend fun editProjectDescription(currentProject: Project) {
         val newDescription = inputReader.readInput("Enter the new description:")
         try {
-            editProjectDescriptionUseCase.execute(currentProject.id, newDescription)
+            val newDescription = currentProject.copy(description = newDescription)
+            editProjectUseCase.editProject(newDescription)
             outputPrinter.printMessage("Project description updated successfully.")
             hasChanges = true
         } catch (exception: PlanMateExceptions) {
@@ -83,7 +81,8 @@ class EditProjectCLI(
             if (selectedIndex != null && selectedIndex in 0 until currentProject.projectStates.size) {
                 val newState = currentProject.projectStates[selectedIndex]
                 try {
-                    editProjectStateUseCase.execute(currentProject.id, newState)
+                    val newProject = currentProject.copy(projectState = newState)
+                    editProjectUseCase.editProject(newProject)
                     outputPrinter.printMessage("Project state updated successfully.")
                     hasChanges = true
                 } catch (e: PlanMateExceptions) {

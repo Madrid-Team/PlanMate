@@ -49,7 +49,7 @@ class TaskCLI(
 
         try {
             val result = displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMessage(result)
+            outputPrinter.printMenuItems(result)
         } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage(exception.message.toString())
         }
