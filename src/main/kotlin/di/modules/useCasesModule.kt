@@ -19,9 +19,9 @@ val useCasesModule = module {
     single { GetProjectLogsByIdUseCase(get()) }
     single { GetProjectByIdUseCase(get()) }
     single { ValidateProjectName() }
-    single { CreateUserUseCase(get()) }
-    single { DeleteUserUseCase(get()) }
-    single { LoginUserUseCase(get()) }
+    single { CreateUserUseCase(get(),get(),get()) }
+    single { DeleteUserUseCase(get(),get())}
+    single { LoginUserUseCase(get(),get(),get()) }
 
     single { DeleteTaskUseCase(get()) }
     single { CreateTaskUseCase(get()) }
