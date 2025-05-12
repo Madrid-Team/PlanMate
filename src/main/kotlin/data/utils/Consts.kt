@@ -14,3 +14,7 @@ const val PROJECT_ID = "_id"
 
 const val TASK_PROJECT_ID = "projectId"
 const val TASK_ID = "_id"
+
+
+const val USER_ID = "_id"
+const val USER_NAME = "username"
