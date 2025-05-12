@@ -3,46 +3,43 @@ package presentation
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
-import presentation.feature.tasks.TaskCLI
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.admin.AdminCLI
-import presentation.feature.projects.ProjectCLI
-import presentation.feature.user.UserCLI
+import presentation.feature.mate.MateCLI
+import presentation.utils.*
 
 class PlanMateCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val authenticationCLI: AuthenticationCLI,
-    private val taskCLI: TaskCLI,
-    private val projectCLI: ProjectCLI,
-    private val userCLI: UserCLI,
-    private val adminCLI: AdminCLI
+    private val adminCLI: AdminCLI,
+    private val mateCLI: MateCLI,
 ) {
     suspend fun start() {
-        outputPrinter.printMessage("=== Welcome to PlanMate ===")
+        outputPrinter.printMessage(String.welcomeMessage)
 
         while (true) {
-            outputPrinter.printMessage("=== === Main Menu === ===")
-            outputPrinter.printMessage("1. Log in")
-            outputPrinter.printMessage("0. Exit")
+            outputPrinter.printMessage(String.mainMenu)
+            outputPrinter.printMessage(String.login)
+            outputPrinter.printMessage(String.exit)
 
 
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> {
+            when (inputReader.readInput(String.selectOption)) {
+                String.selectionOne -> {
                     authenticationCLI.login()
                     val user = CurrentUser.getCurrentUser()
                     showMenuForUser(user)
                     break
                 }
 
-                "0" -> {
-                    outputPrinter.printMessage("Goodbye!")
+                String.selectionZero -> {
+                    outputPrinter.printMessage(String.goodbye)
                     return
                 }
 
-                else -> outputPrinter.printError("Invalid option.")
+                else -> outputPrinter.printError(String.invalidOption)
             }
         }
     }
@@ -51,44 +48,9 @@ class PlanMateCLI(
         outputPrinter.printMessage("\nWelcome, ${user.username}! (Role: ${user.role})")
 
         when (user.role) {
-            UserRole.ADMIN.name -> showAdminMenu()
-            UserRole.MATE.name -> showMateMenu()
+            UserRole.ADMIN.name -> adminCLI.showAdminMenu()
+            UserRole.MATE.name -> mateCLI.showMateMenu()
         }
     }
 
-    private suspend fun showAdminMenu() {
-        while (true) {
-            outputPrinter.printMessage("=== Admin Menu ===")
-            outputPrinter.printMessage("1. Manage tasks")
-            outputPrinter.printMessage("2. Manage projects")
-            outputPrinter.printMessage("3. Manage users")
-            outputPrinter.printMessage("4. Admin tools")
-            outputPrinter.printMessage("0. Log out")
-
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> taskCLI.show()
-                "2" -> projectCLI.show()
-                "3" -> userCLI.show()
-                "4" -> adminCLI.showAdminMenu()
-                "0" -> return
-                else -> outputPrinter.printError("Invalid option.")
-            }
-        }
-    }
-
-    private suspend fun showMateMenu() {
-        while (true) {
-            outputPrinter.printMessage("=== Mate Menu ===")
-            outputPrinter.printMessage("1. View my tasks")
-            outputPrinter.printMessage("2. View projects")
-            outputPrinter.printMessage("0. Log out")
-
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> taskCLI.show()
-                "2" -> projectCLI.showProjects()
-                "0" -> return
-                else -> outputPrinter.printError("Invalid option.")
-            }
-        }
-    }
 }
