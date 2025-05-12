@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 
-class GetAllProjectsUseCaseTest {
+class executeUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
 

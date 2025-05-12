@@ -1,6 +1,7 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
+import domain.utils.ProjectExceptions
 
 class GetProjectLogsByIdUseCase(
     private val projectRepository: ProjectRepository,
@@ -8,7 +9,10 @@ class GetProjectLogsByIdUseCase(
 ) {
     suspend fun execute(id: String): List<String> {
         getProjectByIdUseCase.getById(id)
-
-        return projectRepository.getProjectLogsById(id)
+        val logs = projectRepository.getProjectLogsById(id)
+        logs.ifEmpty {
+            throw ProjectExceptions.NoLogsFoundException("There is no logs for this project")
+        }
+        return logs
     }
 }

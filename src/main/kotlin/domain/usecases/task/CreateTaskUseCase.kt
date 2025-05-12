@@ -3,7 +3,6 @@ package domain.usecases.task
 import domain.models.task.Task
 import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utils.ProjectExceptions
 
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository,
