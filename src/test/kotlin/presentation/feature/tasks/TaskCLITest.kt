@@ -10,107 +10,107 @@ import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
-//class TaskCLITest {
-//    private lateinit var inputReader: InputReader
-//    private lateinit var outputPrinter: OutputPrinter
-//    private lateinit var createTaskCLI: CreateTaskCLI
-//    private lateinit var deleteTaskCLI: DeleteTaskCLI
-//    private lateinit var editTaskCLI: EditTaskCLI
-//    private lateinit var taskView: TaskView
-//    private lateinit var taskCLI: TaskCLI
-//    private lateinit var taskAuditLogCLI: TaskAuditLogCLI
-//
-//
-//    @BeforeEach
-//    fun setup() {
-//        inputReader = mockk()
-//        outputPrinter = mockk(relaxed = true)
-//        createTaskCLI = mockk(relaxed = true)
-//        deleteTaskCLI = mockk(relaxed = true)
-//        editTaskCLI = mockk(relaxed = true)
-//        taskView = mockk(relaxed = true)
-//        taskAuditLogCLI = mockk(relaxed = true)
-//        taskCLI =
-//            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
-//    }
-//
-//    @Test
-//    fun `should navigate to CreateTaskCLI when user selects 1`() {
-//        runTest {
-//            // given
-//            every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
-//
-//            // when
-//            taskCLI.show()
-//
-//            // then
-//            coVerify { createTaskCLI.show() }
-//        }
-//    }
-//
-//    @Test
-//    fun `should navigate to EditTaskCLI when user selects 2`() {
-//        runTest {
-//            // given
-//            every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
-//
-//            // when
-//            taskCLI.show()
-//
-//            // then
-//            coVerify { editTaskCLI.show() }
-//        }
-//    }
-//
-//    @Test
-//    fun `should navigate to DeleteTaskCLI when user selects 3`() {
-//        runTest {
-//            // given
-//            every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
-//
-//            // when
-//            taskCLI.show()
-//
-//            // then
-//            coVerify { deleteTaskCLI.show() }
-//        }
-//    }
-//
-//    @Test
-//    fun `should navigate to TaskView when user selects 4`() {
-//        runTest {
-//            // given
-//            every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
-//
-//            // when
-//            taskCLI.show()
-//
-//            // then
+class TaskCLITest {
+    private lateinit var inputReader: InputReader
+    private lateinit var outputPrinter: OutputPrinter
+    private lateinit var createTaskCLI: CreateTaskCLI
+    private lateinit var deleteTaskCLI: DeleteTaskCLI
+    private lateinit var editTaskCLI: EditTaskCLI
+    private lateinit var taskViewer: TaskViewer
+    private lateinit var taskCLI: TaskCLI
+    private lateinit var taskAuditLogCLI: TaskAuditLogCLI
+
+
+    @BeforeEach
+    fun setup() {
+        inputReader = mockk()
+        outputPrinter = mockk(relaxed = true)
+        createTaskCLI = mockk(relaxed = true)
+        deleteTaskCLI = mockk(relaxed = true)
+        editTaskCLI = mockk(relaxed = true)
+        taskViewer = mockk(relaxed = true)
+        taskAuditLogCLI = mockk(relaxed = true)
+        taskCLI =
+            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, outputPrinter, inputReader, taskViewer)
+    }
+
+    @Test
+    fun `should navigate to CreateTaskCLI when user selects 1`() {
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { createTaskCLI.show() }
+        }
+    }
+
+    @Test
+    fun `should navigate to EditTaskCLI when user selects 2`() {
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("2", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { editTaskCLI.show() }
+        }
+    }
+
+    @Test
+    fun `should navigate to DeleteTaskCLI when user selects 3`() {
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("3", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { deleteTaskCLI.show() }
+        }
+    }
+
+    @Test
+    fun `should navigate to TaskView when user selects 4`() {
+        runTest {
+            // given
+            every { inputReader.readInput(any()) } returnsMany listOf("4", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
 //            coVerify { taskView.show() }
-//        }
-//    }
-//
-//    @Test
-//    fun `should navigate to taskAuditLogCLI when user selects 5`() {
-//        runTest {
-//            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
-//
-//            // when
-//            taskCLI.show()
-//
-//            // then
-//            coVerify { taskAuditLogCLI.show() }
-//        }
-//    }
-//
-//    @Test
-//    fun `should print invalid option message when user selects unknown option`() {
-//        runTest {
-//            every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
-//
-//            taskCLI.show()
-//
-//            verify { outputPrinter.printError("Invalid option.") }
-//        }
-//    }
-//}
+        }
+    }
+
+    @Test
+    fun `should navigate to taskAuditLogCLI when user selects 5`() {
+        runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf("5", "0")
+
+            // when
+            taskCLI.show()
+
+            // then
+            coVerify { taskAuditLogCLI.show() }
+        }
+    }
+
+    @Test
+    fun `should print invalid option message when user selects unknown option`() {
+        runTest {
+            every { inputReader.readInput(any()) } returnsMany listOf("9", "0")
+
+            taskCLI.show()
+
+            verify { outputPrinter.printError("Invalid option.") }
+        }
+    }
+}
