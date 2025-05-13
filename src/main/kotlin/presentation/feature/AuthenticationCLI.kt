@@ -17,10 +17,10 @@ class AuthenticationCLI(
         val userName = inputReader.readInput()
         outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
-        return  try {
-          val user = loginUserUseCase.login(userName, password)
-          outputPrinter.printMessage(String.loginSuccess)
-          user
+        return try {
+            val user = loginUserUseCase.login(userName, password)
+            outputPrinter.printMessage(String.loginSuccess)
+            user
         } catch (e: Exception) {
             outputPrinter.printMenuItems(
                 listOf(
@@ -29,6 +29,7 @@ class AuthenticationCLI(
                     String.pleaseTryAgain
                 )
             )
+
             login()
         }
 

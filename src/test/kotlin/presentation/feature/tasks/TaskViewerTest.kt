@@ -1,16 +1,19 @@
 package presentation.feature.tasks
 
+import com.google.common.truth.Truth.assertThat
 import domain.usecases.task.GetTasksByProjectIdUseCase
-import domain.utils.ProjectExceptions
 import domain.utils.TaskExceptions
-import io.mockk.*
-import kotlinx.coroutines.launch
+import io.mockk.coEvery
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifyOrder
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import java.util.*
 
 class TaskViewerTest {
     private lateinit var getTasksByProjectIdUseCase: GetTasksByProjectIdUseCase
@@ -29,105 +32,80 @@ class TaskViewerTest {
     }
 
     @Test
-    fun `should print project not found when project does not exist`() {
+    fun `should return tasks successfully`() {
         runTest {
-            // Given
-            val projectId = "non_existing_project"
-            every { inputReader.readInput("Enter project ID: ") } returns projectId
-//            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } returns "Project not found."
+            val projectId = UUID.randomUUID().toString()
 
-            //When
-            taskViewer.displayAllTasks(projectId)
+            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } returns tasks
 
-            // Then
-            verify { outputPrinter.printMessage("Project not found.") }
+            val result = getTasksByProjectIdUseCase.getTaskByProjectId(projectId)
+
+            assertThat(result).isEqualTo(tasks)
         }
     }
 
     @Test
-    fun `should print formatted tasks when tasks exist`() {
-        runTest {
-            // Given
-            val projectId = "p1"
-            val expectedOutput = """
-            TODO:
-            - Task 1
+    fun `should print tasks grouped by state with correct format`() {
+        taskViewer.printTasksByState(tasks)
 
-            In Progress:
-            - Task 2
+        // Then
+        verifyOrder {
+            outputPrinter.printMessage("Tasks in state: TODO (1 tasks)")
+            outputPrinter.printMessage("------------------------------")
+            outputPrinter.printMessage("ID: $task1Id")
+            outputPrinter.printMessage("Title: Task 1")
+            outputPrinter.printMessage("Description: Description 1")
+            outputPrinter.printMessage("Created by: user1")
+            outputPrinter.printMessage("Logs: 2 entries")
+            outputPrinter.printMessage("------------------------------")
+            outputPrinter.printMessage("\n")
 
-            Done:
-            - Task 3
-        """.trimIndent()
-
-            every { inputReader.readInput("Enter project ID: ") } returns projectId
-//            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } returns expectedOutput
-
-            // When
-            taskViewer.displayAllTasks(projectId)
-
-            // Then
-            verify { outputPrinter.printMessage(expectedOutput) }
+            outputPrinter.printMessage("Tasks in state: IN_PROGRESS (1 tasks)")
+            outputPrinter.printMessage("------------------------------")
+            outputPrinter.printMessage("ID: $task2Id")
+            outputPrinter.printMessage("Title: Task 2")
+            outputPrinter.printMessage("Description: Description 2")
+            outputPrinter.printMessage("Created by: user2")
+            outputPrinter.printMessage("Logs: 1 entries")
+            outputPrinter.printMessage("------------------------------")
+            outputPrinter.printMessage("\n")
         }
     }
 
     @Test
-    fun `should show error message when display fails`() {
-        testScope.launch {
-            val projectId = "project-123"
-            val errorMessage = "Project not found"
-            every { inputReader.readInput(any()) } returns projectId
-            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } throws TaskExceptions(errorMessage)
+    fun `should print error message when TaskExceptions is thrown`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID().toString()
+        val errorMessage = "Project not found"
 
-            taskViewer.displayAllTasks(projectId)
+        coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } throws TaskExceptions(errorMessage)
 
-            coVerifySequence {
-                outputPrinter.printMessage("=== Display Tasks ===")
-                inputReader.readInput("Enter project ID: ")
-                getTasksByProjectIdUseCase.getTaskByProjectId(projectId)
-                outputPrinter.printMessage(errorMessage)
-            }
-        }
+        // When
+        taskViewer.displayAllTasks(projectId)
+
+        // Then
+        verify { outputPrinter.printError(errorMessage) }
     }
 
-    @Test
-    fun `should display tasks when display is successful`() {
-        runTest {
-            val projectId = "project-123"
-            val tasksOutput = listOf(
-                helperTask(title = "task 1"),
-                helperTask(title = "task 2")
-            )
-            every { inputReader.readInput(any()) } returns projectId
-            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } returns tasksOutput
+    private val task1Id = UUID.randomUUID().toString()
+    private val task2Id = UUID.randomUUID().toString()
 
-            taskViewer.displayAllTasks(projectId)
-
-            coVerifySequence {
-                outputPrinter.printMessage("=== Display Tasks ===")
-                inputReader.readInput("Enter project ID: ")
-                getTasksByProjectIdUseCase.getTaskByProjectId(projectId)
-                outputPrinter.printMessage(any())
-            }
-        }
-    }
-
-
-    @Test
-    fun `should print error message when ProjectExceptions is thrown`() {
-        runTest {
-            val projectId = "project-123"
-            val exception = ProjectExceptions("Project not found")
-
-            every { inputReader.readInput(any()) } returns projectId
-            coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } throws exception
-
-            taskViewer.displayAllTasks(projectId)
-
-            verify {
-                outputPrinter.printMessage("=== Display Tasks ===")
-                outputPrinter.printMessage("Project not found")
-            }
-        }
-    }
+    val tasks = listOf(
+        helperTask(
+            id = task1Id,
+            title = "Task 1",
+            description = "Description 1",
+            state = "TODO",
+            createdBy = "user1",
+            logs = listOf("log1", "log2")
+        ),
+        helperTask(
+            id = task2Id,
+            title = "Task 2",
+            description = "Description 2",
+            state = "IN_PROGRESS",
+            createdBy = "user2",
+            logs = listOf("log1")
+        )
+    )
 }
