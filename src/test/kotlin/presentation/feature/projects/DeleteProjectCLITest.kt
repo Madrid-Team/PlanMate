@@ -7,6 +7,13 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.deleteProjectException
+import presentation.utils.deleteProjectHeader
+import presentation.utils.deleteProjectSuccess
+import presentation.utils.deletionCancelled
+import presentation.utils.enterProjectIdToDelete
+import presentation.utils.selectionOne
+import presentation.utils.sureYouWantToDeleteThisProject
 import kotlin.test.Test
 
 class DeleteProjectCLITest {
@@ -25,57 +32,70 @@ class DeleteProjectCLITest {
     @Test
     fun `should delete project when user confirms`() = runTest {
         // Given
-        every { inputReader.readInput("Enter project ID to delete: ") } returns "project-123"
-        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.deleteProject("project-123") } just runs
+        val projectId = "project-123"
+
+        every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
+        every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
+        coEvery { deleteProjectUseCase.deleteProject(projectId) } just runs
 
         // When
         cli.show()
 
         // Then
-        verify { outputPrinter.printMessage("Project deleted successfully.") }
-        coVerify { deleteProjectUseCase.deleteProject("project-123") }
+        verify { outputPrinter.printMessage(String.deleteProjectHeader) }
+        verify { outputPrinter.printMessage(String.deleteProjectSuccess) }
+
+        coVerify { deleteProjectUseCase.deleteProject(projectId) }
     }
 
     @Test
     fun `should cancel deletion when user does not confirm`() = runTest {
         // Given
-        every { inputReader.readInput("Enter project ID to delete: ") } returns "project-123"
-        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "no"
+        val projectId = "project-123"
+        every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
+        every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns "no"
 
         // When
         cli.show()
 
         // Then
-        verify { outputPrinter.printMessage("Deletion cancelled.") }
+        verify { outputPrinter.printMessage(String.deleteProjectHeader) }
+        verify { outputPrinter.printMessage(String.deletionCancelled) }
         coVerify(exactly = 0) { deleteProjectUseCase.deleteProject(any()) }
     }
 
     @Test
     fun `should show error message when project not found`() = runTest {
         // Given
-        every { inputReader.readInput("Enter project ID to delete: ") } returns "invalid-id"
-        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.deleteProject("invalid-id") } throws ProjectExceptions.ProjectNotFoundException()
+        val projectId = "invalid-id"
+        val exception = ProjectExceptions.ProjectNotFoundException()
+        every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
+        every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
+        coEvery { deleteProjectUseCase.deleteProject(projectId) } throws exception
 
         // When
         cli.show()
 
         // Then
-        verify { outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException().message!!) }
+        verify { outputPrinter.printMessage(String.deleteProjectHeader) }
+        verify { outputPrinter.printMessage(String.deleteProjectException.format(exception.message)) }
     }
 
     @Test
     fun `should show error message when other exception occurs`() = runTest {
         // Given
-        every { inputReader.readInput("Enter project ID to delete: ") } returns "error-id"
-        every { inputReader.readInput("Are you sure you want to delete this project? (yes/no): ") } returns "yes"
-        coEvery { deleteProjectUseCase.deleteProject("error-id") } throws Exception("Unexpected error")
+        val projectId = "error-id"
+        val errorMessage = "Unexpected error"
+        val exception = ProjectExceptions("Unexpected error")
+        every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
+        every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
+        coEvery { deleteProjectUseCase.deleteProject(projectId) } throws exception
 
         // When
         cli.show()
 
         // Then
-        verify { outputPrinter.printMessage("Failed to delete project: Unexpected error") }
+        verify { outputPrinter.printMessage(String.deleteProjectHeader) }
+        verify { outputPrinter.printMessage(String.deleteProjectException.format(errorMessage)) }
     }
 }
