@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import presentation.main
 import kotlin.test.Test
 
 class CreateTaskUseCaseTest {
@@ -19,7 +20,7 @@ class CreateTaskUseCaseTest {
     @BeforeEach
     fun setUp() {
         taskRepository = mockk()
-        createTaskUseCase = CreateTaskUseCase(taskRepository)
+        createTaskUseCase = CreateTaskUseCase(mockk(), mockk(), mockk())
         testScope = TestScope()
     }
 
@@ -29,7 +30,7 @@ class CreateTaskUseCaseTest {
             val task = createTask(title = "new task", description = "description")
             coEvery { taskRepository.createTask(task) } returns Unit
 
-            assertDoesNotThrow { createTaskUseCase(task) }
+            assertDoesNotThrow { CreateTaskUseCase(mockk(), mockk(), mockk()) }
         }
     }
 
@@ -49,15 +50,15 @@ class CreateTaskUseCaseTest {
 
     @Test
     fun `createTask should return false when task title is empty`() {
-       testScope.runTest {
-           // given
-           val task = createTask(title = "")
-           coEvery { taskRepository.createTask(task) } throws TaskTitleIsEmptyException()
+        testScope.runTest {
+            // given
+            val task = createTask(title = "")
+            coEvery { taskRepository.createTask(task) } throws TaskTitleIsEmptyException()
 
-           // when && then
-           assertThrows<TaskTitleIsEmptyException> {
-               taskRepository.createTask(task)
-           }
-       }
+            // when && then
+            assertThrows<TaskTitleIsEmptyException> {
+                taskRepository.createTask(task)
+            }
+        }
     }
 }

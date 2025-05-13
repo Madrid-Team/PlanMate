@@ -38,7 +38,7 @@ class AdminCLITest {
         runTest {
             provideInput("1", "0")
 
-            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
             adminCLI.showAdminMenu()
 
             coVerify(exactly = 1) { projectAuditLogCLI.show() }
@@ -50,7 +50,7 @@ class AdminCLITest {
         runTest {
             provideInput("2", "0")
 
-            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
             adminCLI.showAdminMenu()
 
             coVerify(exactly = 1) { taskAuditLogCLI.show() }
@@ -62,7 +62,7 @@ class AdminCLITest {
         runTest {
             provideInput("99", "0")
 
-            val adminCLI = AdminCLI(projectAuditLogCLI, taskAuditLogCLI)
+            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
             adminCLI.showAdminMenu()
 
             val output = outputStream.toString()

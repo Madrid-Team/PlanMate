@@ -13,7 +13,7 @@ class CreateLogUseCaseTest {
     @Test
     fun `Should return correct log message When create task`() {
         val timestamp =  LocalDateTime.now().convertDateIntoReadableDate()
-        val result = createLogUseCase.invoke(
+        val result = createLogUseCase.createLog(
             operationType = OperationType.CREATE,
             entityName = "Task abdo",
             entityType = EntityType.TASK,
@@ -35,7 +35,7 @@ class CreateLogUseCaseTest {
         val oldValue = "old@mail.com"
         val newValue = "new@mail.com"
         val timestamp = LocalDateTime.now().convertDateIntoReadableDate()
-        val result = createLogUseCase.invoke(
+        val result = createLogUseCase.createLog(
             operationType,
             entityName,
             entityType,

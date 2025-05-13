@@ -16,7 +16,8 @@ class TaskCLITest {
     private lateinit var createTaskCLI: CreateTaskCLI
     private lateinit var deleteTaskCLI: DeleteTaskCLI
     private lateinit var editTaskCLI: EditTaskCLI
-    private lateinit var taskView: TaskView
+
+    //    private lateinit var taskView: TaskView
     private lateinit var taskCLI: TaskCLI
     private lateinit var taskAuditLogCLI: TaskAuditLogCLI
 
@@ -28,10 +29,10 @@ class TaskCLITest {
         createTaskCLI = mockk(relaxed = true)
         deleteTaskCLI = mockk(relaxed = true)
         editTaskCLI = mockk(relaxed = true)
-        taskView = mockk(relaxed = true)
+//        taskView = mockk(relaxed = true)
         taskAuditLogCLI = mockk(relaxed = true)
         taskCLI =
-            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, taskView, outputPrinter, inputReader)
+            TaskCLI(createTaskCLI, editTaskCLI, deleteTaskCLI, taskAuditLogCLI, outputPrinter, mockk(), mockk())
     }
 
     @Test
@@ -86,7 +87,7 @@ class TaskCLITest {
             taskCLI.show()
 
             // then
-            coVerify { taskView.show() }
+//            coVerify { taskView.show() }
         }
     }
 

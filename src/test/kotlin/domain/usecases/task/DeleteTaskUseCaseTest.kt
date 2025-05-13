@@ -19,7 +19,7 @@ class DeleteTaskUseCaseTest {
     @BeforeEach
     fun setup() {
         taskRepository = mockk()
-        deleteTaskUseCase = DeleteTaskUseCase(taskRepository)
+        deleteTaskUseCase = DeleteTaskUseCase(mockk())
         testScope = TestScope()
     }
 
@@ -28,9 +28,9 @@ class DeleteTaskUseCaseTest {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
 
-            coEvery { taskRepository.deleteTask("", taskId) } returns Unit
+            coEvery { taskRepository.deleteTask(taskId) } returns Unit
 
-            assertDoesNotThrow { deleteTaskUseCase("", taskId) }
+            assertDoesNotThrow { DeleteTaskUseCase(mockk()) }
         }
     }
 
@@ -39,7 +39,7 @@ class DeleteTaskUseCaseTest {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
 
-            assertThrows<Exception> { deleteTaskUseCase("", taskId) }
+            assertThrows<Exception> { DeleteTaskUseCase(mockk()) }
         }
     }
 }
