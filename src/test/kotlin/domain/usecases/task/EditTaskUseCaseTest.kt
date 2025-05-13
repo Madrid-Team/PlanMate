@@ -83,13 +83,13 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "Some title", description = "Some description")
-            val expectedException = TaskExceptions.TaskEditFailedException("Failed to edit task")
+            val expectedException = TaskExceptions.TaskCannotEditException("Failed to edit task")
 
             coEvery { taskValidator.validateBasic(task) } returns Unit
             coEvery { taskRepository.editTask(task) } throws expectedException
 
             // When & Then
-            val thrown = assertThrows<TaskExceptions.TaskEditFailedException> {
+            val thrown = assertThrows<TaskExceptions.TaskCannotEditException> {
                 editTaskUseCase.editTask(task)
             }
 
