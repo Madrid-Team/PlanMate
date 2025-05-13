@@ -93,9 +93,4 @@ class TaskAuditLogCLITest {
             }
         }
     }
-//
-//    val projectId = "proj-123"
-//    private val taskId = "task-123"
-//    val logs = listOf("Log A", "Log B")
-//    private val errorMessage = "Task not found"
 }
