@@ -2,12 +2,10 @@ package presentation.feature.projects
 
 import data.source.user.CurrentUserProvider
 import domain.models.logs.AuditLog
-import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.usecases.project.CreateProjectUseCase
-import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

@@ -1,27 +1,18 @@
 package presentation.feature.tasks
 
 import data.source.user.CurrentUserProvider
-import domain.models.logs.CurrentUser
+import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.task.Task
-import domain.models.logs.AuditLog
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import domain.utils.PlanMateExceptions
-import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.utils.availableTaskStates
-import presentation.utils.createTaskHeader
-import presentation.utils.enterProjectId
-import presentation.utils.enterTaskDescription
-import presentation.utils.enterTaskTitle
-import presentation.utils.selectTaskState
-import presentation.utils.taskCreatedSuccessfully
-import presentation.utils.taskCreatedUnsuccessfully
+import presentation.utils.*
 import java.util.*
 
 class CreateTaskCLI(

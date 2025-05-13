@@ -1,7 +1,6 @@
 package presentation.feature.tasks
 
 import data.source.user.CurrentUserProvider
-import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
 import domain.utils.TaskExceptions

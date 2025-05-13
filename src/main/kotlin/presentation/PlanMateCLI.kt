@@ -1,9 +1,7 @@
 package presentation
 
-import data.source.user.CurrentUserProvider
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
-import domain.models.logs.CurrentUser
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
