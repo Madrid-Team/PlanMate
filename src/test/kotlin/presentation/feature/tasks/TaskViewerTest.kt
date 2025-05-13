@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 
-
-class TaskViewTest {
+class TaskViewerTest {
     private lateinit var getTasksByProjectIdUseCase: GetTasksByProjectIdUseCase
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
@@ -131,5 +130,4 @@ class TaskViewTest {
             }
         }
     }
-
 }
