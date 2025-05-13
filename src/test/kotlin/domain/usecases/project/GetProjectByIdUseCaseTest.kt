@@ -23,7 +23,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should return project when project exists`() {
+    fun `should return project when given valid non-blank ID`() {
         runTest {
             // Given
             val projectId = "1"
@@ -54,7 +54,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should throw exception when project ID is blank`() {
+    fun `should throw ProjectNotFoundException when given blank ID`() {
         runTest {
             // Given
             val projectId = ""
