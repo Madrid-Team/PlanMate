@@ -13,9 +13,9 @@ class ValidatePasswordUseCase {
         if (password.length < 6) {
             return PasswordValidationResult.NotValid(UserExceptions.PasswordLessThan6CharsException().message.toString())
         }
-        if (!password.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{8,}\$".toRegex())){
-            return PasswordValidationResult.NotValid(UserExceptions.InvalidPasswordError().message.toString())
-        }
+//        if (!password.matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^A-Za-z0-9]).{8,}\$".toRegex())){
+//            return PasswordValidationResult.NotValid(UserExceptions.InvalidPasswordError().message.toString())
+//        }
 
         return PasswordValidationResult.Valid
     }

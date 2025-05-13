@@ -18,7 +18,7 @@ class AuthenticationCLI(
         outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
         return  try {
-          val user = loginUserUseCase.invoke(userName, password)
+          val user = loginUserUseCase.login(userName, password)
           outputPrinter.printMessage(String.loginSuccess)
           user
         } catch (e: Exception) {
