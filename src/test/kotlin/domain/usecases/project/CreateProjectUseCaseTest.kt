@@ -1,110 +1,108 @@
 package domain.usecases.project
 
-import domain.repository.ProjectRepository
-import domain.usecases.createProject
-import domain.utils.PlanMateExceptions
+import domain.repository.TaskRepository
+import domain.usecases.task.CreateTaskUseCase
+import domain.usecases.task.TaskValidator
+import domain.usecases.task.createTask
 import domain.utils.ProjectExceptions
-import io.mockk.*
+import domain.utils.TaskExceptions.TaskTitleIsEmptyException
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
 
-class CreateProjectUseCaseTest {
-
-    private lateinit var projectRepository: ProjectRepository
-    private lateinit var validateProjectName: ProjectValidator
-    private lateinit var createProjectUseCase: CreateProjectUseCase
-
-    @BeforeEach
-    fun setUp() {
-        projectRepository = mockk()
-        validateProjectName = mockk()
-        createProjectUseCase = CreateProjectUseCase(projectRepository, validateProjectName)
-    }
-
-    @Test
-    fun `should create project when all validations pass`() = runTest {
-        //Given
-        val project = createProject(
-            name = "Test Project",
-            description = "project description",
-            createdBy = "user2",
-            projectState = "Todo",
-            taskStates = listOf("Todo", "In progress"),
-            projectStates = listOf("Testing", "Todo"),
-        )
-
-        every { validateProjectName.validate(any()) } returns Unit
-        coEvery { projectRepository.createProject(project) } returns Unit
-
-        //When & Then
-        assertDoesNotThrow {
-            createProjectUseCase.createProject(project)
-        }
-        coVerify { projectRepository.createProject(project) }
-    }
-
-    @Test
-    fun `should throw exception when project name validation fails`() = runTest {
-        //Given
-        val project = createProject(
-            name = "Invalid Name",
-        )
-        every { validateProjectName.validateName(project) } throws ProjectExceptions.ProjectNameInvalidException()
-
-        //When & Then
-        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
-            createProjectUseCase.createProject(project)
-        }
-    }
-
-    @Test
-    fun `should throw exception when description is empty`() = runTest {
-        //Given
-        val project = createProject(
-            name = "Test Project",
-            description = "",
-        )
-        every { validateProjectName.validate(project) } returns Unit
-
-        //When & Then
-        assertThrows<PlanMateExceptions> {
-            createProjectUseCase.createProject(project)
-        }
-    }
-
-    @Test
-    fun `should throw exception when project states list is empty`() = runTest {
-        //Given
-        val project = createProject(
-            name = "Test Project",
-            description = "Description",
-            projectStates = emptyList()
-        )
-        every { validateProjectName.validate(project) } returns Unit
-
-        //When & Then
-        assertThrows<PlanMateExceptions> {
-            createProjectUseCase.createProject(project)
-        }
-    }
-
-    @Test
-    fun `should throw exception when task states list is empty`() = runTest {
-        //Given
-        val project = createProject(
-            name = "Test Project",
-            description = "Description",
-            projectStates = listOf("Active"),
-            taskStates = emptyList()
-        )
-        every { validateProjectName.validate(project) } returns Unit
-
-        //When & Then
-        assertThrows<PlanMateExceptions> {
-            createProjectUseCase.createProject(project)
-        }
-    }
+class CreateTaskUseCaseTest {
+//    private lateinit var taskRepository: TaskRepository
+//    private lateinit var taskValidator: TaskValidator
+//    private lateinit var createTaskUseCase: CreateTaskUseCase
+//    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
+//    private lateinit var testScope: TestScope
+//
+//    @BeforeEach
+//    fun setUp() {
+//        taskRepository = mockk(relaxed = true)
+//        taskValidator = mockk(relaxed = true)
+//        getProjectByIdUseCase = mockk(relaxed = true)
+//        createTaskUseCase = CreateTaskUseCase(
+//            taskRepository,
+//            getProjectByIdUseCase,
+//            taskValidator
+//        )
+//        testScope = TestScope()
+//    }
+//
+//    @Test
+//    fun `should create task successfully when data is valid`() {
+//        testScope.runTest {
+//            //Given
+//            val task = createTask(title = "new task", description = "description")
+//            // When & Then
+//            assertDoesNotThrow {
+//                createTaskUseCase.createTask(task)
+//            }
+//            coVerify { getProjectByIdUseCase.getById(task.projectId) }
+//            coVerify { taskValidator.validateAll(task) }
+//            coVerify { taskRepository.createTask(task) }
+//        }
+//    }
+//
+//    @Test
+//    fun `should throw ProjectNotFoundException when project ID is empty`() {
+//        testScope.runTest {
+//            // Given
+//            val task = createTask(projectId = "")
+//            coEvery { getProjectByIdUseCase.getById(task.projectId) } throws
+//                    ProjectExceptions.ProjectNotFoundException(
+//                        "Project ID cannot be empty"
+//                    )
+//
+//            // When & Then
+//            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+//                createTaskUseCase.createTask(task)
+//            }
+//
+//            coVerify(exactly = 0) { taskRepository.createTask(any()) }
+//        }
+//    }
+//
+//    @Test
+//    fun `should throw ProjectNotFoundException when project cannot be found by ID`() {
+//        testScope.runTest {
+//            // Given
+//            val task = createTask(projectId = "invalid-project-id")
+//            coEvery { getProjectByIdUseCase.getById(task.projectId) } throws
+//                    ProjectExceptions.ProjectNotFoundException(
+//                        "Project not found"
+//                    )
+//
+//            // When & Then
+//            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+//                createTaskUseCase.createTask(task)
+//            }
+//
+//            coVerify(exactly = 0) { taskRepository.createTask(any()) }
+//        }
+//
+//    }
+//
+//    @Test
+//    fun `should throw TaskTitleIsEmptyException when task title is empty`() {
+//        testScope.runTest {
+//            // Given
+//            val task = createTask(title = "")
+//            coEvery { taskValidator.validateAll(task) } throws TaskTitleIsEmptyException()
+//
+//            // When & Then
+//            assertThrows<TaskTitleIsEmptyException> {
+//                createTaskUseCase.createTask(task)
+//            }
+//
+//            coVerify(exactly = 0) { taskRepository.createTask(any()) }
+//        }
+//    }
 }

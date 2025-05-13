@@ -7,7 +7,6 @@ import domain.utils.ProjectExceptions
 
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase,
     private val taskValidator: TaskValidator
 
 ) {
