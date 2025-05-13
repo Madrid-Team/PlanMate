@@ -1,95 +1,130 @@
 package domain.usecases.user
 
-import com.google.common.truth.Truth.assertThat
-import data.mapper.toDto
-import data.repository.UserRepositoryImpl
-import data.source.user.UserExternalDataSource
-import domain.models.authentication.User
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.utils.NameValidationResult
+import domain.utils.PasswordValidationResult
 import domain.utils.UserExceptions
-//import domain.validation.ValidateUser
 import io.mockk.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
-//class CreateUserUseCaseTest {
-//    private lateinit var userRepository: UserRepository
-//    private lateinit var createUserUseCase: CreateUserUseCase
-//    private lateinit var userExternalDataSource: UserExternalDataSource
-//    private var testScope = TestScope()
-//
-//    @BeforeEach
-//    fun setUp() {
-//        // Mock the data source
-//        userExternalDataSource = mockk<UserExternalDataSource>(relaxed = false)
-//        userRepository = UserRepositoryImpl(userExternalDataSource)
-//        mockkConstructor(ValidateUser::class)
-//        createUserUseCase = CreateUserUseCase(userRepository)
-//    }
-//
-//    @Test
-//    fun `should create user successfully When User dose not exists before`() {
-//        runTest {
-//            // Given
-//            val newUserName = "new user"
-//            val user = User(id = UUID.randomUUID(), username = newUserName, passwordHash = "password", role = "MATE")
-//            val generateId = UUID.randomUUID()
-//
-//            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
-//
-//            coEvery { userExternalDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
-//
-//            coEvery { userExternalDataSource.createNewUser(any()) } returns Unit
-//
-//            // When
-//            assertDoesNotThrow {
-//                createUserUseCase(user)
-//            }
-//
-//            // Then
-//            coVerify {
-//                userExternalDataSource.createNewUser(user.copy(id = generateId).toDto())
-//            }
-//        }
-//    }
-//
-//    @Test
-//    fun `Should not create user When user already exists`() {
-//        runTest {
-//            // Given
-//            val existingUsername = "existingUser"
-//            val existingUser = User(
-//                id = UUID.randomUUID(),
-//                username = existingUsername,
-//                passwordHash = "password",
-//                role = "MATE"
-//            )
-//
-//            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
-//
-//            coEvery { userExternalDataSource.getUserByName(existingUsername) } returns existingUser.toDto()
-//
-//            coEvery { userExternalDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
-//
-//            // When & Then
-//            val exception = assertThrows<UserExceptions.UserExist> {
-//                createUserUseCase(existingUser)
-//            }
-//
-//            assertThat(exception.message).isEqualTo("User already exists")
-//
-//            // Verify createNewUser was called
-//            testScope.launch {
-//                coVerify {
-//                    userRepository.createNewUser(any())
-//                }
-//            }
-//        }
-//    }
-//}
+class CreateUserUseCaseTest {
+
+    private lateinit var userRepository: UserRepository
+    private lateinit var createUserUseCase: CreateUserUseCase
+    private lateinit var validateNameUseCase: ValidateNameUseCase
+    private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
+    private lateinit var passwordHashUseCase: PasswordHashUseCase
+
+    @BeforeEach
+    fun setUp() {
+        userRepository = mockk()
+        validateNameUseCase = mockk()
+        validatePasswordUseCase = mockk()
+        passwordHashUseCase = mockk()
+        createUserUseCase = CreateUserUseCase(
+            userRepository,
+            validateNameUseCase,
+            validatePasswordUseCase,
+            passwordHashUseCase
+        )
+    }
+
+    @Test
+    fun `should call create user successfully when the username and password are correct`() = runTest {
+        val username = "mohamed"
+        val password = "123456789"
+        val passwordHash = "hashed_password"
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
+        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
+        coEvery { passwordHashUseCase.passwordHash(password) } returns passwordHash
+        coEvery { userRepository.createNewUser(any()) } just Runs
+
+        createUserUseCase.createUser(username, password)
+
+        coVerify(exactly = 1) {
+            userRepository.createNewUser(
+                match {
+                    it.username == username &&
+                            it.passwordHash == passwordHash &&
+                            it.role == UserRole.MATE.name
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `should throw invalid username exception when username is empty`() = runTest {
+        val username = ""
+        val password = "123456789"
+
+        coEvery {
+            validateNameUseCase.validateName(username)
+        } returns NameValidationResult.NotValid(
+            UserExceptions.EmptyUserNameException().message.toString()
+        )
+
+        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
+
+        assertFailsWith<UserExceptions.InvalidUserName> {
+            createUserUseCase.createUser(username, password)
+        }
+    }
+
+    @Test
+    fun `should throw invalid username exception when username is less than 3`() = runTest {
+        val username = "mo"
+        val password = "123456789"
+
+        coEvery {
+            validateNameUseCase.validateName(username)
+        } returns NameValidationResult.NotValid(
+            UserExceptions.UserNameLessThan3CharsException().message.toString()
+        )
+
+        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
+
+        assertFailsWith<UserExceptions.InvalidUserName> {
+            createUserUseCase.createUser(username, password)
+        }
+    }
+
+    @Test
+    fun `should throw invalid password exception when password is empty`() = runTest {
+        val username = "kamel"
+        val password = ""
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
+        coEvery {
+            validatePasswordUseCase.validatePassword(password)
+        } returns PasswordValidationResult.NotValid(
+            UserExceptions.EmptyPasswordException().message.toString()
+        )
+
+        assertFailsWith<UserExceptions.InvalidPasswordError> {
+            createUserUseCase.createUser(username, password)
+        }
+    }
+
+    @Test
+    fun `should throw invalid password exception when password is less than 6`() = runTest {
+        val username = "mohamed"
+        val password = "1234"
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
+        coEvery {
+            validatePasswordUseCase.validatePassword(password)
+        } returns PasswordValidationResult.NotValid(
+            UserExceptions.PasswordLessThan6CharsException().message.toString()
+        )
+
+        assertFailsWith<UserExceptions.InvalidPasswordError> {
+            createUserUseCase.createUser(username, password)
+        }
+    }
+}
