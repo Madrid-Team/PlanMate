@@ -1,5 +1,6 @@
 package presentation
 
+import data.source.user.CurrentUserProvider
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
@@ -16,7 +17,7 @@ class PlanMateCLI(
     private val authenticationCLI: AuthenticationCLI,
     private val adminCLI: AdminCLI,
     private val mateCLI: MateCLI,
-) {
+ ) {
     suspend fun start() {
         outputPrinter.printMessage(String.welcomeMessage)
 
@@ -28,9 +29,7 @@ class PlanMateCLI(
 
             when (inputReader.readInput(String.selectOption)) {
                 String.selectionOne -> {
-                    authenticationCLI.login()
-                    val user = CurrentUser.getCurrentUser()
-                    showMenuForUser(user)
+                     showMenuForUser(authenticationCLI.login())
                     break
                 }
 

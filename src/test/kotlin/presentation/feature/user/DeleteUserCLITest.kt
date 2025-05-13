@@ -30,7 +30,7 @@ class DeleteUserCLITest {
             every { inputReader.readInput() } returns "2"
             every { mockCurrentUser.id.toString() } returns "1"
             every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-//            coEvery { useCase.invoke("1", "2") } returns Unit
+            coEvery { useCase.deleteUser("1", "2") } returns Unit
 
             // When
             cli.show()
@@ -53,7 +53,7 @@ class DeleteUserCLITest {
             every { inputReader.readInput() } returnsMany listOf("2", "z")
             every { mockCurrentUser.id.toString() } returns "1"
             every { CurrentUser.getCurrentUser() } returns mockCurrentUser
-//            coEvery { useCase.invoke("1", "2") } throws Exception()
+            coEvery { useCase.deleteUser("1", "2") } throws Exception()
 
             // When
             cli.show()

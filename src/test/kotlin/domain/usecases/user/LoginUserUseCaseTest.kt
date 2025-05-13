@@ -1,5 +1,6 @@
 package domain.usecases.user
 
+import com.google.common.truth.Truth.assertThat
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.repository.UserRepository
@@ -9,6 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.BeforeTest
@@ -31,10 +33,11 @@ class LoginUserUseCaseTest {
             coEvery { userRepository.getAllUsers() } returns listOf(user)
 
             // When
-            val result = loginUser.invoke("user1", "pass123")
+            val result = loginUser.login("user1", "pass123")
 
             // Then
-            assertTrue { result != null }
+            assertThat(result).isInstanceOf(User::class.java)
+            assertTrue(result.username == "user1")
         }
     }
 
@@ -47,14 +50,14 @@ class LoginUserUseCaseTest {
 
             // When
             assertThrows<UserExceptions.WrongPasswordOrUserName> {
-                loginUser.invoke("user1", "wrongPass")
+                loginUser.login("user1", "wrongPass")
             } // Should throw
         }
     }
 
 
     @Test
-    fun `Shouldn't login When username or password is null`() {
+    fun `Shouldn't login When username or password is empty`() {
         runTest {
             // Given
             val user = User(id = UUID.randomUUID(), "MATE_1", PasswordHasher.hash("PASSWORD_HASH_1"), "MATE")
@@ -62,7 +65,7 @@ class LoginUserUseCaseTest {
             coEvery { userRepository.createNewUser(user) } returns Unit
 
             // When && Then
-            assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.invoke("", "PASSWORD_HASH_1") }
+            assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.login("", "PASSWORD_HASH_1") }
         }
     }
 }

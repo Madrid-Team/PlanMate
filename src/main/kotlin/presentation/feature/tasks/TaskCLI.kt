@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
-import domain.usecases.task.DisplayAllTasksUseCase
 import domain.utils.ProjectExceptions
+import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -15,7 +15,7 @@ class TaskCLI(
     private val taskAuditLogCLI: TaskAuditLogCLI,
     private val outputPrinter: OutputPrinter,
     private val inputReader: InputReader,
-    private val displayAllTasksUseCase: DisplayAllTasksUseCase,
+     private val taskViewer: TaskViewer
 
     ) {
     suspend fun show() {
@@ -48,9 +48,8 @@ class TaskCLI(
         val projectId = inputReader.readInput(String.enterProjectId)
 
         try {
-            val result = displayAllTasksUseCase.display(projectId)
-            outputPrinter.printMenuItems(result)
-        } catch (exception: ProjectExceptions) {
+           taskViewer.displayAllTasks(projectId)
+        } catch (exception: TaskExceptions) {
             outputPrinter.printMessage(exception.message.toString())
         }
     }

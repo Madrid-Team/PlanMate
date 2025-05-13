@@ -31,7 +31,7 @@ class TaskAuditLogCLITest {
         testScope.runTest {
             every { reader.readInput("Enter Project ID:") } returns projectId
             every { reader.readInput("Enter Task ID to view audit logs: ") } returns taskId
-//            coEvery { getTaskLogUseCase(projectId = projectId, taskId = taskId) } returns logs
+            coEvery { getTaskLogUseCase.getTaskLogs(projectId = projectId, taskId = taskId) } returns logs
 
             cli.show()
 
@@ -50,7 +50,7 @@ class TaskAuditLogCLITest {
     fun `show should print no logs message when logs are empty`() {
         testScope.runTest {
             every { reader.readInput(any()) } returns taskId
-//            coEvery { getTaskLogUseCase("1", taskId) } returns emptyList()
+            coEvery { getTaskLogUseCase.getTaskLogs("1", taskId) } returns emptyList()
 
             cli.show()
 
@@ -62,7 +62,7 @@ class TaskAuditLogCLITest {
     fun `should print message when no logs are found`() {
         testScope.runTest {
             every { reader.readInput(any()) } returns taskId
-//            coEvery { getTaskLogUseCase("", taskId) } returns emptyList()
+            coEvery { getTaskLogUseCase.getTaskLogs("", taskId) } returns emptyList()
 
             cli.show()
 
@@ -80,7 +80,7 @@ class TaskAuditLogCLITest {
         testScope.runTest {
             every { reader.readInput("Enter Project ID:") } returns projectId
             every { reader.readInput("Enter Task ID to view audit logs: ") } returns taskId
-//            coEvery { getTaskLogUseCase(projectId, taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
+            coEvery { getTaskLogUseCase.getTaskLogs(projectId, taskId) } throws TaskExceptions.NoLogsFoundException(errorMessage)
 
             cli.show()
 

@@ -1,6 +1,5 @@
 package presentation.feature.tasks
 
-import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import io.mockk.coEvery
@@ -21,7 +20,6 @@ class CreateTaskCLITest {
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val createTaskUseCase = mockk<CreateTaskUseCase>(relaxed = true)
     private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>(relaxed = true)
-    private val createLogUseCase = mockk<CreateLogUseCase>(relaxed = true)
     private lateinit var cli: CreateTaskCLI
     private lateinit var testScope: TestScope
 
@@ -31,8 +29,7 @@ class CreateTaskCLITest {
             inputReader,
             outputPrinter,
             createTaskUseCase,
-            createLogUseCase,
-            getProjectByIdUseCase
+             getProjectByIdUseCase
         )
         testScope = TestScope()
     }
@@ -48,7 +45,7 @@ class CreateTaskCLITest {
             )
             val project = helperProject(id = UUID.randomUUID().toString())
             val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-//            coEvery { createTaskUseCase(task) } returns Unit
+            coEvery { createTaskUseCase.createTask(task) } returns Unit
 
             // When
             cli.show()
@@ -65,7 +62,7 @@ class CreateTaskCLITest {
         testScope.runTest {
             every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
             val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-//            coEvery { createTaskUseCase(task) } returns Unit
+            coEvery { createTaskUseCase.createTask(task) } returns Unit
 
             // When
             cli.show()

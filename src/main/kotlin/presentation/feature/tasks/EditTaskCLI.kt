@@ -1,5 +1,6 @@
 package presentation.feature.tasks
 
+import data.source.user.CurrentUserProvider
 import domain.models.logs.CurrentUser
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
@@ -14,7 +15,8 @@ import java.util.*
 class EditTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val editTaskUseCase: EditTaskUseCase
+    private val editTaskUseCase: EditTaskUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage(String.editTaskHeader)
@@ -30,14 +32,14 @@ class EditTaskCLI(
             title = title,
             description = description,
             taskState = String.empty,
-            createdBy = CurrentUser.getCurrentUser().username,
+            createdBy = currentUserProvider.getCurrentUser().username,
             logs = listOf()
         )
 
         try {
             editTaskUseCase.editTask(updatedTask)
             outputPrinter.printMessage(String.taskUpdatedSuccessfully)
-        } catch (exception: TaskExceptions.TaskCannotEditException) {
+        } catch (exception: TaskExceptions) {
             outputPrinter.printMenuItems(listOf(String.taskUpdatedUnsuccessfully, exception.message.toString()))
         }
     }

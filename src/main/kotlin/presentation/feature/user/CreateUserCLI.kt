@@ -1,15 +1,12 @@
 package presentation.feature.user
 
-import data.utils.PasswordHasher
-import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.usecases.user.CreateUserUseCase
 import domain.utils.UserExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import java.util.*
+import presentation.utils.enterUserName
 
 class CreateUserCLI(
     private val createUserUseCase: CreateUserUseCase,
@@ -18,57 +15,34 @@ class CreateUserCLI(
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create user started ===")
-        val userName = collectUsername()
-        val password = collectAndValidatePassword()
-        val passwordHash = PasswordHasher.hash(password)
-        tryCreateUser(userName, passwordHash)
+        val userName = inputReader.readInput(String.enterUserName).trim()
+        val password = inputReader.readInput("Enter password (minimum 6 characters):")
+        tryCreateUser(userName, password)
     }
 
-    private fun collectUsername(): String {
-        outputPrinter.printMessage("Enter user name:")
-        return inputReader.readInput().trim()
-    }
 
-    private fun collectAndValidatePassword(): String {
-        outputPrinter.printMessage("Enter password (minimum 6 characters):")
-        val password = inputReader.readInput()
-
-        if (password.length < 6) {
-            outputPrinter.printError("Password must be at least 6 characters")
-            return collectAndValidatePassword()
-        }
-
-        return password
-    }
-
-    private suspend fun tryCreateUser(userName: String, passwordHash: String) {
+    private suspend fun tryCreateUser(userName: String, password: String) {
         try {
-            val user = User(
-                username = userName,
-                passwordHash = passwordHash,
-                role = UserRole.MATE.name,
-                id = UUID.randomUUID()
-            )
             outputPrinter.printMessage("Creating user...")
-            createUserUseCase.createUser(user)
+            createUserUseCase.createUser(userName, password)
             outputPrinter.printMessage("User created successfully")
-        }catch (e: UserExceptions.UserReadWriteException) {
-            handleUserReadWriteError(userName, passwordHash, e)
+        } catch (e: UserExceptions.UserReadWriteException) {
+            handleUserReadWriteError(userName, password, e)
         } catch (e: UserExceptions) {
-            outputPrinter.printError("Unexpected error: ${e.message}")
+            outputPrinter.printError("Error: ${e.message}")
             showRetryMessage()
         }
     }
 
     private suspend fun handleUserReadWriteError(
         userName: String,
-        passwordHash: String,
+        password: String,
         e: UserExceptions.UserReadWriteException
     ) {
         outputPrinter.printError(e.message.toString())
         outputPrinter.printMessage("1 - Try again with same data\n2 - Enter new data\nAny other key - Exit")
         when (inputReader.readInput()) {
-            "1" -> tryCreateUser(userName, passwordHash)
+            "1" -> tryCreateUser(userName, password)
             "2" -> show()
         }
     }

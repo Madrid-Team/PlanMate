@@ -35,7 +35,7 @@ class AuthenticationCLITest {
             val user = User(id = UUID.randomUUID(), username, passwordHash, "MATE")
 
             every { inputReader.readInput() } returnsMany listOf(username, password)
-            coEvery { useCase.invoke(username, passwordHash) } returns user
+            coEvery { useCase.login(username, passwordHash) } returns user
 
             // When
             cli.login()
@@ -60,7 +60,7 @@ class AuthenticationCLITest {
             val passwordHash = PasswordHasher.hash(password)
 
             every { inputReader.readInput() } returnsMany listOf(username, password, "z") // 2 = don't retry
-            coEvery { useCase.invoke(username, passwordHash) } throws Exception()
+            coEvery { useCase.login(username, passwordHash) } throws Exception()
 
             // When
             cli.login()
@@ -92,8 +92,8 @@ class AuthenticationCLITest {
                 correctUsername,
                 correctPassword
             )
-            coEvery { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
-            coEvery { useCase.invoke(correctUsername, correctHash) } returns user
+            coEvery { useCase.login(incorrectUsername, incorrectHash) } throws Exception()
+            coEvery { useCase.login(correctUsername, correctHash) } returns user
 
             // When
             cli.login()
@@ -116,7 +116,7 @@ class AuthenticationCLITest {
             val incorrectHash = PasswordHasher.hash(incorrectPassword)
 
             every { inputReader.readInput() } returnsMany listOf(incorrectUsername, incorrectPassword, "z")
-            coEvery { useCase.invoke(incorrectUsername, incorrectHash) } throws Exception()
+            coEvery { useCase.login(incorrectUsername, incorrectHash) } throws Exception()
 
             // When
             cli.login()

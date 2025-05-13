@@ -20,7 +20,7 @@ class DeleteProjectCLI(
         try {
             when (inputReader.readInput(String.sureYouWantToDeleteThisProject)) {
                 String.selectionOne -> {
-                    deleteProjectUseCase.execute(projectId)
+                    deleteProjectUseCase.deleteProject(projectId)
                     outputPrinter.printMessage(String.deleteProjectSuccess)
                 }
 
@@ -28,9 +28,7 @@ class DeleteProjectCLI(
                     outputPrinter.printMessage(String.deletionCancelled)
                 }
             }
-        } catch (exception: ProjectExceptions.ProjectNotFoundException) {
-            outputPrinter.printMessage(String.deleteProjectNotFoundException.format(exception.message))
-        } catch (exception: Exception) {
+        }  catch (exception: ProjectExceptions) {
             outputPrinter.printMessage(String.deleteProjectException.format(exception.message))
         }
     }

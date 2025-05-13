@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class DeleteTaskCLI(
     private val inputReader: InputReader,
@@ -13,15 +14,14 @@ class DeleteTaskCLI(
     private val deleteTaskUseCase: DeleteTaskUseCase,
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        outputPrinter.printMessage("=== Delete Task ===")
-        outputPrinter.printMessage("Enter Project ID:")
-        outputPrinter.printMessage("Enter task ID to delete:")
+        outputPrinter.printMessage(String.deleteTaskHeader)
+        outputPrinter.printMessage(String.enterTaskIdToDelete)
         val taskId = inputReader.readInput()
         try {
             deleteTaskUseCase(taskId)
-            outputPrinter.printMessage("Task deleted successfully.")
-        } catch (exception: TaskExceptions.TaskCannotDeleteException) {
-            outputPrinter.printError(exception.message ?: "Task not found or could not be deleted.")
+            outputPrinter.printMessage(String.deleteTaskSuccess)
+        } catch (exception: TaskExceptions) {
+            outputPrinter.printError(String.deleteTaskException.format(exception))
         }
     }
 }

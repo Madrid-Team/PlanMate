@@ -6,7 +6,7 @@ class DeleteProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
-    suspend fun execute(projectId: String) {
+    suspend fun deleteProject(projectId: String) {
         getProjectByIdUseCase.getById(projectId)
         projectRepository.deleteProject(projectId)
     }

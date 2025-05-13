@@ -10,10 +10,8 @@ class ProjectView(
     private val outputPrinter: OutputPrinter
 ) {
     fun projectList(projects: List<Project>) {
-        if (projects.isEmpty()) {
-            outputPrinter.printMessage(String.noProjects)
-            return
-        }
+
+
         outputPrinter.printMessage(String.projectsList)
 
         // Data Rows
