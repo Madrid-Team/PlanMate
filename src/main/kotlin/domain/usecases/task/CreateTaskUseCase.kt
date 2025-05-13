@@ -7,13 +7,11 @@ import domain.utils.ProjectExceptions
 
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase,
     private val taskValidator: TaskValidator
 
 ) {
     suspend fun createTask(task: Task) {
-        getProjectByIdUseCase.getById(task.projectId)
-        taskValidator.validateAll(task)
+         taskValidator.validateAll(task)
 
         taskRepository.createTask(task)
     }

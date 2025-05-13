@@ -1,79 +1,105 @@
 package domain.usecases.task
 
-import domain.models.task.Task
 import domain.repository.TaskRepository
+import domain.utils.TaskExceptions
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.CsvSource
-import java.util.*
 import kotlin.test.Test
 
-//class EditTaskUseCaseTest {
-//    private lateinit var taskRepository: TaskRepository
-//    private lateinit var editTaskUseCase: EditTaskUseCase
-//    private lateinit var testScope: TestScope
-//
-//    @BeforeEach
-//    fun setup() {
-//        taskRepository = mockk()
-//        editTaskUseCase = EditTaskUseCase(taskRepository)
-//        testScope = TestScope()
-//    }
-//
-//    @ParameterizedTest
-//    @CsvSource(
-//        "'title','',''",
-//        "'','2',''",
-//        "'','description',''",
-//        "'','','created by'",
-//    )
-//    fun `editTask should execute successfully when repository not throw exception`(
-//        title: String,
-//        description: String,
-//        createdBy: String,
-//    ) {
-//        testScope.runTest {
-//            //given
-//            val oldTask = Task(
-//                id = UUID.randomUUID(),
-//                projectId = "11",
-//                title = "title",
-//                description = "description",
-//                taskState = "TO Do",
-//                createdBy = "created by",
-//                logs = listOf()
-//            )
-//
-//            val newTask = oldTask.copy(
-//                title = title.ifBlank { oldTask.title },
-//                description = description.ifBlank { oldTask.description },
-//                createdBy = createdBy.ifBlank { oldTask.createdBy }
-//            )
-//
-//            coEvery { taskRepository.editTask(any()) } returns Unit
-//
-//            assertDoesNotThrow { editTaskUseCase(newTask) }
-//        }
-//    }
-//
-//    @Test
-//    fun `editTask should return throw exception when id is not found`() {
-//        //given
-//        testScope.runTest {
-//            val task = createTask(
-//                id = UUID.randomUUID().toString(),
-//                title = "title"
-//            )
-//
-//            assertThrows<Exception> {
-//                editTaskUseCase(task)
-//            }
-//        }
-//    }
-//}
+class EditTaskUseCaseTest {
+    private lateinit var taskRepository: TaskRepository
+    private lateinit var editTaskUseCase: EditTaskUseCase
+    private lateinit var taskValidator: TaskValidator
+    private lateinit var testScope: TestScope
+
+    @BeforeEach
+    fun setup() {
+        taskRepository = mockk(relaxed = true)
+        taskValidator = mockk(relaxed = true)
+        editTaskUseCase = EditTaskUseCase(taskRepository,taskValidator)
+        testScope = TestScope()
+    }
+
+
+    @Test
+    fun `should edit task successfully when data is valid`() {
+        testScope.runTest {
+            // Given
+            val task = createTask(title = "Updated Task", description = "Updated description")
+            coEvery { taskValidator.validateBasic(task) } returns Unit
+            coEvery { taskRepository.editTask(task) } returns Unit
+
+            // When & Then
+            assertDoesNotThrow {
+                editTaskUseCase.editTask(task)
+            }
+
+            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskRepository.editTask(task) }
+        }
+    }
+    @Test
+    fun `should throw TaskTitleIsEmptyException when task title is empty`() {
+        testScope.runTest {
+            // Given
+            val task = createTask(title = "")
+            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskTitleIsEmptyException()
+
+            // When & Then
+            assertThrows<TaskExceptions.TaskTitleIsEmptyException> {
+                editTaskUseCase.editTask(task)
+            }
+
+            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 0) { taskRepository.editTask(any()) }
+        }
+    }
+
+    @Test
+    fun `should throw TaskDescriptionIsEmptyException when task description is empty`() {
+        testScope.runTest {
+            // Given
+            val task = createTask(description = "")
+            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
+
+            // When & Then
+            assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
+                editTaskUseCase.editTask(task)
+            }
+
+            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 0) { taskRepository.editTask(any()) }
+        }
+    }
+
+    @Test
+    fun `should throw TaskEditFailedException when repository fails to edit task`() {
+        testScope.runTest {
+            // Given
+            val task = createTask(title = "Some title", description = "Some description")
+            val expectedException = TaskExceptions.TaskEditFailedException("Failed to edit task")
+
+            coEvery { taskValidator.validateBasic(task) } returns Unit
+            coEvery { taskRepository.editTask(task) } throws expectedException
+
+            // When & Then
+            val thrown = assertThrows<TaskExceptions.TaskEditFailedException> {
+                editTaskUseCase.editTask(task)
+            }
+
+            assert(thrown.message == "Failed to edit task")
+
+            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskRepository.editTask(task) }
+        }
+    }
+
+
+
+}
