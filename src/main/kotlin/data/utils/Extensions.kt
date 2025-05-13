@@ -55,7 +55,7 @@ fun Throwable?.toTaskException(): PlanMateExceptions {
 fun Throwable.toUserException(): PlanMateExceptions {
     return when (val exception = this) {
         is FileNotFoundException -> UserExceptions.UserNotFoundException()
-        is IOException -> UserExceptions.UserReadWrightException()
+        is IOException -> UserExceptions.UserReadWriteException()
         is UserExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {

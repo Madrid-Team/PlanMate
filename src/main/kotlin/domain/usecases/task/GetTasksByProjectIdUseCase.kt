@@ -2,11 +2,12 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
+import domain.utils.TaskExceptions
 
 class GetTasksByProjectIdUseCase(
     private val taskRepository: TaskRepository
 ) {
-    suspend operator fun invoke(projectId: String): List<Task> {
-        return taskRepository.getTasksByProjectId(projectId)
+    suspend fun getTaskByProjectId(projectId: String): List<Task> {
+        return taskRepository.getTasksByProjectId(projectId).ifEmpty { throw TaskExceptions.TaskNotFoundException() }
     }
 }

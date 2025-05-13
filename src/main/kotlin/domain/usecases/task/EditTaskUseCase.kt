@@ -4,9 +4,10 @@ import domain.models.task.Task
 import domain.repository.TaskRepository
 
 class EditTaskUseCase(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val taskValidator: TaskValidator
 ) {
-    suspend operator fun invoke(task: Task) {
+    suspend fun editTask(task: Task) {
+        taskValidator.validateBasic(task)
         taskRepository.editTask(task)
-    }
-}
+    } }

@@ -1,15 +1,30 @@
 package domain.usecases.user
 
 import domain.models.authentication.User
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.validation.ValidateUser
+import domain.utils.NameValidationResult
+import domain.utils.PasswordValidationResult
+import domain.utils.UserExceptions
+import java.util.*
 
 class CreateUserUseCase(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val validateNameUseCase: ValidateNameUseCase,
+    private val validatePasswordUseCase: ValidatePasswordUseCase,
+    private val passwordHashUseCase: PasswordHashUseCase,
 ) {
-    suspend operator fun invoke(user: User) {
-        val userId = ValidateUser(userRepository).generateUUIDValidToNewUser()
-        val newUser = user.copy(id = userId)
-        userRepository.createNewUser(newUser)
+    suspend fun createUser(userName: String, password: String) {
+      validateNameUseCase.validateName(userName)
+      validatePasswordUseCase.validatePassword(password)
+
+        val passwordHash = passwordHashUseCase.passwordHash(password)
+        val user = User(
+            id = UUID.randomUUID(),
+            username = userName,
+            passwordHash = passwordHash,
+            role = UserRole.MATE.name,
+        )
+        userRepository.createNewUser(user)
     }
 }

@@ -1,11 +1,13 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
+import domain.usecases.project.GetProjectByIdUseCase
 
 class DeleteTaskUseCase(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
 ) {
-    suspend operator fun invoke(projectId: String,taskId: String) {
-        taskRepository.deleteTask(projectId,taskId)
+    suspend fun deleteTask(taskId: String) {
+
+        taskRepository.deleteTask(taskId)
     }
 }

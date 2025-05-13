@@ -74,5 +74,4 @@ class TaskCsvParserTest {
         val result = taskCsvParser.parseTaskToString(task.toDto())
         assertThat(result).isEqualTo(expectedValue)
     }
-
 }

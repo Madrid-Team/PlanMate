@@ -5,7 +5,7 @@ import data.utils.UserColumnsIndex
 
 
 class UserCsvParser {
-    val userColumnsIndex = UserColumnsIndex
+    private val userColumnsIndex = UserColumnsIndex
 
     fun parseRowToUser(row: String): UserDto {
         val result = row.split(",")

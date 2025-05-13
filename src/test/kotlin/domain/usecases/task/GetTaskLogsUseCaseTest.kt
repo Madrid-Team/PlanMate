@@ -3,6 +3,7 @@ package domain.usecases.task
 import domain.repository.TaskRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -18,37 +19,43 @@ class GetTaskLogsUseCaseTest {
 
     @BeforeEach
     fun setup() {
-        taskRepository = mockk(relaxed = true)
+        taskRepository = mockk()
         getTaskLogsUseCase = GetTaskLogsUseCase(taskRepository)
         testScope = TestScope()
     }
 
+
     @Test
-    fun `get TaskLogs should return list of logs when task repository return list of logs`() {
-        //Given
+    fun `should return logs when task logs exist`() {
         testScope.runTest {
-            val taskId = 1
-            coEvery { taskRepository.getTaskLogsByID("", taskId.toString()) } returns listOf()
+            // Given
+            val taskId = "valid_task_id"
+            val logs = listOf("Task created", "Task updated")
+            coEvery { taskRepository.getTaskLogsByID(taskId) } returns logs
 
-            assertDoesNotThrow { getTaskLogsUseCase("", taskId.toString()) }
+            // When & Then
+            assertDoesNotThrow {
+                getTaskLogsUseCase(taskId)
+            }
 
+            coVerify(exactly = 1) { taskRepository.getTaskLogsByID(taskId) }
         }
     }
 
     @Test
-    fun `get Task Logs should throw exception when project repository throw exception`() {
-        //Given
+    fun `should throw NoLogsFoundException when no logs are found`() {
         testScope.runTest {
-            val projectId = 1
-            coEvery {
-                taskRepository.getTaskLogsByID(
-                    "",
-                    projectId.toString()
-                )
-            } throws TaskExceptions.NoLogsFoundException()
+            // Given
+            val taskId = "valid_task_id"
+            coEvery { taskRepository.getTaskLogsByID(taskId) } returns emptyList()
 
-            assertThrows<TaskExceptions.NoLogsFoundException> { getTaskLogsUseCase("", projectId.toString()) }
+            // When & Then
+            assertThrows<TaskExceptions.NoLogsFoundException> {
+                getTaskLogsUseCase(taskId)
+            }
 
+            coVerify(exactly = 1) { taskRepository.getTaskLogsByID(taskId) }
         }
     }
+
 }

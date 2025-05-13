@@ -98,7 +98,7 @@ class TaskManagerTest {
         taskManager.addTask(task)
 
         val tasks = taskManager.getTasks()
-        assertThat( tasks.size).isEqualTo(1)
+        assertThat(tasks.size).isEqualTo(1)
         assertThat(tasks[0].id.toString()).isEqualTo(taskId1)
     }
 

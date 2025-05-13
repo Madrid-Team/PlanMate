@@ -2,7 +2,6 @@ package data.dto.authentication
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import org.bson.codecs.pojo.annotations.BsonId
 
 @Serializable
 data class UserDto(

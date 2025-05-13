@@ -7,6 +7,7 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
 import data.dto.project.ProjectDto
+import data.source.mongoDb.MongoClientProvider
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser
@@ -20,7 +21,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
-import data.source.mongoDb.MongoClientProvider
 import java.util.*
 import kotlin.test.*
 
@@ -36,18 +36,16 @@ class ProjectMongoDBDataSourceTest {
 
     @BeforeAll
     fun setup() {
-        mongoClientProvider = MongoClientProvider()
+        mongoClientProvider = mockk(relaxed = true)
         database = mongoClientProvider.getDatabase()
         copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "projects_test", "projects")
         runBlocking {
             projectMongoDBDataSource =
                 ProjectMongoDBDataSource(database.getCollection<ProjectDto>("projects_test"))
         }
-
-
     }
 
-    val testProject = ProjectDto(
+    private val testProject = ProjectDto(
         id = UUID.randomUUID().toString(),
         name = "Test Project For create",
         description = "A test description",
@@ -59,22 +57,24 @@ class ProjectMongoDBDataSourceTest {
         matesUsernames = emptyList(),
         tasks = emptyList()
     )
+
     @Test
-    fun `createProject should call insertOne with correct project`() = runTest {
-        // Arrange
-        val collection = mockk<MongoCollection<ProjectDto>>()
+    fun `createProject should call insertOne with correct project`() {
+        runTest {
+            // Arrange
+            val collection = mockk<MongoCollection<ProjectDto>>()
 
+            coEvery {
+                collection.insertOne(eq(testProject), any())
+            } returns mockk()
 
-        coEvery {
-            collection.insertOne(eq(testProject), any())
-        } returns mockk()
+            val dataSource = ProjectMongoDBDataSource(collection)
 
-        val dataSource = ProjectMongoDBDataSource(collection)
+            dataSource.createProject(testProject)
 
-        dataSource.createProject(testProject)
-
-        coVerify(exactly = 1) {
-            collection.insertOne(eq(testProject), any())
+            coVerify(exactly = 1) {
+                collection.insertOne(eq(testProject), any())
+            }
         }
     }
 
@@ -100,7 +100,7 @@ class ProjectMongoDBDataSourceTest {
 
             projectMongoDBDataSource.createProject(newProject)
 
-            projects = projectMongoDBDataSource.getProjects()
+            projects = projectMongoDBDataSource.getProjects(mockk())
 
             assertEquals(true, projects.any { it.name == "Test Project" })
 
@@ -118,14 +118,14 @@ class ProjectMongoDBDataSourceTest {
 
 
             //Given
-            val projectId = projectMongoDBDataSource.getProjects().first().id
+            val projectId = projectMongoDBDataSource.getProjects(mockk()).first().id
 
 
             // When
             projectMongoDBDataSource.deleteProject(projectId)
 
             // Then
-            assertEquals(0, projectMongoDBDataSource.getProjects().size)
+            assertEquals(0, projectMongoDBDataSource.getProjects(mockk()).size)
 
         }
     }
@@ -180,6 +180,7 @@ class ProjectMongoDBDataSourceTest {
             assertNull(found)
         }
     }
+
     @Test
     fun `createProject should insert the project into the collection`() {
         testScope.launch {
@@ -229,6 +230,7 @@ class ProjectMongoDBDataSourceTest {
             assertEquals(0, foundProjects.size)
         }
     }
+
     @Test
     fun `editProject should call replaceOne with correct query and project`() = runTest {
         val collection = mockk<MongoCollection<ProjectDto>>()
@@ -266,5 +268,4 @@ class ProjectMongoDBDataSourceTest {
         mongoClientProvider.close()
 
     }
-
 }

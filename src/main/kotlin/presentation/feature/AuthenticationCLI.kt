@@ -1,33 +1,37 @@
 package presentation.feature
 
-import data.utils.PasswordHasher
-import domain.models.logs.CurrentUser
+import domain.models.authentication.User
 import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class AuthenticationCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-    suspend fun login() {
-        outputPrinter.printMessage("=== Login ===")
-        outputPrinter.printMessage("Enter user name:")
+    suspend fun login(): User {
+        outputPrinter.printMessage(String.loginHeader)
+        outputPrinter.printMessage(String.enterUserName)
         val userName = inputReader.readInput()
-        outputPrinter.printMessage("Enter password:")
+        outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
-        val passwordHash = PasswordHasher.hash(password)
-        try {
-            val success = loginUserUseCase.invoke(userName, passwordHash)
-            outputPrinter.printMessage("Login Success")
-            CurrentUser.setCurrentUser(success)
+        return try {
+            val user = loginUserUseCase.login(userName, password)
+            outputPrinter.printMessage(String.loginSuccess)
+            user
         } catch (e: Exception) {
-            outputPrinter.printMessage(e.message.toString())
-            outputPrinter.printMessage("Login error:(")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
-            val userOption = inputReader.readInput()
-            if (userOption == "1") login()
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.loginError,
+                    e.message.toString(),
+                    String.pleaseTryAgain
+                )
+            )
+
+            login()
         }
+
     }
 }

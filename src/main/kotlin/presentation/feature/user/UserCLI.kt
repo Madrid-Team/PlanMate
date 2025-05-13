@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class UserCLI(
     private val inputReader: InputReader,
@@ -13,17 +14,20 @@ class UserCLI(
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         while (true) {
-            outputPrinter.printMessage("=== Manage users ===")
-            outputPrinter.printMessage("1. Create new user")
-            outputPrinter.printMessage("2. Delete new user")
-            outputPrinter.printMessage("0. Back")
-            when (inputReader.readInput("Select an option: ")) {
-                "1" -> createUserCLI.show()
-                "2" -> deleteUserCLI.show()
-                "0" -> return@withContext
-                else -> outputPrinter.printError("Invalid option.")
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.manageUsersMenu,
+                    String.createNewUser,
+                    String.deleteUser,
+                    String.back
+                )
+            )
+            when (inputReader.readInput(String.selectOption)) {
+                String.selectionOne -> createUserCLI.show()
+                String.selectionTwo -> deleteUserCLI.show()
+                String.selectionZero -> return@withContext
+                else -> outputPrinter.printError(String.invalidOption)
             }
         }
     }
-
 }

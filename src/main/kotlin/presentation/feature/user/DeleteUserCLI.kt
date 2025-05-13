@@ -1,28 +1,28 @@
 package presentation.feature.user
 
-import domain.models.logs.CurrentUser
+import data.source.user.CurrentUserProvider
 import domain.usecases.user.DeleteUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class DeleteUserCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun show() {
-        outputPrinter.printMessage("=== Delete user started ===")
-        outputPrinter.printMessage("Enter user id:")
+        outputPrinter.printMenuItems(listOf(String.deleteUserStarted, String.enterUserId))
         val userId = inputReader.readInput()
         try {
-            val requiredId = CurrentUser.getCurrentUser().id
-            deleteUserUseCase(requiredId.toString(), userId)
-            outputPrinter.printMessage("Deleted Success")
-        } catch (_: Exception) {
-            outputPrinter.printMessage("Deleted Failed")
-            outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            val requiredId = currentUserProvider.getCurrentUser().id
+            deleteUserUseCase.deleteUser(requiredId, userId)
+            outputPrinter.printMessage(String.deletedSuccess)
+        } catch (e: Exception) {
+            outputPrinter.printMenuItems(listOf(String.deletedFailed, e.message.toString(), String.pressOneToTryAgain))
             val userOption = inputReader.readInput()
-            if (userOption == "1") show()
+            if (userOption == String.selectionOne) show()
         }
     }
 }

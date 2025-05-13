@@ -6,28 +6,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class TaskAuditLogCLI(
-    private val reader: InputReader,
-    private val printer: OutputPrinter,
+    private val inputReader: InputReader,
+    private val outputPrinter: OutputPrinter,
     private val getTaskLogsByIdUseCase: GetTaskLogsUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        printer.printMessage("=== Task Audit Log ===")
+        outputPrinter.printMessage(String.taskAuditLogHeader)
         try {
-            val projectId = reader.readInput("Enter Project ID:")
-            val taskId = reader.readInput("Enter Task ID to view audit logs: ")
-            val logs = getTaskLogsByIdUseCase(projectId, taskId)
+            val taskId = inputReader.readInput(String.enterTaskIdToViewLogs)
+            val logs = getTaskLogsByIdUseCase(taskId)
             if (logs.isEmpty()) {
-                printer.printMessage("No audit logs found for this task id : $taskId\n")
+                outputPrinter.printMessage(String.taskLogNotFound.format(taskId))
             } else {
-                printer.printMessage("Audit logs for task id: $taskId\n")
+                outputPrinter.printMessage(String.auditLogsForTaskId.format(taskId))
                 logs.forEach { log ->
-                    printer.printMessage("- $log\n")
+                    outputPrinter.printMessage("- $log\n")
                 }
             }
-        } catch (exception: TaskExceptions.NoLogsFoundException) {
-            printer.printError(errorMessage = "Failed to fetch audit logs : ${exception.message}\n")
+        } catch (exception: TaskExceptions) {
+            outputPrinter.printError(String.auditLogException.format(exception))
         }
     }
 }

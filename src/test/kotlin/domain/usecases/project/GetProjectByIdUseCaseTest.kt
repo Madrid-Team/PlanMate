@@ -3,7 +3,7 @@ package domain.usecases.project
 import com.google.common.truth.Truth.assertThat
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -23,7 +23,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should return project when project exists`() {
+    fun `should return project when given valid non-blank ID`() {
         runTest {
             // Given
             val projectId = "1"
@@ -31,26 +31,38 @@ class GetProjectByIdUseCaseTest {
             coEvery { projectRepository.getProjectById(projectId) } returns mockProject
 
             // When
-            val result = getProjectByIdUseCase.invoke(projectId)
+            val result = getProjectByIdUseCase.getById(projectId)
 
             // Then
-            assertDoesNotThrow { getProjectByIdUseCase.invoke(projectId) }
+            assertDoesNotThrow { getProjectByIdUseCase.getById(projectId) }
             assertThat(result).isEqualTo(mockProject)
         }
     }
 
     @Test
-    fun ` should throw exception when project does not exist`() {
+    fun `should throw exception when project does not exist`() {
         runTest {
             // Given
             val projectId = "999"
-            coEvery { projectRepository.getProjectById(projectId) } throws PlanMateExceptions("Project not found")
+            coEvery { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             // When & Then
-            assertThrows<PlanMateExceptions> {
-                getProjectByIdUseCase.invoke(projectId)
+            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+                getProjectByIdUseCase.getById(projectId)
             }
         }
     }
 
+    @Test
+    fun `should throw ProjectNotFoundException when given blank ID`() {
+        runTest {
+            // Given
+            val projectId = ""
+
+            // When & Then
+            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+                getProjectByIdUseCase.getById(projectId)
+            }
+        }
+    }
 }

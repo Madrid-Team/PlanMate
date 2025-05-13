@@ -52,6 +52,7 @@ class ProjectCsvParserTest {
             "project updated"
         )
     }
+
     @Test
     fun `parseOneRowToProject function should parse project state correctly`() {
         assertThat(project.projectState).isEqualTo("In progress")
@@ -85,7 +86,7 @@ class ProjectCsvParserTest {
             createdBy = "user2",
             projectState = "Todo",
             taskStates = listOf("Todo", "In progress"),
-            projectStates = listOf("Testing","Todo"),
+            projectStates = listOf("Testing", "Todo"),
             projectLogs = listOf("project created")
         )
 
@@ -94,6 +95,4 @@ class ProjectCsvParserTest {
 
         assertThat(newRow).isEqualTo(exceptedRow)
     }
-
-
 }

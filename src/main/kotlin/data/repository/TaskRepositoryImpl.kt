@@ -9,44 +9,34 @@ import domain.repository.TaskRepository
 
 class TaskRepositoryImpl(
     private val taskExternalDataSource: TaskExternalDataSource,
-) : TaskRepository{
-    override suspend fun editTask(task: Task) {
+) : TaskRepository {
+    override suspend fun editTask(task: Task) = executeTaskOperation {
+        taskExternalDataSource.editTask(task.toDto())
+    }
+
+    override suspend fun deleteTask(taskId: String) = executeTaskOperation {
+        taskExternalDataSource.deleteTask(taskId)
+    }
+
+    override suspend fun createTask(task: Task) = executeTaskOperation {
+        taskExternalDataSource.createTask(task.toDto())
+    }
+
+    override suspend fun getTasksByProjectId(projectId: String): List<Task> = executeTaskOperation {
+        val tasks = taskExternalDataSource.getTasksByProjectId(projectId)
+        tasks.map { task -> task.toDomain() }
+    }
+
+    override suspend fun getTaskLogsByID(taskId: String): List<String> = executeTaskOperation {
+        taskExternalDataSource.getTaskLogsByID(taskId)
+    }
+
+    private suspend fun <T> executeTaskOperation(operation: suspend () -> T): T {
         return try {
-            taskExternalDataSource.editTask(task.toDto())
-        }catch (e: Exception){
+            operation()
+        } catch (e: Exception) {
             throw e.toTaskException()
         }
     }
 
-    override suspend fun deleteTask(projectId: String,taskId: String) {
-        return try {
-            taskExternalDataSource.deleteTask(projectId,taskId)
-        }catch (e:Exception){
-            throw e.toTaskException()
-        }
-    }
-
-    override suspend fun createTask(task: Task) {
-        return try {
-            taskExternalDataSource.createTask(task.toDto())
-        }catch (e:Exception){
-            throw e.toTaskException()
-        }
-    }
-
-    override suspend fun getTasksByProjectId(projectId: String): List<Task> {
-        return try {
-            taskExternalDataSource.getTasksByProjectId(projectId).map { it.toDomain() }
-        }catch (e:Exception){
-            throw e.toTaskException()
-        }
-    }
-
-    override suspend fun getTaskLogsByID(projectId: String,taskId: String): List<String> {
-        return try {
-            taskExternalDataSource.getTaskLogsByID(projectId , taskId)
-        }catch (e:Exception){
-            throw e.toTaskException()
-        }
-    }
 }

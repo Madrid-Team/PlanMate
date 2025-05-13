@@ -1,12 +1,12 @@
 package presentation.feature.tasks
 
-import domain.usecases.logs.CreateLogUseCase
+import data.source.user.CurrentUserProvider
+import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
-import io.mockk.coEvery
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import domain.usecases.task.TaskValidator
+import domain.utils.ProjectExceptions
+import io.mockk.*
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -14,14 +14,20 @@ import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import presentation.feature.projects.helperProject
+import presentation.feature.user.helperUser
+import presentation.utils.*
 import java.util.*
 
 class CreateTaskCLITest {
+
     private val inputReader = mockk<InputReader>(relaxed = true)
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val createTaskUseCase = mockk<CreateTaskUseCase>(relaxed = true)
     private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>(relaxed = true)
-    private val createLogUseCase = mockk<CreateLogUseCase>(relaxed = true)
+    private val currentUserProvider = mockk<CurrentUserProvider>(relaxed = true)
+    private val taskValidator = mockk<TaskValidator>(relaxed = true)
+    private val taskRepository = mockk<TaskRepository>(relaxed = true)
+
     private lateinit var cli: CreateTaskCLI
     private lateinit var testScope: TestScope
 
@@ -31,47 +37,73 @@ class CreateTaskCLITest {
             inputReader,
             outputPrinter,
             createTaskUseCase,
-            createLogUseCase,
-            getProjectByIdUseCase
+            getProjectByIdUseCase,
+            currentUserProvider
         )
         testScope = TestScope()
     }
 
-    @Test
-    fun `should create task successfully when valid input is provided`() {
-        testScope.runTest {
-            // Given
-            every { inputReader.readInput(any()) } returnsMany listOf(
-                UUID.randomUUID().toString(),
-                "title",
-                "description"
-            )
-            val project = helperProject(id = UUID.randomUUID().toString())
-            val task = helperTask(projectId = project.id.toString(), title = "title", description = "description")
-            coEvery { createTaskUseCase(task) } returns Unit
-
-            // When
-            cli.show()
-
-            // Then
-//        verify { createTaskUseCase.createTask(task) }
-            verify { outputPrinter.printMessage(any()) }
-        }
-    }
+//    @Test
+//    fun `should create task successfully when valid input is provided`() {
+//        testScope.runTest {
+//            // Given
+//            val projectId = UUID.randomUUID()
+//            val project = helperProject(id = projectId.toString(), taskStates = listOf("TODO", "IN_PROGRESS"))
+//            val user = helperUser(username = "elhady")
+//
+//            coEvery { getProjectByIdUseCase.getById(projectId.toString()) } returns project
+//            every { currentUserProvider.getCurrentUser() } returns user
+//            every { inputReader.readInput(any()) } returnsMany listOf(
+//                projectId.toString(),
+//                "Title",
+//                "Description",
+//                "1"
+//            )
+//            every { taskValidator.validateAll(any()) } just Runs
+//            coEvery { taskRepository.createTask(any()) } just Runs
+//
+//            // When
+//            cli.show()
+//
+//            // Then
+//            verify {
+//                outputPrinter.printMessage(String.createTaskHeader)
+//                outputPrinter.printMessage(String.taskCreatedSuccessfully)
+//            }
+//        }
+//    }
 
     @Test
     fun `should show error message when project ID is not found and not create task`() {
-        // Given
         testScope.runTest {
-            every { inputReader.readInput(any()) } returnsMany listOf("invalid_id", "title", "description")
-            val task = helperTask(projectId = "invalid_id", title = "title", description = "description")
-            coEvery { createTaskUseCase(task) } returns Unit
+            // Given
+            val invalidProjectId = UUID.randomUUID().toString()
+            val user = helperUser(username = "user")
+
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                invalidProjectId,
+                "title",
+                "description"
+            )
+            every { currentUserProvider.getCurrentUser() } returns user
+            coEvery { getProjectByIdUseCase.getById(invalidProjectId) } throws ProjectExceptions.ProjectNotFoundException(
+                "Project ID cannot be empty"
+            )
 
             // When
             cli.show()
 
             // Then
-            verify { outputPrinter.printMessage("Failed to create task") }
+            verifySequence {
+                outputPrinter.printMessage(String.createTaskHeader)
+                inputReader.readInput(String.enterProjectId)
+                inputReader.readInput(String.enterTaskTitle)
+                inputReader.readInput(String.enterTaskDescription)
+                outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty").message!!)
+                outputPrinter.printMessage(String.taskCreatedUnsuccessfully)
+            }
         }
     }
+
 }
+

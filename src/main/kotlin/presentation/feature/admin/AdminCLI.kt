@@ -1,24 +1,38 @@
 package presentation.feature.admin
 
-import presentation.feature.projects.ProjectAuditLogCLI
-import presentation.feature.tasks.TaskAuditLogCLI
+import presentation.components.InputReader
+import presentation.components.OutputPrinter
+import presentation.feature.projects.ProjectCLI
+import presentation.feature.tasks.TaskCLI
+import presentation.feature.user.UserCLI
+import presentation.utils.*
 
-class AdminCLI(private val projectAuditLogCLI: ProjectAuditLogCLI, private val taskAuditLogCLI: TaskAuditLogCLI) {
+class AdminCLI(
+    private val inputReader: InputReader,
+    private val outputPrinter: OutputPrinter,
+    private val taskCLI: TaskCLI,
+    private val projectCLI: ProjectCLI,
+    private val userCLI: UserCLI,
+) {
+
     suspend fun showAdminMenu() {
         while (true) {
-            println("=== Admin Tools ===")
-            println("1. View Project Logs")
-            println("2. View Task Logs")
-            println("0. Back")
-            print("Choose an option: ")
-
-            when (readln()) {
-                "1" -> projectAuditLogCLI.show()
-                "2" -> taskAuditLogCLI.show()
-                "0" -> return
-                else -> println("Invalid option!")
+            outputPrinter.printMenuItems(
+                listOf(
+                    String.adminMenu,
+                    String.manageTasks,
+                    String.manageProjects,
+                    String.manageUsers,
+                    String.logout
+                )
+            )
+            when (inputReader.readInput(String.selectOption)) {
+                String.selectionOne -> taskCLI.show()
+                String.selectionTwo -> projectCLI.show()
+                String.selectionThree -> userCLI.show()
+                String.selectionZero -> return
+                else -> outputPrinter.printError(String.invalidOption)
             }
         }
     }
-
 }

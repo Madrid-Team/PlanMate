@@ -1,9 +1,10 @@
 package data.source.project
 
+import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 
 interface ProjectExternalDataSource {
-    suspend fun getProjects(): List<ProjectDto>
+    suspend fun getProjects(user: UserDto): List<ProjectDto>
     suspend fun createProject(project: ProjectDto)
     suspend fun deleteProject(projectId: String)
     suspend fun editProject(project: ProjectDto)

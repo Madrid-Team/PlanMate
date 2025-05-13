@@ -2,11 +2,9 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
-import domain.utils.PlanMateExceptions
-import domain.validation.ValidateProjectName
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,66 +15,134 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
-    private lateinit var validateProjectName: ValidateProjectName
-    private val testScope: TestScope = TestScope()
+    private lateinit var projectValidator: ProjectValidator
+    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
-        validateProjectName = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository, validateProjectName)
+        projectValidator = mockk(relaxed = true)
+        getProjectByIdUseCase = mockk(relaxed = true)
+        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, getProjectByIdUseCase)
     }
 
     @Test
-    fun `editProject should return true when project is updated successfully in projectRepository`() {
-        testScope.runTest {
-            //Given
-            val project = createProject(
-                id = UUID.randomUUID().toString(),
-                name = "Test Project",
-                description = "dia"
-            )
-            coEvery { projectRepository.editProject(project) } returns Unit
+    fun `should edit project when all validations pass`() = runTest {
+        //Given
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Test Project",
+            description = "Project description"
+        )
+        coEvery { getProjectByIdUseCase.getById(any()) } returns project
+        coEvery { projectRepository.editProject(any()) } returns Unit
 
-            //When
-
-            assertDoesNotThrow {
-                editProjectUseCase(project)
-            }
+        //When & Then
+        assertDoesNotThrow {
+            editProjectUseCase.editProject(project)
         }
     }
 
     @Test
-    fun `editProject should return false when id is not found`() {
-        testScope.runTest {
-            //Given
-            val project = createProject(
-                id = UUID.randomUUID().toString(),
-                name = "Test Project",
-                description = "dia"
-            )
-            coEvery { projectRepository.editProject(project) } throws PlanMateExceptions("")
+    fun `should throw exception when project does not exist`() = runTest {
+        //Given
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Test Project",
+            description = "Project description"
+        )
+        coEvery { getProjectByIdUseCase.getById(any()) } throws ProjectExceptions.ProjectNotFoundException()
 
-            //When
-            assertThrows<PlanMateExceptions> {
-                editProjectUseCase(project)
-            }
+        //When & Then
+        assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            editProjectUseCase.editProject(project)
         }
     }
 
+    @Test
+    fun `should throw exception when project name is invalid`() = runTest {
+        //Given
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Invalid Name",
+            description = "Project description"
+        )
+        coEvery { getProjectByIdUseCase.getById(any()) } throws ProjectExceptions.ProjectNameInvalidException()
+        coEvery { projectValidator.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
+
+        //When & Then
+        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
 
     @Test
-    fun `editProject should return false when updated name is invalid`() {
-        testScope.runTest {
-            //Given
-            val project = createProject(
-                name = "123&",
-            )
-            coEvery { projectRepository.editProject(project) } throws PlanMateExceptions("Can't edit task")
-            //When & Then
-            assertThrows<PlanMateExceptions> {
-                editProjectUseCase(project)
-            }
+    fun `should throw exception when project description is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = ""
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project description is invalid`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "###Invalid###"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionInvalidException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionInvalidException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project description is too short`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Short"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionTooShortException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionTooShortException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project states is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Valid Description"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectStatesIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectStatesIsEmptyException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project task states is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Valid Description"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {
+            editProjectUseCase.editProject(project)
         }
     }
 

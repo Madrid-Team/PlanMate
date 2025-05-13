@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.*
 
 class DeleteProjectCLI(
     private val inputReader: InputReader,
@@ -13,26 +14,22 @@ class DeleteProjectCLI(
     private val deleteProjectUseCase: DeleteProjectUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
-        outputPrinter.printMessage("=== Delete Project ===")
-        val projectId = inputReader.readInput("Enter project ID to delete: ")
+        outputPrinter.printMessage(String.deleteProjectHeader)
+        val projectId = inputReader.readInput(String.enterProjectIdToDelete)
 
         try {
-            val confirmed = inputReader.readInput("Are you sure you want to delete this project? (yes/no): ")
-            when (confirmed.lowercase()) {
-                "yes" -> {
-                    deleteProjectUseCase(projectId)
-                    outputPrinter.printMessage("Project deleted successfully.")
+            when (inputReader.readInput(String.sureYouWantToDeleteThisProject)) {
+                String.selectionOne -> {
+                    deleteProjectUseCase.deleteProject(projectId)
+                    outputPrinter.printMessage(String.deleteProjectSuccess)
                 }
 
                 else -> {
-                    outputPrinter.printMessage("Deletion cancelled.")
+                    outputPrinter.printMessage(String.deletionCancelled)
                 }
             }
-        } catch (e: ProjectExceptions.ProjectNotFoundException) {
-            outputPrinter.printMessage(e.message ?: "Project not found")
-        } catch (e: Exception) {
-            outputPrinter.printMessage("Failed to delete project: ${e.message}")
+        }  catch (exception: ProjectExceptions) {
+            outputPrinter.printMessage(String.deleteProjectException.format(exception.message))
         }
     }
 }
-
