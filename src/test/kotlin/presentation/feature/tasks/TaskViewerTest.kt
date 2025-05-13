@@ -2,8 +2,10 @@ package presentation.feature.tasks
 
 import com.google.common.truth.Truth.assertThat
 import domain.usecases.task.GetTasksByProjectIdUseCase
+import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.verify
 import io.mockk.verifyOrder
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -44,9 +46,6 @@ class TaskViewerTest {
 
     @Test
     fun `should print tasks grouped by state with correct format`() {
-        // Given
-
-        // When
         taskViewer.printTasksByState(tasks)
 
         // Then
@@ -71,6 +70,21 @@ class TaskViewerTest {
             outputPrinter.printMessage("------------------------------")
             outputPrinter.printMessage("\n")
         }
+    }
+
+    @Test
+    fun `should print error message when TaskExceptions is thrown`() = runTest {
+        // Given
+        val projectId = UUID.randomUUID().toString()
+        val errorMessage = "Project not found"
+
+        coEvery { getTasksByProjectIdUseCase.getTaskByProjectId(projectId) } throws TaskExceptions(errorMessage)
+
+        // When
+        taskViewer.displayAllTasks(projectId)
+
+        // Then
+        verify { outputPrinter.printError(errorMessage) }
     }
 
     private val task1Id = UUID.randomUUID().toString()
