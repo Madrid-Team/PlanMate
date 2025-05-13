@@ -2,30 +2,31 @@ package domain.usecases.user
 
 import org.junit.jupiter.api.Assertions.*
 
-import com.google.common.truth.Truth.assertThat
+import domain.utils.UserExceptions
 import domain.models.authentication.UserRole
-import domain.utils.AdminValidationResult
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ValidateAdminRoleUseCaseTest {
 
-    private lateinit var useCase: ValidateAdminRoleUseCase
+    private lateinit var validateAdminRoleuseCase: ValidateAdminRoleUseCase
 
     @BeforeEach
     fun setup() {
-        useCase = ValidateAdminRoleUseCase()
+        validateAdminRoleuseCase = ValidateAdminRoleUseCase()
     }
 
     @Test
-    fun `should return Valid if role is ADMIN`() {
-        val result = useCase.validate(UserRole.ADMIN.name)
-        assertThat(result).isEqualTo(AdminValidationResult.Valid)
+    fun `does not throw when role is ADMIN`() {
+        validateAdminRoleuseCase.validate(UserRole.ADMIN.name)
     }
 
     @Test
-    fun `should return NotAdmin if role is not ADMIN`() {
-        val result = useCase.validate(UserRole.MATE.name)
-        assertThat(result).isEqualTo(AdminValidationResult.NotAdmin)
+    fun `throws UserNotAdminException when role is not ADMIN`() {
+        assertThrows<UserExceptions.UserNotAdminException> {
+            validateAdminRoleuseCase.validate(UserRole.MATE.name)
+        }
     }
 }
+
