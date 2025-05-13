@@ -5,12 +5,9 @@ import domain.usecases.project.GetProjectByIdUseCase
 
 class DeleteTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase,
 ) {
-    suspend fun deleteTask( taskId: String) {
+    suspend fun deleteTask(taskId: String) {
 
-        // Proceed to delete
         taskRepository.deleteTask(taskId)
     }
 }
