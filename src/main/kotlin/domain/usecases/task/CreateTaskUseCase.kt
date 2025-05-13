@@ -12,8 +12,7 @@ class CreateTaskUseCase(
 
 ) {
     suspend fun createTask(task: Task) {
-        getProjectByIdUseCase.getById(task.projectId)
-        taskValidator.validateAll(task)
+         taskValidator.validateAll(task)
 
         taskRepository.createTask(task)
     }
