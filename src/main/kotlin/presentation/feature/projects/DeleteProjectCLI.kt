@@ -28,9 +28,7 @@ class DeleteProjectCLI(
                     outputPrinter.printMessage(String.deletionCancelled)
                 }
             }
-        } catch (exception: ProjectExceptions.ProjectNotFoundException) {
-            outputPrinter.printMessage(String.deleteProjectNotFoundException.format(exception.message))
-        } catch (exception: Exception) {
+        }  catch (exception: ProjectExceptions) {
             outputPrinter.printMessage(String.deleteProjectException.format(exception.message))
         }
     }

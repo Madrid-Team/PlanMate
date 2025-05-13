@@ -1,6 +1,7 @@
 package presentation.feature.tasks
 
 import domain.utils.ProjectExceptions
+import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -48,7 +49,7 @@ class TaskCLI(
 
         try {
            taskViewer.displayAllTasks(projectId)
-        } catch (exception: ProjectExceptions) {
+        } catch (exception: TaskExceptions) {
             outputPrinter.printMessage(exception.message.toString())
         }
     }

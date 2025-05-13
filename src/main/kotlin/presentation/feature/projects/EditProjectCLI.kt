@@ -4,6 +4,7 @@ import domain.models.project.Project
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -39,7 +40,7 @@ class EditProjectCLI(
                     else -> outputPrinter.printMessage("Invalid option. Please try again.")
                 }
             }
-        } catch (exception: Exception) {
+        } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage(exception.message ?: "Error while editing project")
         }
     }
@@ -51,7 +52,7 @@ class EditProjectCLI(
             editProjectUseCase.editProject(newProject)
             outputPrinter.printMessage("Project name updated successfully.")
             hasChanges = true
-        } catch (exception: PlanMateExceptions) {
+        } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage("Failed to update project description: ${exception.message}")
         }
     }
@@ -63,7 +64,7 @@ class EditProjectCLI(
             editProjectUseCase.editProject(newDescription)
             outputPrinter.printMessage("Project description updated successfully.")
             hasChanges = true
-        } catch (exception: PlanMateExceptions) {
+        } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage("Failed to update project description: ${exception.message}")
         }
     }
@@ -85,7 +86,7 @@ class EditProjectCLI(
                     editProjectUseCase.editProject(newProject)
                     outputPrinter.printMessage("Project state updated successfully.")
                     hasChanges = true
-                } catch (e: PlanMateExceptions) {
+                } catch (e: ProjectExceptions) {
                     outputPrinter.printMessage("Failed to update project state: ${e.message}")
                 }
                 break

@@ -1,5 +1,6 @@
 package presentation.feature.tasks
 
+import data.source.user.CurrentUserProvider
 import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
@@ -7,6 +8,8 @@ import domain.models.task.Task
 import domain.models.logs.AuditLog
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
+import domain.utils.PlanMateExceptions
+import domain.utils.TaskExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -25,7 +28,8 @@ class CreateTaskCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val createTaskUseCase: CreateTaskUseCase,
-    private val getProjectByIdUseCase: GetProjectByIdUseCase
+    private val getProjectByIdUseCase: GetProjectByIdUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage(String.createTaskHeader)
@@ -33,7 +37,7 @@ class CreateTaskCLI(
             val task = readTaskInput()
             createTaskUseCase.createTask(task)
             outputPrinter.printMessage(String.taskCreatedSuccessfully)
-        } catch (exception: Exception) {
+        } catch (exception: PlanMateExceptions) {
             outputPrinter.printMessage(exception.message.toString())
             outputPrinter.printMessage(String.taskCreatedUnsuccessfully)
         }
@@ -60,13 +64,13 @@ class CreateTaskCLI(
             title = title,
             description = description,
             taskState = selectedState,
-            createdBy = CurrentUser.getCurrentUser().username,
+            createdBy = currentUserProvider.getCurrentUser().username,
             logs = listOf(
                 AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = title,
                     entityType = EntityType.TASK,
-                    username = CurrentUser.getCurrentUser().username,
+                    username = currentUserProvider.getCurrentUser().username,
                 ).toString()
             ),
             id = UUID.randomUUID()
