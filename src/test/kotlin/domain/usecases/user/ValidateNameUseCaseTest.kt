@@ -1,10 +1,9 @@
 package domain.usecases.user
 
-import com.google.common.truth.Truth.assertThat
-
-import domain.utils.NameValidationResult
+import domain.utils.UserExceptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ValidateNameUseCaseTest {
 
@@ -16,20 +15,22 @@ class ValidateNameUseCaseTest {
     }
 
     @Test
-    fun `should return NotValid if name is blank`() {
-        val result = useCase.validateName("")
-        assertThat(result).isInstanceOf(NameValidationResult.NotValid::class.java)
+    fun `throws InvalidUserName when name is blank`() {
+        assertThrows<UserExceptions.InvalidUserName> {
+            useCase.validateName("")
+        }
     }
 
     @Test
-    fun `should return NotValid if name is less than 3 chars`() {
-        val result = useCase.validateName("mo")
-        assertThat(result).isInstanceOf(NameValidationResult.NotValid::class.java)
+    fun `throws UserNameLessThan3CharsException when name is too short`() {
+        assertThrows<UserExceptions.UserNameLessThan3CharsException> {
+            useCase.validateName("ab")
+        }
     }
 
     @Test
-    fun `should return Valid if name is 3 or more chars`() {
-        val result = useCase.validateName("mohamed")
-        assertThat(result).isEqualTo(NameValidationResult.Valid)
+    fun `does not throw exception for valid name`() {
+        useCase.validateName("mohamed")
     }
 }
+
