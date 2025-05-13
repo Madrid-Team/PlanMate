@@ -11,36 +11,36 @@ class TaskViewer(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
 
-) {
-    suspend fun displayAllTasks(projectId:String) {
+    ) {
+    suspend fun displayAllTasks(projectId: String) {
         try {
 
             val allTasks = getTasksByProjectIdUseCase.getTaskByProjectId(projectId)
 
             printTasksByState(allTasks)
-        }catch (e: TaskExceptions){
+        } catch (e: TaskExceptions) {
             outputPrinter.printError(e.message.toString())
         }
 
     }
 
     fun printTasksByState(tasks: List<Task>) {
-         val tasksByState = tasks.groupBy { it.taskState }
+        val tasksByState = tasks.groupBy { it.taskState }
 
-         tasksByState.forEach { (state, tasksInState) ->
-            println("Tasks in state: $state (${tasksInState.size} tasks)")
-            println("------------------------------")
+        tasksByState.forEach { (state, tasksInState) ->
+            outputPrinter.printMessage("Tasks in state: $state (${tasksInState.size} tasks)")
+            outputPrinter.printMessage("------------------------------")
 
             tasksInState.forEach { task ->
-                println("ID: ${task.id}")
-                println("Title: ${task.title}")
-                println("Description: ${task.description}")
-                println("Created by: ${task.createdBy}")
-                println("Logs: ${task.logs.size} entries")
-                println("------------------------------")
+                outputPrinter.printMessage("ID: ${task.id}")
+                outputPrinter.printMessage("Title: ${task.title}")
+                outputPrinter.printMessage("Description: ${task.description}")
+                outputPrinter.printMessage("Created by: ${task.createdBy}")
+                outputPrinter.printMessage("Logs: ${task.logs.size} entries")
+                outputPrinter.printMessage("------------------------------")
             }
-            println("\n")
+            outputPrinter.printMessage("\n")
         }
     }
 
- }
+}
