@@ -50,4 +50,15 @@ class GetAllProjectsUseCaseTest {
             }
         }
     }
+
+    @Test
+    fun `should throw ProjectNotFoundException when repository returns empty list`() = runTest {
+        // Given
+        coEvery { projectRepository.getAllProjects() } returns emptyList()
+
+        // When & Then
+        assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            getAllProjectsUseCase.getProjects()
+        }
+    }
 }
