@@ -2,7 +2,7 @@ package domain.usecases.user
 
 import domain.models.authentication.UserRole
 
-import domain.utils.AdminValidationResult
+
 import domain.utils.UserExceptions
 
 

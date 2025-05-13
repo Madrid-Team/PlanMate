@@ -1,6 +1,5 @@
 package domain.usecases.user
 
-import org.junit.jupiter.api.Assertions.*
 
 import domain.utils.UserExceptions
 import domain.models.authentication.UserRole
