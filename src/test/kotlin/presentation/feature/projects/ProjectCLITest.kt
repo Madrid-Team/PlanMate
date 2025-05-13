@@ -70,19 +70,6 @@ class ProjectCLITest {
     }
 
 
-//    @Test
-//    fun `should call showProjects when user selects 1`() {
-//        runTest {
-//            // given
-//            every { inputReader.readInput(any()) } returnsMany listOf("1", "0")
-//
-//            // when
-//            projectCLI.show()
-//
-//            // then
-//            coVerify(exactly = 1) { projectCLI.showProjects() }
-//        }
-//    }
 
     @Test
     fun `should navigate to CreateProjectCLI when user selects 2`() {
