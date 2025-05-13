@@ -6,15 +6,14 @@ import domain.utils.UserExceptions
 class ValidatePasswordUseCase {
 
 
-    fun validatePassword(password: String): PasswordValidationResult {
+    fun validatePassword(password: String) {
         if (password.isEmpty()) {
-            return PasswordValidationResult.NotValid(UserExceptions.EmptyPasswordException().message.toString())
+            throw UserExceptions.EmptyPasswordException()
         }
         if (password.length < 6) {
-            return PasswordValidationResult.NotValid(UserExceptions.PasswordLessThan6CharsException().message.toString())
+            throw UserExceptions.PasswordLessThan6CharsException()
         }
 
-        return PasswordValidationResult.Valid
     }
 
 }

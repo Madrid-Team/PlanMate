@@ -15,14 +15,9 @@ class LoginUserUseCase(
 
 ) {
     suspend fun login(userName: String, password: String): User {
-        val nameValidation = validateNameUseCase.validateName(userName)
-        if (nameValidation is NameValidationResult.NotValid) {
-            throw UserExceptions.InvalidUserName()
-        }
-        val passwordValidation = validatePasswordUseCase.validatePassword(password)
-        if (passwordValidation is PasswordValidationResult.NotValid) {
-            throw UserExceptions.InvalidPasswordError()
-        }
+        validateNameUseCase.validateName(userName)
+        validatePasswordUseCase.validatePassword(password)
+
         val passwordHash = PasswordHasher.hash(password)
         val user = userRepository.login(userName, passwordHash)
         return user
