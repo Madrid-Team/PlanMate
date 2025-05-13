@@ -1,21 +1,17 @@
 package domain.usecases.user
 
-import domain.utils.NameValidationResult
 import domain.utils.UserExceptions
 
 class ValidateNameUseCase {
 
-    fun validateName(name: String): NameValidationResult {
+    fun validateName(name: String) {
         if (name.isBlank()) {
-            return NameValidationResult.NotValid(UserExceptions.EmptyUserNameException().message.toString())
+            throw UserExceptions.InvalidUserName()
         }
         if (name.length < 3) {
-            return NameValidationResult.NotValid(UserExceptions.UserNameLessThan3CharsException().message.toString())
+             throw UserExceptions.UserNameLessThan3CharsException()
         }
 
-
-        return NameValidationResult.Valid
     }
-
 
 }
