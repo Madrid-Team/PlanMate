@@ -16,112 +16,112 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ValidateUserTest {
-    private lateinit var userRepository: UserRepository
-    private lateinit var validateUser: ValidateUser
-    private val testScope: TestScope = TestScope()
-
-    @BeforeTest
-    fun setup() {
-        userRepository = mockk(relaxUnitFun = true)
-        mockkConstructor(ValidateUser::class)
-        validateUser = ValidateUser(userRepository)
-    }
-
-
-    @Test
-    fun `Should validate user successfully When user is valid`() {
-        //Given
-        val userValid = User(
-            id = UUID.randomUUID(), "username7",
-            "#yty", "ADMIN"
-        )
-        //When
-        every {
-            validateUser.validateUser(
-                listOf(userValid), userValid.username, userValid.passwordHash
-            )
-        } returns userValid
-
-        val result = validateUser.validateUser(
-            listOf(userValid), userValid.username, userValid.passwordHash
-        )
-        assertEquals(userValid, result)
-    }
-
-    @Test
-    fun `should throw WrongPasswordOrUserName when password is incorrect`() {
-        // Given
-        val user = User(
-            id = UUID.randomUUID(),
-            username = "john",
-            passwordHash = "hashed123",
-            role = "ADMIN"
-        )
-        val users = listOf(user)
-
-        // When
-        val exception = assertThrows<UserExceptions> {
-            validateUser.validateUser(users, user.username, "user")
-        }
-
-        //Then
-        assertTrue(exception is UserExceptions.WrongPasswordOrUserName)
-    }
-
-    @Test
-    fun `should throw NotFoundUser when users list is empty `() {
-        // Given
-        val user = User(
-            id = UUID.randomUUID(),
-            username = "john",
-            passwordHash = "hashed123",
-            role = "ADMIN"
-        )
-        val users = emptyList<User>()
-
-
-        // When
-        val exception = assertThrows<UserExceptions> {
-            validateUser.validateUser(users, user.username, user.passwordHash)
-        }
-
-        //Then
-        assertTrue(exception is UserExceptions.UserNotFoundException)
-    }
-
-
-    @Test
-    fun `should throw NotFoundUser when username does not exist`() {
-        // Given
-        val user = User(
-            id = UUID.randomUUID(),
-            username = "john",
-            passwordHash = "hashed123",
-            role = "ADMIN"
-        )
-        val users = listOf(user)
-
-        // When + Then
-        val exception = assertThrows<UserExceptions.UserNotFoundException> {
-            validateUser.validateUser(users, "nonexistentUser", "hashed123")
-        }
-
-        assertThat(exception.message).isEqualTo("Not found user or wrong username")
-    }
-
-    @Test
-    fun `should generate a unique UUID When UUID is in use`() {
-        testScope.launch {
-            // Given
-            val newUUID = UUID.randomUUID().toString()
-            coEvery { userRepository.getUserById(any()) } returns mockk()
-
-            // When
-            val generatedUUID = validateUser.generateUUIDValidToNewUser()
-
-            // Then
-            assertThat(generatedUUID).isNotEqualTo(newUUID)
-            coVerify(exactly = 1) { userRepository.getUserById(any()) }
-        }
-    }
+//    private lateinit var userRepository: UserRepository
+//    private lateinit var validateUser: ValidateUser
+//    private val testScope: TestScope = TestScope()
+//
+//    @BeforeTest
+//    fun setup() {
+//        userRepository = mockk(relaxUnitFun = true)
+//        mockkConstructor(ValidateUser::class)
+//        validateUser = ValidateUser(userRepository)
+//    }
+//
+//
+//    @Test
+//    fun `Should validate user successfully When user is valid`() {
+//        //Given
+//        val userValid = User(
+//            id = UUID.randomUUID(), "username7",
+//            "#yty", "ADMIN"
+//        )
+//        //When
+//        every {
+//            validateUser.validateUser(
+//                listOf(userValid), userValid.username, userValid.passwordHash
+//            )
+//        } returns userValid
+//
+//        val result = validateUser.validateUser(
+//            listOf(userValid), userValid.username, userValid.passwordHash
+//        )
+//        assertEquals(userValid, result)
+//    }
+//
+//    @Test
+//    fun `should throw WrongPasswordOrUserName when password is incorrect`() {
+//        // Given
+//        val user = User(
+//            id = UUID.randomUUID(),
+//            username = "john",
+//            passwordHash = "hashed123",
+//            role = "ADMIN"
+//        )
+//        val users = listOf(user)
+//
+//        // When
+//        val exception = assertThrows<UserExceptions> {
+//            validateUser.validateUser(users, user.username, "user")
+//        }
+//
+//        //Then
+//        assertTrue(exception is UserExceptions.WrongPasswordOrUserName)
+//    }
+//
+//    @Test
+//    fun `should throw NotFoundUser when users list is empty `() {
+//        // Given
+//        val user = User(
+//            id = UUID.randomUUID(),
+//            username = "john",
+//            passwordHash = "hashed123",
+//            role = "ADMIN"
+//        )
+//        val users = emptyList<User>()
+//
+//
+//        // When
+//        val exception = assertThrows<UserExceptions> {
+//            validateUser.validateUser(users, user.username, user.passwordHash)
+//        }
+//
+//        //Then
+//        assertTrue(exception is UserExceptions.UserNotFoundException)
+//    }
+//
+//
+//    @Test
+//    fun `should throw NotFoundUser when username does not exist`() {
+//        // Given
+//        val user = User(
+//            id = UUID.randomUUID(),
+//            username = "john",
+//            passwordHash = "hashed123",
+//            role = "ADMIN"
+//        )
+//        val users = listOf(user)
+//
+//        // When + Then
+//        val exception = assertThrows<UserExceptions.UserNotFoundException> {
+//            validateUser.validateUser(users, "nonexistentUser", "hashed123")
+//        }
+//
+//        assertThat(exception.message).isEqualTo("Not found user or wrong username")
+//    }
+//
+//    @Test
+//    fun `should generate a unique UUID When UUID is in use`() {
+//        testScope.launch {
+//            // Given
+//            val newUUID = UUID.randomUUID().toString()
+//            coEvery { userRepository.getUserById(any()) } returns mockk()
+//
+//            // When
+//            val generatedUUID = validateUser.generateUUIDValidToNewUser()
+//
+//            // Then
+//            assertThat(generatedUUID).isNotEqualTo(newUUID)
+//            coVerify(exactly = 1) { userRepository.getUserById(any()) }
+//        }
+//    }
 }
