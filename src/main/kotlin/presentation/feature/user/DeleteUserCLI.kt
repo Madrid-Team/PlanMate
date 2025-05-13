@@ -1,7 +1,6 @@
 package presentation.feature.user
 
 import data.source.user.CurrentUserProvider
-import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -18,7 +17,7 @@ class DeleteUserCLI(
         val userId = inputReader.readInput()
         try {
             val requiredId = currentUserProvider.getCurrentUser().id
-            deleteUserUseCase.deleteUser(requiredId.toString(), userId)
+            deleteUserUseCase.deleteUser(requiredId, userId)
             outputPrinter.printMessage(String.deletedSuccess)
         } catch (e: Exception) {
             outputPrinter.printMenuItems(listOf(String.deletedFailed, e.message.toString(), String.pressOneToTryAgain))
