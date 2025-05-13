@@ -122,7 +122,6 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning", "In Progress")
         )
 
-        // لا نتوقع أي Exception هنا
         validator.validate(project)
     }
 }
