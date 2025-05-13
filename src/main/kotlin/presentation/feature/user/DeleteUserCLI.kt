@@ -1,5 +1,6 @@
 package presentation.feature.user
 
+import data.source.user.CurrentUserProvider
 import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
 import presentation.components.InputReader
@@ -9,13 +10,14 @@ import presentation.utils.*
 class DeleteUserCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
-    private val deleteUserUseCase: DeleteUserUseCase
+    private val deleteUserUseCase: DeleteUserUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun show() {
         outputPrinter.printMenuItems(listOf(String.deleteUserStarted, String.enterUserId))
         val userId = inputReader.readInput()
         try {
-            val requiredId = CurrentUser.getCurrentUser().id
+            val requiredId = currentUserProvider.getCurrentUser().id
             deleteUserUseCase.deleteUser(requiredId.toString(), userId)
             outputPrinter.printMessage(String.deletedSuccess)
         } catch (e: Exception) {

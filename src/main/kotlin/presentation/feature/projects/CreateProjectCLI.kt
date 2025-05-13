@@ -1,5 +1,6 @@
 package presentation.feature.projects
 
+import data.source.user.CurrentUserProvider
 import domain.models.logs.AuditLog
 import domain.models.logs.CurrentUser
 import domain.models.logs.EntityType
@@ -7,6 +8,7 @@ import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.usecases.project.CreateProjectUseCase
 import domain.utils.PlanMateExceptions
+import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -18,6 +20,7 @@ class CreateProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val createProjectUseCase: CreateProjectUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Project ===")
@@ -48,7 +51,7 @@ class CreateProjectCLI(
         val project = Project(
             name = name,
             description = description,
-            createdBy = CurrentUser.getCurrentUser().username,
+            createdBy = currentUserProvider.getCurrentUser().username,
             projectLogs = emptyList(),
             projectState = projectState,
             taskStates = taskStates.trim().split("-").filter { it.isNotBlank() },
@@ -65,9 +68,11 @@ class CreateProjectCLI(
                  ).toString()
             }
             val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
-            createProjectUseCase.createProject(projectWithLog)
+
+          createProjectUseCase.createProject(projectWithLog)
+
             outputPrinter.printMessage("Project created successfully")
-        } catch (e: PlanMateExceptions) {
+        } catch (e: ProjectExceptions) {
             outputPrinter.printMessage("Failed to create project: ${e.message}")
         }
     }
