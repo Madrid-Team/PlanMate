@@ -75,4 +75,75 @@ class EditProjectUseCaseTest {
             editProjectUseCase.editProject(project)
         }
     }
+
+    @Test
+    fun `should throw exception when project description is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = ""
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project description is invalid`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "###Invalid###"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionInvalidException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionInvalidException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project description is too short`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Short"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionTooShortException()
+
+        assertThrows<ProjectExceptions.ProjectDescriptionTooShortException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project states is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Valid Description"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectStatesIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectStatesIsEmptyException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
+    @Test
+    fun `should throw exception when project task states is empty`() = runTest {
+        val project = createProject(
+            id = UUID.randomUUID().toString(),
+            name = "Valid Name",
+            description = "Valid Description"
+        )
+        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
+
+        assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {
+            editProjectUseCase.editProject(project)
+        }
+    }
+
 }
