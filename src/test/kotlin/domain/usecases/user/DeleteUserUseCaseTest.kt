@@ -1,17 +1,15 @@
 package domain.usecases.user
-
 import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-
-import domain.utils.AdminValidationResult
+import domain.usecases.user.DeleteUserUseCase
+import domain.usecases.user.ValidateAdminRoleUseCase
 import domain.utils.UserExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
 
 class DeleteUserUseCaseTest {
 
@@ -20,7 +18,7 @@ class DeleteUserUseCaseTest {
     private lateinit var deleteUserUseCase: DeleteUserUseCase
 
     @BeforeEach
-    fun setUp() {
+    fun setup() {
         userRepository = mockk()
         validateAdminRoleUseCase = mockk()
         deleteUserUseCase = DeleteUserUseCase(userRepository, validateAdminRoleUseCase)
@@ -28,42 +26,45 @@ class DeleteUserUseCaseTest {
 
     @Test
     fun `should delete user when requester is admin`() = runTest {
-        val adminId = UUID.randomUUID().toString()
-        val userToDeleteId = UUID.randomUUID().toString()
-
+        // Given
+        val requesterId = UUID.randomUUID()
+        val targetId = UUID.randomUUID()
         val adminUser = User(
-            id = UUID.fromString(adminId),
-            username = "admin_user",
-            passwordHash = "hashed_password",
-            role = UserRole.ADMIN.name
+            id = requesterId,
+            username = "AdminUser",
+            passwordHash = "hashedPassword",
+            role = "ADMIN"
         )
 
-        coEvery { userRepository.getUserById(adminId) } returns adminUser
-        every { validateAdminRoleUseCase.validate(adminUser.role) } returns AdminValidationResult.Valid
-        coEvery { userRepository.deleteUser(userToDeleteId) } just Runs
+        coEvery { userRepository.getUserById(requesterId.toString()) } returns adminUser
+        every { validateAdminRoleUseCase.validate("ADMIN") } returns true
+        coEvery { userRepository.deleteUser(targetId.toString()) } just Runs
 
-        deleteUserUseCase.deleteUser(adminId, userToDeleteId)
+        // When
+        deleteUserUseCase.deleteUser(requesterId.toString(), targetId.toString())
 
-        coVerify(exactly = 1) { userRepository.deleteUser(userToDeleteId) }
+        // Then
+        coVerify(exactly = 1) { userRepository.deleteUser(targetId.toString()) }
     }
 
     @Test
-    fun `should throw exception when requester is not admin`() = runTest {
-        val mateId = UUID.randomUUID().toString()
-        val userToDeleteId = UUID.randomUUID().toString()
-
-        val mateUser = User(
-            id = UUID.fromString(mateId),
-            username = "mate_user",
-            passwordHash = "hashed_password",
-            role = UserRole.MATE.name
+    fun `should throw UserNotAdminException when requester is not admin`() = runTest {
+        // Given
+        val requesterId = UUID.randomUUID()
+        val targetId = UUID.randomUUID()
+        val normalUser = User(
+            id = requesterId,
+            username = "NormalUser",
+            passwordHash = "hashedPassword",
+            role = "USER"
         )
 
-        coEvery { userRepository.getUserById(mateId) } returns mateUser
-        every { validateAdminRoleUseCase.validate(mateUser.role) } returns AdminValidationResult.NotAdmin
+        coEvery { userRepository.getUserById(requesterId.toString()) } returns normalUser
+        every { validateAdminRoleUseCase.validate("USER") } returns false
 
-        assertFailsWith<UserExceptions.UserNotAdminException> {
-            deleteUserUseCase.deleteUser(mateId, userToDeleteId)
+        // When & Then
+        assertThrows<UserExceptions.UserNotAdminException> {
+            deleteUserUseCase.deleteUser(requesterId.toString(), targetId.toString())
         }
 
         coVerify(exactly = 0) { userRepository.deleteUser(any()) }
