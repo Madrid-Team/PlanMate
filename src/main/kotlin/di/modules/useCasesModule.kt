@@ -19,11 +19,11 @@ val useCasesModule = module {
     single { CreateUserUseCase(get(),get()) }
     single { DeleteUserUseCase(get()) }
     single { LoginUserUseCase(get()) }
-    single { DeleteTaskUseCase(get(),get(),get()) }
+    single { DeleteTaskUseCase(get() ) }
     single { CreateTaskUseCase(get(),get(),get(),) }
     single { DisplayAllTasksUseCase(get(),get()) }
     single { EditTaskUseCase(get(),get(),get(),get()) }
-    single { GetTaskLogsUseCase(get(),get(),get()) }
+    single { GetTaskLogsUseCase(get() ) }
     single { GetTasksByProjectIdUseCase(get()) }
     single { TaskValidator() }
     single { ProjectValidator() }
