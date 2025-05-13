@@ -9,6 +9,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.back
+import presentation.utils.createNewUser
+import presentation.utils.deleteUser
+import presentation.utils.invalidOption
+import presentation.utils.manageUsersMenu
+import presentation.utils.selectOption
 
 class UserCLITest {
     private val inputReader = mockk<InputReader>()
@@ -26,17 +32,23 @@ class UserCLITest {
     fun `should show menu and create user when enter 1`() {
         runTest {
             // Given
-            every { inputReader.readInput("Select an option: ") } returns "1" andThen "0"
+            every { inputReader.readInput(String.selectOption) } returns "1" andThen "0"
 
             // When
             cli.show()
 
             // Then
+            verify {
+                outputPrinter.printMenuItems(
+                    listOf(
+                        String.manageUsersMenu,
+                        String.createNewUser,
+                        String.deleteUser,
+                        String.back
+                    )
+                )
+            }
             coVerify {
-                outputPrinter.printMessage("=== Manage users ===")
-                outputPrinter.printMessage("1. Create new user")
-                outputPrinter.printMessage("2. Delete new user")
-                outputPrinter.printMessage("0. Back")
                 createUserCLI.show()
             }
         }
@@ -46,19 +58,23 @@ class UserCLITest {
     fun `should show menu and delete user when enter 2`() {
         runTest {
             // Given
-            every { inputReader.readInput("Select an option: ") } returns "2" andThen "0"
+            every { inputReader.readInput(String.selectOption) } returns "2" andThen "0"
 
             // When
             cli.show()
 
             // Then
-            coVerify {
-                outputPrinter.printMessage("=== Manage users ===")
-                outputPrinter.printMessage("1. Create new user")
-                outputPrinter.printMessage("2. Delete new user")
-                outputPrinter.printMessage("0. Back")
-                deleteUserCLI.show()
+            verify {
+                outputPrinter.printMenuItems(
+                    listOf(
+                        String.manageUsersMenu,
+                        String.createNewUser,
+                        String.deleteUser,
+                        String.back
+                    )
+                )
             }
+            coVerify { deleteUserCLI.show() }
         }
     }
 
@@ -66,17 +82,21 @@ class UserCLITest {
     fun `should back when enter 0`() {
         runTest {
             // Given
-            every { inputReader.readInput("Select an option: ") } returns "0"
+            every { inputReader.readInput(String.selectOption) } returns "0"
 
             // When
             cli.show()
 
             // Then
             verify {
-                outputPrinter.printMessage("=== Manage users ===")
-                outputPrinter.printMessage("1. Create new user")
-                outputPrinter.printMessage("2. Delete new user")
-                outputPrinter.printMessage("0. Back")
+                outputPrinter.printMenuItems(
+                    listOf(
+                        String.manageUsersMenu,
+                        String.createNewUser,
+                        String.deleteUser,
+                        String.back
+                    )
+                )
             }
         }
     }
@@ -85,18 +105,22 @@ class UserCLITest {
     fun `should show error message when enter input incorrectly`() {
         runTest {
             // Given
-            every { inputReader.readInput("Select an option: ") } returns "z" andThen "0"
+            every { inputReader.readInput(String.selectOption) } returns "z" andThen "0"
 
             // When
             cli.show()
 
             // Then
             verify {
-                outputPrinter.printMessage("=== Manage users ===")
-                outputPrinter.printMessage("1. Create new user")
-                outputPrinter.printMessage("2. Delete new user")
-                outputPrinter.printError("Invalid option.")
-                outputPrinter.printMessage("0. Back")
+                outputPrinter.printMenuItems(
+                    listOf(
+                        String.manageUsersMenu,
+                        String.createNewUser,
+                        String.deleteUser,
+                        String.back
+                    )
+                )
+                outputPrinter.printError(String.invalidOption)
             }
         }
     }

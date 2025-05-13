@@ -1,7 +1,9 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
+import domain.utils.TaskExceptions
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -19,27 +21,37 @@ class DeleteTaskUseCaseTest {
     @BeforeEach
     fun setup() {
         taskRepository = mockk()
-        deleteTaskUseCase = DeleteTaskUseCase(mockk())
+        deleteTaskUseCase = DeleteTaskUseCase(taskRepository)
         testScope = TestScope()
     }
 
     @Test
-    fun `deleteTask should execute successfully when TaskRepository delete task`() {
+    fun `should complete successfully when task exists and is deleted`() {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
-
             coEvery { taskRepository.deleteTask(taskId) } returns Unit
 
-            assertDoesNotThrow { DeleteTaskUseCase(mockk()) }
+            assertDoesNotThrow { deleteTaskUseCase.deleteTask(taskId) }
+            coVerify(exactly = 1) { taskRepository.deleteTask(taskId) }
         }
+
     }
 
     @Test
-    fun `deleteTask should throw exception when TaskRepository throw exception`() {
+    fun `should throw TaskNotFoundException when task does not exist`() {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
+            val expectedException = TaskExceptions.TaskNotFoundException("Task not found")
 
-            assertThrows<Exception> { DeleteTaskUseCase(mockk()) }
+            coEvery { taskRepository.deleteTask(taskId) } throws expectedException
+
+            val thrown = assertThrows<TaskExceptions.TaskNotFoundException> {
+                deleteTaskUseCase.deleteTask(taskId)
+            }
+
+            assert(thrown.message == "Task not found")
+            coVerify(exactly = 1) { taskRepository.deleteTask(taskId) }
         }
     }
+
 }

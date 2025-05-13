@@ -34,8 +34,8 @@ import kotlin.time.Duration.Companion.seconds
 
 
 class UserMongoDBDataSourceTest {
-    private  var mongoClientProvider: MongoClientProvider=MongoClientProvider()
-    private  var database: MongoDatabase = mongoClientProvider.getDatabase()
+    private var mongoClientProvider: MongoClientProvider = MongoClientProvider()
+    private var database: MongoDatabase = mongoClientProvider.getDatabase()
     private lateinit var userMongoDBDataSource: UserExternalDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     private lateinit var userDtoCollection: MongoCollection<UserDto>
@@ -45,14 +45,14 @@ class UserMongoDBDataSourceTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeEach
     fun setup() {
-      //  Dispatchers.setMain(TestDispatcher())
+        //  Dispatchers.setMain(TestDispatcher())
         copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "user_test", "users")
         runTest {
             copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
         }
         userDtoCollection = database.getCollection<UserDto>("user_test")
-            userMongoDBDataSource =
-                UserMongoDBDataSource(userDtoCollection)
+        userMongoDBDataSource =
+            UserMongoDBDataSource(userDtoCollection)
 //        advanceUntilIdle()
 
     }
@@ -64,14 +64,14 @@ class UserMongoDBDataSourceTest {
         passwordHash = "hashed_pw",
         role = "admin"
     )
-   private val  userTest3 = UserDto(
-    id = "ghost2",
-    username = "GhostUser",
-    passwordHash = "shci58392nwsuss9203asdx",
-    role = "ADMIN"
+    private val userTest3 = UserDto(
+        id = "ghost2",
+        username = "GhostUser",
+        passwordHash = "shci58392nwsuss9203asdx",
+        role = "ADMIN"
     )
     private val userTest = UserDto(
-        id ="AbdoId",
+        id = "AbdoId",
         username = "User Name Abdo",
         passwordHash = "shci58392nwsuss9203asdx",
         role = UserRole.ADMIN.name,
@@ -82,7 +82,6 @@ class UserMongoDBDataSourceTest {
         passwordHash = "shci58392nwsuss9203asdxh",
         role = UserRole.ADMIN.name,
     )
-
 
 
     @Test
@@ -115,6 +114,7 @@ class UserMongoDBDataSourceTest {
 
         }
     }
+
     @Test
     fun `deleteUser should delete user with correct id`() = runTest(timeout = 60.seconds) {
         // Arrange
@@ -136,6 +136,7 @@ class UserMongoDBDataSourceTest {
         val deletedUser = userDtoCollection.find(eq("_id", userTest.id)).firstOrNull()
         assertNull(deletedUser, "User should not exist in collection")
     }
+
     @Test
     fun `deleteUser should call deleteOne with the correct filter`() = runTest {
         // Given
@@ -144,7 +145,12 @@ class UserMongoDBDataSourceTest {
         val insertOneResult = mockk<InsertOneResult>()
         coEvery { insertOneResult.wasAcknowledged() } returns true
         coEvery { collection.insertOne(userTest2, any()) } returns insertOneResult
-        coEvery { collection.deleteOne(eq(Filters.eq("_id", userTest2.id)), any()) } returns DeleteResult.acknowledged(1)
+        coEvery {
+            collection.deleteOne(
+                eq(Filters.eq("_id", userTest2.id)),
+                any()
+            )
+        } returns DeleteResult.acknowledged(1)
 
         // When
         dataSource.createNewUser(userTest2)
@@ -156,16 +162,16 @@ class UserMongoDBDataSourceTest {
     }
 
     @Test
-    fun `getUserById returns user when found`()=runTest {
+    fun `getUserById returns user when found`() = runTest {
         userDtoCollection.insertOne(userTest)
 
         userDtoCollection.find(eq("_id", userTest.id))
 
 
-            val result = assertDoesNotThrow {
-                userMongoDBDataSource.getUserById(userTest.id)
-            }
-            assertNotNull(result)
+        val result = assertDoesNotThrow {
+            userMongoDBDataSource.getUserById(userTest.id)
+        }
+        assertNotNull(result)
 
     }
 
@@ -223,13 +229,13 @@ class UserMongoDBDataSourceTest {
         val username = "testUser"
         val password = "pass123"
 
-        val expectedUser = UserDto( "1",  username,  password,"Admin")
-           userMongoDBDataSource.createNewUser(expectedUser )
+        val expectedUser = UserDto("1", username, password, "Admin")
+        userMongoDBDataSource.createNewUser(expectedUser)
 
         val filter = and(eq(USER_NAME, username), eq(PASSWORD, password))
 
 
-        assertEquals( userDtoCollection.find(filter).firstOrNull(),  expectedUser)
+        assertEquals(userDtoCollection.find(filter).firstOrNull(), expectedUser)
 
         // When
         val result = userMongoDBDataSource.login(username, password)
@@ -247,7 +253,7 @@ class UserMongoDBDataSourceTest {
         val filter = and(eq("username", username), eq("password", password))
 
 
-          assertNull( userDtoCollection.find(filter).firstOrNull())
+        assertNull(userDtoCollection.find(filter).firstOrNull())
 
 
         // When
@@ -257,16 +263,16 @@ class UserMongoDBDataSourceTest {
         assertNull(result)
 
 
-}
+    }
 
 
-@AfterEach
-   fun cleanup() {
-       runTest {
-           userDtoCollection.deleteMany(Document())
-           clearAllMocks()
+    @AfterEach
+    fun cleanup() {
+        runTest {
+            userDtoCollection.deleteMany(Document())
+            clearAllMocks()
 
-       }
+        }
         mongoClientProvider.close()
 
     }

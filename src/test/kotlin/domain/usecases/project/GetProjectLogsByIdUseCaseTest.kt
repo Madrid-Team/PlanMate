@@ -52,4 +52,20 @@ class GetProjectLogsByIdUseCaseTest {
             }
         }
     }
+
+    @Test
+    fun `should throw NoLogsFoundException when project has no logs`() {
+        runTest {
+            // Given
+            val projectId = "project-empty-logs"
+            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
+            coEvery { projectRepository.getProjectLogsById(projectId) } returns emptyList()
+
+            // When & Then
+            assertThrows<ProjectExceptions.NoLogsFoundException> {
+                getProjectLogsByIdUseCase.execute(projectId)
+            }
+        }
+    }
+
 }

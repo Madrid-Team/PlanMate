@@ -1,72 +1,131 @@
 package presentation.feature.admin
 
-import org.junit.jupiter.api.*
-import java.io.*
-import kotlin.test.assertTrue
-import io.mockk.*
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import presentation.feature.tasks.TaskAuditLogCLI
-import presentation.feature.projects.ProjectAuditLogCLI
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import presentation.components.InputReader
+import presentation.components.OutputPrinter
+import presentation.feature.projects.ProjectCLI
+import presentation.feature.tasks.TaskCLI
+import presentation.feature.user.UserCLI
+import presentation.utils.*
 
 class AdminCLITest {
-
-    private lateinit var inputStream: ByteArrayInputStream
-    private lateinit var outputStream: ByteArrayOutputStream
-    private lateinit var printStream: PrintStream
-
-    private lateinit var projectAuditLogCLI: ProjectAuditLogCLI
-    private lateinit var taskAuditLogCLI: TaskAuditLogCLI
+    private lateinit var inputReader: InputReader
+    private lateinit var outputPrinter: OutputPrinter
+    private lateinit var taskCLI: TaskCLI
+    private lateinit var projectCLI: ProjectCLI
+    private lateinit var userCLI: UserCLI
+    private lateinit var adminCLI: AdminCLI
 
     @BeforeEach
     fun setup() {
-        projectAuditLogCLI = mockk(relaxed = true)
-        taskAuditLogCLI = mockk(relaxed = true)
-
-        outputStream = ByteArrayOutputStream()
-        printStream = PrintStream(outputStream)
-        System.setOut(printStream)
-    }
-
-    private fun provideInput(vararg lines: String) {
-        val input = lines.joinToString("\n")
-        inputStream = ByteArrayInputStream(input.toByteArray())
-        System.setIn(inputStream)
+        taskCLI = mockk(relaxed = true)
+        projectCLI = mockk(relaxed = true)
+        userCLI = mockk(relaxed = true)
+        inputReader = mockk(relaxed = true)
+        outputPrinter = mockk(relaxed = true)
+        adminCLI = AdminCLI(inputReader, outputPrinter, taskCLI, projectCLI, userCLI)
     }
 
     @Test
-    fun `should call projectAuditLogCLI when user selects 1`() {
+    fun `should print admin menu and logout when user select 0`() {
         runTest {
-            provideInput("1", "0")
+            // Given
+            every { inputReader.readInput(any()) } returns "0"
 
-            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
+            // when
             adminCLI.showAdminMenu()
 
-            coVerify(exactly = 1) { projectAuditLogCLI.show() }
+            // then
+            verify {
+                outputPrinter.printMenuItems(
+                    listOf(
+                        String.adminMenu,
+                        String.manageTasks,
+                        String.manageProjects,
+                        String.manageUsers,
+                        String.logout
+                    )
+                )
+            }
         }
     }
 
     @Test
-    fun `should call taskAuditLogCLI when user selects 2`() {
+    fun `should call taskCLI when user select 1`() {
         runTest {
-            provideInput("2", "0")
+            // Given
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                String.selectionOne,
+                String.selectionZero
+            )
 
-            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
+            // when
             adminCLI.showAdminMenu()
 
-            coVerify(exactly = 1) { taskAuditLogCLI.show() }
+            // then
+            coVerify {
+                taskCLI.show()
+            }
         }
     }
 
     @Test
-    fun `should print invalid option when input is invalid`() {
+    fun `should call projectCLI when user select 2`() {
         runTest {
-            provideInput("99", "0")
+            // Given
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                String.selectionTwo,
+                String.selectionZero
+            )
 
-            val adminCLI = AdminCLI(mockk(), mockk(), mockk(), mockk(), mockk())
+            // when
             adminCLI.showAdminMenu()
 
-            val output = outputStream.toString()
-            assertTrue(output.contains("Invalid option!"))
+            // then
+            coVerify {
+                projectCLI.show()
+            }
+        }
+    }
+
+    @Test
+    fun `should call userCLI when user select 3`() {
+        runTest {
+            // Given
+            every { inputReader.readInput(any()) } returnsMany listOf(
+                String.selectionThree,
+                String.selectionZero
+            )
+
+            // when
+            adminCLI.showAdminMenu()
+
+            // then
+            coVerify {
+                userCLI.show()
+            }
+        }
+    }
+
+    @Test
+    fun `should show error message when user select invalid option`() {
+        runTest {
+            // Given
+            every { inputReader.readInput(any()) } returnsMany listOf("a", "0")
+
+            // when
+            adminCLI.showAdminMenu()
+
+            // then
+            verify {
+                outputPrinter.printError(String.invalidOption)
+            }
         }
     }
 }

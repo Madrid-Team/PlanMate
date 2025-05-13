@@ -2,6 +2,7 @@ package presentation.feature.projects
 
 import data.utils.toProjectException
 import domain.usecases.project.GetProjectLogsByIdUseCase
+import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -10,6 +11,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.auditLogException
+import presentation.utils.auditLogsForProjectId
+import presentation.utils.enterProjectIDToViewAudit
+import presentation.utils.projectAuditLogHeader
 import kotlin.test.Test
 
 class ProjectAuditLogCLITest {
@@ -28,59 +33,59 @@ class ProjectAuditLogCLITest {
     }
 
     @Test
-    fun `show should print audit logs when logs are available`() {
-        runTest {
-            val projectId = "123"
-            val logs = listOf("Created", "Updated", "Deleted")
+    fun `show should print audit logs when logs are available`() = runTest {
+        val projectId = "123"
+        val logs = listOf("Created", "Updated", "Deleted")
 
-            every { reader.readInput(any()) } returns projectId
-            coEvery { useCase.execute(projectId) } returns logs
-
-            cli.show()
-
-            verifySequence {
-                printer.printMessage("=== Project Audit Log ===")
-                reader.readInput("Enter Project ID to view audit logs: ")
-                printer.printMessage("Audit logs for project ID: $projectId\n")
-                printer.printMessage("- Created\n")
-                printer.printMessage("- Updated\n")
-                printer.printMessage("- Deleted\n")
-            }
-        }
-    }
-
-    @Test
-    fun `show should print message when no logs are found`() {
-        runTest {
-            val projectId = "456"
-
-            every { reader.readInput(any()) } returns projectId
-            coEvery { useCase.execute(projectId) } returns emptyList()
-
-            cli.show()
-
-            verifySequence {
-                printer.printMessage("=== Project Audit Log ===")
-                reader.readInput("Enter Project ID to view audit logs: ")
-                printer.printMessage("No audit logs found for project ID: $projectId\n")
-            }
-        }
-    }
-
-    @Test
-    fun `show should print error when use case fails`() = runTest {
-        val projectId = "789"
-        val exception = RuntimeException("Something went wrong")
-
-        every { reader.readInput(any()) } returns projectId
-        coEvery { useCase.execute(projectId) } throws exception.toProjectException()
+        every { reader.readInput(String.enterProjectIDToViewAudit) } returns projectId
+        coEvery { useCase.execute(projectId) } returns logs
 
         cli.show()
 
         verifySequence {
-            printer.printMessage("=== Project Audit Log ===")
-            reader.readInput("Enter Project ID to view audit logs: ")
-            printer.printError("Failed to fetch audit logs: Something went wrong\n")
+            printer.printMessage(String.projectAuditLogHeader)
+            reader.readInput(String.enterProjectIDToViewAudit)
+            printer.printMessage(String.auditLogsForProjectId.format(projectId))
+            printer.printMessage("- Created\n")
+            printer.printMessage("- Updated\n")
+            printer.printMessage("- Deleted\n")
+        }
+    }
+
+    @Test
+    fun `show should print message when no logs are found`() = runTest {
+        val projectId = "456"
+        val exception = ProjectExceptions.NoLogsFoundException("There is no logs for this project")
+
+        every { reader.readInput(String.enterProjectIDToViewAudit) } returns projectId
+        coEvery { useCase.execute(projectId) } throws exception
+
+        cli.show()
+
+        verifySequence {
+            printer.printMessage(String.projectAuditLogHeader)
+            reader.readInput(String.enterProjectIDToViewAudit)
+            printer.printError(String.auditLogException.format(exception.message))
+        }
+    }
+
+
+
+    @Test
+    fun `show should print error when use case fails`() = runTest {
+        val projectId = "789"
+        val exceptionMessage = "Something went wrong"
+        val exception = ProjectExceptions(exceptionMessage)
+
+        every { reader.readInput(String.enterProjectIDToViewAudit) } returns projectId
+        coEvery { useCase.execute(projectId) } throws exception
+
+        cli.show()
+
+        verifySequence {
+            printer.printMessage(String.projectAuditLogHeader)
+            reader.readInput(String.enterProjectIDToViewAudit)
+            printer.printError(String.auditLogException.format(exceptionMessage))
         }
     }
 }

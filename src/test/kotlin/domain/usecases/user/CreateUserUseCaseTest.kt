@@ -1,94 +1,95 @@
 package domain.usecases.user
 
-import com.google.common.truth.Truth.assertThat
-import data.mapper.toDto
-import data.repository.UserRepositoryImpl
-import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.usecases.user.*
 import domain.utils.UserExceptions
 import io.mockk.*
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertDoesNotThrow
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.*
-import kotlin.test.Test
+
 
 class CreateUserUseCaseTest {
+
     private lateinit var userRepository: UserRepository
+    private lateinit var validateNameUseCase: ValidateNameUseCase
+    private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
+    private lateinit var passwordHashUseCase: PasswordHashUseCase
     private lateinit var createUserUseCase: CreateUserUseCase
-    private lateinit var userExternalDataSource: UserExternalDataSource
-    private var testScope = TestScope()
 
     @BeforeEach
-    fun setUp() {
-        // Mock the data source
-        userExternalDataSource = mockk<UserExternalDataSource>(relaxed = false)
-        userRepository = UserRepositoryImpl(mockk(), mockk())
-        mockkConstructor(ValidateUser::class)
-        createUserUseCase = CreateUserUseCase(userRepository)
+    fun setup() {
+        userRepository = mockk()
+        validateNameUseCase = mockk()
+        validatePasswordUseCase = mockk()
+        passwordHashUseCase = mockk()
+        createUserUseCase = CreateUserUseCase(
+            userRepository,
+            validateNameUseCase,
+            validatePasswordUseCase,
+            passwordHashUseCase
+        )
     }
 
     @Test
-    fun `should create user successfully When User dose not exists before`() {
-        runTest {
-            // Given
-            val newUserName = "new user"
-            val user = User(id = UUID.randomUUID(), username = newUserName, passwordHash = "password", role = "MATE")
-            val generateId = UUID.randomUUID()
+    fun `should create new user when input is valid`() = runTest {
+        // Given
+        val username = "ValidUser"
+        val password = "ValidPassword123"
+        val hashedPassword = "hashedPassword"
 
-            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns generateId
+        every { validateNameUseCase.validateName(username) } returns Unit
+        every { validatePasswordUseCase.validatePassword(password) } returns Unit
+        every { passwordHashUseCase.passwordHash(password) } returns hashedPassword
+        coEvery { userRepository.createNewUser(any()) } just Runs
 
-            coEvery { userExternalDataSource.getUserByName(newUserName) } throws UserExceptions.UserNotFoundException()
+        // When
+        createUserUseCase.createUser(username, password)
 
-            coEvery { userExternalDataSource.createNewUser(any()) } returns Unit
-
-            // When
-            assertDoesNotThrow {
-                CreateUserUseCase(mockk())
-            }
-
-            // Then
-            coVerify {
-                userExternalDataSource.createNewUser(user.copy(id = generateId).toDto())
-            }
-        }
-    }
-
-    @Test
-    fun `Should not create user When user already exists`() {
-        runTest {
-            // Given
-            val existingUsername = "existingUser"
-            val existingUser = User(
-                id = UUID.randomUUID(),
-                username = existingUsername,
-                passwordHash = "password",
-                role = "MATE"
-            )
-
-            coEvery { anyConstructed<ValidateUser>().generateUUIDValidToNewUser() } returns UUID.randomUUID()
-
-            coEvery { userExternalDataSource.getUserByName(existingUsername) } returns existingUser.toDto()
-
-            coEvery { userExternalDataSource.createNewUser(any()) } throws UserExceptions.UserExist("User already exists")
-
-            // When & Then
-            val exception = assertThrows<UserExceptions.UserExist> {
-                CreateUserUseCase(mockk())
-            }
-
-            assertThat(exception.message).isEqualTo("User already exists")
-
-            // Verify createNewUser was called
-            testScope.launch {
-                coVerify {
-                    userRepository.createNewUser(any())
+        // Then
+        coVerify(exactly = 1) {
+            userRepository.createNewUser(
+                match {
+                    it.username == username &&
+                            it.passwordHash == hashedPassword &&
+                            it.role == "MATE"
                 }
-            }
+            )
         }
+    }
+
+    @Test
+    fun `should throw InvalidUserName when name is invalid`() = runTest {
+        // Given
+        val username = ""
+        val password = "ValidPassword123"
+
+        every { validateNameUseCase.validateName(username) } throws UserExceptions.InvalidUserName()
+
+        // When & Then
+        assertThrows<UserExceptions.InvalidUserName> {
+            createUserUseCase.createUser(username, password)
+        }
+
+        coVerify(exactly = 0) { userRepository.createNewUser(any()) }
+    }
+
+    @Test
+    fun `should throw InvalidPasswordError when password is invalid`() = runTest {
+        // Given
+        val username = "ValidUser"
+        val password = ""
+
+        every { validateNameUseCase.validateName(username) } returns Unit
+        every { validatePasswordUseCase.validatePassword(password) } throws UserExceptions.InvalidPasswordError()
+
+        // When & Then
+        assertThrows<UserExceptions.InvalidPasswordError> {
+            createUserUseCase.createUser(username, password)
+        }
+
+        coVerify(exactly = 0) { userRepository.createNewUser(any()) }
     }
 }

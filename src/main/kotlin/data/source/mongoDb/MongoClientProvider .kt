@@ -13,7 +13,7 @@ class MongoClientProvider {
         .version(ServerApiVersion.V1)
         .build()
     private val mongoClientSettings = MongoClientSettings.builder()
-        .applyConnectionString(ConnectionString(System.getenv("MONGO_URI")))
+        .applyConnectionString(ConnectionString("mongodb+srv://israa:12345@cluster0.n7e5mmf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"))
         .serverApi(serverApi)
         .build()
 

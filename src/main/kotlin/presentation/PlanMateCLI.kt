@@ -15,7 +15,7 @@ class PlanMateCLI(
     private val authenticationCLI: AuthenticationCLI,
     private val adminCLI: AdminCLI,
     private val mateCLI: MateCLI,
- ) {
+) {
     suspend fun start() {
         outputPrinter.printMessage(String.welcomeMessage)
 
@@ -27,13 +27,13 @@ class PlanMateCLI(
 
             when (inputReader.readInput(String.selectOption)) {
                 String.selectionOne -> {
-                     showMenuForUser(authenticationCLI.login())
+                    showMenuForUser(authenticationCLI.login())
                     break
                 }
 
                 String.selectionZero -> {
                     outputPrinter.printMessage(String.goodbye)
-                    return
+                    break
                 }
 
                 else -> outputPrinter.printError(String.invalidOption)

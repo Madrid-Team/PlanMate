@@ -53,9 +53,9 @@ class UserCsvDataSourceTest {
             val row = userCsvParser.parseUserToRow(user.toDto())
             every { fileCsvWriter.writeToCsvFile(row) } returns Unit
 
-            coEvery{ dataSource.getUserByName(user.username) } throws UserExceptions.UserNotFoundException()
+            coEvery { dataSource.getUserByName(user.username) } throws UserExceptions.UserNotFoundException()
             // When & Then
-            assertDoesNotThrow{
+            assertDoesNotThrow {
                 dataSource.createNewUser(user.toDto())
             }
         }

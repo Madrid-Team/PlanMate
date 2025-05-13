@@ -10,6 +10,10 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.deleteTaskException
+import presentation.utils.deleteTaskHeader
+import presentation.utils.deleteTaskSuccess
+import presentation.utils.enterTaskIdToDelete
 import kotlin.test.Test
 
 class DeleteTaskCLITest {
@@ -30,42 +34,65 @@ class DeleteTaskCLITest {
         testScope = TestScope()
     }
 
+
     @Test
-    fun `should show success message when task is deleted successfully`() {
-        testScope.runTest {
-            // given
-            every { inputReader.readInput() } returnsMany listOf("1", "2")
-            coEvery { deleteTaskUseCase.deleteTask("1", "2") } returns Unit
+    fun `should show success message when task is deleted successfully`() = testScope.runTest {
+        // Given
+        val taskId = "123"
+        every { inputReader.readInput() } returns taskId
+        coEvery { deleteTaskUseCase.deleteTask(taskId) } just Runs
 
-            // when
-            deleteTaskCLI.show()
+        // When
+        deleteTaskCLI.show()
 
-            // then
-            coVerify {
-                deleteTaskUseCase.deleteTask("1", "2")
-                outputPrinter.printMessage("=== Delete Task ===")
-                outputPrinter.printMessage("Enter task ID to delete:")
-                deleteTaskUseCase.deleteTask("1", "2")
-                outputPrinter.printMessage("Task deleted successfully.")
-            }
+        // Then
+        coVerifySequence {
+            outputPrinter.printMessage(String.deleteTaskHeader)
+            outputPrinter.printMessage(String.enterTaskIdToDelete)
+            inputReader.readInput()
+            deleteTaskUseCase.deleteTask(taskId)
+            outputPrinter.printMessage(String.deleteTaskSuccess)
         }
     }
+
+    @Test
+    fun `should show error message when deletion throws TaskExceptions`() = runTest {
+        // Given
+        val taskId = "123"
+        val exception = TaskExceptions.TaskNotFoundException(taskId)
+        every { inputReader.readInput() } returns taskId
+        coEvery { deleteTaskUseCase.deleteTask(taskId) } throws exception
+
+        // When
+        deleteTaskCLI.show()
+
+        // Then
+        coVerifySequence {
+            outputPrinter.printMessage(String.deleteTaskHeader)
+            outputPrinter.printMessage(String.enterTaskIdToDelete)
+            inputReader.readInput()
+            deleteTaskUseCase.deleteTask(taskId)
+            outputPrinter.printError(String.deleteTaskException.format(exception))
+        }
+    }
+
 
     @Test
     fun `should show fail message when task deletion fails`() {
         // given
         testScope.runTest {
-            every { inputReader.readInput() } returnsMany listOf("2", "1")
-            coEvery { deleteTaskUseCase.deleteTask("2", "1") } throws TaskExceptions.TaskCannotDeleteException()
+            // Given
+            val taskId = "456"
+            val exception = TaskExceptions.TaskCannotDeleteException()
+            every { inputReader.readInput() } returns taskId
+            coEvery { deleteTaskUseCase.deleteTask(taskId) } throws exception
 
-            // when
+            // When
             deleteTaskCLI.show()
 
-            // then
+            // Then
             verify {
-                outputPrinter.printError(
-                    TaskExceptions.TaskCannotDeleteException().message ?: "Task not found or could not be deleted."
-                )
+                outputPrinter.printError(String.deleteTaskException.format(exception))
             }
         }
     }
