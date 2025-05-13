@@ -15,15 +15,15 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
-    private lateinit var projectValidator:ProjectValidator
-      private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
+    private lateinit var projectValidator: ProjectValidator
+    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
         projectValidator = mockk(relaxed = true)
         getProjectByIdUseCase = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository,     projectValidator,getProjectByIdUseCase)
+        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, getProjectByIdUseCase)
     }
 
     @Test
@@ -67,7 +67,7 @@ class EditProjectUseCaseTest {
             name = "Invalid Name",
             description = "Project description"
         )
-        coEvery { getProjectByIdUseCase.getById(any()) } returns project
+        coEvery { getProjectByIdUseCase.getById(any()) } throws ProjectExceptions.ProjectNameInvalidException()
         coEvery { projectValidator.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
 
         //When & Then
