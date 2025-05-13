@@ -15,57 +15,38 @@ class ProjectRepositoryImpl(
 ) : ProjectRepository {
 
 
-    override suspend fun getAllProjects(): List<Project> {
+    override suspend fun getAllProjects(): List<Project> = executeProjectOperation {
+        projectExternalDataSource.getProjects(currentUserProvider.getCurrentUser()).map { it.toDomain() }
+    }
+
+    override suspend fun createProject(project: Project) = executeProjectOperation {
+        projectExternalDataSource.createProject(project.toDto())
+    }
+
+    override suspend fun deleteProject(projectId: String) = executeProjectOperation {
+        projectExternalDataSource.deleteProject(projectId)
+    }
+
+    override suspend fun editProject(project: Project) = executeProjectOperation {
+        projectExternalDataSource.editProject(project.toDto())
+    }
+
+    override suspend fun getProjectLogsById(id: String): List<String> = executeProjectOperation {
+        projectExternalDataSource.getProjectLogsById(id) ?: throw ProjectExceptions.ProjectNotFoundException()
+    }
+
+
+    override suspend fun getProjectById(id: String): Project = executeProjectOperation {
+        projectExternalDataSource.getProjectById(id)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+    }
+
+    private suspend fun <T> executeProjectOperation(operation: suspend () -> T): T {
         return try {
-            projectExternalDataSource.getProjects(currentUserProvider.getCurrentUser()).map { it.toDomain() }
+            operation()
         } catch (e: Exception) {
             throw e.toProjectException()
         }
     }
 
-
-    override suspend fun createProject(project: Project) {
-        return try {
-            projectExternalDataSource.createProject(project.toDto())
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
-    }
-
-    override suspend fun deleteProject(projectId: String) {
-        return try {
-            projectExternalDataSource.deleteProject(projectId)
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
-    }
-
-    override suspend fun editProject(project: Project) {
-        return try {
-            projectExternalDataSource.editProject(project.toDto())
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
-
-    }
-
-    override suspend fun getProjectLogsById(id: String): List<String> {
-        return try {
-
-            projectExternalDataSource.getProjectLogsById(id) ?: throw ProjectExceptions.ProjectNotFoundException()
-
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
-    }
-
-    override suspend fun getProjectById(id: String): Project {
-        return try {
-            projectExternalDataSource.getProjectById(id)?.toDomain()
-                ?: throw ProjectExceptions.ProjectNotFoundException()
-        } catch (e: Exception) {
-            throw e.toProjectException()
-        }
-    }
 
 }
