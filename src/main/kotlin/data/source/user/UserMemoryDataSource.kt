@@ -1,8 +1,8 @@
-package data.dto.authentication
+package data.source.user
 
-import data.source.user.CurrentUserProvider
+import data.dto.authentication.UserDto
 
-class CurrentUser : CurrentUserProvider {
+class UserMemoryDataSource : CurrentUserProvider {
     private var user: UserDto? = null
 
     override fun setCurrentUser(user: UserDto) {
