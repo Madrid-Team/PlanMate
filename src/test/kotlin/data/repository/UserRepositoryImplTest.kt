@@ -3,10 +3,8 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.createUserDto
 import data.mapper.toDomain
-import data.mapper.toDto
 import data.source.user.CurrentUserProvider
 import data.source.user.UserExternalDataSource
-import domain.models.authentication.User
 import domain.utils.UserExceptions
 import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery
@@ -17,7 +15,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
-import java.util.*
 import kotlin.test.Test
 
 class UserRepositoryImplTest {
@@ -35,51 +32,36 @@ class UserRepositoryImplTest {
         userRepositoryImpl = UserRepositoryImpl(userExternalDataSource, currentUserProvider)
     }
 
-    private val userDto = createUserDto(
-        id = UUID.randomUUID().toString(),
-        username = "user name",
-        passwordHash = "pass",
-        role = "role"
-    )
-
     @Test
     fun `Should add user successfully`() {
         runTest {
-            // Given
-            val user = User(id = UUID.randomUUID(), "username1", "hash", "ADMIN")
+            coEvery { userExternalDataSource.createNewUser(userDto) } returns Unit
 
-            coEvery { userExternalDataSource.createNewUser(user.toDto()) } returns Unit
-
-            // When/Then - No exception is thrown
-            // Verify
             assertDoesNotThrow {
-                userRepositoryImpl.createNewUser(user)
+                userRepositoryImpl.createNewUser(userDto.toDomain())
             }
-            coVerify { userExternalDataSource.createNewUser(user.toDto()) }
+
+            coVerify { userExternalDataSource.createNewUser(userDto) }
         }
     }
 
     @Test
     fun `Should fail to add user when datasource fails`() {
         runTest {
-            // Given
-            val user = User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
             val exception = UserExist()
-            coEvery { userExternalDataSource.createNewUser(user.toDto()) } throws exception
+            coEvery { userExternalDataSource.createNewUser(userDto) } throws exception
 
-            // When/Then
             val thrownException = assertThrows<UserExist> {
-                userRepositoryImpl.createNewUser(user)
+                userRepositoryImpl.createNewUser(userDto.toDomain())
             }
 
-            // Verify exception is wrapped
             assertThat(thrownException).isSameInstanceAs(exception)
         }
     }
 
     @Test
     fun `getUser should return user when found`() {
-        testScope.runTest {
+        runTest {
             coEvery { userExternalDataSource.getUserById(userDto.id) } returns userDto
 
             val result = userRepositoryImpl.getUserById(userDto.id)
@@ -91,25 +73,17 @@ class UserRepositoryImplTest {
     @Test
     fun `getAllUsers should return user when found`() {
         runTest {
-            // Given
-            val users = listOf(
-                User(id = UUID.randomUUID(), "username1", "hash1", "MATE"),
-                User(id = UUID.randomUUID(), "username2", "hash2", "MATE")
-            )
+            coEvery { userExternalDataSource.getAllUsers() } returns usersDto
 
-            coEvery { userExternalDataSource.getAllUsers() } returns users.map { it.toDto() }
-
-            // When
             val result = userRepositoryImpl.getAllUsers()
 
-            // Then
-            assertThat(result).containsExactlyElementsIn(users)
+            assertThat(result).containsExactlyElementsIn(usersDto.map { it.toDomain() })
         }
     }
 
     @Test
     fun `getUserByName should return user when found`() {
-        testScope.runTest {
+        runTest {
             coEvery { userExternalDataSource.getUserByName(userDto.username) } returns userDto
 
             val result = userRepositoryImpl.getUserByName(userDto.username)
@@ -121,33 +95,82 @@ class UserRepositoryImplTest {
     @Test
     fun `Should delete user successfully`() {
         runTest {
-            // Given
-            val userId = "1"
-            coEvery { userExternalDataSource.deleteUser(userId) } returns Unit
+            coEvery { userExternalDataSource.deleteUser(userDto.id) } returns Unit
 
-            // When
-            userRepositoryImpl.deleteUser(userId)
+            userRepositoryImpl.deleteUser(userDto.id)
 
-            // Then - verify the call was made to the data source
-            coVerify { userExternalDataSource.deleteUser(userId) }
+            coVerify { userExternalDataSource.deleteUser(userDto.id) }
         }
     }
 
     @Test
     fun `Should propagate exception from data source when deleting user`() {
         runTest {
-            // Given
-            val userId = "2"
             val exception = UserExceptions.UserNotFoundException()
-            coEvery { userExternalDataSource.deleteUser(userId) } throws exception
+            coEvery { userExternalDataSource.deleteUser(userDto.id) } throws exception
 
-            // When/Then
             val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
-                userRepositoryImpl.deleteUser(userId)
+                userRepositoryImpl.deleteUser(userDto.id)
             }
 
             assertThat(thrownException).isSameInstanceAs(exception)
         }
     }
 
+    @Test
+    fun `login should return user when login successfully`() {
+        runTest {
+            coEvery { userExternalDataSource.login(userDto.username, userDto.passwordHash) } returns userDto
+            coEvery { currentUserProvider.setCurrentUser(userDto) } returns Unit
+
+            val result = userRepositoryImpl.login(userDto.username, userDto.passwordHash)
+
+            assertThat(result).isEqualTo(userDto.toDomain())
+        }
+    }
+
+    @Test
+    fun `login should throw UserNotFoundException when user is equal null`() {
+        runTest {
+            coEvery { userExternalDataSource.login(userDto.username, userDto.passwordHash) } returns null
+            coEvery { currentUserProvider.setCurrentUser(userDto) } returns Unit
+
+            assertThrows<UserExceptions.UserNotFoundException> {
+                userRepositoryImpl.login(
+                    userDto.username,
+                    userDto.passwordHash
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `login should throw UserException when catch exception`() {
+        runTest {
+            coEvery {
+                userExternalDataSource.login(
+                    userDto.username,
+                    userDto.passwordHash
+                )
+            } throws UserExceptions.UserNotFoundException()
+
+            coEvery { currentUserProvider.setCurrentUser(userDto) } returns Unit
+
+            assertThrows<UserExceptions.UserNotFoundException> {
+                userRepositoryImpl.login(
+                    userDto.username,
+                    userDto.passwordHash
+                )
+            }
+        }
+    }
+
+    private val userDto = createUserDto(
+        id = "26fb5810-951e-4913-aae8-1d36d72d85eb",
+        username = "user name",
+        passwordHash = "pass",
+        role = "role"
+    )
+
+    private val usersDto = listOf(userDto)
 }
