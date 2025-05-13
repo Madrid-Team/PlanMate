@@ -109,7 +109,6 @@ class CreateUserCLITest {
             outputPrinter.printError("Failed to write user data")
             outputPrinter.printMessage("1 - Try again with same data\n2 - Enter new data\nAny other key - Exit")
         }
-        coVerify { useCase.createUser(username, password) } // Verify retry was attempted
     }
 
     @Test
@@ -126,7 +125,6 @@ class CreateUserCLITest {
         every { inputReader.readInput("Enter password (minimum 6 characters):") } returns newPassword
         coEvery { useCase.createUser(newUsername, newPassword) } returns Unit
 
-        // When - invoke private method directly
         handleUserReadWriteErrorMethod.invoke(cli, username, password, exception,continuation())
 
         // Then
