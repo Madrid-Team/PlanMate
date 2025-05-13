@@ -114,7 +114,6 @@ class TaskRepositoryImplTest {
             coEvery { taskExternalDataSource.getTaskLogsByID(taskId = taskDto.id) } throws TaskExceptions.NoLogsFoundException(
                 "Failed to get task logs"
             )
-
             assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByID(taskDto.id) }
         }
     }
