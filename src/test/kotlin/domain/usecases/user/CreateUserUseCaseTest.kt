@@ -1,27 +1,26 @@
 package domain.usecases.user
 
-import domain.models.authentication.UserRole
+import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utils.NameValidationResult
-import domain.utils.PasswordValidationResult
+import domain.usecases.user.*
 import domain.utils.UserExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
 
 class CreateUserUseCaseTest {
 
     private lateinit var userRepository: UserRepository
-    private lateinit var createUserUseCase: CreateUserUseCase
     private lateinit var validateNameUseCase: ValidateNameUseCase
     private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
     private lateinit var passwordHashUseCase: PasswordHashUseCase
+    private lateinit var createUserUseCase: CreateUserUseCase
 
     @BeforeEach
-    fun setUp() {
+    fun setup() {
         userRepository = mockk()
         validateNameUseCase = mockk()
         validatePasswordUseCase = mockk()
@@ -35,96 +34,62 @@ class CreateUserUseCaseTest {
     }
 
     @Test
-    fun `should call create user successfully when the username and password are correct`() = runTest {
-        val username = "mohamed"
-        val password = "123456789"
-        val passwordHash = "hashed_password"
+    fun `should create new user when input is valid`() = runTest {
+        // Given
+        val username = "ValidUser"
+        val password = "ValidPassword123"
+        val hashedPassword = "hashedPassword"
 
-        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
-        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
-        coEvery { passwordHashUseCase.passwordHash(password) } returns passwordHash
+        every { validateNameUseCase.validateName(username) } returns Unit
+        every { validatePasswordUseCase.validatePassword(password) } returns Unit
+        every { passwordHashUseCase.passwordHash(password) } returns hashedPassword
         coEvery { userRepository.createNewUser(any()) } just Runs
 
+        // When
         createUserUseCase.createUser(username, password)
 
+        // Then
         coVerify(exactly = 1) {
             userRepository.createNewUser(
                 match {
                     it.username == username &&
-                            it.passwordHash == passwordHash &&
-                            it.role == UserRole.MATE.name
+                            it.passwordHash == hashedPassword &&
+                            it.role == "MATE"
                 }
             )
         }
     }
 
     @Test
-    fun `should throw invalid username exception when username is empty`() = runTest {
+    fun `should throw InvalidUserName when name is invalid`() = runTest {
+        // Given
         val username = ""
-        val password = "123456789"
+        val password = "ValidPassword123"
 
-        coEvery {
-            validateNameUseCase.validateName(username)
-        } returns NameValidationResult.NotValid(
-            UserExceptions.EmptyUserNameException().message.toString()
-        )
+        every { validateNameUseCase.validateName(username) } throws UserExceptions.InvalidUserName()
 
-        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
-
-        assertFailsWith<UserExceptions.InvalidUserName> {
+        // When & Then
+        assertThrows<UserExceptions.InvalidUserName> {
             createUserUseCase.createUser(username, password)
         }
+
+        coVerify(exactly = 0) { userRepository.createNewUser(any()) }
     }
 
     @Test
-    fun `should throw invalid username exception when username is less than 3`() = runTest {
-        val username = "mo"
-        val password = "123456789"
-
-        coEvery {
-            validateNameUseCase.validateName(username)
-        } returns NameValidationResult.NotValid(
-            UserExceptions.UserNameLessThan3CharsException().message.toString()
-        )
-
-        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
-
-        assertFailsWith<UserExceptions.InvalidUserName> {
-            createUserUseCase.createUser(username, password)
-        }
-    }
-
-    @Test
-    fun `should throw invalid password exception when password is empty`() = runTest {
-        val username = "kamel"
+    fun `should throw InvalidPasswordError when password is invalid`() = runTest {
+        // Given
+        val username = "ValidUser"
         val password = ""
 
-        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
-        coEvery {
-            validatePasswordUseCase.validatePassword(password)
-        } returns PasswordValidationResult.NotValid(
-            UserExceptions.EmptyPasswordException().message.toString()
-        )
+        every { validateNameUseCase.validateName(username) } returns Unit
+        every { validatePasswordUseCase.validatePassword(password) } throws UserExceptions.InvalidPasswordError()
 
-        assertFailsWith<UserExceptions.InvalidPasswordError> {
+        // When & Then
+        assertThrows<UserExceptions.InvalidPasswordError> {
             createUserUseCase.createUser(username, password)
         }
-    }
 
-    @Test
-    fun `should throw invalid password exception when password is less than 6`() = runTest {
-        val username = "mohamed"
-        val password = "1234"
-
-        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
-        coEvery {
-            validatePasswordUseCase.validatePassword(password)
-        } returns PasswordValidationResult.NotValid(
-            UserExceptions.PasswordLessThan6CharsException().message.toString()
-        )
-
-        assertFailsWith<UserExceptions.InvalidPasswordError> {
-            createUserUseCase.createUser(username, password)
-        }
+        coVerify(exactly = 0) { userRepository.createNewUser(any()) }
     }
 }
