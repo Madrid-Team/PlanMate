@@ -1,25 +1,26 @@
 package domain.usecases.user
 
-import data.utils.PasswordHasher
 import domain.models.authentication.User
-import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.utils.PasswordValidation
-import java.util.*
+import domain.usecases.user.ValidateUser
+import domain.utils.NameValidationResult
+import domain.utils.PasswordValidationResult
+import domain.utils.UserExceptions
 
 class CreateUserUseCase(
     private val userRepository: UserRepository,
-    private val passwordValidation: PasswordValidation
+    private val validateNameUseCase: ValidateNameUseCase,
+    private val validatePasswordUseCase: ValidatePasswordUseCase
 ) {
-    suspend fun createUser(userName: String, password: String) {
-        passwordValidation.validate(password)
-        val passwordHash = PasswordHasher.hash(password)
-        val newUser = User(
-            username = userName,
-            passwordHash = passwordHash,
-            role = UserRole.MATE.name,
-            id = UUID.randomUUID()
-        )
-        userRepository.createNewUser(newUser)
-    }
+    suspend fun createUser(user: User) {
+        val nameValidation = validateNameUseCase.validateName(user.username)
+        if (nameValidation is NameValidationResult.NotValid) {
+            throw UserExceptions.InvalidUserName()
+        }
+        val passwordValidation = validatePasswordUseCase.validatePassword(user.passwordHash)
+        if (passwordValidation is PasswordValidationResult.NotValid) {
+            throw UserExceptions.InvalidPasswordError()
+        }
+        userRepository.createNewUser(user)
 }
+    }

@@ -2,15 +2,20 @@ package domain.usecases.user
 
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
+import domain.utils.AdminValidationResult
 import domain.utils.UserExceptions
 
 class DeleteUserUseCase(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val  validateAdminRoleUseCase: ValidateAdminRoleUseCase
 ) {
-    val validator = ValidateUser(userRepository)
     suspend fun deleteUser(userRequestId: String, userToDeleteId: String) {
         val user = userRepository.getUserById(userRequestId)
-        userRepository.getUserById(userToDeleteId)
-        validator.validateUserRoleToDelete(user.role,userToDeleteId)
+        val isAdmin = validateAdminRoleUseCase.validate(user.role)
+        if (isAdmin == AdminValidationResult.Valid){
+            userRepository.deleteUser(userToDeleteId)
+        }else{
+            throw UserExceptions.UserNotAdminException()
+        }
     }
 }
