@@ -1,150 +1,71 @@
 package domain.usecases.user
 
-import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
-import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import java.util.*
 
-//class DeleteUserUseCaseTest {
-//
-//    private lateinit var userRepository: UserRepository
-//    private lateinit var deleteUserUseCase: DeleteUserUseCase
-//
-//    @BeforeEach
-//    fun setUp() {
-//        userRepository = mockk(relaxed = true)
-//        deleteUserUseCase = DeleteUserUseCase(userRepository)
-//    }
-//
-//    @Test
-//    fun `invoke should delete user when requester is admin`() {
-//        runTest {
-//            // Given
-//            val adminId = UUID.randomUUID().toString()
-//            val userToDeleteId = UUID.randomUUID().toString()
-//            val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
-//
-//            coEvery { userRepository.getUserById(adminId) } returns adminUser
-//            coEvery { userRepository.getUserById(userToDeleteId) } returns User(
-//                id = UUID.randomUUID(),
-//                "userToDelete",
-//                "hash",
-//                "MATE"
-//            )
-//            coEvery { userRepository.deleteUser(userToDeleteId) } returns Unit
-//
-//            // When - Should not throw exception
-//            deleteUserUseCase.deleteUser(adminId, userToDeleteId)
-//
-//            // Then
-//            coVerify(exactly = 1) { userRepository.getUserById(adminId) }
-//            coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
-//            coVerify(exactly = 1) { userRepository.deleteUser(userToDeleteId) }
-//        }
-//    }
-//
-//    @Test
-//    fun `invoke should fail when requester is not admin`() {
-//        runTest {
-//            // Given
-//            val mateId = UUID.randomUUID().toString()
-//            val userToDeleteId = UUID.randomUUID().toString()
-//            val mateUser = User(id = UUID.randomUUID(), "mate", "hash", "MATE")
-//
-//            coEvery { userRepository.getUserById(mateId) } returns mateUser
-//            coEvery { userRepository.getUserById(userToDeleteId) } returns User(
-//                id = UUID.randomUUID(),
-//                "userToDelete",
-//                "hash",
-//                "MATE"
-//            )
-//
-//            // When/Then
-//            val exception = assertThrows<UserExceptions> {
-//                deleteUserUseCase.deleteUser(mateId, userToDeleteId)
-//            }
-//
-//            assertEquals("User is not admin", exception.message)
-//            coVerify(exactly = 1) { userRepository.getUserById(mateId) }
-//            coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
-//            coVerify(exactly = 0) { userRepository.deleteUser(any()) }
-//        }
-//    }
-//
-//    @Test
-//    fun `invoke should fail when requester user not found`() {
-//        runTest {
-//            // Given
-//            val nonExistentId = "non-existent-id"
-//            val userToDeleteId = "user-to-delete-id"
-//
-//            coEvery { userRepository.getUserById(nonExistentId) } throws UserExceptions.UserNotFoundException()
-//
-//            // When/Then
-//            val exception = assertThrows<UserExceptions.UserNotFoundException> {
-//                deleteUserUseCase.deleteUser(nonExistentId, userToDeleteId)
-//            }
-//
-//            coVerify(exactly = 1) { userRepository.getUserById(nonExistentId) }
-//            coVerify(exactly = 0) { userRepository.deleteUser(any()) }
-//            assertThat(exception).isInstanceOf(UserExceptions.UserNotFoundException::class.java)
-//        }
-//    }
-//
-//    @Test
-//    fun `invoke should fail when user to delete not found`() {
-//        runTest {
-//            // Given
-//            val adminId = "admin-id"
-//            val userToDeleteId = "non-existent-id"
-//
-//            coEvery { userRepository.getUserById(userToDeleteId) } throws UserExceptions.UserNotFoundException()
-//
-//            // When/Then
-//            val exception = assertThrows<UserExceptions.UserNotFoundException> {
-//                deleteUserUseCase.deleteUser(adminId, userToDeleteId)
-//            }
-//
-//            coVerify(exactly = 1) { userRepository.getUserById(adminId) }
-//            coVerify(exactly = 1) { userRepository.getUserById(userToDeleteId) }
-//            coVerify(exactly = 0) { userRepository.deleteUser(any()) }
-//            assertThat(exception).isInstanceOf(UserExceptions.UserNotFoundException::class.java)
-//        }
-//    }
-//
-//    @Test
-//    fun `invoke should fail when repository throws exception`() {
-//        runTest {
-//            // Given
-//            val adminId = "admin-id"
-//            val userToDeleteId = "user-to-delete-id"
-//            val adminUser = User(id = UUID.randomUUID(), "admin", "hash", "ADMIN")
-//            val databaseException = Exception("Database error")
-//
-//            coEvery { userRepository.getUserById(adminId) } returns adminUser
-//            coEvery { userRepository.getUserById(userToDeleteId) } returns User(
-//                id = UUID.randomUUID(),
-//                "userToDelete",
-//                "hash",
-//                "MATE"
-//            )
-//            coEvery { userRepository.deleteUser(userToDeleteId) } throws databaseException
-//
-//            // When/Then
-//            val exception = assertThrows<Exception> {
-//                deleteUserUseCase.deleteUser(adminId, userToDeleteId)
-//            }
-//
-//            assertEquals(databaseException, exception)
-//        }
-//    }
-//}
+import domain.utils.AdminValidationResult
+import domain.utils.UserExceptions
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.BeforeEach
+import java.util.*
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
+
+class DeleteUserUseCaseTest {
+
+    private lateinit var userRepository: UserRepository
+    private lateinit var validateAdminRoleUseCase: ValidateAdminRoleUseCase
+    private lateinit var deleteUserUseCase: DeleteUserUseCase
+
+    @BeforeEach
+    fun setUp() {
+        userRepository = mockk()
+        validateAdminRoleUseCase = mockk()
+        deleteUserUseCase = DeleteUserUseCase(userRepository, validateAdminRoleUseCase)
+    }
+
+    @Test
+    fun `should delete user when requester is admin`() = runTest {
+        val adminId = UUID.randomUUID().toString()
+        val userToDeleteId = UUID.randomUUID().toString()
+
+        val adminUser = User(
+            id = UUID.fromString(adminId),
+            username = "admin_user",
+            passwordHash = "hashed_password",
+            role = UserRole.ADMIN.name
+        )
+
+        coEvery { userRepository.getUserById(adminId) } returns adminUser
+        every { validateAdminRoleUseCase.validate(adminUser.role) } returns AdminValidationResult.Valid
+        coEvery { userRepository.deleteUser(userToDeleteId) } just Runs
+
+        deleteUserUseCase.deleteUser(adminId, userToDeleteId)
+
+        coVerify(exactly = 1) { userRepository.deleteUser(userToDeleteId) }
+    }
+
+    @Test
+    fun `should throw exception when requester is not admin`() = runTest {
+        val mateId = UUID.randomUUID().toString()
+        val userToDeleteId = UUID.randomUUID().toString()
+
+        val mateUser = User(
+            id = UUID.fromString(mateId),
+            username = "mate_user",
+            passwordHash = "hashed_password",
+            role = UserRole.MATE.name
+        )
+
+        coEvery { userRepository.getUserById(mateId) } returns mateUser
+        every { validateAdminRoleUseCase.validate(mateUser.role) } returns AdminValidationResult.NotAdmin
+
+        assertFailsWith<UserExceptions.UserNotAdminException> {
+            deleteUserUseCase.deleteUser(mateId, userToDeleteId)
+        }
+
+        coVerify(exactly = 0) { userRepository.deleteUser(any()) }
+    }
+}
