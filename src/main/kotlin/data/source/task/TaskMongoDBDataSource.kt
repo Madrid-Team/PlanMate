@@ -1,15 +1,11 @@
 package data.source.task
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.eq
-import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
 import data.utils.TASK_ID
 import data.utils.TASK_PROJECT_ID
 import kotlinx.coroutines.flow.toList
-import org.bson.Document
 
 class TaskMongoDBDataSource(
     private val collection: MongoCollection<TaskDto>

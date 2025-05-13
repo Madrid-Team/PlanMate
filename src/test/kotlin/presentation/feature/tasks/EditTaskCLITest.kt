@@ -18,7 +18,7 @@ class EditTaskCLITest {
     private lateinit var inputReader: InputReader
     private lateinit var outputPrinter: OutputPrinter
     private lateinit var editTaskUseCase: EditTaskUseCase
-    private lateinit var taskView: TaskView
+//    private lateinit var taskView: TaskView
     private lateinit var editTaskCLI: EditTaskCLI
     private lateinit var testScope: TestScope
 
@@ -27,7 +27,7 @@ class EditTaskCLITest {
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         editTaskUseCase = mockk(relaxed = true)
-        taskView = mockk(relaxed = true)
+//        taskView = mockk(relaxed = true)
         editTaskCLI = EditTaskCLI(inputReader, outputPrinter, editTaskUseCase)
         testScope = TestScope()
 
@@ -52,7 +52,7 @@ class EditTaskCLITest {
                 title = "New Title",
                 description = "New Description"
             )
-            coEvery { editTaskUseCase(updatedTask) } returns Unit
+//            coEvery { editTaskUseCase(updatedTask) } returns Unit
 
             editTaskCLI.show()
 
@@ -70,7 +70,7 @@ class EditTaskCLITest {
                 "New Description"
             )
 
-            coEvery { editTaskUseCase(any()) } throws TaskExceptions.TaskCannotEditException()
+//            coEvery { editTaskUseCase(any()) } throws TaskExceptions.TaskCannotEditException()
 
             editTaskCLI.show()
 

@@ -4,7 +4,6 @@ import domain.repository.ProjectRepository
 import domain.usecases.createProject
 import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
-import domain.validation.ValidateProjectName
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -15,7 +14,7 @@ import org.junit.jupiter.api.assertThrows
 class CreateProjectUseCaseTest {
 
     private lateinit var projectRepository: ProjectRepository
-    private lateinit var validateProjectName: ValidateProjectName
+    private lateinit var validateProjectName: ProjectValidator
     private lateinit var createProjectUseCase: CreateProjectUseCase
 
     @BeforeEach
@@ -37,7 +36,7 @@ class CreateProjectUseCaseTest {
             projectStates = listOf("Testing", "Todo"),
         )
 
-        every { validateProjectName(any()) } returns Unit
+        every { validateProjectName.validate(any()) } returns Unit
         coEvery { projectRepository.createProject(project) } returns Unit
 
         //When & Then
@@ -53,7 +52,7 @@ class CreateProjectUseCaseTest {
         val project = createProject(
             name = "Invalid Name",
         )
-        every { validateProjectName(project) } throws ProjectExceptions.ProjectNameInvalidException()
+        every { validateProjectName.validateName(project) } throws ProjectExceptions.ProjectNameInvalidException()
 
         //When & Then
         assertThrows<ProjectExceptions.ProjectNameInvalidException> {
@@ -68,7 +67,7 @@ class CreateProjectUseCaseTest {
             name = "Test Project",
             description = "",
         )
-        every { validateProjectName(project) } returns Unit
+        every { validateProjectName.validate(project) } returns Unit
 
         //When & Then
         assertThrows<PlanMateExceptions> {
@@ -84,7 +83,7 @@ class CreateProjectUseCaseTest {
             description = "Description",
             projectStates = emptyList()
         )
-        every { validateProjectName(project) } returns Unit
+        every { validateProjectName.validate(project) } returns Unit
 
         //When & Then
         assertThrows<PlanMateExceptions> {
@@ -101,7 +100,7 @@ class CreateProjectUseCaseTest {
             projectStates = listOf("Active"),
             taskStates = emptyList()
         )
-        every { validateProjectName(project) } returns Unit
+        every { validateProjectName.validate(project) } returns Unit
 
         //When & Then
         assertThrows<PlanMateExceptions> {

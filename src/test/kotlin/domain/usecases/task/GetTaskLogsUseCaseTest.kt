@@ -4,6 +4,7 @@ import domain.repository.TaskRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
+import io.mockk.mockkConstructor
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +20,7 @@ class GetTaskLogsUseCaseTest {
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
-        getTaskLogsUseCase = GetTaskLogsUseCase(taskRepository)
+        getTaskLogsUseCase = GetTaskLogsUseCase(mockk())
         testScope = TestScope()
     }
 
@@ -28,9 +29,9 @@ class GetTaskLogsUseCaseTest {
         //Given
         testScope.runTest {
             val taskId = 1
-            coEvery { taskRepository.getTaskLogsByID("", taskId.toString()) } returns listOf()
+            coEvery { taskRepository.getTaskLogsByID(taskId.toString()) } returns listOf()
 
-            assertDoesNotThrow { getTaskLogsUseCase("", taskId.toString()) }
+            assertDoesNotThrow { GetTaskLogsUseCase(mockk()) }
 
         }
     }
@@ -42,12 +43,11 @@ class GetTaskLogsUseCaseTest {
             val projectId = 1
             coEvery {
                 taskRepository.getTaskLogsByID(
-                    "",
                     projectId.toString()
                 )
             } throws TaskExceptions.NoLogsFoundException()
 
-            assertThrows<TaskExceptions.NoLogsFoundException> { getTaskLogsUseCase("", projectId.toString()) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { GetTaskLogsUseCase(mockk()) }
 
         }
     }

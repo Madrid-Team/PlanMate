@@ -94,9 +94,9 @@ class TaskRepositoryImplTest {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
             val projectId = UUID.randomUUID().toString()
-            coEvery { taskExternalDataSource.deleteTask(taskId = taskId, projectId = projectId) } returns Unit
+            coEvery { taskExternalDataSource.deleteTask(taskId = taskId) } returns Unit
 
-            assertDoesNotThrow { taskRepository.deleteTask(projectId, taskId) }
+            assertDoesNotThrow { taskRepository.deleteTask(projectId) }
         }
     }
 
@@ -105,9 +105,9 @@ class TaskRepositoryImplTest {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
             val projectId = UUID.randomUUID().toString()
-            coEvery { taskExternalDataSource.deleteTask(taskId = taskId, projectId = projectId) } throws IOException()
+            coEvery { taskExternalDataSource.deleteTask(taskId = taskId) } throws IOException()
 
-            assertThrows<TaskExceptions> { taskRepository.deleteTask(projectId, taskId) }
+            assertThrows<TaskExceptions> { taskRepository.deleteTask(taskId) }
         }
     }
 
@@ -117,7 +117,7 @@ class TaskRepositoryImplTest {
             val id = UUID.randomUUID().toString()
             val projectId = UUID.randomUUID().toString()
 
-            assertDoesNotThrow { taskRepository.getTaskLogsByID(projectId, id) }
+            assertDoesNotThrow { taskRepository.getTaskLogsByID(projectId) }
         }
     }
 
@@ -130,11 +130,10 @@ class TaskRepositoryImplTest {
             coEvery {
                 taskExternalDataSource.getTaskLogsByID(
                     taskId = taskId,
-                    projectId = projectId
                 )
             } throws Exception()
 
-            assertThrows<PlanMateExceptions> { taskRepository.getTaskLogsByID(projectId, taskId) }
+            assertThrows<PlanMateExceptions> { taskRepository.getTaskLogsByID(taskId) }
         }
     }
 

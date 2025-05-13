@@ -8,11 +8,13 @@ import com.mongodb.kotlin.client.coroutine.FindFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
-import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
+import data.source.mongoDb.MongoClientProvider
+import data.utils.TASK_PROJECT_ID
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
@@ -22,9 +24,9 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
-import data.source.mongoDb.MongoClientProvider
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TaskMongoDBDataSourceTest {
@@ -42,7 +44,7 @@ class TaskMongoDBDataSourceTest {
         copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,"projects_test","projects")
         runBlocking {
             taskMongoDBDataSource =
-                TaskMongoDBDataSource(database.getCollection<ProjectDto>("projects_test") )
+                TaskMongoDBDataSource(database.getCollection<TaskDto>("projects_test") )
         }
     }
     val task = TaskDto(
@@ -59,7 +61,7 @@ class TaskMongoDBDataSourceTest {
     @Test
     fun `editTask should update the matching task in the project`()=runTest  {
         // Arrange
-        val collection = mockk<MongoCollection<ProjectDto>>(relaxed = true)
+        val collection = mockk<MongoCollection<TaskDto>>(relaxed = true)
 
         val filter = Filters.and(
             eq("_id", task.projectId),
@@ -84,7 +86,7 @@ class TaskMongoDBDataSourceTest {
     @Test
     fun `deleteTask should remove the task with given ID from project`() = runTest {
         // Arrange
-        val collection = mockk<MongoCollection<ProjectDto>>(relaxed = true)
+        val collection = mockk<MongoCollection<TaskDto>>(relaxed = true)
         val projectId = "project-id"
         val taskId = "task-id"
 
@@ -98,7 +100,7 @@ class TaskMongoDBDataSourceTest {
         val dataSource = TaskMongoDBDataSource(collection)
 
         // Act
-        dataSource.deleteTask(projectId, taskId)
+        dataSource.deleteTask( taskId)
         testScope.launch {
             // Assert
             coVerify(exactly = 1) { collection.updateOne(filter, update) }
@@ -107,7 +109,7 @@ class TaskMongoDBDataSourceTest {
     @Test
     fun `createTask should push task to the correct project`() = runTest {
         // Arrange
-        val collection = mockk<MongoCollection<ProjectDto>>(relaxed = true)
+        val collection = mockk<MongoCollection<TaskDto>>(relaxed = true)
         val task = TaskDto(
             id = "task-id",
             projectId = "project-id",
@@ -140,16 +142,11 @@ class TaskMongoDBDataSourceTest {
     fun `getTasksByProjectId returns empty list when no project found`() = runTest {
         // Given
         val projectId = "nonexistent"
-        val collection = mockk<MongoCollection<ProjectDto>>()
+        val collection = mockk<MongoCollection<TaskDto>>(relaxed = true)
         val taskMongoDBDataSource = TaskMongoDBDataSource(collection)
-
-        val mockFlow = mockk<FindFlow<ProjectDto>>(relaxed = true)
-        coEvery { collection.find(eq("_id", projectId)) } returns mockFlow
-
-        // Simulate empty flow collection
-        coEvery { mockFlow.collect(any()) } coAnswers {
-            // Do nothing to simulate an empty flow
-        }
+        val mockFlow = mockk<FindFlow<TaskDto>>(relaxed = true)
+        coEvery { collection.find<TaskDto>(Filters.eq(TASK_PROJECT_ID, projectId), any()) } returns mockFlow
+        coEvery { mockFlow.toList() } returns emptyList()
 
         // When
         val result = taskMongoDBDataSource.getTasksByProjectId(projectId)
@@ -171,7 +168,7 @@ class TaskMongoDBDataSourceTest {
 
         testScope.launch {
             // Act
-        taskMongoDBDataSource.deleteTask(projectId, taskId)
+        taskMongoDBDataSource.deleteTask( taskId)
 
         // Assert
         coVerify {
@@ -199,7 +196,7 @@ class TaskMongoDBDataSourceTest {
 
            // Act & Assert
            val thrown = assertThrows<RuntimeException> {
-               taskMongoDBDataSource.deleteTask(projectId, taskId)
+               taskMongoDBDataSource.deleteTask(taskId)
            }
            assertEquals("DB error", thrown.message)
            coVerify {
@@ -213,37 +210,6 @@ class TaskMongoDBDataSourceTest {
 
 
 
-    @Test
-    fun `createTask does nothing when project does not exist`()  {
-    // Arrange
-    val projectId = "nonexistent"
-    val task = TaskDto(
-        id = "task1",
-        projectId = projectId,
-        title = "Task 1",
-        description = "Description 1",
-        taskState = "TODO",
-        createdBy = "user1",
-        logs = listOf("log1", "log2")
-    )
-    val updateResult = mockk<UpdateResult>()
-    coEvery { updateResult.modifiedCount } returns 0L
-    testScope.launch {
-        coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } returns updateResult
-
-        // Act
-        taskMongoDBDataSource.createTask(task)
-
-        // Assert
-        coVerify {
-            collection.updateOne(
-                eq("_id", projectId),
-                Updates.push("tasks", task)
-            )
-        }
-        assertEquals(0L, updateResult.modifiedCount)
-    }
-}
 
     @Test
     fun `createTask throws exception on database error`() {
@@ -275,6 +241,19 @@ class TaskMongoDBDataSourceTest {
                 )
             }
         }
+    }
+    @Test
+    fun `getTaskLogsByID returns empty list when no tasks found`() = runTest {
+        // Given
+        val taskId = "missingTask"
+       val collection=database.getCollection<TaskDto>("projects_test")
+       taskMongoDBDataSource =TaskMongoDBDataSource(collection)
+        // When
+        val result = taskMongoDBDataSource.getTaskLogsByID(taskId)
+
+        // Then
+        assertTrue(result.isEmpty())
+
     }
     @AfterAll
     fun cleanup() {

@@ -1,7 +1,10 @@
 package data.repository
 
 import com.google.common.truth.Truth.assertThat
+import data.createUserDto
+import data.mapper.toDomain
 import data.mapper.toDto
+import data.source.user.CurrentUserProvider
 import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.utils.UserExceptions
@@ -9,6 +12,7 @@ import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertDoesNotThrow
@@ -20,12 +24,23 @@ class UserRepositoryImplTest {
 
     private lateinit var userExternalDataSource: UserExternalDataSource
     private lateinit var userRepositoryImpl: UserRepositoryImpl
+    private lateinit var testScope: TestScope
+    private lateinit var currentUserProvider: CurrentUserProvider
 
     @BeforeEach
     fun setUp() {
-        userExternalDataSource = mockk()
-        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource)
+        userExternalDataSource = mockk(relaxed = true)
+        testScope = TestScope()
+        currentUserProvider = mockk(relaxed = true)
+        userRepositoryImpl = UserRepositoryImpl(userExternalDataSource, currentUserProvider)
     }
+
+    private val userDto = createUserDto(
+        id = UUID.randomUUID().toString(),
+        username = "user name",
+        passwordHash = "pass",
+        role = "role"
+    )
 
     @Test
     fun `Should add user successfully`() {
@@ -64,17 +79,12 @@ class UserRepositoryImplTest {
 
     @Test
     fun `getUser should return user when found`() {
-        runTest {
-            // Given
-            val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
+        testScope.runTest {
+            coEvery { userExternalDataSource.getUserById(userDto.id) } returns userDto
 
-            coEvery { userExternalDataSource.getUserById("1") } returns user.toDto()
+            val result = userRepositoryImpl.getUserById(userDto.id)
 
-            // When
-            val result = userRepositoryImpl.getUserById("1")
-
-            // Then
-            assertThat(result).isEqualTo(user)
+            assertThat(result).isEqualTo(userDto.toDomain())
         }
     }
 
@@ -99,17 +109,12 @@ class UserRepositoryImplTest {
 
     @Test
     fun `getUserByName should return user when found`() {
-        runTest {
-            // Given
-            val user = User(id = UUID.randomUUID(), "username1", "passwordhash1", "MATE")
+        testScope.runTest {
+            coEvery { userExternalDataSource.getUserByName(userDto.username) } returns userDto
 
-            coEvery { userExternalDataSource.getUserByName("username1") } returns user.toDto()
+            val result = userRepositoryImpl.getUserByName(userDto.username)
 
-            // When
-            val result = userRepositoryImpl.getUserByName("username1")
-
-            // Then
-            assertThat(result).isEqualTo(user)
+            assertThat(result).isEqualTo(userDto.toDomain())
         }
     }
 

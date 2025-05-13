@@ -3,8 +3,8 @@ package domain.Validation
 import com.google.common.truth.Truth.assertThat
 import domain.models.authentication.User
 import domain.repository.UserRepository
+import domain.usecases.user.ValidateUser
 import domain.utils.UserExceptions
-import domain.validation.ValidateUser
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -37,12 +37,12 @@ class ValidateUserTest {
         )
         //When
         every {
-            validateUser.validateUserToLogin(
+            validateUser.validateUser(
                 listOf(userValid), userValid.username, userValid.passwordHash
             )
         } returns userValid
 
-        val result = validateUser.validateUserToLogin(
+        val result = validateUser.validateUser(
             listOf(userValid), userValid.username, userValid.passwordHash
         )
         assertEquals(userValid, result)
@@ -61,7 +61,7 @@ class ValidateUserTest {
 
         // When
         val exception = assertThrows<UserExceptions> {
-            validateUser.validateUserToLogin(users, user.username, "user")
+            validateUser.validateUser(users, user.username, "user")
         }
 
         //Then
@@ -82,7 +82,7 @@ class ValidateUserTest {
 
         // When
         val exception = assertThrows<UserExceptions> {
-            validateUser.validateUserToLogin(users, user.username, user.passwordHash)
+            validateUser.validateUser(users, user.username, user.passwordHash)
         }
 
         //Then
@@ -103,7 +103,7 @@ class ValidateUserTest {
 
         // When + Then
         val exception = assertThrows<UserExceptions.UserNotFoundException> {
-            validateUser.validateUserToLogin(users, "nonexistentUser", "hashed123")
+            validateUser.validateUser(users, "nonexistentUser", "hashed123")
         }
 
         assertThat(exception.message).isEqualTo("Not found user or wrong username")

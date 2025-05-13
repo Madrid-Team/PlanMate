@@ -25,7 +25,7 @@ class DisplayAllTasksUseCaseTest {
     fun setUp() {
         projectRepository = mockk()
         taskRepository = mockk()
-        displayAllTasksUseCase = DisplayAllTasksUseCase(projectRepository, taskRepository)
+        displayAllTasksUseCase = DisplayAllTasksUseCase(projectRepository)
         testScope = TestScope()
     }
 

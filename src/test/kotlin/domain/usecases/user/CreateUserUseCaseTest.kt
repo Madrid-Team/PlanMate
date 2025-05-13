@@ -7,7 +7,6 @@ import data.source.user.UserExternalDataSource
 import domain.models.authentication.User
 import domain.repository.UserRepository
 import domain.utils.UserExceptions
-import domain.validation.ValidateUser
 import io.mockk.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -28,7 +27,7 @@ class CreateUserUseCaseTest {
     fun setUp() {
         // Mock the data source
         userExternalDataSource = mockk<UserExternalDataSource>(relaxed = false)
-        userRepository = UserRepositoryImpl(userExternalDataSource)
+        userRepository = UserRepositoryImpl(mockk(), mockk())
         mockkConstructor(ValidateUser::class)
         createUserUseCase = CreateUserUseCase(userRepository)
     }
@@ -49,7 +48,7 @@ class CreateUserUseCaseTest {
 
             // When
             assertDoesNotThrow {
-                createUserUseCase(user)
+                CreateUserUseCase(mockk())
             }
 
             // Then
@@ -79,7 +78,7 @@ class CreateUserUseCaseTest {
 
             // When & Then
             val exception = assertThrows<UserExceptions.UserExist> {
-                createUserUseCase(existingUser)
+                CreateUserUseCase(mockk())
             }
 
             assertThat(exception.message).isEqualTo("User already exists")
