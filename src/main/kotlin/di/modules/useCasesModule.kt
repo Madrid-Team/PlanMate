@@ -7,10 +7,18 @@ import domain.usecases.user.DeleteUserUseCase
 import domain.usecases.user.LoginUserUseCase
 import domain.usecases.project.*
 import domain.usecases.task.*
+import domain.usecases.user.PasswordHashUseCase
+import domain.usecases.user.ValidateAdminRoleUseCase
+import domain.usecases.user.ValidateNameUseCase
+import domain.usecases.user.ValidatePasswordUseCase
 import domain.validation.ValidateProjectName
 import org.koin.dsl.module
 
 val useCasesModule = module {
+    single { ValidateNameUseCase() }
+    single { ValidatePasswordUseCase() }
+    single { PasswordHashUseCase() }
+    single { ValidateAdminRoleUseCase() }
     single { CreateLogUseCase() }
     single { CreateProjectUseCase(get()) }
     single { DeleteProjectUseCase(get()) }
@@ -22,7 +30,6 @@ val useCasesModule = module {
     single { CreateUserUseCase(get(),get(),get()) }
     single { DeleteUserUseCase(get(),get())}
     single { LoginUserUseCase(get(),get(),get()) }
-
     single { DeleteTaskUseCase(get()) }
     single { CreateTaskUseCase(get()) }
     single { DisplayAllTasksUseCase(get(), get()) }
