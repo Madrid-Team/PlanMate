@@ -23,11 +23,11 @@ class CreateProjectCLI(
         outputPrinter.printMessage("=== Create Project ===")
         val name = inputReader.readInput("Enter project name: ")
         val description = inputReader.readInput("Enter project description: ")
-        val taskStates = inputReader.readInput("Enter task States separated by white space description: ")
-        val projectStates = inputReader.readInput("Enter project States separated by white space description: ")
+        val taskStates = inputReader.readInput("Enter task States separated by (-): ")
+        val projectStates = inputReader.readInput("Enter project States separated by (-): ")
 
 
-        val currentProjectStates = projectStates.split(" ")
+        val currentProjectStates = projectStates.split("-").filter { it.isNotBlank() }
         val statesMenu =
             currentProjectStates.mapIndexed { index, state -> "${index + 1}. $state" }.joinToString("\n")
         val promptMessage = "Select project State:\n$statesMenu\nEnter number: "
@@ -42,7 +42,6 @@ class CreateProjectCLI(
                 break
             } else {
                 println("Invalid selection. Please enter a valid state id ")
-                currentProjectStates.firstOrNull() ?: ""
             }
         }
 
@@ -52,7 +51,7 @@ class CreateProjectCLI(
             createdBy = CurrentUser.getCurrentUser().username,
             projectLogs = emptyList(),
             projectState = projectState,
-            taskStates = taskStates.trim().split(" "),
+            taskStates = taskStates.trim().split("-").filter { it.isNotBlank() },
             projectStates = currentProjectStates,
             id = UUID.randomUUID()
         )
@@ -66,10 +65,7 @@ class CreateProjectCLI(
                  ).toString()
             }
             val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
-            val projectCreation = async {
-                createProjectUseCase.createProject(projectWithLog)
-            }
-            projectCreation.await()
+            createProjectUseCase.createProject(projectWithLog)
             outputPrinter.printMessage("Project created successfully")
         } catch (e: PlanMateExceptions) {
             outputPrinter.printMessage("Failed to create project: ${e.message}")
