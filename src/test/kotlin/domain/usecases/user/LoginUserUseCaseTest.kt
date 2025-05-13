@@ -3,69 +3,77 @@ package domain.usecases.user
 import com.google.common.truth.Truth.assertThat
 import data.utils.PasswordHasher
 import domain.models.authentication.User
+import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
-import io.mockk.coEvery
-import io.mockk.mockk
+import domain.utils.*
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertDoesNotThrow
-import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.api.BeforeEach
 import java.util.*
-import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
-//class LoginUserUseCaseTest {
-//    private lateinit var loginUser: LoginUserUseCase
-//    private lateinit var userRepository: UserRepository
-//
-//    @BeforeTest
-//    fun setUp() {
-//        userRepository = mockk()
-//        loginUser = LoginUserUseCase(userRepository)
-//    }
-//
-//    @Test
-//    fun `Should login user successfully when username and password are correct`() {
-//        runTest {
-//            // Given
-//            val user = User(id = UUID.randomUUID(), "user1", "pass123", "MATE")
-//            coEvery { userRepository.getAllUsers() } returns listOf(user)
-//
-//            // When
-//            val result = loginUser.login("user1", "pass123")
-//
-//            // Then
-//            assertThat(result).isInstanceOf(User::class.java)
-//            assertTrue(result.username == "user1")
-//        }
-//    }
-//
-//    @Test
-//    fun `Should not login when username or password are incorrect`() {
-//        runTest {
-//            // Given
-//            val user = User(id = UUID.randomUUID(), "user1", PasswordHasher.hash("correctPass"), "MATE")
-//            coEvery { userRepository.getAllUsers() } returns listOf(user)
-//
-//            // When
-//            assertThrows<UserExceptions.WrongPasswordOrUserName> {
-//                loginUser.login("user1", "wrongPass")
-//            } // Should throw
-//        }
-//    }
-//
-//
-//    @Test
-//    fun `Shouldn't login When username or password is empty`() {
-//        runTest {
-//            // Given
-//            val user = User(id = UUID.randomUUID(), "MATE_1", PasswordHasher.hash("PASSWORD_HASH_1"), "MATE")
-//
-//            coEvery { userRepository.createNewUser(user) } returns Unit
-//
-//            // When && Then
-//            assertThrows<UserExceptions.UserNameOrPasswordError> { loginUser.login("", "PASSWORD_HASH_1") }
-//        }
-//    }
-//}
+class LoginUserUseCaseTest {
+
+    private lateinit var userRepository: UserRepository
+    private lateinit var validateNameUseCase: ValidateNameUseCase
+    private lateinit var validatePasswordUseCase: ValidatePasswordUseCase
+    private lateinit var loginUserUseCase: LoginUserUseCase
+
+    @BeforeEach
+    fun setUp() {
+        userRepository = mockk()
+        validateNameUseCase = mockk()
+        validatePasswordUseCase = mockk()
+        loginUserUseCase = LoginUserUseCase(userRepository, validateNameUseCase, validatePasswordUseCase)
+    }
+
+    @Test
+    fun `should login successfully with valid username and password`() = runTest {
+        // Given
+        val username = "mohamed"
+        val password = "12345678"
+        val passwordHash = PasswordHasher.hash(password)
+        val user = User(UUID.randomUUID(), username, passwordHash, UserRole.MATE.name)
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
+        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.Valid
+        coEvery { userRepository.login(username, passwordHash) } returns user
+
+        // When
+        val result = loginUserUseCase.login(username, password)
+
+        // Then
+        assertThat(result).isEqualTo(user)
+        coVerify(exactly = 1) { userRepository.login(username, passwordHash) }
+    }
+
+    @Test
+    fun `should throw InvalidUserName when name is not valid`() = runTest {
+        // Given
+        val username = "mo"
+        val password = "12345678"
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.NotValid("Too short")
+
+        // When & Then
+        assertFailsWith<UserExceptions.InvalidUserName> {
+            loginUserUseCase.login(username, password)
+        }
+    }
+
+    @Test
+    fun `should throw InvalidPasswordError when password is not valid`() = runTest {
+        // Given
+        val username = "mohamed"
+        val password = ""
+
+        coEvery { validateNameUseCase.validateName(username) } returns NameValidationResult.Valid
+        coEvery { validatePasswordUseCase.validatePassword(password) } returns PasswordValidationResult.NotValid("Password cannot be empty")
+
+        // When & Then
+        assertFailsWith<UserExceptions.InvalidPasswordError> {
+            loginUserUseCase.login(username, password)
+        }
+    }
+}
