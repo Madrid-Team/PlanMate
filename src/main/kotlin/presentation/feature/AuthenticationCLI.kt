@@ -1,5 +1,6 @@
 package presentation.feature
 
+import domain.models.authentication.User
 import domain.usecases.user.LoginUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
@@ -10,15 +11,16 @@ class AuthenticationCLI(
     private val outputPrinter: OutputPrinter,
     private val loginUserUseCase: LoginUserUseCase
 ) {
-    suspend fun login() {
+    suspend fun login(): User {
         outputPrinter.printMessage(String.loginHeader)
         outputPrinter.printMessage(String.enterUserName)
         val userName = inputReader.readInput()
         outputPrinter.printMessage(String.enterPassword)
         val password = inputReader.readInput()
-        try {
-            loginUserUseCase.login(userName, password)
-            outputPrinter.printMessage(String.loginSuccess)
+        return  try {
+          val user = loginUserUseCase.invoke(userName, password)
+          outputPrinter.printMessage(String.loginSuccess)
+          user
         } catch (e: Exception) {
             outputPrinter.printMenuItems(
                 listOf(
@@ -29,5 +31,6 @@ class AuthenticationCLI(
             )
             login()
         }
+
     }
 }
