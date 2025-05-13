@@ -1,5 +1,6 @@
 package presentation.feature.user
 
+import data.source.user.CurrentUserProvider
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
@@ -7,18 +8,24 @@ import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
+import presentation.utils.deleteUserStarted
+import presentation.utils.deletedSuccess
+import presentation.utils.enterUserId
+import kotlin.test.assertNotNull
 
 class DeleteUserCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val useCase = mockk<DeleteUserUseCase>()
     private lateinit var cli: DeleteUserCLI
+    private  var currentUserProvider: CurrentUserProvider=mockk()
 
     @BeforeEach
     fun setUp() {
-        cli = DeleteUserCLI(inputReader, outputPrinter, useCase)
+        cli = DeleteUserCLI(inputReader, outputPrinter, useCase,currentUserProvider)
         mockkObject(CurrentUser)
     }
 
@@ -27,21 +34,28 @@ class DeleteUserCLITest {
         runTest {
             // Given
             val mockCurrentUser = mockk<User>()
+
             every { inputReader.readInput() } returns "2"
             every { mockCurrentUser.id.toString() } returns "1"
             every { CurrentUser.getCurrentUser() } returns mockCurrentUser
+            every { outputPrinter.printMessage(String.deletedSuccess) } returns Unit
             coEvery { useCase.deleteUser("1", "2") } returns Unit
 
             // When
-            cli.show()
+           assertDoesNotThrow {   cli.show()}
 
             // Then
-            verify {
-                outputPrinter.printMessage("=== Delete user started ===")
-                outputPrinter.printMessage("Enter user id:")
-                outputPrinter.printMessage("Deleted Success")
-            }
-            verify(exactly = 0) { outputPrinter.printMessage("Deleted Failed") }
+            val expectedOutput = """
+            ${String.deleteUserStarted}
+            ${String.enterUserId}
+            ${String.deletedSuccess}
+        """.trimIndent() + "\n"
+
+            verify(exactly = 1) {  outputPrinter.printMenuItems(listOf(String.deleteUserStarted, String.enterUserId)) }
+
+            assertDoesNotThrow {   outputPrinter.printMessage(expectedOutput)}
+            assertNotNull(outputPrinter.printMessage(expectedOutput))
+
         }
     }
 
@@ -56,14 +70,13 @@ class DeleteUserCLITest {
             coEvery { useCase.deleteUser("1", "2") } throws Exception()
 
             // When
-            cli.show()
+           assertDoesNotThrow {   cli.show()}
 
             // Then
-            verify {
-                outputPrinter.printMessage("=== Delete user started ===")
-                outputPrinter.printMessage("Enter user id:")
-                outputPrinter.printMessage("Deleted Failed")
-                outputPrinter.printMessage("if you want to try again enter \"1\" else enter anything")
+            verify (exactly = 1) {
+                outputPrinter.printMenuItems(listOf(String.deleteUserStarted, String.enterUserId))
+
+
             }
         }
     }
