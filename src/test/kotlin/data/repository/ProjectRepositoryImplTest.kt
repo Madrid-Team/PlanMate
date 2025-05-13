@@ -3,7 +3,6 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.createUserDto
-import data.dto.authentication.UserDto
 import data.mapper.toDomain
 import data.mapper.toDto
 import data.source.project.ProjectExternalDataSource
@@ -12,7 +11,9 @@ import data.source.user.CurrentUserProvider
 import domain.models.project.Project
 import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -193,11 +194,11 @@ class ProjectRepositoryImplTest {
             val id = UUID.randomUUID().toString()
             val expectedProject = createProject(id = id)
 
-            every { projectManager.getProjects() } returns listOf(expectedProject)
+            coEvery { projectExternalDataSource.getProjectById(id) } returns expectedProject
 
             val result = repository.getProjectById(id)
 
-            assertThat(expectedProject).isEqualTo(result)
+            assertThat(expectedProject).isEqualTo(result.toDto())
         }
     }
 
