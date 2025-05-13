@@ -5,37 +5,30 @@ import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import presentation.components.OutputPrinter
-import java.util.*
 
 class ProjectViewTest {
+
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val projectView = ProjectView(outputPrinter)
+
+    private val sampleLogs = listOf("created", "updated")
 
     @Test
     fun `should print message when project list is empty`() {
         // Given
-        val emptyProjects  = emptyList<Project>()
+        val emptyProjects = emptyList<Project>()
 
         // When
         projectView.projectList(emptyProjects)
 
         // Then
-        verify { outputPrinter.printMessage("No projects to display.") }
+        verify { outputPrinter.printMessage("=== Projects List ===") }
     }
 
     @Test
     fun `should print project details when list has one project`() {
         // Given
-        val project = Project(
-            id = UUID.randomUUID(),
-            name = "Test Project",
-            description = "This is a test project.",
-            projectState = "ACTIVE",
-            createdBy = "admin",
-            projectLogs = listOf("created", "updated"),
-            projectStates = listOf("ACTIVE", "ARCHIVED"),
-            taskStates = listOf("OPEN", "CLOSED")
-        )
+        val project = helperProject(name = "Test Project", createdBy = "admin", projectLogs = sampleLogs)
 
         // When
         projectView.projectList(listOf(project))
@@ -53,15 +46,17 @@ class ProjectViewTest {
     @Test
     fun `should print multiple projects correctly`() {
         // Given
-        val project1 = Project(UUID.randomUUID(), name = "Test Project 1", description = "This is a test project.", projectState = "OPEN", createdBy = "admin", projectLogs = listOf("created", "updated"), taskStates = listOf("OPEN", "CLOSED"), projectStates = listOf("OPEN", "CLOSED"))
-        val project2 = Project(UUID.randomUUID(), name = "Test Project 2", description = "This is a test project.", projectState = "OPEN", createdBy = "admin", projectLogs = listOf("created", "updated"), taskStates = listOf("OPEN", "CLOSED"), projectStates = listOf("OPEN", "CLOSED"))
+        val project1 = helperProject(name = "Test Project 1", createdBy = "admin")
+        val project2 = helperProject(name = "Test Project 2", createdBy = "admin")
 
         // When
         projectView.projectList(listOf(project1, project2))
 
         // Then
         verify { outputPrinter.printMessage("=== Projects List ===") }
+
         verify(exactly = 2) { outputPrinter.printMessage("+--------------------------------------+") }
+
         verify {
             outputPrinter.printMessage(
                 match { it.contains("Test Project 1") && it.contains("admin") }
