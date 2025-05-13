@@ -1,11 +1,10 @@
 package domain.usecases.user
 
-import org.junit.jupiter.api.Assertions.*
 
-import com.google.common.truth.Truth.assertThat
-import domain.utils.PasswordValidationResult
+import domain.utils.UserExceptions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class ValidatePasswordUseCaseTest {
 
@@ -17,20 +16,21 @@ class ValidatePasswordUseCaseTest {
     }
 
     @Test
-    fun `should return NotValid if password is empty`() {
-        val result = useCase.validatePassword("")
-        assertThat(result).isInstanceOf(PasswordValidationResult.NotValid::class.java)
+    fun `throws EmptyPasswordException when password is empty`() {
+        assertThrows<UserExceptions.EmptyPasswordException> {
+            useCase.validatePassword("")
+        }
     }
 
     @Test
-    fun `should return NotValid if password is less than 6 chars`() {
-        val result = useCase.validatePassword("12345")
-        assertThat(result).isInstanceOf(PasswordValidationResult.NotValid::class.java)
+    fun `throws PasswordLessThan6CharsException when password is too short`() {
+        assertThrows<UserExceptions.PasswordLessThan6CharsException> {
+            useCase.validatePassword("1234")
+        }
     }
 
     @Test
-    fun `should return Valid if password is 6 or more chars`() {
-        val result = useCase.validatePassword("123456")
-        assertThat(result).isEqualTo(PasswordValidationResult.Valid)
+    fun `does not throw exception for valid password`() {
+        useCase.validatePassword("123456")
     }
 }
