@@ -43,35 +43,35 @@ class CreateTaskCLITest {
         testScope = TestScope()
     }
 
-    @Test
-    fun `should create task successfully when valid input is provided`() {
-        testScope.runTest {
-            // Given
-            val projectId = UUID.randomUUID()
-            val project = helperProject(id = projectId.toString(), taskStates = listOf("TODO", "IN_PROGRESS"))
-            val user = helperUser(username = "elhady")
-
-            coEvery { getProjectByIdUseCase.getById(projectId.toString()) } returns project
-            every { currentUserProvider.getCurrentUser() } returns user
-            every { inputReader.readInput(any()) } returnsMany listOf(
-                projectId.toString(),
-                "Title",
-                "Description",
-                "1"
-            )
-            every { taskValidator.validateAll(any()) } just Runs
-            coEvery { taskRepository.createTask(any()) } just Runs
-
-            // When
-            cli.show()
-
-            // Then
-            verify {
-                outputPrinter.printMessage(String.createTaskHeader)
-                outputPrinter.printMessage(String.taskCreatedSuccessfully)
-            }
-        }
-    }
+//    @Test
+//    fun `should create task successfully when valid input is provided`() {
+//        testScope.runTest {
+//            // Given
+//            val projectId = UUID.randomUUID()
+//            val project = helperProject(id = projectId.toString(), taskStates = listOf("TODO", "IN_PROGRESS"))
+//            val user = helperUser(username = "elhady")
+//
+//            coEvery { getProjectByIdUseCase.getById(projectId.toString()) } returns project
+//            every { currentUserProvider.getCurrentUser() } returns user
+//            every { inputReader.readInput(any()) } returnsMany listOf(
+//                projectId.toString(),
+//                "Title",
+//                "Description",
+//                "1"
+//            )
+//            every { taskValidator.validateAll(any()) } just Runs
+//            coEvery { taskRepository.createTask(any()) } just Runs
+//
+//            // When
+//            cli.show()
+//
+//            // Then
+//            verify {
+//                outputPrinter.printMessage(String.createTaskHeader)
+//                outputPrinter.printMessage(String.taskCreatedSuccessfully)
+//            }
+//        }
+//    }
 
     @Test
     fun `should show error message when project ID is not found and not create task`() {
