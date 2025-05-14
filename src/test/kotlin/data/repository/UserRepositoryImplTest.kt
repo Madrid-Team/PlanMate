@@ -64,7 +64,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { userExternalDataSource.getUserById(userDto.id) } returns userDto
 
-            val result = userRepositoryImpl.getUserById(userDto.id)
+            val result = userRepositoryImpl.getUserByUserId(userDto.id)
 
             assertThat(result).isEqualTo(userDto.toDomain())
         }
@@ -97,7 +97,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { userExternalDataSource.deleteUser(userDto.id) } returns Unit
 
-            userRepositoryImpl.deleteUser(userDto.id)
+            userRepositoryImpl.deleteUserByUserId(userDto.id)
 
             coVerify { userExternalDataSource.deleteUser(userDto.id) }
         }
@@ -110,7 +110,7 @@ class UserRepositoryImplTest {
             coEvery { userExternalDataSource.deleteUser(userDto.id) } throws exception
 
             val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
-                userRepositoryImpl.deleteUser(userDto.id)
+                userRepositoryImpl.deleteUserByUserId(userDto.id)
             }
 
             assertThat(thrownException).isSameInstanceAs(exception)

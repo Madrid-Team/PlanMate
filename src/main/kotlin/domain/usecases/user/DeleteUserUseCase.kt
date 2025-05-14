@@ -8,10 +8,10 @@ class DeleteUserUseCase(
     private val validateAdminRoleUseCase: ValidateAdminRoleUseCase
 ) {
     suspend fun deleteUser(userRequestId: String, userToDeleteId: String) {
-        val user = userRepository.getUserById(userRequestId)
+        val user = userRepository.getUserByUserId(userRequestId)
         val isAdmin = validateAdminRoleUseCase.validate(user.role)
         if (isAdmin) {
-            userRepository.deleteUser(userToDeleteId)
+            userRepository.deleteUserByUserId(userToDeleteId)
         } else {
             throw UserExceptions.UserNotAdminException()
         }

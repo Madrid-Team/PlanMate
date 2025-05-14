@@ -13,7 +13,7 @@ class UserRepositoryImpl(
     private val userExternalDataSource: UserExternalDataSource,
     private val currentUserProvider: CurrentUserProvider,
 ) : UserRepository {
-    override suspend fun deleteUser(userId: String) = executeUserOperation {
+    override suspend fun deleteUserByUserId(userId: String) = executeUserOperation {
         userExternalDataSource.deleteUser(userId)
     }
 
@@ -24,7 +24,7 @@ class UserRepositoryImpl(
     }
 
 
-    override suspend fun getUserById(userId: String): User =  executeUserOperation {
+    override suspend fun getUserByUserId(userId: String): User =  executeUserOperation {
         val user = userExternalDataSource.getUserById(userId)
         user?.let { currentUserProvider.setCurrentUser(it) }
         user?.toDomain() ?: throw UserExceptions.UserNotFoundException()
