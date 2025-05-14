@@ -62,6 +62,6 @@ class TaskCsvDataSource(
     }
 
     override suspend fun getTaskLogsByID(taskId: String): List<String> {
-        return taskManager.getTasks().filter { it.id == taskId }.flatMap { it.logs }
+        return taskManager.getTasks().filter { it.id == taskId }.flatMap { it.taskLogs }
     }
 }

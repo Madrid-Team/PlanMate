@@ -19,7 +19,7 @@ class TaskCsvParser {
             description = result[TASK_DESCRIPTION],
             taskState = result[TASK_STATES],
             createdBy = result[TASK_CREATED_BY],
-            logs = result[TASK_LOGS].split("|")
+            taskLogs = result[TASK_LOGS].split("|")
         )
     }
 
@@ -31,7 +31,7 @@ class TaskCsvParser {
             task.createdBy,
             task.taskState,
             task.title,
-            task.logs.joinToString("|")
+            task.taskLogs.joinToString("|")
         ).joinToString(",")
 
         return taskCsvLine
