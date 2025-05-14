@@ -1,8 +1,6 @@
 package presentation.feature.user
 
 import data.source.csv.user.CurrentUserProvider
-import domain.models.authentication.User
-import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -10,11 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.utils.deleteUserStarted
-import presentation.utils.deletedFailed
-import presentation.utils.deletedSuccess
-import presentation.utils.enterUserId
-import presentation.utils.pressOneToTryAgain
+import presentation.utils.*
 
 class DeleteUserCLITest {
     private val inputReader = mockk<InputReader>()

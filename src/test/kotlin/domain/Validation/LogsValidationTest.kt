@@ -3,8 +3,8 @@ package domain.Validation
 import domain.models.logs.OperationType
 import domain.usecases.logs.LogsValidation
 import domain.utils.PlanMateExceptions
-import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertDoesNotThrow
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

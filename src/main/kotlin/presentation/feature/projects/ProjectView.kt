@@ -1,8 +1,6 @@
 package presentation.feature.projects
 
 import domain.models.project.Project
-import domain.usecases.project.GetAllProjectsUseCase
-import domain.utils.PlanMateExceptions
 import presentation.components.OutputPrinter
 import presentation.utils.*
 

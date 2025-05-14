@@ -1,14 +1,14 @@
 package data.source.csv.project
 
+import data.dto.project.ProjectDto
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_CREATED_BY
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_DESCRIPTION
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_ID
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_LOGS
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_NAME
+import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATE
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATES
 import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_TASKS_STATES
-import data.dto.project.ProjectDto
-import data.utils.PlanMateColumnIndex.ProjectColumnsIndex.PROJECT_STATE
 
 class ProjectCsvParser() {
 

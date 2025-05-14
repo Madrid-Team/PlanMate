@@ -3,11 +3,11 @@ package data.utils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
 import kotlin.test.Test
 

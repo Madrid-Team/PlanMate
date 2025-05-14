@@ -34,7 +34,7 @@ class TaskAuditLogCLITest {
             val taskId = "123"
             val logs = listOf("Log A", "Log B")
             every { inputReader.readInput(String.enterTaskIdToViewLogs) } returns taskId
-            coEvery { getTaskLogsUseCase(taskId) } returns logs
+            coEvery { getTaskLogsUseCase.getTaskLogsByTaskId(taskId) } returns logs
 
             // When
             cli.show()
@@ -57,7 +57,7 @@ class TaskAuditLogCLITest {
             // Given
             val taskId = "123"
             every { inputReader.readInput(String.enterTaskIdToViewLogs) } returns taskId
-            coEvery { getTaskLogsUseCase(taskId) } returns emptyList()
+            coEvery { getTaskLogsUseCase.getTaskLogsByTaskId(taskId) } returns emptyList()
 
             // When
             cli.show()
@@ -80,7 +80,7 @@ class TaskAuditLogCLITest {
             val errorMessage = "Task not found"
             val exception = TaskExceptions.NoLogsFoundException(errorMessage)
             every { inputReader.readInput(String.enterTaskIdToViewLogs) } returns taskId
-            coEvery { getTaskLogsUseCase(taskId) } throws exception
+            coEvery { getTaskLogsUseCase.getTaskLogsByTaskId(taskId) } throws exception
 
             // When
             cli.show()

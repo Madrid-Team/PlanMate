@@ -1,8 +1,6 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.usecases.project.GetProjectByIdUseCase
-import domain.utils.ProjectExceptions
 import domain.utils.TaskExceptions
 import domain.utils.TaskExceptions.TaskTitleIsEmptyException
 import io.mockk.coEvery

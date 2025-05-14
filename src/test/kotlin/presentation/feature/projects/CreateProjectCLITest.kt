@@ -3,7 +3,6 @@ package presentation.feature.projects
 import data.dto.authentication.UserDto
 import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
-import domain.models.project.Project
 import domain.usecases.project.CreateProjectUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
@@ -13,8 +12,6 @@ import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
 import java.util.*
-import kotlin.test.assertEquals
-import com.mongodb.assertions.Assertions.assertTrue
 
 class CreateProjectCLITest {
     private val inputReader = mockk<InputReader>()

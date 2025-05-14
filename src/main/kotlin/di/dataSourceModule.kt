@@ -4,25 +4,13 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
-import data.source.csv.project.ProjectExternalDataSource
-import data.source.csv.project.ProjectCsvDataSource
-import data.source.csv.project.ProjectCsvParser
-import data.source.csv.project.ProjectManager
-import data.source.csv.task.TaskExternalDataSource
-import data.source.csv.task.TaskCsvDataSource
-import data.source.csv.task.TaskCsvParser
-import data.source.csv.task.TaskManager
-import data.source.csv.user.UserExternalDataSource
-import data.source.csv.user.UserCsvParser
+import data.source.csv.project.*
+import data.source.csv.task.*
+import data.source.csv.user.*
+import data.source.mongoDb.MongoClientProvider
+import data.utils.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import data.source.mongoDb.MongoClientProvider
-import data.source.csv.project.ProjectMongoDBDataSource
-import data.source.csv.task.TaskMongoDBDataSource
-import data.source.csv.user.CurrentUserProvider
-import data.source.csv.user.UserMongoDBDataSource
-import data.utils.*
-import data.source.csv.user.UserMemoryDataSource
 import java.io.File
 
 val dataSourceModule = module {

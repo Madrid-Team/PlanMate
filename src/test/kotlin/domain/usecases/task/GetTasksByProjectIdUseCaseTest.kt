@@ -1,18 +1,16 @@
 package domain.usecases.task
 
-import com.google.common.truth.Truth.assertThat
 import domain.repository.TaskRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.assertDoesNotThrow
-import io.mockk.coVerify
-
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class GetTasksByProjectIdUseCaseTest {
