@@ -1,6 +1,5 @@
 package di
 
-import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.*
 import domain.usecases.task.*
 import domain.usecases.user.*
@@ -11,7 +10,6 @@ val useCasesModule = module {
     single { ValidatePasswordUseCase() }
     single { PasswordHashUseCase() }
     single { ValidateAdminRoleUseCase() }
-    single { CreateLogUseCase(get()) }
     single { CreateProjectUseCase(get(), get()) }
     single { DeleteProjectUseCase(get(), get()) }
     single { EditProjectUseCase(get(), get(), get()) }
