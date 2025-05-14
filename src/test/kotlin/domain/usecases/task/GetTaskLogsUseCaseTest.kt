@@ -51,7 +51,7 @@ class GetTaskLogsUseCaseTest {
 
             // When & Then
             assertThrows<TaskExceptions.NoLogsFoundException> {
-                getTaskLogsUseCase(taskId)
+                getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
             coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
