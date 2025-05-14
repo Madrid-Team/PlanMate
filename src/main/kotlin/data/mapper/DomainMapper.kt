@@ -56,7 +56,7 @@ fun TaskDto.toDomain() =
         projectId = projectId,
         description = description,
         createdBy = createdBy,
-        logs = logs,
+        taskLogs = taskLogs,
         taskState = taskState,
         title = title,
     )
@@ -68,7 +68,7 @@ fun Task.toDto() =
         projectId = projectId,
         description = description,
         createdBy = createdBy,
-        logs = logs,
+        taskLogs = taskLogs,
         taskState = taskState,
         title = title,
     )

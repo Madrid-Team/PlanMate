@@ -58,7 +58,7 @@ class TaskMongoDBDataSourceTest {
         description = "Updated Desc",
         taskState = "in-progress",
         createdBy = "user",
-        logs = listOf("edited log")
+        taskLogs = listOf("edited log")
     )
     val task2 = TaskDto(
         id = "task-id2",
@@ -67,7 +67,7 @@ class TaskMongoDBDataSourceTest {
         description = "Test Desc",
         taskState = "open",
         createdBy = "user",
-        logs = emptyList()
+        taskLogs = emptyList()
     )
 
     @Test
@@ -105,7 +105,7 @@ class TaskMongoDBDataSourceTest {
             description = "Description 1",
             taskState = "TODO",
             createdBy = "user1",
-            logs = listOf("log1", "log2")
+            taskLogs = listOf("log1", "log2")
         )
 
         coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } throws Exception(

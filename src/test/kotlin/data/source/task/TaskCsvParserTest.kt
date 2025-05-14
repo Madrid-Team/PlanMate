@@ -47,7 +47,7 @@ class TaskCsvParserTest {
 
     @Test
     fun `parseOneRowToTask function should parse task log correctly`() {
-        assertThat(task.logs).containsExactly("log1", "log2", "log3")
+        assertThat(task.taskLogs).containsExactly("log1", "log2", "log3")
     }
 
     @Test
@@ -69,7 +69,7 @@ class TaskCsvParserTest {
             task.createdBy,
             task.taskState,
             task.title,
-            task.logs.joinToString("|")
+            task.taskLogs.joinToString("|")
         ).joinToString(",")
 
         val result = taskCsvParser.parseTaskToString(task.toDto())

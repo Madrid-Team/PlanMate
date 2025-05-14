@@ -19,5 +19,5 @@ fun helperTask(
     description = description,
     taskState = state,
     createdBy = createdBy,
-    logs = logs
+    taskLogs = logs
 )

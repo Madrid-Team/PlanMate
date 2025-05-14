@@ -32,7 +32,7 @@ class EditTaskCLI(
             description = description,
             taskState = String.empty,
             createdBy = currentUserProvider.getCurrentUser().username,
-            logs = listOf()
+            taskLogs = listOf()
         )
 
         try {

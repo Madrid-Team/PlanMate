@@ -36,7 +36,7 @@ class TaskViewer(
                 outputPrinter.printMessage("Title: ${task.title}")
                 outputPrinter.printMessage("Description: ${task.description}")
                 outputPrinter.printMessage("Created by: ${task.createdBy}")
-                outputPrinter.printMessage("Logs: ${task.logs.size} entries")
+                outputPrinter.printMessage("Logs: ${task.taskLogs.size} entries")
                 outputPrinter.printMessage("------------------------------")
             }
             outputPrinter.printMessage("\n")

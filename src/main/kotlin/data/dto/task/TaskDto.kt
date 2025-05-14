@@ -11,5 +11,5 @@ data class TaskDto(
     val description: String,
     val taskState: String,
     val createdBy: String,
-    val logs: List<String>,
+    val taskLogs: List<String>,
 )

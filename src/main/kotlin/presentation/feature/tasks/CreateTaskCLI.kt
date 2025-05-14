@@ -56,7 +56,7 @@ class CreateTaskCLI(
             description = description,
             taskState = selectedState,
             createdBy = currentUserProvider.getCurrentUser().username,
-            logs = listOf(
+            taskLogs = listOf(
                 AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = title,

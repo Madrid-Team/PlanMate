@@ -1,6 +1,5 @@
 package domain.usecases.task
 
-import data.dto.task.TaskDto
 import domain.models.task.Task
 import java.util.*
 
@@ -19,5 +18,5 @@ fun createTask(
     description = description,
     taskState = state,
     createdBy = createdBy,
-    logs = logs
+    taskLogs = logs
 )
