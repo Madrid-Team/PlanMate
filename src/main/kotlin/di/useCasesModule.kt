@@ -1,4 +1,4 @@
-package di.modules
+package di
 
 import domain.usecases.logs.CreateLogUseCase
 import domain.usecases.project.*

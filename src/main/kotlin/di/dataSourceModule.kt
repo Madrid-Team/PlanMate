@@ -1,4 +1,4 @@
-package di.modules
+package di
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.authentication.UserDto

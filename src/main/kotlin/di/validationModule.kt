@@ -1,4 +1,4 @@
-package di.modules
+package di
 
 import domain.usecases.logs.LogsValidation
 import domain.usecases.task.TaskValidator

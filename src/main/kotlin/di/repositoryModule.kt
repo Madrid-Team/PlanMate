@@ -1,9 +1,8 @@
-package di.modules
+package di
 
 import data.repository.ProjectRepositoryImpl
 import data.repository.TaskRepositoryImpl
 import data.repository.UserRepositoryImpl
-import data.source.csv.project.ProjectManager
 import domain.repository.ProjectRepository
 import domain.repository.TaskRepository
 import domain.repository.UserRepository
