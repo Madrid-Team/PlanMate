@@ -31,7 +31,7 @@ class DeleteTaskUseCaseTest {
             val taskId = UUID.randomUUID().toString()
             coEvery { taskRepository.deleteTaskByTaskId(taskId) } returns Unit
 
-            assertDoesNotThrow { deleteTaskUseCase.deleteTask(taskId) }
+            assertDoesNotThrow { deleteTaskUseCase.deleteTaskByTaskId(taskId) }
             coVerify(exactly = 1) { taskRepository.deleteTaskByTaskId(taskId) }
         }
 
@@ -46,7 +46,7 @@ class DeleteTaskUseCaseTest {
             coEvery { taskRepository.deleteTaskByTaskId(taskId) } throws expectedException
 
             val thrown = assertThrows<TaskExceptions.TaskNotFoundException> {
-                deleteTaskUseCase.deleteTask(taskId)
+                deleteTaskUseCase.deleteTaskByTaskId(taskId)
             }
 
             assert(thrown.message == "Task not found")
