@@ -35,7 +35,7 @@ class GetTaskLogsUseCaseTest {
 
             // When & Then
             assertDoesNotThrow {
-                getTaskLogsUseCase(taskId)
+                getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
             coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
