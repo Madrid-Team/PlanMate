@@ -32,7 +32,7 @@ class GetProjectLogsByIdUseCaseTest {
             coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns expectedLogs
 
             //When
-            val result = getProjectLogsByIdUseCase.execute(projectId)
+            val result = getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
 
             //Then
             assert(result == expectedLogs)
@@ -48,7 +48,7 @@ class GetProjectLogsByIdUseCaseTest {
 
             //When
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                getProjectLogsByIdUseCase.execute(projectId)
+                getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
     }
@@ -63,7 +63,7 @@ class GetProjectLogsByIdUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions.NoLogsFoundException> {
-                getProjectLogsByIdUseCase.execute(projectId)
+                getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
     }

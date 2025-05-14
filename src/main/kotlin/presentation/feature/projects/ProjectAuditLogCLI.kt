@@ -1,7 +1,6 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetProjectLogsByIdUseCase
-import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -21,7 +20,7 @@ class ProjectAuditLogCLI(
         printer.printMessage(String.projectAuditLogHeader)
         val projectId = reader.readInput(String.enterProjectIDToViewAudit)
         try {
-            val logs = getProjectLogsByIdUseCase.execute(projectId)
+            val logs = getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             printer.printMessage(String.auditLogsForProjectId.format(projectId))
             logs.forEach { log ->
                 printer.printMessage("- $log\n")

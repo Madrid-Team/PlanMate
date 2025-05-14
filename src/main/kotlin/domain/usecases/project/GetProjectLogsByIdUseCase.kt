@@ -7,9 +7,9 @@ class GetProjectLogsByIdUseCase(
     private val projectRepository: ProjectRepository,
     private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
-    suspend fun execute(id: String): List<String> {
-        getProjectByIdUseCase.getProjectById(id)
-        val logs = projectRepository.getProjectLogsByProjectId(id)
+    suspend fun getProjectLogsByProjectId(projectId: String): List<String> {
+        getProjectByIdUseCase.getProjectById(projectId)
+        val logs = projectRepository.getProjectLogsByProjectId(projectId)
         logs.ifEmpty {
             throw ProjectExceptions.NoLogsFoundException("There is no logs for this project")
         }
