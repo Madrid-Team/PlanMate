@@ -1,7 +1,7 @@
 package presentation.feature.tasks
 
 import data.mapper.toDto
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.models.logs.CurrentUser

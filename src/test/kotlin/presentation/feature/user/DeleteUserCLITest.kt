@@ -1,6 +1,6 @@
 package presentation.feature.user
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.authentication.User
 import domain.models.logs.CurrentUser
 import domain.usecases.user.DeleteUserUseCase

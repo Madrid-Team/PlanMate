@@ -3,8 +3,8 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.createUserDto
 import data.mapper.toDomain
-import data.source.user.CurrentUserProvider
-import data.source.user.UserExternalDataSource
+import data.source.csv.user.CurrentUserProvider
+import data.source.csv.user.UserExternalDataSource
 import domain.utils.UserExceptions
 import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery

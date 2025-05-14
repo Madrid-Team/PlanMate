@@ -1,6 +1,6 @@
 package presentation.feature.projects
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType

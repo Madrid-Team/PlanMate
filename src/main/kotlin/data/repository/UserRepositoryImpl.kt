@@ -2,8 +2,8 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.user.CurrentUserProvider
-import data.source.user.UserExternalDataSource
+import data.source.csv.user.CurrentUserProvider
+import data.source.csv.user.UserExternalDataSource
 import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository

@@ -1,6 +1,6 @@
 package presentation.feature.user
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.usecases.user.DeleteUserUseCase
 import presentation.components.InputReader
 import presentation.components.OutputPrinter

@@ -3,6 +3,9 @@ package data.source.user
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
 import data.mapper.toDto
+import data.source.csv.user.UserCsvDataSource
+import data.source.csv.user.UserCsvParser
+import data.source.csv.user.UserExternalDataSource
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.User

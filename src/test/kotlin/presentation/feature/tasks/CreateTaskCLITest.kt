@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase

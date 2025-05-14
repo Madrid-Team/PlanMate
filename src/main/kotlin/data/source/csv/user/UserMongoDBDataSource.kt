@@ -1,4 +1,4 @@
-package data.source.user
+package data.source.csv.user
 
 import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.toList
 
 class UserMongoDBDataSource(
     private val collection: MongoCollection<UserDto>
-): UserExternalDataSource{
+): UserExternalDataSource {
     override suspend fun createNewUser(user: UserDto) {
         collection.insertOne(user)
     }

@@ -1,7 +1,7 @@
 package presentation.feature.projects
 
 import data.dto.authentication.UserDto
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
 import domain.models.project.Project
 import domain.usecases.project.CreateProjectUseCase
