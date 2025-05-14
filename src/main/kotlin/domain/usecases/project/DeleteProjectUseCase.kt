@@ -8,6 +8,6 @@ class DeleteProjectUseCase(
 ) {
     suspend fun deleteProject(projectId: String) {
         getProjectByIdUseCase.getById(projectId)
-        projectRepository.deleteProject(projectId)
+        projectRepository.deleteProjectByProjectId(projectId)
     }
 }

@@ -29,7 +29,7 @@ class DeleteProjectUseCaseTest {
             // Given
             val projectId = "project-123"
             coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.deleteProject(projectId) } returns Unit
+            coEvery { projectRepository.deleteProjectByProjectId(projectId) } returns Unit
 
             // When
             assertDoesNotThrow {
@@ -38,7 +38,7 @@ class DeleteProjectUseCaseTest {
 
             // Then
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
-            coVerify(exactly = 1) { projectRepository.deleteProject(projectId) }
+            coVerify(exactly = 1) { projectRepository.deleteProjectByProjectId(projectId) }
         }
     }
 
@@ -56,7 +56,7 @@ class DeleteProjectUseCaseTest {
 
             // Then
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
-            coVerify(exactly = 0) { projectRepository.deleteProject(any()) }
+            coVerify(exactly = 0) { projectRepository.deleteProjectByProjectId(any()) }
         }
     }
 
@@ -73,7 +73,7 @@ class DeleteProjectUseCaseTest {
             }
 
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(blankId) }
-            coVerify(exactly = 0) { projectRepository.deleteProject(any()) }
+            coVerify(exactly = 0) { projectRepository.deleteProjectByProjectId(any()) }
         }
     }
 
@@ -83,7 +83,7 @@ class DeleteProjectUseCaseTest {
             // Given
             val projectId = "existing-id"
             coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.deleteProject(projectId) } throws RuntimeException("DB error")
+            coEvery { projectRepository.deleteProjectByProjectId(projectId) } throws RuntimeException("DB error")
 
             // When & Then
             assertThrows<RuntimeException> {
@@ -91,7 +91,7 @@ class DeleteProjectUseCaseTest {
             }
 
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
-            coVerify(exactly = 1) { projectRepository.deleteProject(projectId) }
+            coVerify(exactly = 1) { projectRepository.deleteProjectByProjectId(projectId) }
         }
     }
 

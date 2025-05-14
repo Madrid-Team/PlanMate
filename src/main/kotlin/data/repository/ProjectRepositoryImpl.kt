@@ -23,7 +23,7 @@ class ProjectRepositoryImpl(
         projectExternalDataSource.createProject(project.toDto())
     }
 
-    override suspend fun deleteProject(projectId: String) = executeProjectOperation {
+    override suspend fun deleteProjectByProjectId(projectId: String) = executeProjectOperation {
         projectExternalDataSource.deleteProject(projectId)
     }
 

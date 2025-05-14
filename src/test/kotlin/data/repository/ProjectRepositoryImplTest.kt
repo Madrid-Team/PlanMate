@@ -72,7 +72,7 @@ class ProjectRepositoryImplTest {
             coEvery { projectExternalDataSource.getProjects(mockk()) } returns listOf(projectDto)
 
             assertDoesNotThrow {
-                repository.deleteProject(project.id.toString())
+                repository.deleteProjectByProjectId(project.id.toString())
             }
         }
     }
