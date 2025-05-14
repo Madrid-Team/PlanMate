@@ -7,7 +7,7 @@ class GetTaskLogsUseCase(
     private val taskRepository: TaskRepository
 ) {
     suspend operator fun invoke(taskId: String): List<String> {
-        return taskRepository.getTaskLogsByID(taskId).ifEmpty { throw TaskExceptions.NoLogsFoundException() }
+        return taskRepository.getTaskLogsByTaskId(taskId).ifEmpty { throw TaskExceptions.NoLogsFoundException() }
     }
 
 }

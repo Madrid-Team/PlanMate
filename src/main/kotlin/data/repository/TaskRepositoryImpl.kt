@@ -27,7 +27,7 @@ class TaskRepositoryImpl(
         tasks.map { task -> task.toDomain() }
     }
 
-    override suspend fun getTaskLogsByID(taskId: String): List<String> = executeTaskOperation {
+    override suspend fun getTaskLogsByTaskId(taskId: String): List<String> = executeTaskOperation {
         taskExternalDataSource.getTaskLogsByID(taskId)
     }
 

@@ -103,7 +103,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `getTaskLogsById returns task's logs when it exists in tasks list`() {
         runTest {
-            assertDoesNotThrow { taskRepository.getTaskLogsByID(taskDto.projectId) }
+            assertDoesNotThrow { taskRepository.getTaskLogsByTaskId(taskDto.projectId) }
         }
     }
 
@@ -114,7 +114,7 @@ class TaskRepositoryImplTest {
             coEvery { taskExternalDataSource.getTaskLogsByID(taskId = taskDto.id) } throws TaskExceptions.NoLogsFoundException(
                 "Failed to get task logs"
             )
-            assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByID(taskDto.id) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByTaskId(taskDto.id) }
         }
     }
 }
