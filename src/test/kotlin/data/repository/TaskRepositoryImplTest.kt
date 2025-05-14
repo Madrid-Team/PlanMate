@@ -86,7 +86,7 @@ class TaskRepositoryImplTest {
         runTest {
             coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } returns Unit
 
-            assertDoesNotThrow { taskRepository.deleteTask(taskDto.projectId) }
+            assertDoesNotThrow { taskRepository.deleteTaskByTaskId(taskDto.projectId) }
         }
     }
 
@@ -96,7 +96,7 @@ class TaskRepositoryImplTest {
             coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } throws TaskExceptions.TaskCannotDeleteException(
                 "Failed to delete task"
             )
-            assertThrows<TaskExceptions.TaskCannotDeleteException> { taskRepository.deleteTask(taskDto.id) }
+            assertThrows<TaskExceptions.TaskCannotDeleteException> { taskRepository.deleteTaskByTaskId(taskDto.id) }
         }
     }
 

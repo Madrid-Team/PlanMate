@@ -14,7 +14,7 @@ class TaskRepositoryImpl(
         taskExternalDataSource.editTask(task.toDto())
     }
 
-    override suspend fun deleteTask(taskId: String) = executeTaskOperation {
+    override suspend fun deleteTaskByTaskId(taskId: String) = executeTaskOperation {
         taskExternalDataSource.deleteTask(taskId)
     }
 
