@@ -98,7 +98,7 @@ class ProjectRepositoryImplTest {
             every { projectManager.getProjects() } returns listOf(projectDto)
 
             assertDoesNotThrow {
-                repository.getProjectLogsById(projectDto.id)
+                repository.getProjectLogsByProjectId(projectDto.id)
             }
         }
     }

@@ -29,7 +29,7 @@ class GetProjectLogsByIdUseCaseTest {
             val expectedLogs = listOf("Log 1", "Log 2")
 
             coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.getProjectLogsById(projectId) } returns expectedLogs
+            coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns expectedLogs
 
             //When
             val result = getProjectLogsByIdUseCase.execute(projectId)
@@ -59,7 +59,7 @@ class GetProjectLogsByIdUseCaseTest {
             // Given
             val projectId = "project-empty-logs"
             coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.getProjectLogsById(projectId) } returns emptyList()
+            coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns emptyList()
 
             // When & Then
             assertThrows<ProjectExceptions.NoLogsFoundException> {

@@ -31,13 +31,13 @@ class ProjectRepositoryImpl(
         projectExternalDataSource.editProject(project.toDto())
     }
 
-    override suspend fun getProjectLogsById(id: String): List<String> = executeProjectOperation {
-        projectExternalDataSource.getProjectLogsById(id) ?: throw ProjectExceptions.ProjectNotFoundException()
+    override suspend fun getProjectLogsByProjectId(projectId: String): List<String> = executeProjectOperation {
+        projectExternalDataSource.getProjectLogsById(projectId) ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
 
-    override suspend fun getProjectById(id: String): Project = executeProjectOperation {
-        projectExternalDataSource.getProjectById(id)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+    override suspend fun getProjectById(projectId: String): Project = executeProjectOperation {
+        projectExternalDataSource.getProjectById(projectId)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
     private suspend fun <T> executeProjectOperation(operation: suspend () -> T): T {
