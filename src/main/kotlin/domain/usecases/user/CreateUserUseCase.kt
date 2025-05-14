@@ -3,9 +3,6 @@ package domain.usecases.user
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.repository.UserRepository
-import domain.utils.NameValidationResult
-import domain.utils.PasswordValidationResult
-import domain.utils.UserExceptions
 import java.util.*
 
 class CreateUserUseCase(
@@ -15,8 +12,8 @@ class CreateUserUseCase(
     private val passwordHashUseCase: PasswordHashUseCase,
 ) {
     suspend fun createUser(userName: String, password: String) {
-      validateNameUseCase.validateName(userName)
-      validatePasswordUseCase.validatePassword(password)
+        validateNameUseCase.validateName(userName)
+        validatePasswordUseCase.validatePassword(password)
 
         val passwordHash = passwordHashUseCase.passwordHash(password)
         val user = User(

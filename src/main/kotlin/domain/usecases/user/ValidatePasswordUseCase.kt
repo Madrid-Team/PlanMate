@@ -1,6 +1,5 @@
 package domain.usecases.user
 
-import domain.utils.PasswordValidationResult
 import domain.utils.UserExceptions
 
 class ValidatePasswordUseCase {
