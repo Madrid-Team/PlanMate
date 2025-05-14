@@ -28,7 +28,7 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val projectId = "project-123"
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
             coEvery { projectRepository.deleteProjectByProjectId(projectId) } returns Unit
 
             // When
@@ -37,7 +37,7 @@ class DeleteProjectUseCaseTest {
             }
 
             // Then
-            coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
+            coVerify(exactly = 1) { getProjectByIdUseCase.getProjectById(projectId) }
             coVerify(exactly = 1) { projectRepository.deleteProjectByProjectId(projectId) }
         }
     }
@@ -47,7 +47,7 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val projectId = "not-found"
-            coEvery { getProjectByIdUseCase.getById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
@@ -55,7 +55,7 @@ class DeleteProjectUseCaseTest {
             }
 
             // Then
-            coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
+            coVerify(exactly = 1) { getProjectByIdUseCase.getProjectById(projectId) }
             coVerify(exactly = 0) { projectRepository.deleteProjectByProjectId(any()) }
         }
     }
@@ -65,14 +65,14 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val blankId = ""
-            coEvery { getProjectByIdUseCase.getById(blankId) } throws ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty")
+            coEvery { getProjectByIdUseCase.getProjectById(blankId) } throws ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty")
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
                 deleteProjectUseCase.deleteProjectByProjectId(blankId)
             }
 
-            coVerify(exactly = 1) { getProjectByIdUseCase.getById(blankId) }
+            coVerify(exactly = 1) { getProjectByIdUseCase.getProjectById(blankId) }
             coVerify(exactly = 0) { projectRepository.deleteProjectByProjectId(any()) }
         }
     }
@@ -82,7 +82,7 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val projectId = "existing-id"
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
             coEvery { projectRepository.deleteProjectByProjectId(projectId) } throws RuntimeException("DB error")
 
             // When & Then
@@ -90,7 +90,7 @@ class DeleteProjectUseCaseTest {
                 deleteProjectUseCase.deleteProjectByProjectId(projectId)
             }
 
-            coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }
+            coVerify(exactly = 1) { getProjectByIdUseCase.getProjectById(projectId) }
             coVerify(exactly = 1) { projectRepository.deleteProjectByProjectId(projectId) }
         }
     }

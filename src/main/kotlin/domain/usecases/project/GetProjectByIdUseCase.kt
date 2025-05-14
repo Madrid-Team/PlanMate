@@ -7,7 +7,7 @@ import domain.utils.ProjectExceptions
 class GetProjectByIdUseCase(
     private val projectRepository: ProjectRepository
 ) {
-    suspend fun getById(id: String): Project {
+    suspend fun getProjectById(id: String): Project {
         if (id.isBlank()) {
             throw ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty")
         }

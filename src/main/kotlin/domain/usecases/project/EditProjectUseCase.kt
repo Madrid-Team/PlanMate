@@ -15,7 +15,7 @@ class EditProjectUseCase(
         with(projectValidator) {
             validate(updatedProject)
         }
-        val currentProject = getProjectByIdUseCase.getById(updatedProject.id.toString())
+        val currentProject = getProjectByIdUseCase.getProjectById(updatedProject.id.toString())
         projectRepository.editProject(
             updatedProject.copy(
                 projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(

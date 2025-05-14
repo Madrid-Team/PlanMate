@@ -40,7 +40,7 @@ class CreateTaskCLI(
         val title = inputReader.readInput(String.enterTaskTitle)
         val description = inputReader.readInput(String.enterTaskDescription)
 
-        val project = getProjectByIdUseCase.getById(projectId)
+        val project = getProjectByIdUseCase.getProjectById(projectId)
 
         outputPrinter.printMessage(String.availableTaskStates)
         project.taskStates.forEachIndexed { index, state ->

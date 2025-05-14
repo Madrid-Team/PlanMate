@@ -31,10 +31,10 @@ class GetProjectByIdUseCaseTest {
             coEvery { projectRepository.getProjectById(projectId) } returns mockProject
 
             // When
-            val result = getProjectByIdUseCase.getById(projectId)
+            val result = getProjectByIdUseCase.getProjectById(projectId)
 
             // Then
-            assertDoesNotThrow { getProjectByIdUseCase.getById(projectId) }
+            assertDoesNotThrow { getProjectByIdUseCase.getProjectById(projectId) }
             assertThat(result).isEqualTo(mockProject)
         }
     }
@@ -48,7 +48,7 @@ class GetProjectByIdUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                getProjectByIdUseCase.getById(projectId)
+                getProjectByIdUseCase.getProjectById(projectId)
             }
         }
     }
@@ -61,7 +61,7 @@ class GetProjectByIdUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                getProjectByIdUseCase.getById(projectId)
+                getProjectByIdUseCase.getProjectById(projectId)
             }
         }
     }

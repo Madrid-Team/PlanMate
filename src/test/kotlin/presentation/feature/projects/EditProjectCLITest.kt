@@ -52,7 +52,7 @@ class EditProjectCLITest {
             // Given
             every { inputReader.readInput(String.enterProjectIdToEdit) } returns projectId
             every { inputReader.readInput(String.selectOption) } returns String.selectionFour
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns originalProject
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns originalProject
 
 
             // When
@@ -64,7 +64,7 @@ class EditProjectCLITest {
                 outputPrinter.printMessage(String.chooseFieldsEditProject)
                 outputPrinter.printMessage("No changes were made to the project.")
             }
-            coVerify { getProjectByIdUseCase.getById(projectId) }
+            coVerify { getProjectByIdUseCase.getProjectById(projectId) }
             assertThat(cli.hasChanges).isFalse()
         }
     }
@@ -74,7 +74,7 @@ class EditProjectCLITest {
         runTest {
             // Given
             every { inputReader.readInput(String.enterProjectIdToEdit) } returns projectId
-            coEvery { getProjectByIdUseCase.getById(projectId) } throws ProjectExceptions(errorMessage)
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions(errorMessage)
 
             // When
             cli.show()
@@ -233,7 +233,7 @@ class EditProjectCLITest {
             every { inputReader.readInput("Enter the new name:") } returns newName
             coEvery { editProjectUseCase.editProject(updatedProject) } just runs
             every { inputReader.readInput(String.enterProjectIdToEdit) } returns projectId
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns originalProject
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns originalProject
             every { inputReader.readInput(String.selectOption) } returnsMany listOf(String.selectionOne, String.selectionFour)
 
             // When
@@ -260,7 +260,7 @@ class EditProjectCLITest {
             every { inputReader.readInput("Enter the new name:") } returns newName
             coEvery { editProjectUseCase.editProject(updatedProject) } just runs
             every { inputReader.readInput(String.enterProjectIdToEdit) } returns projectId
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns originalProject
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns originalProject
             every { inputReader.readInput(String.selectOption) } returnsMany listOf("5", String.selectionFour)
 
             // When
