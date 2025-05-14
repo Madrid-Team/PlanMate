@@ -33,7 +33,7 @@ class DeleteProjectUseCaseTest {
 
             // When
             assertDoesNotThrow {
-                deleteProjectUseCase.deleteProject(projectId)
+                deleteProjectUseCase.deleteProjectByProjectId(projectId)
             }
 
             // Then
@@ -51,7 +51,7 @@ class DeleteProjectUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                deleteProjectUseCase.deleteProject(projectId)
+                deleteProjectUseCase.deleteProjectByProjectId(projectId)
             }
 
             // Then
@@ -69,7 +69,7 @@ class DeleteProjectUseCaseTest {
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                deleteProjectUseCase.deleteProject(blankId)
+                deleteProjectUseCase.deleteProjectByProjectId(blankId)
             }
 
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(blankId) }
@@ -87,7 +87,7 @@ class DeleteProjectUseCaseTest {
 
             // When & Then
             assertThrows<RuntimeException> {
-                deleteProjectUseCase.deleteProject(projectId)
+                deleteProjectUseCase.deleteProjectByProjectId(projectId)
             }
 
             coVerify(exactly = 1) { getProjectByIdUseCase.getById(projectId) }

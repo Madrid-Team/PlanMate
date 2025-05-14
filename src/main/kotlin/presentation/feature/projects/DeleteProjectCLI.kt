@@ -20,7 +20,7 @@ class DeleteProjectCLI(
         try {
             when (inputReader.readInput(String.sureYouWantToDeleteThisProject)) {
                 String.selectionOne -> {
-                    deleteProjectUseCase.deleteProject(projectId)
+                    deleteProjectUseCase.deleteProjectByProjectId(projectId)
                     outputPrinter.printMessage(String.deleteProjectSuccess)
                 }
 
