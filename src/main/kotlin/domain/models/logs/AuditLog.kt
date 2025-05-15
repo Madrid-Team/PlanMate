@@ -1,7 +1,11 @@
+
 package domain.models.logs
 
-import domain.utils.convertDateIntoReadableDate
-import java.time.LocalDateTime
+import domain.utils.convertDateToReadableDate
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
 
 data class AuditLog(
     val operationType: OperationType,
@@ -11,7 +15,7 @@ data class AuditLog(
     val fieldName: String = "",
     val oldValue: String = "",
     val newValue: String = "",
-    val timestamp: String = LocalDateTime.now().convertDateIntoReadableDate()
+    val timestamp: String = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).convertDateToReadableDate()
 ) {
     var changeHappened = ""
     override fun toString(): String {
