@@ -5,10 +5,10 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
 
-class CopyCollectionIfDifferentToTest(val database: MongoDatabase,val copyCollectionName: String , originalCollectionName: String )  {
+class CopyCollectionIfDifferentToTest(val database: MongoDatabase, originalCollectionName: String )  {
 
     val original = database.getCollection<Document>(originalCollectionName)
-    val copy = database.getCollection<Document>(copyCollectionName)
+    val copy = database.getCollection<Document>("Collection_Test")
 
 
      suspend fun copyCollectionIfDifferent(): MongoCollection<Document> {
@@ -22,7 +22,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase,val copyCollec
                 copy.insertMany(originalDocs)
                 println("projects_test collection refreshed.")
 
-                return   database.getCollection<Document>(copyCollectionName)
+                return   database.getCollection<Document>("Collection_Test")
             } else {
                 println("Original collection is empty. Nothing to copy.")
                 throw AssertionError("Original collection is empty Can't Copy collection to do testing.")
@@ -30,7 +30,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase,val copyCollec
             }
         } else {
             println("No structural difference. Copy not needed.")
-            return database.getCollection<Document>(copyCollectionName)
+            return database.getCollection<Document>("Collection_Test")
         }
 
     }
@@ -39,7 +39,7 @@ class CopyCollectionIfDifferentToTest(val database: MongoDatabase,val copyCollec
 
         val areStructurallyEqual = originalDocs.zip(copyDocs).all { (doc1, doc2) ->
             val keys1 = doc1.keys.filterNot { it == "_id" }.toSet()
-            val keys2 = doc2.keys.filterNot { it == "id" }.toSet()
+            val keys2 = doc2.keys.filterNot { it == "_id" }.toSet()
 
             keys1 == keys2 && doc1.size == doc2.size
         }

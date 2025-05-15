@@ -13,6 +13,7 @@ import data.source.csv.task.TaskExternalDataSource
 import data.source.csv.task.TaskMongoDBDataSource
 import data.source.mongoDb.MongoClientProvider
 import data.utils.TASK_PROJECT_ID
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -44,10 +45,10 @@ class TaskMongoDBDataSourceTest {
         testScope = TestScope()
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "projects_test", "projects")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,  "projects")
         runBlocking {
             taskMongoDBDataSource =
-                TaskMongoDBDataSource(database.getCollection<TaskDto>("projects_test"))
+                TaskMongoDBDataSource(database.getCollection<TaskDto>("Collection_Test"))
         }
     }
 
@@ -108,7 +109,7 @@ class TaskMongoDBDataSourceTest {
             taskLogs = listOf("log1", "log2")
         )
 
-        coEvery { collection.updateOne(eq("_id", projectId), Updates.push("tasks", task)) } throws Exception(
+        coEvery { collection.updateOne(eq("_id", "false projectId"), Updates.push("tasks", task)) } throws Exception(
             "DB error"
         )
         runTest {
@@ -249,7 +250,7 @@ class TaskMongoDBDataSourceTest {
     fun `getTaskLogsByID returns empty list when no tasks found`() = runTest {
         // Given
         val taskId = "missingTask"
-        val collection = database.getCollection<TaskDto>("projects_test")
+        val collection = database.getCollection<TaskDto>("Collection_Test")
         taskMongoDBDataSource = TaskMongoDBDataSource(collection)
         // When
         val result = taskMongoDBDataSource.getTaskLogsByID(taskId)
@@ -261,7 +262,7 @@ class TaskMongoDBDataSourceTest {
 
     @AfterAll
     fun cleanup() {
-
+        clearAllMocks()
         mongoClientProvider.close()
 
     }

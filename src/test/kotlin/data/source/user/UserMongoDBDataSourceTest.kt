@@ -21,7 +21,6 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
@@ -43,16 +42,14 @@ class UserMongoDBDataSourceTest {
     private lateinit var userDtoCollection: MongoCollection<UserDto>
     private var testScope: TestScope = TestScope()
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeEach
     fun setup() {
         //  Dispatchers.setMain(TestDispatcher())
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "user_test", "users")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,  "users")
         runTest {
             copyCollectionIfDifferentToTest.copyCollectionIfDifferent()
         }
-        userDtoCollection = database.getCollection<UserDto>("user_test")
+        userDtoCollection = database.getCollection<UserDto>("Collection_Test")
         userMongoDBDataSource =
             UserMongoDBDataSource(userDtoCollection)
 //        advanceUntilIdle()
@@ -60,18 +57,7 @@ class UserMongoDBDataSourceTest {
     }
 
     val id = UUID.randomUUID().toString()
-    val userDto = UserDto(
-        id = id,
-        username = "User Name",
-        passwordHash = "hashed_pw",
-        role = "admin"
-    )
-    private val userTest3 = UserDto(
-        id = "ghost2",
-        username = "GhostUser",
-        passwordHash = "shci58392nwsuss9203asdx",
-        role = "ADMIN"
-    )
+
     private val userTest = UserDto(
         id = "AbdoId",
         username = "User Name Abdo",
