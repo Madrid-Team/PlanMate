@@ -1,9 +1,6 @@
-package data.source.project
+package data.source.csv.project
 
 import data.createProject
-import data.source.csv.project.ProjectCsvDataSource
-import data.source.csv.project.ProjectCsvParser
-import data.source.csv.project.ProjectManager
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import io.mockk.every

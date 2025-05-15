@@ -1,9 +1,8 @@
-package data.source.task
+package data.source.csv.task
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.task.TaskDto
 import data.mapper.toDto
-import data.source.csv.task.TaskCsvParser
 import domain.usecases.task.createTask
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

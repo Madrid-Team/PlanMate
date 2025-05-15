@@ -1,9 +1,9 @@
-package data.source.task
+package data.source.csv.task
 
 import com.google.common.truth.Truth.assertThat
-import data.source.csv.task.TaskManager
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import java.util.*
 import kotlin.test.assertTrue
 
@@ -49,7 +49,7 @@ class TaskManagerTest {
     @Test
     fun `addTask should add single task`() {
         val task = helperTaskDto()
-        org.junit.jupiter.api.assertDoesNotThrow {
+        assertDoesNotThrow {
             taskManager.addTask(task)
         }
     }

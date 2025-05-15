@@ -1,8 +1,7 @@
-package data.source.user
+package data.source.csv.user
 
 import com.google.common.truth.Truth.assertThat
 import data.dto.authentication.UserDto
-import data.source.csv.user.UserCsvParser
 import domain.models.authentication.UserRole
 import org.junit.jupiter.api.Test
 import kotlin.test.BeforeTest
