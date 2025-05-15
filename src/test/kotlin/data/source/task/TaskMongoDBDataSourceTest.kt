@@ -114,7 +114,10 @@ class TaskMongoDBDataSourceTest {
         )
         runTest {
             // Act & Assert
+
             assertThrows<Exception> {
+                taskMongoDBDataSource.createTask(task)
+                // el task already exist
                 taskMongoDBDataSource.createTask(task)
             }
         }
