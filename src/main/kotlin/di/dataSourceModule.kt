@@ -8,6 +8,9 @@ import data.source.csv.project.*
 import data.source.csv.task.*
 import data.source.csv.user.*
 import data.source.mongoDb.MongoClientProvider
+import data.source.mongoDb.ProjectMongoDBDataSource
+import data.source.mongoDb.TaskMongoDBDataSource
+import data.source.mongoDb.UserMongoDBDataSource
 import data.utils.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -59,7 +62,7 @@ val dataSourceModule = module {
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
-    
+
     single { TaskManager() }
     single { ProjectManager() }
     single<CurrentUserProvider> { UserMemoryDataSource() }
