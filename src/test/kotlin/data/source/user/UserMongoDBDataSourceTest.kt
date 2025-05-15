@@ -11,7 +11,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
 import data.dto.authentication.UserDto
 import data.source.csv.user.UserExternalDataSource
-import data.source.csv.user.UserMongoDBDataSource
+import data.source.mongoDb.UserMongoDBDataSource
 import data.source.mongoDb.MongoClientProvider
 import data.utils.PASSWORD
 import data.utils.USER_NAME
