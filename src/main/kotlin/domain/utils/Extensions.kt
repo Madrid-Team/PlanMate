@@ -15,8 +15,9 @@ import kotlinx.datetime.toLocalDateTime
 fun LocalDateTime.convertDateToReadableDate(): String {
     val isDstMonth = this.monthNumber in 4..10
     // Add +1 hour if in DST months
+    val timeZone=TimeZone.of("Africa/Cairo")
     val adjustedDateTime = if (isDstMonth) {
-        this.toInstant(TimeZone.of("Africa/Cairo")).plus(1, DateTimeUnit.HOUR).toLocalDateTime(TimeZone.of("Africa/Cairo"))
+        this.toInstant(timeZone).plus(1, DateTimeUnit.HOUR).toLocalDateTime(timeZone)
     } else {
         this
     }
