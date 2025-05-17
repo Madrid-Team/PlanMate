@@ -111,10 +111,7 @@ class TaskMongoDBDataSourceTest {
             )
 
             coEvery {
-                collection.updateOne(
-                    eq("_id", "false projectId"),
-                    Updates.push("tasks", task)
-                )
+                collection.updateOne(eq("_id", "false projectId"), Updates.push("tasks", task))
             } throws Exception()
             // Act & Assert
             assertThrows<Exception> {

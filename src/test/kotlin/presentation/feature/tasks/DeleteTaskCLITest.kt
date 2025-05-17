@@ -1,6 +1,9 @@
 package presentation.feature.tasks
 
+import data.source.csv.user.CurrentUserProvider
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.task.DeleteTaskUseCase
+import domain.usecases.task.GetTaskByIdUseCase
 import domain.utils.TaskExceptions
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
@@ -23,14 +26,27 @@ class DeleteTaskCLITest {
     private lateinit var deleteTaskCLI: DeleteTaskCLI
     private lateinit var testScope: TestScope
     private lateinit var coroutineScope: CoroutineScope
+    private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
+    private lateinit var addAuditLogUseCase: AddAuditLogUseCase
+    private lateinit var currentUserProvider: CurrentUserProvider
 
     @BeforeEach
     fun setUp() {
         inputReader = mockk(relaxed = true)
         outputPrinter = mockk(relaxed = true)
         deleteTaskUseCase = mockk(relaxed = true)
+        getTaskByIdUseCase = mockk(relaxed = true)
+        addAuditLogUseCase = mockk(relaxed = true)
+        currentUserProvider = mockk(relaxed = true)
         coroutineScope = CoroutineScope(Dispatchers.IO)
-        deleteTaskCLI = DeleteTaskCLI(inputReader, outputPrinter, deleteTaskUseCase)
+        deleteTaskCLI = DeleteTaskCLI(
+            inputReader,
+            outputPrinter,
+            deleteTaskUseCase,
+            getTaskByIdUseCase,
+            addAuditLogUseCase,
+            currentUserProvider
+        )
         testScope = TestScope()
     }
 

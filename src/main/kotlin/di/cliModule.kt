@@ -19,17 +19,17 @@ val cliModule = module {
     single<InputReader> { ConsoleInputReader() }
     single<OutputPrinter> { ConsoleOutputPrinter() }
 
-    single { CreateTaskCLI(get(), get(), get(), get(), get() ,get()) }
-    single { DeleteTaskCLI(get(), get(), get()) }
-    single { EditTaskCLI(get(), get(), get(),get()) }
+    single { CreateTaskCLI(get(), get(), get(), get(), get(), get()) }
+    single { DeleteTaskCLI(get(), get(), get(), get(), get(), get()) }
+    single { EditTaskCLI(get(), get(), get(), get()) }
     single { TaskCLI(get(), get(), get(), get(), get(), get(), get()) }
     single { ProjectAuditLogCLI(get(), get(), get()) }
     single { TaskAuditLogCLI(get(), get(), get()) }
     single { AuthenticationCLI(get(), get(), get()) }
-    single { PlanMateCLI(get(), get(), get(), get(), get() ) }
+    single { PlanMateCLI(get(), get(), get(), get(), get()) }
     single { ProjectCLI(get(), get(), get(), get(), get(), get(), get(), get()) }
-    single { CreateProjectCLI(get(), get(), get(),get(),get()) }
-    single { DeleteProjectCLI(get(), get(), get()) }
+    single { CreateProjectCLI(get(), get(), get(), get(), get()) }
+    single { DeleteProjectCLI(get(), get(), get(), get(), get(), get()) }
     single { EditProjectCLI(get(), get(), get(), get()) }
     single { UserCLI(get(), get(), get(), get()) }
     single { CreateUserCLI(get(), get(), get()) }
@@ -37,6 +37,6 @@ val cliModule = module {
     single { ProjectView(get()) }
     single { AdminCLI(get(), get(), get(), get(), get()) }
     single { MateCLI(get(), get(), get(), get()) }
-    single { TaskViewer(get (),get(),get()) }
+    single { TaskViewer(get(), get(), get()) }
 
 }
