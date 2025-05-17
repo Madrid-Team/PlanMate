@@ -32,14 +32,18 @@ class EditProjectUseCase(
         if (updatedProject.name != currentProject.name) {
             listOfLogs.add(
                     AuditLog(
-                    operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
-                    entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
-                    fieldName = "name",
-                    oldValue = currentProject.name,
-                    newValue = updatedProject.name,
-                ).toString()
+                        operationType = OperationType.UPDATE,
+                        entityName = currentProject.name,
+                        entityType = EntityType.PROJECT,
+                        username = currentProject.createdBy,
+                        fieldName = "name",
+                        oldValue = currentProject.name,
+                        newValue = updatedProject.name,
+                        id = TODO(),
+                        entityId = TODO(),
+                        projectId = TODO(),
+                        timestamp = TODO(),
+                    ).toString()
             )
         }
 
@@ -53,6 +57,10 @@ class EditProjectUseCase(
                     fieldName = "description",
                     oldValue = currentProject.description,
                     newValue = updatedProject.description,
+                    id = TODO(),
+                    entityId = TODO(),
+                    projectId = TODO(),
+                    timestamp = TODO(),
                 ).toString()
             )
         }
@@ -67,6 +75,10 @@ class EditProjectUseCase(
                     fieldName = "project state",
                     oldValue = currentProject.projectState,
                     newValue = updatedProject.projectState,
+                    id = TODO(),
+                    entityId = TODO(),
+                    projectId = TODO(),
+                    timestamp = TODO(),
                 ).toString()
             )
         }

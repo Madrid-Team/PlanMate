@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import data.createUserDto
 import data.mapper.toDomain
 import data.source.csv.user.CurrentUserProvider
-import data.source.csv.user.UserExternalDataSource
+import data.source.UserExternalDataSource
 import domain.utils.UserExceptions
 import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery

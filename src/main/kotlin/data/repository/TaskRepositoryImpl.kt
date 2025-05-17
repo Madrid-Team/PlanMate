@@ -2,7 +2,7 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.csv.task.TaskExternalDataSource
+import data.source.TaskExternalDataSource
 import data.utils.toTaskException
 import domain.models.task.Task
 import domain.repository.TaskRepository

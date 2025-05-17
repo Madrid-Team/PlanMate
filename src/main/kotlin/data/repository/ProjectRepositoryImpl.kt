@@ -2,7 +2,7 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.csv.project.ProjectExternalDataSource
+import data.source.ProjectExternalDataSource
 import data.source.csv.user.CurrentUserProvider
 import data.utils.toProjectException
 import domain.models.project.Project
@@ -11,7 +11,7 @@ import domain.utils.ProjectExceptions
 
 class ProjectRepositoryImpl(
     private val projectExternalDataSource: ProjectExternalDataSource,
-    private val currentUserProvider: CurrentUserProvider
+    private val currentUserProvider: CurrentUserProvider,
 ) : ProjectRepository {
 
 

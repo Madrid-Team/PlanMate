@@ -4,7 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.createUserDto
 import data.mapper.toDto
-import data.source.csv.project.ProjectExternalDataSource
+import data.source.ProjectExternalDataSource
 import data.source.csv.project.ProjectManager
 import data.source.csv.user.CurrentUserProvider
 import domain.models.project.Project

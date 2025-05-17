@@ -9,8 +9,8 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
 import data.dto.task.TaskDto
-import data.source.csv.task.TaskExternalDataSource
-import data.source.csv.task.TaskMongoDBDataSource
+import data.source.TaskExternalDataSource
+import data.source.mongoDb.TaskMongoDBDataSource
 import data.source.mongoDb.MongoClientProvider
 import data.utils.TASK_PROJECT_ID
 import io.mockk.clearAllMocks

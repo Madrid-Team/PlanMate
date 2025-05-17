@@ -5,7 +5,7 @@ import data.dto.authentication.UserDto
 import data.mapper.toDto
 import data.source.csv.user.UserCsvDataSource
 import data.source.csv.user.UserCsvParser
-import data.source.csv.user.UserExternalDataSource
+import data.source.UserExternalDataSource
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.models.authentication.User

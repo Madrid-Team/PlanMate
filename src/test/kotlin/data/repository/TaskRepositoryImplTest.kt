@@ -1,7 +1,7 @@
 package data.repository
 
 import data.mapper.toDomain
-import data.source.csv.task.TaskExternalDataSource
+import data.source.TaskExternalDataSource
 import data.source.csv.task.TaskManager
 import data.source.task.helperTaskDto
 import domain.repository.TaskRepository

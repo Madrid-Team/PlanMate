@@ -1,5 +1,6 @@
 package di
 
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.*
 import domain.usecases.task.*
 import domain.usecases.user.*
@@ -30,5 +31,6 @@ val useCasesModule = module {
     single { GetTasksByProjectIdUseCase(get()) }
     single { TaskValidator() }
     single { ProjectValidator() }
+    single { AddAuditLogUseCase(get()) }
 
 }

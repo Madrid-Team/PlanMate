@@ -1,9 +1,6 @@
 package data.utils
 
-import domain.utils.PlanMateExceptions
-import domain.utils.ProjectExceptions
-import domain.utils.TaskExceptions
-import domain.utils.UserExceptions
+import domain.utils.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -62,5 +59,9 @@ fun Throwable.toUserException(): PlanMateExceptions {
             PlanMateExceptions(exception.message.toString())
         }
     }
+}
+
+fun Throwable.toAuditException(): PlanMateExceptions {
+    return AuditException(this.message.toString())
 }
 
