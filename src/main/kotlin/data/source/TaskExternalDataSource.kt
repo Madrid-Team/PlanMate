@@ -8,4 +8,5 @@ interface TaskExternalDataSource {
     suspend fun createTask(task: TaskDto)
     suspend fun getTasksByProjectId(projectId: String): List<TaskDto>
     suspend fun getTaskLogsByID(taskId: String): List<String>
+    suspend fun getTaskById(taskId: String): TaskDto?
 }

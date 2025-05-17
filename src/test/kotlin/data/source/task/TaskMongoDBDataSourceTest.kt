@@ -45,7 +45,7 @@ class TaskMongoDBDataSourceTest {
         testScope = TestScope()
         mongoClientProvider = MongoClientProvider()
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,  "projects")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "projects")
         runBlocking {
             taskMongoDBDataSource =
                 TaskMongoDBDataSource(database.getCollection<TaskDto>("Collection_Test"))
@@ -97,22 +97,25 @@ class TaskMongoDBDataSourceTest {
 
     @Test
     fun `createTask throws exception on database error`() {
-        // Arrange
-        val projectId = "project1"
-        val task = TaskDto(
-            id = "task1",
-            projectId = projectId,
-            title = "Task 1",
-            description = "Description 1",
-            taskState = "TODO",
-            createdBy = "user1",
-            taskLogs = listOf("log1", "log2")
-        )
-
-        coEvery { collection.updateOne(eq("_id", "false projectId"), Updates.push("tasks", task)) } throws Exception(
-            "DB error"
-        )
         runTest {
+            // Arrange
+            val projectId = "project1"
+            val task = TaskDto(
+                id = "task1",
+                projectId = projectId,
+                title = "Task 1",
+                description = "Description 1",
+                taskState = "TODO",
+                createdBy = "user1",
+                taskLogs = listOf("log1", "log2")
+            )
+
+            coEvery {
+                collection.updateOne(
+                    eq("_id", "false projectId"),
+                    Updates.push("tasks", task)
+                )
+            } throws Exception()
             // Act & Assert
             assertThrows<Exception> {
                 taskMongoDBDataSource.createTask(task)

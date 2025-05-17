@@ -6,6 +6,7 @@ import data.source.TaskExternalDataSource
 import data.utils.toTaskException
 import domain.models.task.Task
 import domain.repository.TaskRepository
+import domain.utils.TaskExceptions
 
 class TaskRepositoryImpl(
     private val taskExternalDataSource: TaskExternalDataSource,
@@ -29,6 +30,10 @@ class TaskRepositoryImpl(
 
     override suspend fun getTaskLogsByTaskId(taskId: String): List<String> = executeTaskOperation {
         taskExternalDataSource.getTaskLogsByID(taskId)
+    }
+
+    override suspend fun getTaskById(taskId: String): Task = executeTaskOperation {
+        taskExternalDataSource.getTaskById(taskId)?.toDomain() ?: throw TaskExceptions.TaskNotFoundException()
     }
 
     private suspend fun <T> executeTaskOperation(operation: suspend () -> T): T {

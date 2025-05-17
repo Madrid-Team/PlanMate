@@ -1,6 +1,8 @@
 package domain.usecases.task
 
+import data.source.csv.user.CurrentUserProvider
 import domain.repository.TaskRepository
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -17,12 +19,19 @@ class EditTaskUseCaseTest {
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var taskValidator: TaskValidator
     private lateinit var testScope: TestScope
+    private lateinit var addAuditLogUseCase: AddAuditLogUseCase
+    private lateinit var currentUserProvider: CurrentUserProvider
+    private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
         taskValidator = mockk(relaxed = true)
-        editTaskUseCase = EditTaskUseCase(taskRepository,taskValidator)
+        addAuditLogUseCase = mockk(relaxed = true)
+        currentUserProvider = mockk(relaxed = true)
+        getTaskByIdUseCase = mockk(relaxed = true)
+        editTaskUseCase =
+            EditTaskUseCase(taskRepository, taskValidator, getTaskByIdUseCase, addAuditLogUseCase, currentUserProvider)
         testScope = TestScope()
     }
 
@@ -44,6 +53,7 @@ class EditTaskUseCaseTest {
             coVerify(exactly = 1) { taskRepository.editTask(task) }
         }
     }
+
     @Test
     fun `should throw TaskTitleIsEmptyException when task title is empty`() {
         testScope.runTest {
@@ -99,7 +109,6 @@ class EditTaskUseCaseTest {
             coVerify(exactly = 1) { taskRepository.editTask(task) }
         }
     }
-
 
 
 }

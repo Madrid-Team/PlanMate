@@ -9,4 +9,5 @@ interface TaskRepository {
     suspend fun createTask(task: Task)
     suspend fun getTasksByProjectId(projectId: String): List<Task>
     suspend fun getTaskLogsByTaskId(taskId: String): List<String>
+    suspend fun getTaskById(taskId: String): Task
 }
