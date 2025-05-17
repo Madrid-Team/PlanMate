@@ -3,7 +3,7 @@ package domain.usecases.task
 import domain.models.task.Task
 import domain.utils.TaskExceptions
 
-class TaskValidator {
+class TaskValidatorUseCase {
     fun validateBasic(task: Task) {
         if (task.title.isBlank()) {
             throw TaskExceptions.TaskTitleIsEmptyException()

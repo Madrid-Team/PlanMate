@@ -8,13 +8,13 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
-class TaskValidatorTest {
-    private lateinit var taskValidator: TaskValidator
+class TaskValidatorUseCaseTest {
+    private lateinit var taskValidatorUseCase: TaskValidatorUseCase
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
-        taskValidator = TaskValidator()
+        taskValidatorUseCase = TaskValidatorUseCase()
         testScope = TestScope()
     }
 
@@ -24,7 +24,7 @@ class TaskValidatorTest {
             val task = createTask(title = "Valid title", description = "Valid description")
 
             assertDoesNotThrow {
-                taskValidator.validateBasic(task)
+                taskValidatorUseCase.validateBasic(task)
             }
         }
     }
@@ -35,7 +35,7 @@ class TaskValidatorTest {
             val task = createTask(title = "")
 
             assertThrows<TaskExceptions.TaskTitleIsEmptyException> {
-                taskValidator.validateBasic(task)
+                taskValidatorUseCase.validateBasic(task)
             }
         }
     }
@@ -50,7 +50,7 @@ class TaskValidatorTest {
             )
 
             assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
-                taskValidator.validateBasic(task)
+                taskValidatorUseCase.validateBasic(task)
             }
         }
     }
@@ -61,7 +61,7 @@ class TaskValidatorTest {
             val task = createTask(title = "Valid", description = "Valid", state = "TODO")
 
             assertDoesNotThrow {
-                taskValidator.validateAll(task)
+                taskValidatorUseCase.validateAll(task)
             }
         }
     }
@@ -76,7 +76,7 @@ class TaskValidatorTest {
             )
 
             assertThrows<TaskExceptions.TaskStateIsEmptyException> {
-                taskValidator.validateAll(task)
+                taskValidatorUseCase.validateAll(task)
             }
         }
     }

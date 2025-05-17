@@ -15,17 +15,17 @@ import org.junit.jupiter.api.assertThrows
 
 class CreateProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
-    private lateinit var projectValidator: ProjectValidator
+    private lateinit var projectValidatorUseCase: ProjectValidatorUseCase
     private lateinit var createProjectUseCase: CreateProjectUseCase
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
-        projectValidator = mockk(relaxed = true)
+        projectValidatorUseCase = mockk(relaxed = true)
         createProjectUseCase = CreateProjectUseCase(
             projectRepository,
-            projectValidator
+            projectValidatorUseCase
         )
         testScope = TestScope()
     }
@@ -46,7 +46,7 @@ class CreateProjectUseCaseTest {
                 createProjectUseCase.createProject(project)
             }
 
-            coVerify { projectValidator.validate(project) }
+            coVerify { projectValidatorUseCase.validate(project) }
             coVerify { projectRepository.createProject(project) }
         }
     }
@@ -62,7 +62,7 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf("TaskState1")
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectNameInvalidException()
+            coEvery { projectValidatorUseCase.validate(project) } throws ProjectExceptions.ProjectNameInvalidException()
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectNameInvalidException> {
@@ -84,7 +84,7 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf("TaskState1")
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
+            coEvery { projectValidatorUseCase.validate(project) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
@@ -107,7 +107,7 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf()
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
+            coEvery { projectValidatorUseCase.validate(project) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
 
             // When & Then
             assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {

@@ -3,7 +3,7 @@ package domain.usecases.project
 import domain.models.project.Project
 import domain.utils.ProjectExceptions
 
-class ProjectValidator() {
+class ProjectValidatorUseCase() {
     fun validate(project: Project) {
         validateName(project)
         validateDescription(project)

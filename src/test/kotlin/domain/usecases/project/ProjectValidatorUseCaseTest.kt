@@ -6,13 +6,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class ProjectValidatorTest {
+class ProjectValidatorUseCaseTest {
 
-    private lateinit var validator: ProjectValidator
+    private lateinit var validator: ProjectValidatorUseCase
 
     @BeforeEach
     fun setUp() {
-        validator = ProjectValidator()
+        validator = ProjectValidatorUseCase()
     }
 
     @Test

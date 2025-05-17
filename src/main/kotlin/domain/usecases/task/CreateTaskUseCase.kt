@@ -5,11 +5,11 @@ import domain.repository.TaskRepository
 
 class CreateTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val taskValidator: TaskValidator
+    private val taskValidatorUseCase: TaskValidatorUseCase
 
 ) {
     suspend fun createTask(task: Task) {
-         taskValidator.validateAll(task)
+         taskValidatorUseCase.validateAll(task)
 
         taskRepository.createTask(task)
     }

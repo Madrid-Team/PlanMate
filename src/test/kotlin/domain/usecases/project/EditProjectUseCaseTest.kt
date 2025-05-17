@@ -15,15 +15,15 @@ import java.util.*
 class EditProjectUseCaseTest {
     private lateinit var projectRepository: ProjectRepository
     private lateinit var editProjectUseCase: EditProjectUseCase
-    private lateinit var projectValidator: ProjectValidator
+    private lateinit var projectValidatorUseCase: ProjectValidatorUseCase
     private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
-        projectValidator = mockk(relaxed = true)
+        projectValidatorUseCase = mockk(relaxed = true)
         getProjectByIdUseCase = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, getProjectByIdUseCase)
+        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidatorUseCase, getProjectByIdUseCase)
     }
 
     @Test
@@ -68,7 +68,7 @@ class EditProjectUseCaseTest {
             description = "Project description"
         )
         coEvery { getProjectByIdUseCase.getProjectById(any()) } throws ProjectExceptions.ProjectNameInvalidException()
-        coEvery { projectValidator.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
+        coEvery { projectValidatorUseCase.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
 
         //When & Then
         assertThrows<ProjectExceptions.ProjectNameInvalidException> {
@@ -83,7 +83,7 @@ class EditProjectUseCaseTest {
             name = "Valid Name",
             description = ""
         )
-        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
+        coEvery { projectValidatorUseCase.validate(any()) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
 
         assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
             editProjectUseCase.editProject(project)
@@ -97,7 +97,7 @@ class EditProjectUseCaseTest {
             name = "Valid Name",
             description = "###Invalid###"
         )
-        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionInvalidException()
+        coEvery { projectValidatorUseCase.validate(any()) } throws ProjectExceptions.ProjectDescriptionInvalidException()
 
         assertThrows<ProjectExceptions.ProjectDescriptionInvalidException> {
             editProjectUseCase.editProject(project)
@@ -111,7 +111,7 @@ class EditProjectUseCaseTest {
             name = "Valid Name",
             description = "Short"
         )
-        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectDescriptionTooShortException()
+        coEvery { projectValidatorUseCase.validate(any()) } throws ProjectExceptions.ProjectDescriptionTooShortException()
 
         assertThrows<ProjectExceptions.ProjectDescriptionTooShortException> {
             editProjectUseCase.editProject(project)
@@ -125,7 +125,7 @@ class EditProjectUseCaseTest {
             name = "Valid Name",
             description = "Valid Description"
         )
-        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectStatesIsEmptyException()
+        coEvery { projectValidatorUseCase.validate(any()) } throws ProjectExceptions.ProjectStatesIsEmptyException()
 
         assertThrows<ProjectExceptions.ProjectStatesIsEmptyException> {
             editProjectUseCase.editProject(project)
@@ -139,7 +139,7 @@ class EditProjectUseCaseTest {
             name = "Valid Name",
             description = "Valid Description"
         )
-        coEvery { projectValidator.validate(any()) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
+        coEvery { projectValidatorUseCase.validate(any()) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
 
         assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {
             editProjectUseCase.editProject(project)

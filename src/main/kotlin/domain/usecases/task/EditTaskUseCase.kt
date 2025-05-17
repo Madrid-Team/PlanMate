@@ -5,9 +5,9 @@ import domain.repository.TaskRepository
 
 class EditTaskUseCase(
     private val taskRepository: TaskRepository,
-    private val taskValidator: TaskValidator
+    private val taskValidatorUseCase: TaskValidatorUseCase
 ) {
     suspend fun editTask(task: Task) {
-        taskValidator.validateBasic(task)
+        taskValidatorUseCase.validateBasic(task)
         taskRepository.editTask(task)
     } }

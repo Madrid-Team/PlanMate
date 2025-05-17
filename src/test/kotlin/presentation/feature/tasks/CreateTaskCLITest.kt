@@ -4,7 +4,7 @@ import data.source.csv.user.CurrentUserProvider
 import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
-import domain.usecases.task.TaskValidator
+import domain.usecases.task.TaskValidatorUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.TestScope
@@ -24,7 +24,7 @@ class CreateTaskCLITest {
     private val createTaskUseCase = mockk<CreateTaskUseCase>(relaxed = true)
     private val getProjectByIdUseCase = mockk<GetProjectByIdUseCase>(relaxed = true)
     private val currentUserProvider = mockk<CurrentUserProvider>(relaxed = true)
-    private val taskValidator = mockk<TaskValidator>(relaxed = true)
+    private val taskValidatorUseCase = mockk<TaskValidatorUseCase>(relaxed = true)
     private val taskRepository = mockk<TaskRepository>(relaxed = true)
 
     private lateinit var cli: CreateTaskCLI

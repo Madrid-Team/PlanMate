@@ -15,17 +15,17 @@ import kotlin.test.Test
 
 class CreateTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
-    private lateinit var taskValidator: TaskValidator
+    private lateinit var taskValidatorUseCase: TaskValidatorUseCase
     private lateinit var createTaskUseCase: CreateTaskUseCase
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setUp() {
         taskRepository = mockk(relaxed = true)
-        taskValidator = mockk(relaxed = true)
+        taskValidatorUseCase = mockk(relaxed = true)
         createTaskUseCase = CreateTaskUseCase(
             taskRepository,
-            taskValidator
+            taskValidatorUseCase
         )
         testScope = TestScope()
     }
@@ -39,7 +39,7 @@ class CreateTaskUseCaseTest {
             assertDoesNotThrow {
                 createTaskUseCase.createTask(task)
             }
-            coVerify { taskValidator.validateAll(task) }
+            coVerify { taskValidatorUseCase.validateAll(task) }
             coVerify { taskRepository.createTask(task) }
         }
     }
@@ -51,7 +51,7 @@ class CreateTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "")
-            coEvery { taskValidator.validateAll(task) } throws TaskTitleIsEmptyException()
+            coEvery { taskValidatorUseCase.validateAll(task) } throws TaskTitleIsEmptyException()
 
             // When & Then
             assertThrows<TaskTitleIsEmptyException> {
@@ -66,7 +66,7 @@ class CreateTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(description = "")
-            coEvery { taskValidator.validateAll(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
+            coEvery { taskValidatorUseCase.validateAll(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
 
             // When & Then
             assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
@@ -82,7 +82,7 @@ class CreateTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(state = "")
-            coEvery { taskValidator.validateAll(task) } throws TaskExceptions.TaskStateIsEmptyException()
+            coEvery { taskValidatorUseCase.validateAll(task) } throws TaskExceptions.TaskStateIsEmptyException()
 
             // When & Then
             assertThrows<TaskExceptions.TaskStateIsEmptyException> {

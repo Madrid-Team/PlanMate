@@ -15,14 +15,14 @@ import kotlin.test.Test
 class EditTaskUseCaseTest {
     private lateinit var taskRepository: TaskRepository
     private lateinit var editTaskUseCase: EditTaskUseCase
-    private lateinit var taskValidator: TaskValidator
+    private lateinit var taskValidatorUseCase: TaskValidatorUseCase
     private lateinit var testScope: TestScope
 
     @BeforeEach
     fun setup() {
         taskRepository = mockk(relaxed = true)
-        taskValidator = mockk(relaxed = true)
-        editTaskUseCase = EditTaskUseCase(taskRepository,taskValidator)
+        taskValidatorUseCase = mockk(relaxed = true)
+        editTaskUseCase = EditTaskUseCase(taskRepository,taskValidatorUseCase)
         testScope = TestScope()
     }
 
@@ -32,7 +32,7 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "Updated Task", description = "Updated description")
-            coEvery { taskValidator.validateBasic(task) } returns Unit
+            coEvery { taskValidatorUseCase.validateBasic(task) } returns Unit
             coEvery { taskRepository.editTask(task) } returns Unit
 
             // When & Then
@@ -40,7 +40,7 @@ class EditTaskUseCaseTest {
                 editTaskUseCase.editTask(task)
             }
 
-            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskValidatorUseCase.validateBasic(task) }
             coVerify(exactly = 1) { taskRepository.editTask(task) }
         }
     }
@@ -49,14 +49,14 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "")
-            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskTitleIsEmptyException()
+            coEvery { taskValidatorUseCase.validateBasic(task) } throws TaskExceptions.TaskTitleIsEmptyException()
 
             // When & Then
             assertThrows<TaskExceptions.TaskTitleIsEmptyException> {
                 editTaskUseCase.editTask(task)
             }
 
-            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskValidatorUseCase.validateBasic(task) }
             coVerify(exactly = 0) { taskRepository.editTask(any()) }
         }
     }
@@ -66,14 +66,14 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(description = "")
-            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
+            coEvery { taskValidatorUseCase.validateBasic(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
 
             // When & Then
             assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
                 editTaskUseCase.editTask(task)
             }
 
-            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskValidatorUseCase.validateBasic(task) }
             coVerify(exactly = 0) { taskRepository.editTask(any()) }
         }
     }
@@ -85,7 +85,7 @@ class EditTaskUseCaseTest {
             val task = createTask(title = "Some title", description = "Some description")
             val expectedException = TaskExceptions.TaskCannotEditException("Failed to edit task")
 
-            coEvery { taskValidator.validateBasic(task) } returns Unit
+            coEvery { taskValidatorUseCase.validateBasic(task) } returns Unit
             coEvery { taskRepository.editTask(task) } throws expectedException
 
             // When & Then
@@ -95,7 +95,7 @@ class EditTaskUseCaseTest {
 
             assert(thrown.message == "Failed to edit task")
 
-            coVerify(exactly = 1) { taskValidator.validateBasic(task) }
+            coVerify(exactly = 1) { taskValidatorUseCase.validateBasic(task) }
             coVerify(exactly = 1) { taskRepository.editTask(task) }
         }
     }

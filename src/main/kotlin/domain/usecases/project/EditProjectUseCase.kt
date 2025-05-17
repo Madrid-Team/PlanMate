@@ -8,11 +8,11 @@ import domain.repository.ProjectRepository
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val projectValidator: ProjectValidator,
-     private val getProjectByIdUseCase: GetProjectByIdUseCase
+    private val projectValidatorUseCase: ProjectValidatorUseCase,
+    private val getProjectByIdUseCase: GetProjectByIdUseCase
 ) {
     suspend fun editProject(updatedProject: Project) {
-        with(projectValidator) {
+        with(projectValidatorUseCase) {
             validate(updatedProject)
         }
         val currentProject = getProjectByIdUseCase.getProjectById(updatedProject.id.toString())

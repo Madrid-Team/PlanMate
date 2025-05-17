@@ -10,8 +10,8 @@ val useCasesModule = module {
     single { ValidatePasswordUseCase() }
     single { PasswordHashUseCase() }
     single { ValidateAdminRoleUseCase() }
-    single { TaskValidator() }
-    single { ProjectValidator() }
+    single { TaskValidatorUseCase() }
+    single { ProjectValidatorUseCase() }
 
     single { GetAllProjectsUseCase(get()) }
     single { GetProjectLogsByIdUseCase(get(), get()) }

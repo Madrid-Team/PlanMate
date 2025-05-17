@@ -5,10 +5,10 @@ import domain.repository.ProjectRepository
 
 class CreateProjectUseCase(
     private val projectRepository: ProjectRepository,
-    private val projectValidator: ProjectValidator
+    private val projectValidatorUseCase: ProjectValidatorUseCase
 ) {
     suspend fun createProject(project: Project) {
-        projectValidator.validate(project)
+        projectValidatorUseCase.validate(project)
         projectRepository.createProject(project)
     }
 }
