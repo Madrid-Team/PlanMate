@@ -14,17 +14,14 @@ import org.junit.jupiter.api.assertThrows
 
 class GetProjectLogsByIdUseCaseTest {
     private lateinit var auditLogRepository: AuditLogRepository
-    private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
     private lateinit var getProjectLogsByIdUseCase: GetProjectLogsByIdUseCase
 
     @BeforeEach
     fun setUp() {
         auditLogRepository = mockk(relaxed = true)
-        getProjectByIdUseCase = mockk(relaxed = true)
         getProjectLogsByIdUseCase =
             GetProjectLogsByIdUseCase(
-                auditLogRepository = auditLogRepository,
-                getProjectByIdUseCase = getProjectByIdUseCase
+                auditLogRepository = auditLogRepository
             )
     }
 
@@ -44,7 +41,6 @@ class GetProjectLogsByIdUseCaseTest {
             val auditLogs = listOf(log1, log2)
             val expectedLogs = listOf("Log 1", "Log 2")
 
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockProject
             coEvery { auditLogRepository.getAuditLogForProjectById(projectId) } returns auditLogs
 
             //When
@@ -60,10 +56,9 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             //Given
             val projectId = "not-found"
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             //When
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectExceptions.NoLogsFoundException> {
                 getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
@@ -74,7 +69,6 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             // Given
             val projectId = "project-empty-logs"
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
             coEvery { auditLogRepository.getAuditLogForProjectById(projectId) } returns emptyList()
 
             // When & Then

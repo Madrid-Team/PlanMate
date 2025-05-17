@@ -18,8 +18,8 @@ class ProjectAuditLogCLI(
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         printer.printMessage(String.projectAuditLogHeader)
-        val projectId = reader.readInput(String.enterProjectIDToViewAudit)
         try {
+            val projectId = reader.readInput(String.enterProjectIDToViewAudit)
             val logs = getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             printer.printMessage(String.auditLogsForProjectId.format(projectId))
             logs.forEach { log ->

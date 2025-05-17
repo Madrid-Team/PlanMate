@@ -1,6 +1,9 @@
 package presentation.feature.projects
 
+import data.source.csv.user.CurrentUserProvider
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.DeleteProjectUseCase
+import domain.usecases.project.GetProjectByIdUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
@@ -21,12 +24,22 @@ class DeleteProjectCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val deleteProjectUseCase = mockk<DeleteProjectUseCase>()
+    private val getProjectByIdUseCase: GetProjectByIdUseCase = mockk<GetProjectByIdUseCase>(relaxed = true)
+    private val addAuditLogUseCase: AddAuditLogUseCase = mockk<AddAuditLogUseCase>(relaxed = true)
+    private val currentUserProvider: CurrentUserProvider = mockk<CurrentUserProvider>(relaxed = true)
 
     private lateinit var cli: DeleteProjectCLI
 
     @BeforeEach
     fun setUp() {
-        cli = DeleteProjectCLI(inputReader, outputPrinter, deleteProjectUseCase)
+        cli = DeleteProjectCLI(
+            inputReader,
+            outputPrinter,
+            deleteProjectUseCase,
+            getProjectByIdUseCase,
+            addAuditLogUseCase,
+            currentUserProvider
+        )
     }
 
     @Test
