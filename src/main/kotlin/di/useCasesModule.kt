@@ -10,25 +10,22 @@ val useCasesModule = module {
     single { ValidatePasswordUseCase() }
     single { PasswordHashUseCase() }
     single { ValidateAdminRoleUseCase() }
-    single { CreateProjectUseCase(get(), get()) }
-    single { DeleteProjectUseCase(get(), get()) }
-    single { EditProjectUseCase(get(), get(), get()) }
-    single { CreateProjectUseCase(get(), get()) }
-    single { CreateProjectUseCase(get(), get()) }
-    single { DeleteProjectUseCase(get(), get()) }
-    single { EditProjectUseCase(get(), get(), get()) }
-    single { GetAllProjectsUseCase(get()) }
-    single { GetProjectLogsByIdUseCase(get(), get()) }
-    single { GetProjectByIdUseCase(get()) }
-    single { CreateUserUseCase(get(), get(), get(),get()) }
-    single { DeleteUserUseCase(get(), get()) }
-    single { LoginUserUseCase(get(), get(), get()) }
-    single { DeleteTaskUseCase(get()) }
-    single { CreateTaskUseCase(get(), get()) }
-    single { EditTaskUseCase(get(), get()) }
-    single { GetTaskLogsUseCase(get()) }
-    single { GetTasksByProjectIdUseCase(get()) }
     single { TaskValidator() }
     single { ProjectValidator() }
 
+    single { GetAllProjectsUseCase(get()) }
+    single { GetProjectLogsByIdUseCase(get(), get()) }
+    single { GetProjectByIdUseCase(get()) }
+    single { GetTaskLogsUseCase(get()) }
+    single { GetTasksByProjectIdUseCase(get()) }
+
+    factory { CreateProjectUseCase(get(), get()) }
+    factory { DeleteProjectUseCase(get(), get()) }
+    factory { EditProjectUseCase(get(), get(), get()) }
+    factory { CreateUserUseCase(get(), get(), get(), get()) }
+    factory { DeleteUserUseCase(get(), get()) }
+    factory { LoginUserUseCase(get(), get(), get()) }
+    factory { DeleteTaskUseCase(get()) }
+    factory { CreateTaskUseCase(get(), get()) }
+    factory { EditTaskUseCase(get(), get()) }
 }
