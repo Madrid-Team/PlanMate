@@ -1,9 +1,13 @@
 package data.mapper
 
+import data.dto.AuditLogDto
 import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
 import domain.models.authentication.User
+import domain.models.logs.AuditLog
+import domain.models.logs.EntityType.Companion.toEntityType
+import domain.models.logs.OperationType.Companion.toOperationType
 import domain.models.project.Project
 import domain.models.task.Task
 import java.util.*
@@ -52,7 +56,7 @@ fun Project.toDto() =
 
 fun TaskDto.toDomain() =
     Task(
-        id =  UUID.fromString(id),
+        id = UUID.fromString(id),
         projectId = projectId,
         description = description,
         createdBy = createdBy,
@@ -72,3 +76,34 @@ fun Task.toDto() =
         taskState = taskState,
         title = title,
     )
+
+fun AuditLogDto.toDomain() =
+    AuditLog(
+        id = UUID.fromString(id),
+        operationType = toOperationType(operationType),
+        entityName = entityName,
+        entityType = toEntityType(entityType),
+        entityId = entityId,
+        projectId = projectId,
+        username = username,
+        fieldName = fieldName,
+        oldValue = oldValue,
+        newValue = newValue,
+        timestamp = timestamp,
+    )
+
+fun AuditLog.toDto() =
+    AuditLogDto(
+        id = id.toString(),
+        operationType = operationType.name,
+        entityName = entityName,
+        entityType = entityType.name,
+        entityId = entityId,
+        projectId = projectId,
+        username = username,
+        fieldName = fieldName,
+        oldValue = oldValue,
+        newValue = newValue,
+        timestamp = timestamp,
+    )
+

@@ -6,6 +6,7 @@ const val PROJECT_COLLECTION = "projects"
 const val USER_COLLECTION = "users"
 const val DATABASE_NAME = "planmate"
 const val TASKS_COLLECTION = "tasks"
+const val AUDIT_LOG = "audit_log"
 
 
 const val CREATED_BY = "createdBy"
@@ -22,3 +23,5 @@ const val PASSWORD = "passwordHash"
 
 
 const val MATES_USER_NAMES = "matesUsernames"
+
+const val ENTITY_ID = "entityId"

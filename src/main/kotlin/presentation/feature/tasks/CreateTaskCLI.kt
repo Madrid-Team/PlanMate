@@ -5,6 +5,7 @@ import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.task.Task
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import domain.utils.PlanMateExceptions
@@ -20,13 +21,24 @@ class CreateTaskCLI(
     private val outputPrinter: OutputPrinter,
     private val createTaskUseCase: CreateTaskUseCase,
     private val getProjectByIdUseCase: GetProjectByIdUseCase,
-    private val currentUserProvider: CurrentUserProvider
+    private val currentUserProvider: CurrentUserProvider,
+    private val addAuditLogUseCase: AddAuditLogUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage(String.createTaskHeader)
         try {
             val task = readTaskInput()
             createTaskUseCase.createTask(task)
+            addAuditLogUseCase.addAuditLog(
+                AuditLog(
+                    operationType = OperationType.CREATE,
+                    entityName = task.title,
+                    entityType = EntityType.TASK,
+                    username = currentUserProvider.getCurrentUser().username,
+                    entityId = task.id.toString(),
+                    projectId = task.projectId,
+                )
+            )
             outputPrinter.printMessage(String.taskCreatedSuccessfully)
         } catch (exception: PlanMateExceptions) {
             outputPrinter.printMessage(exception.message.toString())
@@ -56,15 +68,8 @@ class CreateTaskCLI(
             description = description,
             taskState = selectedState,
             createdBy = currentUserProvider.getCurrentUser().username,
-            taskLogs = listOf(
-                AuditLog(
-                    operationType = OperationType.CREATE,
-                    entityName = title,
-                    entityType = EntityType.TASK,
-                    username = currentUserProvider.getCurrentUser().username,
-                ).toString()
-            ),
-            id = UUID.randomUUID()
+            id = UUID.randomUUID(),
+            taskLogs = emptyList()
         )
     }
 }

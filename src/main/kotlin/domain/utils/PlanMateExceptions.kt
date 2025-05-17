@@ -11,8 +11,7 @@ open class ProjectExceptions(message: String) : PlanMateExceptions(message) {
     class ProjectsFileNotExistsException : ProjectExceptions("projects.csv not found")
     class ProjectsReadWriteException : ProjectExceptions("Couldn't access projects.csv")
     class NoLogsFoundException(error: String = "There are no logs found for this task") : ProjectExceptions(error)
-    class ProjectDescriptionInvalidException :
-        ProjectExceptions("Project description invalid, please enter a valid description")
+    class ProjectDescriptionInvalidException : ProjectExceptions("Project description invalid, please enter a valid description")
 
     class ProjectDescriptionTooShortException : ProjectExceptions("Project description is too short")
 }
@@ -51,3 +50,8 @@ open class UserExceptions(message: String) : PlanMateExceptions(message) {
     class UserPasswordNotContainsLowerCaseException :
         UserExceptions("Password must contain at least one lower case letter")
 }
+
+open class AuditException(message: String) : PlanMateExceptions(message)
+
+
+

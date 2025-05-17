@@ -5,6 +5,7 @@ import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,8 @@ class CreateProjectCLI(
     private val inputReader: InputReader,
     private val outputPrinter: OutputPrinter,
     private val createProjectUseCase: CreateProjectUseCase,
-    private val currentUserProvider: CurrentUserProvider
+    private val currentUserProvider: CurrentUserProvider,
+    private val addAuditLogUseCase: AddAuditLogUseCase
 ) {
     suspend fun show() = withContext(Dispatchers.IO) {
         outputPrinter.printMessage("=== Create Project ===")
@@ -57,18 +59,18 @@ class CreateProjectCLI(
             id = UUID.randomUUID()
         )
         try {
-            val logUseCase = async {
-                    AuditLog(
+
+            createProjectUseCase.createProject(project)
+
+            addAuditLogUseCase.addAuditLog(
+                AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = project.name,
                     entityType = EntityType.PROJECT,
                     username = project.createdBy,
-                 ).toString()
-            }
-            val projectWithLog = project.copy(projectLogs = listOf(logUseCase.await()))
-
-          createProjectUseCase.createProject(projectWithLog)
-
+                    entityId = project.id.toString(),
+                )
+            )
             outputPrinter.printMessage("Project created successfully")
         } catch (e: ProjectExceptions) {
             outputPrinter.printMessage("Failed to create project: ${e.message}")

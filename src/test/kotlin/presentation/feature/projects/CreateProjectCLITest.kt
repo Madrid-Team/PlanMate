@@ -3,6 +3,7 @@ package presentation.feature.projects
 import data.dto.authentication.UserDto
 import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.CreateProjectUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.*
@@ -17,6 +18,7 @@ class CreateProjectCLITest {
     private val inputReader = mockk<InputReader>()
     private val outputPrinter = mockk<OutputPrinter>(relaxed = true)
     private val createProjectUseCase = mockk<CreateProjectUseCase>()
+    private val addAuditLogUseCase = mockk<AddAuditLogUseCase>()
     private val currentUserProvider = mockk<CurrentUserProvider>()
     private val userMock = mockk<UserDto>()
     private lateinit var cli: CreateProjectCLI
@@ -33,7 +35,7 @@ class CreateProjectCLITest {
         every { userMock.username } returns "test-user"
         every { currentUserProvider.getCurrentUser() } returns userMock
 
-        cli = CreateProjectCLI(inputReader, outputPrinter, createProjectUseCase, currentUserProvider)
+        cli = CreateProjectCLI(inputReader, outputPrinter, createProjectUseCase, currentUserProvider,addAuditLogUseCase)
 
         mockkStatic(UUID::class)
         every { UUID.randomUUID() } returns mockUUID

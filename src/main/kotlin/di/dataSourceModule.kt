@@ -1,13 +1,18 @@
 package di
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import data.dto.AuditLogDto
 import data.dto.authentication.UserDto
 import data.dto.project.ProjectDto
 import data.dto.task.TaskDto
+import data.source.AuditExternalDataSource
+import data.source.ProjectExternalDataSource
+import data.source.TaskExternalDataSource
+import data.source.UserExternalDataSource
 import data.source.csv.project.*
 import data.source.csv.task.*
 import data.source.csv.user.*
-import data.source.mongoDb.MongoClientProvider
+import data.source.mongoDb.*
 import data.utils.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -59,7 +64,7 @@ val dataSourceModule = module {
 
     single { MongoClientProvider() }
     single { get<MongoClientProvider>().getDatabase() }
-    
+
     single { TaskManager() }
     single { ProjectManager() }
     single<CurrentUserProvider> { UserMemoryDataSource() }
@@ -67,12 +72,14 @@ val dataSourceModule = module {
     single(named("projects")) { get<MongoDatabase>().getCollection<ProjectDto>(PROJECT_COLLECTION) }
     single(named("users")) { get<MongoDatabase>().getCollection<UserDto>(USER_COLLECTION) }
     single(named("tasks")) { get<MongoDatabase>().getCollection<TaskDto>(TASKS_COLLECTION) }
+    single(named("audit_log")) { get<MongoDatabase>().getCollection<AuditLogDto>(AUDIT_LOG) }
 
 
 
     single<UserExternalDataSource> { UserMongoDBDataSource(get(named("users"))) }
     single<TaskExternalDataSource> { TaskMongoDBDataSource(get(named("tasks"))) }
     single<ProjectExternalDataSource> { ProjectMongoDBDataSource(get(named("projects"))) }
+    single<AuditExternalDataSource> { AuditMongoDBDataSource(get(named("audit_log"))) }
 
 
 }
