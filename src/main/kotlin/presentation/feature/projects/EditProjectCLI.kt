@@ -21,16 +21,34 @@ class EditProjectCLI(
         outputPrinter.printMessage(String.editProjectHeader)
         val id = inputReader.readInput(String.enterProjectIdToEdit)
         try {
-            val currentProject = getProjectByIdUseCase.getProjectById(id)
+            var currentProject = getProjectByIdUseCase.getProjectById(id)
             hasChanges = false
 
             while (true) {
                 outputPrinter.printMessage(String.chooseFieldsEditProject)
 
                 when (inputReader.readInput(String.selectOption)) {
-                    String.selectionOne -> editProjectName(currentProject)
-                    String.selectionTwo -> editProjectDescription(currentProject)
-                    String.selectionThree -> editProjectStates(currentProject)
+                    String.selectionOne -> {
+                        val result = editProjectName(currentProject)
+                        if (result != null) {
+                            currentProject = result
+                        }
+                    }
+
+                    String.selectionTwo -> {
+                        val result = editProjectDescription(currentProject)
+                        if (result != null) {
+                            currentProject = result
+                        }
+                    }
+
+                    String.selectionThree -> {
+                        val result = editProjectStates(currentProject)
+                        if (result != null) {
+                            currentProject = result
+                        }
+                    }
+
                     String.selectionFour -> {
                         editProjectFinished()
                         break
@@ -44,31 +62,35 @@ class EditProjectCLI(
         }
     }
 
-    suspend fun editProjectName(currentProject: Project) {
+    suspend fun editProjectName(currentProject: Project): Project? {
         val newName = inputReader.readInput("Enter the new name:")
         try {
             val newProject = currentProject.copy(name = newName)
             editProjectUseCase.editProject(newProject)
             outputPrinter.printMessage("Project name updated successfully.")
             hasChanges = true
+            return newProject
         } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage("Failed to update project description: ${exception.message}")
+            return null
         }
     }
 
-    suspend fun editProjectDescription(currentProject: Project) {
+    suspend fun editProjectDescription(currentProject: Project): Project? {
         val newDescription = inputReader.readInput("Enter the new description:")
         try {
-            val newDescription = currentProject.copy(description = newDescription)
-            editProjectUseCase.editProject(newDescription)
+            val updatedProject = currentProject.copy(description = newDescription)
+            editProjectUseCase.editProject(updatedProject)
             outputPrinter.printMessage("Project description updated successfully.")
             hasChanges = true
+            return updatedProject
         } catch (exception: ProjectExceptions) {
             outputPrinter.printMessage("Failed to update project description: ${exception.message}")
+            return null
         }
     }
 
-    suspend fun editProjectStates(currentProject: Project) {
+    suspend fun editProjectStates(currentProject: Project): Project? {
         val taskStatesMenu =
             currentProject.projectStates.mapIndexed { index, state -> "${index + 1}. $state" }
                 .joinToString("\n")
@@ -85,6 +107,7 @@ class EditProjectCLI(
                     editProjectUseCase.editProject(newProject)
                     outputPrinter.printMessage("Project state updated successfully.")
                     hasChanges = true
+                    return newProject
                 } catch (e: ProjectExceptions) {
                     outputPrinter.printMessage("Failed to update project state: ${e.message}")
                 }
@@ -93,6 +116,7 @@ class EditProjectCLI(
                 println("Invalid selection. Please enter a valid state id ")
             }
         }
+        return null
     }
 
     private fun editProjectFinished() {

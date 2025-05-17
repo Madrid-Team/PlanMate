@@ -1,7 +1,9 @@
 package domain.usecases.project
 
+import data.source.csv.user.CurrentUserProvider
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -17,13 +19,23 @@ class EditProjectUseCaseTest {
     private lateinit var editProjectUseCase: EditProjectUseCase
     private lateinit var projectValidator: ProjectValidator
     private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
+    private lateinit var addAuditLogUseCase: AddAuditLogUseCase
+    private lateinit var currentUserProvider: CurrentUserProvider
 
     @BeforeEach
     fun setUp() {
         projectRepository = mockk(relaxed = true)
         projectValidator = mockk(relaxed = true)
         getProjectByIdUseCase = mockk(relaxed = true)
-        editProjectUseCase = EditProjectUseCase(projectRepository, projectValidator, getProjectByIdUseCase)
+        addAuditLogUseCase = mockk(relaxed = true)
+        currentUserProvider = mockk(relaxed = true)
+        editProjectUseCase = EditProjectUseCase(
+            projectRepository,
+            projectValidator,
+            getProjectByIdUseCase,
+            addAuditLogUseCase,
+            currentUserProvider
+        )
     }
 
     @Test

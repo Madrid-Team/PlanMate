@@ -1,87 +1,73 @@
 package domain.usecases.project
 
+import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
+import domain.usecases.logs.AddAuditLogUseCase
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
     private val projectValidator: ProjectValidator,
-     private val getProjectByIdUseCase: GetProjectByIdUseCase
+    private val getProjectByIdUseCase: GetProjectByIdUseCase,
+    private val addAuditLogUseCase: AddAuditLogUseCase,
+    private val currentUserProvider: CurrentUserProvider
 ) {
     suspend fun editProject(updatedProject: Project) {
         with(projectValidator) {
             validate(updatedProject)
         }
         val currentProject = getProjectByIdUseCase.getProjectById(updatedProject.id.toString())
-        projectRepository.editProject(
-            updatedProject.copy(
-                projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(
-                    currentProject,
-                    updatedProject
-                )
-            )
-        )
+        projectRepository.editProject(updatedProject)
+        updateProjectLogs(currentProject = currentProject, updatedProject = updatedProject)
     }
 
-    private fun getLogsForAllChangesInUpdatedProject(currentProject: Project, updatedProject: Project): List<String> {
-        val listOfLogs = mutableListOf<String>()
-
+    private suspend fun updateProjectLogs(currentProject: Project, updatedProject: Project) {
         if (updatedProject.name != currentProject.name) {
-            listOfLogs.add(
-                    AuditLog(
-                        operationType = OperationType.UPDATE,
-                        entityName = currentProject.name,
-                        entityType = EntityType.PROJECT,
-                        username = currentProject.createdBy,
-                        fieldName = "name",
-                        oldValue = currentProject.name,
-                        newValue = updatedProject.name,
-                        id = TODO(),
-                        entityId = TODO(),
-                        projectId = TODO(),
-                        timestamp = TODO(),
-                    ).toString()
+            addAuditLogUseCase.addAuditLog(
+                AuditLog(
+                    operationType = OperationType.UPDATE,
+                    entityName = updatedProject.name,
+                    entityType = EntityType.PROJECT,
+                    entityId = updatedProject.id.toString(),
+                    username = currentUserProvider.getCurrentUser().username,
+                    fieldName = "name",
+                    oldValue = currentProject.name,
+                    newValue = updatedProject.name,
+                )
             )
         }
 
         if (updatedProject.description != currentProject.description) {
-            listOfLogs.add(
+            addAuditLogUseCase.addAuditLog(
                 AuditLog(
                     operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
+                    entityName = updatedProject.name,
                     entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
+                    entityId = updatedProject.id.toString(),
+                    username = currentUserProvider.getCurrentUser().username,
                     fieldName = "description",
                     oldValue = currentProject.description,
                     newValue = updatedProject.description,
-                    id = TODO(),
-                    entityId = TODO(),
-                    projectId = TODO(),
-                    timestamp = TODO(),
-                ).toString()
+                )
             )
         }
 
         if (updatedProject.projectState != currentProject.projectState) {
-            listOfLogs.add(
+            addAuditLogUseCase.addAuditLog(
                 AuditLog(
                     operationType = OperationType.UPDATE,
-                    entityName = currentProject.name,
+                    entityName = updatedProject.name,
                     entityType = EntityType.PROJECT,
-                    username = currentProject.createdBy,
-                    fieldName = "project state",
+                    entityId = updatedProject.id.toString(),
+                    username = currentUserProvider.getCurrentUser().username,
+                    fieldName = "project State",
                     oldValue = currentProject.projectState,
                     newValue = updatedProject.projectState,
-                    id = TODO(),
-                    entityId = TODO(),
-                    projectId = TODO(),
-                    timestamp = TODO(),
-                ).toString()
+                )
             )
         }
-        return listOfLogs
     }
 }
