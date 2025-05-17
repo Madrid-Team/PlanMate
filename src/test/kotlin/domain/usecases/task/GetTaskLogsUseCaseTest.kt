@@ -1,6 +1,9 @@
 package domain.usecases.task
 
-import domain.repository.TaskRepository
+import domain.models.logs.AuditLog
+import domain.models.logs.EntityType
+import domain.models.logs.OperationType
+import domain.repository.AuditLogRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -13,14 +16,14 @@ import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 
 class GetTaskLogsUseCaseTest {
-    private lateinit var taskRepository: TaskRepository
     private lateinit var getTaskLogsUseCase: GetTaskLogsUseCase
     private lateinit var testScope: TestScope
+    private lateinit var auditLoRepository: AuditLogRepository
 
     @BeforeEach
     fun setup() {
-        taskRepository = mockk()
-        getTaskLogsUseCase = GetTaskLogsUseCase(taskRepository)
+        auditLoRepository = mockk(relaxed = true)
+        getTaskLogsUseCase = GetTaskLogsUseCase(auditLoRepository)
         testScope = TestScope()
     }
 
@@ -30,15 +33,23 @@ class GetTaskLogsUseCaseTest {
         testScope.runTest {
             // Given
             val taskId = "valid_task_id"
-            val logs = listOf("Task created", "Task updated")
-            coEvery { taskRepository.getTaskLogsByTaskId(taskId) } returns logs
+            val logs = listOf(
+                AuditLog(
+                    operationType = OperationType.UPDATE,
+                    entityName = "",
+                    entityType = EntityType.TASK,
+                    entityId = "",
+                    username = ""
+                )
+            )
+            coEvery { auditLoRepository.getAuditLogForTaskById(taskId) } returns logs
 
             // When & Then
             assertDoesNotThrow {
                 getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
-            coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
+            coVerify(exactly = 1) { auditLoRepository.getAuditLogForTaskById(taskId) }
         }
     }
 
@@ -47,14 +58,14 @@ class GetTaskLogsUseCaseTest {
         testScope.runTest {
             // Given
             val taskId = "valid_task_id"
-            coEvery { taskRepository.getTaskLogsByTaskId(taskId) } returns emptyList()
+            coEvery { auditLoRepository.getAuditLogForTaskById(taskId) } returns emptyList()
 
             // When & Then
             assertThrows<TaskExceptions.NoLogsFoundException> {
                 getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
-            coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
+            coVerify(exactly = 1) { auditLoRepository.getAuditLogForTaskById(taskId) }
         }
     }
 

@@ -1,9 +1,8 @@
 package domain.usecases.project
 
-import data.dto.AuditLogDto
 import domain.models.logs.AuditLog
+import domain.models.project.Project
 import domain.repository.AuditLogRepository
-import domain.repository.ProjectRepository
 import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.every
@@ -20,9 +19,13 @@ class GetProjectLogsByIdUseCaseTest {
 
     @BeforeEach
     fun setUp() {
-        auditLogRepository = mockk()
-        getProjectByIdUseCase = mockk()
-        getProjectLogsByIdUseCase = GetProjectLogsByIdUseCase(auditLogRepository, getProjectByIdUseCase)
+        auditLogRepository = mockk(relaxed = true)
+        getProjectByIdUseCase = mockk(relaxed = true)
+        getProjectLogsByIdUseCase =
+            GetProjectLogsByIdUseCase(
+                auditLogRepository = auditLogRepository,
+                getProjectByIdUseCase = getProjectByIdUseCase
+            )
     }
 
     @Test
@@ -30,18 +33,19 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             //Given
             val projectId = "project-123"
+            val mockProject = mockk<Project>()
 
-            val log1 = mockk<AuditLog> {
-                every { toString() } returns "Log 1"
-            }
-            val log2 = mockk<AuditLog> {
-                every { toString() } returns "Log 2"
-            }
+            val log1 = mockk<AuditLog>()
+            every { log1.toString() } returns "Log 1"
+
+            val log2 = mockk<AuditLog>()
+            every { log2.toString() } returns "Log 2"
+
             val auditLogs = listOf(log1, log2)
             val expectedLogs = listOf("Log 1", "Log 2")
 
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
-            coEvery { auditLogRepository.getAuditLogForProjectById(projectId)} returns auditLogs
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockProject
+            coEvery { auditLogRepository.getAuditLogForProjectById(projectId) } returns auditLogs
 
             //When
             val result = getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)

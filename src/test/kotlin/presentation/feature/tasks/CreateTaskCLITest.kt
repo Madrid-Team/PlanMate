@@ -2,11 +2,15 @@ package presentation.feature.tasks
 
 import data.source.csv.user.CurrentUserProvider
 import domain.repository.TaskRepository
+import domain.usecases.logs.AddAuditLogUseCase
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import domain.usecases.task.TaskValidator
 import domain.utils.ProjectExceptions
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verifySequence
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -26,6 +30,8 @@ class CreateTaskCLITest {
     private val currentUserProvider = mockk<CurrentUserProvider>(relaxed = true)
     private val taskValidator = mockk<TaskValidator>(relaxed = true)
     private val taskRepository = mockk<TaskRepository>(relaxed = true)
+    private val addAuditLogUseCase = mockk<AddAuditLogUseCase>(relaxed = true)
+
 
     private lateinit var cli: CreateTaskCLI
     private lateinit var testScope: TestScope
@@ -37,7 +43,8 @@ class CreateTaskCLITest {
             outputPrinter,
             createTaskUseCase,
             getProjectByIdUseCase,
-            currentUserProvider
+            currentUserProvider,
+            addAuditLogUseCase
         )
         testScope = TestScope()
     }
