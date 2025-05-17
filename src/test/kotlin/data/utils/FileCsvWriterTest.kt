@@ -1,18 +1,13 @@
 package data.utils
 
-import com.google.common.base.Verify.verify
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
-import kotlin.test.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
+import kotlin.test.Test
 
 class FileCsvWriterTest {
 

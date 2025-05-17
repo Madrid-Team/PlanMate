@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
@@ -40,7 +40,7 @@ class CreateTaskCLI(
         val title = inputReader.readInput(String.enterTaskTitle)
         val description = inputReader.readInput(String.enterTaskDescription)
 
-        val project = getProjectByIdUseCase.getById(projectId)
+        val project = getProjectByIdUseCase.getProjectById(projectId)
 
         outputPrinter.printMessage(String.availableTaskStates)
         project.taskStates.forEachIndexed { index, state ->
@@ -56,7 +56,7 @@ class CreateTaskCLI(
             description = description,
             taskState = selectedState,
             createdBy = currentUserProvider.getCurrentUser().username,
-            logs = listOf(
+            taskLogs = listOf(
                 AuditLog(
                     operationType = OperationType.CREATE,
                     entityName = title,

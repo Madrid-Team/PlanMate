@@ -31,14 +31,14 @@ class GetTaskLogsUseCaseTest {
             // Given
             val taskId = "valid_task_id"
             val logs = listOf("Task created", "Task updated")
-            coEvery { taskRepository.getTaskLogsByID(taskId) } returns logs
+            coEvery { taskRepository.getTaskLogsByTaskId(taskId) } returns logs
 
             // When & Then
             assertDoesNotThrow {
-                getTaskLogsUseCase(taskId)
+                getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
-            coVerify(exactly = 1) { taskRepository.getTaskLogsByID(taskId) }
+            coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
         }
     }
 
@@ -47,14 +47,14 @@ class GetTaskLogsUseCaseTest {
         testScope.runTest {
             // Given
             val taskId = "valid_task_id"
-            coEvery { taskRepository.getTaskLogsByID(taskId) } returns emptyList()
+            coEvery { taskRepository.getTaskLogsByTaskId(taskId) } returns emptyList()
 
             // When & Then
             assertThrows<TaskExceptions.NoLogsFoundException> {
-                getTaskLogsUseCase(taskId)
+                getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 
-            coVerify(exactly = 1) { taskRepository.getTaskLogsByID(taskId) }
+            coVerify(exactly = 1) { taskRepository.getTaskLogsByTaskId(taskId) }
         }
     }
 

@@ -7,6 +7,8 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
 import data.dto.project.ProjectDto
+import data.source.csv.project.ProjectExternalDataSource
+import data.source.mongoDb.ProjectMongoDBDataSource
 import data.source.mongoDb.MongoClientProvider
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
@@ -18,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.bson.Document
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.TestInstance
@@ -31,6 +34,7 @@ class ProjectMongoDBDataSourceTest {
     private lateinit var database: MongoDatabase
     private lateinit var projectMongoDBDataSource: ProjectExternalDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
+    private lateinit var projectCollection: MongoCollection<ProjectDto>
     val testScope = TestScope()
 
 
@@ -38,10 +42,11 @@ class ProjectMongoDBDataSourceTest {
     fun setup() {
         mongoClientProvider = mockk(relaxed = true)
         database = mongoClientProvider.getDatabase()
-        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database, "projects_test", "projects")
+        copyCollectionIfDifferentToTest = CopyCollectionIfDifferentToTest(database,  "projects")
+        projectCollection=database.getCollection<ProjectDto>("Collection_Test")
         runBlocking {
             projectMongoDBDataSource =
-                ProjectMongoDBDataSource(database.getCollection<ProjectDto>("projects_test"))
+                ProjectMongoDBDataSource(projectCollection)
         }
     }
 
@@ -171,7 +176,7 @@ class ProjectMongoDBDataSourceTest {
             )
 
             // When
-            val result = projectMongoDBDataSource.editProject(nonExistentProject)
+             projectMongoDBDataSource.editProject(nonExistentProject)
 
             // Then
             val found =
@@ -265,6 +270,11 @@ class ProjectMongoDBDataSourceTest {
 
     @AfterAll
     fun cleanup() {
+        runTest {
+            projectCollection.deleteMany(Document())
+            clearAllMocks()
+
+        }
         mongoClientProvider.close()
 
     }

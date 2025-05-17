@@ -2,7 +2,7 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.task.TaskExternalDataSource
+import data.source.csv.task.TaskExternalDataSource
 import data.utils.toTaskException
 import domain.models.task.Task
 import domain.repository.TaskRepository
@@ -14,7 +14,7 @@ class TaskRepositoryImpl(
         taskExternalDataSource.editTask(task.toDto())
     }
 
-    override suspend fun deleteTask(taskId: String) = executeTaskOperation {
+    override suspend fun deleteTaskByTaskId(taskId: String) = executeTaskOperation {
         taskExternalDataSource.deleteTask(taskId)
     }
 
@@ -27,7 +27,7 @@ class TaskRepositoryImpl(
         tasks.map { task -> task.toDomain() }
     }
 
-    override suspend fun getTaskLogsByID(taskId: String): List<String> = executeTaskOperation {
+    override suspend fun getTaskLogsByTaskId(taskId: String): List<String> = executeTaskOperation {
         taskExternalDataSource.getTaskLogsByID(taskId)
     }
 

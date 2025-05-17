@@ -40,7 +40,7 @@ class DeleteTaskCLITest {
         // Given
         val taskId = "123"
         every { inputReader.readInput() } returns taskId
-        coEvery { deleteTaskUseCase.deleteTask(taskId) } just Runs
+        coEvery { deleteTaskUseCase.deleteTaskByTaskId(taskId) } just Runs
 
         // When
         deleteTaskCLI.show()
@@ -50,7 +50,7 @@ class DeleteTaskCLITest {
             outputPrinter.printMessage(String.deleteTaskHeader)
             outputPrinter.printMessage(String.enterTaskIdToDelete)
             inputReader.readInput()
-            deleteTaskUseCase.deleteTask(taskId)
+            deleteTaskUseCase.deleteTaskByTaskId(taskId)
             outputPrinter.printMessage(String.deleteTaskSuccess)
         }
     }
@@ -61,7 +61,7 @@ class DeleteTaskCLITest {
         val taskId = "123"
         val exception = TaskExceptions.TaskNotFoundException(taskId)
         every { inputReader.readInput() } returns taskId
-        coEvery { deleteTaskUseCase.deleteTask(taskId) } throws exception
+        coEvery { deleteTaskUseCase.deleteTaskByTaskId(taskId) } throws exception
 
         // When
         deleteTaskCLI.show()
@@ -71,7 +71,7 @@ class DeleteTaskCLITest {
             outputPrinter.printMessage(String.deleteTaskHeader)
             outputPrinter.printMessage(String.enterTaskIdToDelete)
             inputReader.readInput()
-            deleteTaskUseCase.deleteTask(taskId)
+            deleteTaskUseCase.deleteTaskByTaskId(taskId)
             outputPrinter.printError(String.deleteTaskException.format(exception))
         }
     }
@@ -85,7 +85,7 @@ class DeleteTaskCLITest {
             val taskId = "456"
             val exception = TaskExceptions.TaskCannotDeleteException()
             every { inputReader.readInput() } returns taskId
-            coEvery { deleteTaskUseCase.deleteTask(taskId) } throws exception
+            coEvery { deleteTaskUseCase.deleteTaskByTaskId(taskId) } throws exception
 
             // When
             deleteTaskCLI.show()

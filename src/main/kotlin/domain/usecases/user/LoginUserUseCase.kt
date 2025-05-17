@@ -4,9 +4,6 @@ package domain.usecases.user
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utils.NameValidationResult
-import domain.utils.PasswordValidationResult
-import domain.utils.UserExceptions
 
 class LoginUserUseCase(
     private val userRepository: UserRepository,

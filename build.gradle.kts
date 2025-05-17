@@ -34,6 +34,9 @@ dependencies {
     implementation(platform("org.mongodb:mongodb-driver-bom:5.4.0"))
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine")
     implementation("org.mongodb:bson-kotlinx:5.4.0")
+    //  Kotlinx DateTime
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+
 
 
 }

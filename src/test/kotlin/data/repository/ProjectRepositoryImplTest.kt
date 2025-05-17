@@ -4,9 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.createUserDto
 import data.mapper.toDto
-import data.source.project.ProjectExternalDataSource
-import data.source.project.ProjectManager
-import data.source.user.CurrentUserProvider
+import data.source.csv.project.ProjectExternalDataSource
+import data.source.csv.project.ProjectManager
+import data.source.csv.user.CurrentUserProvider
 import domain.models.project.Project
 import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
@@ -72,7 +72,7 @@ class ProjectRepositoryImplTest {
             coEvery { projectExternalDataSource.getProjects(mockk()) } returns listOf(projectDto)
 
             assertDoesNotThrow {
-                repository.deleteProject(project.id.toString())
+                repository.deleteProjectByProjectId(project.id.toString())
             }
         }
     }
@@ -98,7 +98,7 @@ class ProjectRepositoryImplTest {
             every { projectManager.getProjects() } returns listOf(projectDto)
 
             assertDoesNotThrow {
-                repository.getProjectLogsById(projectDto.id)
+                repository.getProjectLogsByProjectId(projectDto.id)
             }
         }
     }

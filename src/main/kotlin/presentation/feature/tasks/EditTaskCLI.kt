@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.models.task.Task
 import domain.usecases.task.EditTaskUseCase
 import domain.utils.TaskExceptions
@@ -32,7 +32,7 @@ class EditTaskCLI(
             description = description,
             taskState = String.empty,
             createdBy = currentUserProvider.getCurrentUser().username,
-            logs = listOf()
+            taskLogs = listOf()
         )
 
         try {

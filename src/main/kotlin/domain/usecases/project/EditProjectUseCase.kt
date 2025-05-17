@@ -1,10 +1,10 @@
 package domain.usecases.project
 
+import domain.models.logs.AuditLog
 import domain.models.logs.EntityType
 import domain.models.logs.OperationType
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.models.logs.AuditLog
 
 class EditProjectUseCase(
     private val projectRepository: ProjectRepository,
@@ -15,7 +15,7 @@ class EditProjectUseCase(
         with(projectValidator) {
             validate(updatedProject)
         }
-        val currentProject = getProjectByIdUseCase.getById(updatedProject.id.toString())
+        val currentProject = getProjectByIdUseCase.getProjectById(updatedProject.id.toString())
         projectRepository.editProject(
             updatedProject.copy(
                 projectLogs = currentProject.projectLogs + getLogsForAllChangesInUpdatedProject(

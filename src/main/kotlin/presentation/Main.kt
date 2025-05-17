@@ -1,6 +1,6 @@
 package presentation
 
-import di.modules.*
+import di.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

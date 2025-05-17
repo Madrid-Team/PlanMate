@@ -3,7 +3,6 @@ package presentation.feature.projects
 import domain.models.project.Project
 import domain.usecases.project.EditProjectUseCase
 import domain.usecases.project.GetProjectByIdUseCase
-import domain.utils.PlanMateExceptions
 import domain.utils.ProjectExceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -22,7 +21,7 @@ class EditProjectCLI(
         outputPrinter.printMessage(String.editProjectHeader)
         val id = inputReader.readInput(String.enterProjectIdToEdit)
         try {
-            val currentProject = getProjectByIdUseCase.getById(id)
+            val currentProject = getProjectByIdUseCase.getProjectById(id)
             hasChanges = false
 
             while (true) {

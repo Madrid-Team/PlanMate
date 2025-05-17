@@ -18,7 +18,7 @@ class DeleteTaskCLI(
         outputPrinter.printMessage(String.enterTaskIdToDelete)
         val taskId = inputReader.readInput()
         try {
-            deleteTaskUseCase.deleteTask(taskId)
+            deleteTaskUseCase.deleteTaskByTaskId(taskId)
             outputPrinter.printMessage(String.deleteTaskSuccess)
         } catch (exception: TaskExceptions) {
             outputPrinter.printError(String.deleteTaskException.format(exception))

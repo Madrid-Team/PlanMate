@@ -34,15 +34,15 @@ class DeleteUserUseCaseTest {
             role = "ADMIN"
         )
 
-        coEvery { userRepository.getUserById(requesterId.toString()) } returns adminUser
+        coEvery { userRepository.getUserByUserId(requesterId.toString()) } returns adminUser
         every { validateAdminRoleUseCase.validate("ADMIN") } returns true
-        coEvery { userRepository.deleteUser(targetId.toString()) } just Runs
+        coEvery { userRepository.deleteUserByUserId(targetId.toString()) } just Runs
 
         // When
         deleteUserUseCase.deleteUser(requesterId.toString(), targetId.toString())
 
         // Then
-        coVerify(exactly = 1) { userRepository.deleteUser(targetId.toString()) }
+        coVerify(exactly = 1) { userRepository.deleteUserByUserId(targetId.toString()) }
     }
 
     @Test
@@ -57,7 +57,7 @@ class DeleteUserUseCaseTest {
             role = "USER"
         )
 
-        coEvery { userRepository.getUserById(requesterId.toString()) } returns normalUser
+        coEvery { userRepository.getUserByUserId(requesterId.toString()) } returns normalUser
         every { validateAdminRoleUseCase.validate("USER") } returns false
 
         // When & Then
@@ -65,6 +65,6 @@ class DeleteUserUseCaseTest {
             deleteUserUseCase.deleteUser(requesterId.toString(), targetId.toString())
         }
 
-        coVerify(exactly = 0) { userRepository.deleteUser(any()) }
+        coVerify(exactly = 0) { userRepository.deleteUserByUserId(any()) }
     }
 }

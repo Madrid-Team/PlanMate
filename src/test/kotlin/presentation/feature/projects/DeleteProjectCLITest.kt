@@ -36,7 +36,7 @@ class DeleteProjectCLITest {
 
         every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
         every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
-        coEvery { deleteProjectUseCase.deleteProject(projectId) } just runs
+        coEvery { deleteProjectUseCase.deleteProjectByProjectId(projectId) } just runs
 
         // When
         cli.show()
@@ -45,7 +45,7 @@ class DeleteProjectCLITest {
         verify { outputPrinter.printMessage(String.deleteProjectHeader) }
         verify { outputPrinter.printMessage(String.deleteProjectSuccess) }
 
-        coVerify { deleteProjectUseCase.deleteProject(projectId) }
+        coVerify { deleteProjectUseCase.deleteProjectByProjectId(projectId) }
     }
 
     @Test
@@ -61,7 +61,7 @@ class DeleteProjectCLITest {
         // Then
         verify { outputPrinter.printMessage(String.deleteProjectHeader) }
         verify { outputPrinter.printMessage(String.deletionCancelled) }
-        coVerify(exactly = 0) { deleteProjectUseCase.deleteProject(any()) }
+        coVerify(exactly = 0) { deleteProjectUseCase.deleteProjectByProjectId(any()) }
     }
 
     @Test
@@ -71,7 +71,7 @@ class DeleteProjectCLITest {
         val exception = ProjectExceptions.ProjectNotFoundException()
         every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
         every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
-        coEvery { deleteProjectUseCase.deleteProject(projectId) } throws exception
+        coEvery { deleteProjectUseCase.deleteProjectByProjectId(projectId) } throws exception
 
         // When
         cli.show()
@@ -89,7 +89,7 @@ class DeleteProjectCLITest {
         val exception = ProjectExceptions("Unexpected error")
         every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
         every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
-        coEvery { deleteProjectUseCase.deleteProject(projectId) } throws exception
+        coEvery { deleteProjectUseCase.deleteProjectByProjectId(projectId) } throws exception
 
         // When
         cli.show()

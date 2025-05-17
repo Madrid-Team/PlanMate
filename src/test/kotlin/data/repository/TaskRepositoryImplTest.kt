@@ -1,9 +1,9 @@
 package data.repository
 
 import data.mapper.toDomain
-import data.source.task.TaskExternalDataSource
-import data.source.task.TaskManager
-import data.source.task.helperTaskDto
+import data.source.csv.task.TaskExternalDataSource
+import data.source.csv.task.TaskManager
+import data.source.csv.task.helperTaskDto
 import domain.repository.TaskRepository
 import domain.utils.TaskExceptions
 import io.mockk.coEvery
@@ -86,7 +86,7 @@ class TaskRepositoryImplTest {
         runTest {
             coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } returns Unit
 
-            assertDoesNotThrow { taskRepository.deleteTask(taskDto.projectId) }
+            assertDoesNotThrow { taskRepository.deleteTaskByTaskId(taskDto.projectId) }
         }
     }
 
@@ -96,14 +96,14 @@ class TaskRepositoryImplTest {
             coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } throws TaskExceptions.TaskCannotDeleteException(
                 "Failed to delete task"
             )
-            assertThrows<TaskExceptions.TaskCannotDeleteException> { taskRepository.deleteTask(taskDto.id) }
+            assertThrows<TaskExceptions.TaskCannotDeleteException> { taskRepository.deleteTaskByTaskId(taskDto.id) }
         }
     }
 
     @Test
     fun `getTaskLogsById returns task's logs when it exists in tasks list`() {
         runTest {
-            assertDoesNotThrow { taskRepository.getTaskLogsByID(taskDto.projectId) }
+            assertDoesNotThrow { taskRepository.getTaskLogsByTaskId(taskDto.projectId) }
         }
     }
 
@@ -114,7 +114,7 @@ class TaskRepositoryImplTest {
             coEvery { taskExternalDataSource.getTaskLogsByID(taskId = taskDto.id) } throws TaskExceptions.NoLogsFoundException(
                 "Failed to get task logs"
             )
-            assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByID(taskDto.id) }
+            assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByTaskId(taskDto.id) }
         }
     }
 }

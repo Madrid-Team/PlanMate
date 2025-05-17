@@ -28,11 +28,11 @@ class GetProjectLogsByIdUseCaseTest {
             val projectId = "project-123"
             val expectedLogs = listOf("Log 1", "Log 2")
 
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.getProjectLogsById(projectId) } returns expectedLogs
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
+            coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns expectedLogs
 
             //When
-            val result = getProjectLogsByIdUseCase.execute(projectId)
+            val result = getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
 
             //Then
             assert(result == expectedLogs)
@@ -44,11 +44,11 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             //Given
             val projectId = "not-found"
-            coEvery { getProjectByIdUseCase.getById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
 
             //When
             assertThrows<ProjectExceptions.ProjectNotFoundException> {
-                getProjectLogsByIdUseCase.execute(projectId)
+                getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
     }
@@ -58,12 +58,12 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             // Given
             val projectId = "project-empty-logs"
-            coEvery { getProjectByIdUseCase.getById(projectId) } returns mockk()
-            coEvery { projectRepository.getProjectLogsById(projectId) } returns emptyList()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } returns mockk()
+            coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns emptyList()
 
             // When & Then
             assertThrows<ProjectExceptions.NoLogsFoundException> {
-                getProjectLogsByIdUseCase.execute(projectId)
+                getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
     }

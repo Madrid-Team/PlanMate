@@ -1,14 +1,8 @@
 package presentation
 
-import com.google.common.truth.Truth.assertThat
 import data.utils.PasswordHasher
 import domain.models.authentication.User
-import domain.models.logs.CurrentUser
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,12 +11,7 @@ import presentation.components.OutputPrinter
 import presentation.feature.AuthenticationCLI
 import presentation.feature.admin.AdminCLI
 import presentation.feature.mate.MateCLI
-import presentation.utils.exit
-import presentation.utils.goodbye
-import presentation.utils.invalidOption
-import presentation.utils.login
-import presentation.utils.mainMenu
-import presentation.utils.welcomeMessage
+import presentation.utils.*
 import java.util.*
 
 class PlanMateCLITest {

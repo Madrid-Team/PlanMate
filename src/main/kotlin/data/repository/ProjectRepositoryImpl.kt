@@ -2,8 +2,8 @@ package data.repository
 
 import data.mapper.toDomain
 import data.mapper.toDto
-import data.source.project.ProjectExternalDataSource
-import data.source.user.CurrentUserProvider
+import data.source.csv.project.ProjectExternalDataSource
+import data.source.csv.user.CurrentUserProvider
 import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
@@ -23,7 +23,7 @@ class ProjectRepositoryImpl(
         projectExternalDataSource.createProject(project.toDto())
     }
 
-    override suspend fun deleteProject(projectId: String) = executeProjectOperation {
+    override suspend fun deleteProjectByProjectId(projectId: String) = executeProjectOperation {
         projectExternalDataSource.deleteProject(projectId)
     }
 
@@ -31,13 +31,13 @@ class ProjectRepositoryImpl(
         projectExternalDataSource.editProject(project.toDto())
     }
 
-    override suspend fun getProjectLogsById(id: String): List<String> = executeProjectOperation {
-        projectExternalDataSource.getProjectLogsById(id) ?: throw ProjectExceptions.ProjectNotFoundException()
+    override suspend fun getProjectLogsByProjectId(projectId: String): List<String> = executeProjectOperation {
+        projectExternalDataSource.getProjectLogsById(projectId) ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
 
-    override suspend fun getProjectById(id: String): Project = executeProjectOperation {
-        projectExternalDataSource.getProjectById(id)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+    override suspend fun getProjectById(projectId: String): Project = executeProjectOperation {
+        projectExternalDataSource.getProjectById(projectId)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
     }
 
     private suspend fun <T> executeProjectOperation(operation: suspend () -> T): T {

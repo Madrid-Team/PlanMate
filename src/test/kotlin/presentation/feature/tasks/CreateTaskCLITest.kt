@@ -1,6 +1,6 @@
 package presentation.feature.tasks
 
-import data.source.user.CurrentUserProvider
+import data.source.csv.user.CurrentUserProvider
 import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.feature.projects.helperProject
 import presentation.feature.user.helperUser
 import presentation.utils.*
 import java.util.*
@@ -86,7 +85,7 @@ class CreateTaskCLITest {
                 "description"
             )
             every { currentUserProvider.getCurrentUser() } returns user
-            coEvery { getProjectByIdUseCase.getById(invalidProjectId) } throws ProjectExceptions.ProjectNotFoundException(
+            coEvery { getProjectByIdUseCase.getProjectById(invalidProjectId) } throws ProjectExceptions.ProjectNotFoundException(
                 "Project ID cannot be empty"
             )
 

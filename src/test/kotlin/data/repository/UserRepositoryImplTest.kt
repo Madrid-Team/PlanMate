@@ -3,8 +3,8 @@ package data.repository
 import com.google.common.truth.Truth.assertThat
 import data.createUserDto
 import data.mapper.toDomain
-import data.source.user.CurrentUserProvider
-import data.source.user.UserExternalDataSource
+import data.source.csv.user.CurrentUserProvider
+import data.source.csv.user.UserExternalDataSource
 import domain.utils.UserExceptions
 import domain.utils.UserExceptions.UserExist
 import io.mockk.coEvery
@@ -64,7 +64,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { userExternalDataSource.getUserById(userDto.id) } returns userDto
 
-            val result = userRepositoryImpl.getUserById(userDto.id)
+            val result = userRepositoryImpl.getUserByUserId(userDto.id)
 
             assertThat(result).isEqualTo(userDto.toDomain())
         }
@@ -97,7 +97,7 @@ class UserRepositoryImplTest {
         runTest {
             coEvery { userExternalDataSource.deleteUser(userDto.id) } returns Unit
 
-            userRepositoryImpl.deleteUser(userDto.id)
+            userRepositoryImpl.deleteUserByUserId(userDto.id)
 
             coVerify { userExternalDataSource.deleteUser(userDto.id) }
         }
@@ -110,7 +110,7 @@ class UserRepositoryImplTest {
             coEvery { userExternalDataSource.deleteUser(userDto.id) } throws exception
 
             val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
-                userRepositoryImpl.deleteUser(userDto.id)
+                userRepositoryImpl.deleteUserByUserId(userDto.id)
             }
 
             assertThat(thrownException).isSameInstanceAs(exception)

@@ -34,7 +34,7 @@ class EditProjectUseCaseTest {
             name = "Test Project",
             description = "Project description"
         )
-        coEvery { getProjectByIdUseCase.getById(any()) } returns project
+        coEvery { getProjectByIdUseCase.getProjectById(any()) } returns project
         coEvery { projectRepository.editProject(any()) } returns Unit
 
         //When & Then
@@ -51,7 +51,7 @@ class EditProjectUseCaseTest {
             name = "Test Project",
             description = "Project description"
         )
-        coEvery { getProjectByIdUseCase.getById(any()) } throws ProjectExceptions.ProjectNotFoundException()
+        coEvery { getProjectByIdUseCase.getProjectById(any()) } throws ProjectExceptions.ProjectNotFoundException()
 
         //When & Then
         assertThrows<ProjectExceptions.ProjectNotFoundException> {
@@ -67,7 +67,7 @@ class EditProjectUseCaseTest {
             name = "Invalid Name",
             description = "Project description"
         )
-        coEvery { getProjectByIdUseCase.getById(any()) } throws ProjectExceptions.ProjectNameInvalidException()
+        coEvery { getProjectByIdUseCase.getProjectById(any()) } throws ProjectExceptions.ProjectNameInvalidException()
         coEvery { projectValidator.validateName(any()) } throws ProjectExceptions.ProjectNameInvalidException()
 
         //When & Then

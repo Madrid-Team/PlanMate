@@ -1,8 +1,6 @@
 package domain.usecases.user
 
-import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.usecases.user.*
 import domain.utils.UserExceptions
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
