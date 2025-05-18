@@ -7,7 +7,7 @@ import com.mongodb.kotlin.client.coroutine.FindFlow
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.authentication.UserDto
-import data.source.csv.user.UserExternalDataSource
+import data.source.UserExternalDataSource
 import data.source.mongoDb.MongoClientProvider
 import data.source.mongoDb.UserMongoDBDataSource
 import data.utils.PASSWORD

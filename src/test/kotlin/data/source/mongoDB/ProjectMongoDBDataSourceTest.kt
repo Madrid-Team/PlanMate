@@ -6,7 +6,7 @@ import com.mongodb.client.result.DeleteResult
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.dto.project.ProjectDto
-import data.source.csv.project.ProjectExternalDataSource
+import data.source.ProjectExternalDataSource
 import data.source.mongoDb.MongoClientProvider
 import data.source.mongoDb.ProjectMongoDBDataSource
 import domain.models.authentication.User

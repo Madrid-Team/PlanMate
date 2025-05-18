@@ -38,7 +38,7 @@ class TaskMongoDBDataSourceTest {
     private lateinit var taskMongoDBDataSource: TaskExternalDataSource
     private lateinit var copyCollectionIfDifferentToTest: CopyCollectionIfDifferentToTest
     private lateinit var testScope: TestScope
-    private val collection = mockk<MongoCollection<TaskDto>>(relaxed = true)
+    private val collection = mockk<MongoCollection<TaskDto>>()
 
     @BeforeAll
     fun setup() {
