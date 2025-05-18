@@ -1,7 +1,6 @@
-package data.source.project
+package data.source.csv.project
 
 import com.google.common.truth.Truth.assertThat
-import data.source.csv.project.ProjectManager
 import domain.usecases.createProject
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

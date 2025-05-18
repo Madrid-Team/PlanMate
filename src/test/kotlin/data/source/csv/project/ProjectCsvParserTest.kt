@@ -1,9 +1,8 @@
-package data.source.project
+package data.source.csv.project
 
 import com.google.common.truth.Truth.assertThat
 import data.createProject
 import data.dto.project.ProjectDto
-import data.source.csv.project.ProjectCsvParser
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 
