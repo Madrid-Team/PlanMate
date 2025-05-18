@@ -1,6 +1,8 @@
 package presentation.feature.projects
 
 import domain.usecases.project.GetProjectLogsByIdUseCase
+import domain.utils.NoLogsFoundException
+import domain.utils.NoProjectLogsFoundException
 import domain.utils.ProjectExceptions
 import io.mockk.coEvery
 import io.mockk.every
@@ -54,7 +56,7 @@ class ProjectAuditLogCLITest {
     @Test
     fun `show should print message when no logs are found`() = runTest {
         val projectId = "456"
-        val exception = ProjectExceptions.NoLogsFoundException("There is no logs for this project")
+        val exception = NoProjectLogsFoundException("There is no logs for this project")
 
         every { reader.readInput(String.enterProjectIDToViewAudit) } returns projectId
         coEvery { useCase.getProjectLogsByProjectId(projectId) } throws exception

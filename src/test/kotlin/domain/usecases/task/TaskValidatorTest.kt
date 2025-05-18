@@ -1,6 +1,8 @@
 package domain.usecases.task
 
-import domain.utils.TaskExceptions
+import domain.utils.TaskDescriptionIsEmptyException
+import domain.utils.TaskStateIsEmptyException
+import domain.utils.TaskTitleIsEmptyException
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -34,7 +36,7 @@ class TaskValidatorTest {
         testScope.runTest {
             val task = createTask(title = "")
 
-            assertThrows<TaskExceptions.TaskTitleIsEmptyException> {
+            assertThrows<TaskTitleIsEmptyException> {
                 taskValidator.validateBasic(task)
             }
         }
@@ -49,7 +51,7 @@ class TaskValidatorTest {
                 state = "TODO"
             )
 
-            assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
+            assertThrows<TaskDescriptionIsEmptyException> {
                 taskValidator.validateBasic(task)
             }
         }
@@ -75,7 +77,7 @@ class TaskValidatorTest {
                 state = ""
             )
 
-            assertThrows<TaskExceptions.TaskStateIsEmptyException> {
+            assertThrows<TaskStateIsEmptyException> {
                 taskValidator.validateAll(task)
             }
         }

@@ -4,6 +4,8 @@ import data.dto.authentication.UserDto
 import data.utils.FileCsvReader
 import data.utils.FileCsvWriter
 import domain.utils.UserExceptions
+import domain.utils.UserExist
+import domain.utils.UserNotFoundException
 
 class UserCsvDataSource(
     private val fileCsvReader: FileCsvReader,
@@ -14,8 +16,8 @@ class UserCsvDataSource(
         val row: String = userCsvParser.parseUserToRow(user)
         try {
             getUserByName(user.username)
-            throw UserExceptions.UserExist()
-        } catch (_: UserExceptions.UserNotFoundException) {
+            throw UserExist()
+        } catch (_: UserNotFoundException) {
             fileCsvWriter.writeToCsvFile(row)
         } catch (e: Exception) {
             throw e
@@ -24,7 +26,7 @@ class UserCsvDataSource(
 
     override suspend fun deleteUser(userId: String) {
         val allUsers = getAllUsers()
-        if (allUsers.isEmpty()) throw UserExceptions.UserNotFoundException()
+        if (allUsers.isEmpty()) throw UserNotFoundException()
         val updatedUsers = allUsers.filter { it.id != userId }
         val userRows = updatedUsers.map { user ->
             userCsvParser.parseUserToRow(user)

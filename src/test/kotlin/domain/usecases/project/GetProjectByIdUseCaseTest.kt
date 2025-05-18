@@ -3,7 +3,7 @@ package domain.usecases.project
 import com.google.common.truth.Truth.assertThat
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -44,10 +44,10 @@ class GetProjectByIdUseCaseTest {
         runTest {
             // Given
             val projectId = "999"
-            coEvery { projectRepository.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { projectRepository.getProjectById(projectId) } throws ProjectNotFoundException()
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectNotFoundException> {
                 getProjectByIdUseCase.getProjectById(projectId)
             }
         }
@@ -60,7 +60,7 @@ class GetProjectByIdUseCaseTest {
             val projectId = ""
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectNotFoundException> {
                 getProjectByIdUseCase.getProjectById(projectId)
             }
         }

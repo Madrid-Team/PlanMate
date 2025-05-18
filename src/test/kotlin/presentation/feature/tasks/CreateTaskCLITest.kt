@@ -5,8 +5,11 @@ import domain.repository.TaskRepository
 import domain.usecases.project.GetProjectByIdUseCase
 import domain.usecases.task.CreateTaskUseCase
 import domain.usecases.task.TaskValidator
-import domain.utils.ProjectExceptions
-import io.mockk.*
+import domain.utils.ProjectNotFoundException
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verifySequence
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -85,7 +88,7 @@ class CreateTaskCLITest {
                 "description"
             )
             every { currentUserProvider.getCurrentUser() } returns user
-            coEvery { getProjectByIdUseCase.getProjectById(invalidProjectId) } throws ProjectExceptions.ProjectNotFoundException(
+            coEvery { getProjectByIdUseCase.getProjectById(invalidProjectId) } throws ProjectNotFoundException(
                 "Project ID cannot be empty"
             )
 
@@ -98,7 +101,7 @@ class CreateTaskCLITest {
                 inputReader.readInput(String.enterProjectId)
                 inputReader.readInput(String.enterTaskTitle)
                 inputReader.readInput(String.enterTaskDescription)
-                outputPrinter.printMessage(ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty").message!!)
+                outputPrinter.printMessage(ProjectNotFoundException("Project ID cannot be empty").message!!)
                 outputPrinter.printMessage(String.taskCreatedUnsuccessfully)
             }
         }

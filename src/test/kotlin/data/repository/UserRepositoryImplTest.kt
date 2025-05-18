@@ -5,8 +5,8 @@ import data.createUserDto
 import data.mapper.toDomain
 import data.source.csv.user.CurrentUserProvider
 import data.source.csv.user.UserExternalDataSource
-import domain.utils.UserExceptions
-import domain.utils.UserExceptions.UserExist
+import domain.utils.UserExist
+import domain.utils.UserNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -106,10 +106,10 @@ class UserRepositoryImplTest {
     @Test
     fun `Should propagate exception from data source when deleting user`() {
         runTest {
-            val exception = UserExceptions.UserNotFoundException()
+            val exception = UserNotFoundException()
             coEvery { userExternalDataSource.deleteUser(userDto.id) } throws exception
 
-            val thrownException = assertThrows<UserExceptions.UserNotFoundException> {
+            val thrownException = assertThrows<UserNotFoundException> {
                 userRepositoryImpl.deleteUserByUserId(userDto.id)
             }
 
@@ -135,7 +135,7 @@ class UserRepositoryImplTest {
             coEvery { userExternalDataSource.login(userDto.username, userDto.passwordHash) } returns null
             coEvery { currentUserProvider.setCurrentUser(userDto) } returns Unit
 
-            assertThrows<UserExceptions.UserNotFoundException> {
+            assertThrows<UserNotFoundException> {
                 userRepositoryImpl.login(
                     userDto.username,
                     userDto.passwordHash
@@ -152,11 +152,11 @@ class UserRepositoryImplTest {
                     userDto.username,
                     userDto.passwordHash
                 )
-            } throws UserExceptions.UserNotFoundException()
+            } throws UserNotFoundException()
 
             coEvery { currentUserProvider.setCurrentUser(userDto) } returns Unit
 
-            assertThrows<UserExceptions.UserNotFoundException> {
+            assertThrows<UserNotFoundException> {
                 userRepositoryImpl.login(
                     userDto.username,
                     userDto.passwordHash

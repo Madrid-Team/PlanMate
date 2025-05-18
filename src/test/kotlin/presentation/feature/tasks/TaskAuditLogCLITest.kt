@@ -1,8 +1,11 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.GetTaskLogsUseCase
-import domain.utils.TaskExceptions
-import io.mockk.*
+import domain.utils.NoLogsFoundException
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verifySequence
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -78,7 +81,7 @@ class TaskAuditLogCLITest {
             // Given
             val taskId = "123"
             val errorMessage = "Task not found"
-            val exception = TaskExceptions.NoLogsFoundException(errorMessage)
+            val exception = NoLogsFoundException(errorMessage)
             every { inputReader.readInput(String.enterTaskIdToViewLogs) } returns taskId
             coEvery { getTaskLogsUseCase.getTaskLogsByTaskId(taskId) } throws exception
 

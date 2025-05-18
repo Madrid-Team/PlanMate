@@ -1,8 +1,9 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
-import domain.utils.TaskExceptions.TaskTitleIsEmptyException
+import domain.utils.TaskDescriptionIsEmptyException
+import domain.utils.TaskStateIsEmptyException
+import domain.utils.TaskTitleIsEmptyException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -66,10 +67,10 @@ class CreateTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(description = "")
-            coEvery { taskValidator.validateAll(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
+            coEvery { taskValidator.validateAll(task) } throws TaskDescriptionIsEmptyException()
 
             // When & Then
-            assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
+            assertThrows<TaskDescriptionIsEmptyException> {
                 createTaskUseCase.createTask(task)
             }
 
@@ -82,10 +83,10 @@ class CreateTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(state = "")
-            coEvery { taskValidator.validateAll(task) } throws TaskExceptions.TaskStateIsEmptyException()
+            coEvery { taskValidator.validateAll(task) } throws TaskStateIsEmptyException()
 
             // When & Then
-            assertThrows<TaskExceptions.TaskStateIsEmptyException> {
+            assertThrows<TaskStateIsEmptyException> {
                 createTaskUseCase.createTask(task)
             }
 

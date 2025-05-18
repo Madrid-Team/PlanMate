@@ -1,7 +1,8 @@
 package presentation.feature.tasks
 
 import domain.usecases.task.DeleteTaskUseCase
-import domain.utils.TaskExceptions
+import domain.utils.TaskCannotDeleteException
+import domain.utils.TaskNotFoundException
 import io.mockk.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +60,7 @@ class DeleteTaskCLITest {
     fun `should show error message when deletion throws TaskExceptions`() = runTest {
         // Given
         val taskId = "123"
-        val exception = TaskExceptions.TaskNotFoundException(taskId)
+        val exception = TaskNotFoundException(taskId)
         every { inputReader.readInput() } returns taskId
         coEvery { deleteTaskUseCase.deleteTaskByTaskId(taskId) } throws exception
 
@@ -83,7 +84,7 @@ class DeleteTaskCLITest {
         testScope.runTest {
             // Given
             val taskId = "456"
-            val exception = TaskExceptions.TaskCannotDeleteException()
+            val exception = TaskCannotDeleteException()
             every { inputReader.readInput() } returns taskId
             coEvery { deleteTaskUseCase.deleteTaskByTaskId(taskId) } throws exception
 

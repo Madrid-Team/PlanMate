@@ -1,7 +1,7 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
+import domain.utils.TaskNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -53,7 +53,7 @@ class GetTasksByProjectIdUseCaseTest {
             coEvery { taskRepository.getTasksByProjectId(projectId) } returns emptyList()
 
             // When & Then
-            assertThrows<TaskExceptions.TaskNotFoundException> {
+            assertThrows<TaskNotFoundException> {
                 getTasksByProjectIdUseCase.getTaskByProjectId(projectId)
             }
 

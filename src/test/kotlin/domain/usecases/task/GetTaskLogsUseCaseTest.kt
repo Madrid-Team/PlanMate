@@ -1,7 +1,7 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
+import domain.utils.NoLogsFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -50,7 +50,7 @@ class GetTaskLogsUseCaseTest {
             coEvery { taskRepository.getTaskLogsByTaskId(taskId) } returns emptyList()
 
             // When & Then
-            assertThrows<TaskExceptions.NoLogsFoundException> {
+            assertThrows<NoLogsFoundException> {
                 getTaskLogsUseCase.getTaskLogsByTaskId(taskId)
             }
 

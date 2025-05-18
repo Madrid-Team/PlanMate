@@ -2,18 +2,13 @@ package presentation.feature.projects
 
 import domain.usecases.project.DeleteProjectUseCase
 import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.utils.deleteProjectException
-import presentation.utils.deleteProjectHeader
-import presentation.utils.deleteProjectSuccess
-import presentation.utils.deletionCancelled
-import presentation.utils.enterProjectIdToDelete
-import presentation.utils.selectionOne
-import presentation.utils.sureYouWantToDeleteThisProject
+import presentation.utils.*
 import kotlin.test.Test
 
 class DeleteProjectCLITest {
@@ -68,7 +63,7 @@ class DeleteProjectCLITest {
     fun `should show error message when project not found`() = runTest {
         // Given
         val projectId = "invalid-id"
-        val exception = ProjectExceptions.ProjectNotFoundException()
+        val exception = ProjectNotFoundException()
         every { inputReader.readInput(String.enterProjectIdToDelete) } returns projectId
         every { inputReader.readInput(String.sureYouWantToDeleteThisProject) } returns String.selectionOne
         coEvery { deleteProjectUseCase.deleteProjectByProjectId(projectId) } throws exception

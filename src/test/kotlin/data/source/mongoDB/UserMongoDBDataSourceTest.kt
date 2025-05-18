@@ -13,7 +13,7 @@ import data.source.mongoDb.UserMongoDBDataSource
 import data.utils.PASSWORD
 import data.utils.USER_NAME
 import domain.models.authentication.UserRole
-import domain.utils.UserExceptions
+import domain.utils.UserNotFoundException
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -201,7 +201,7 @@ class UserMongoDBDataSourceTest {
             coEvery { firstOrNull() } returns null
         }
         testScope.launch {
-            assertFailsWith<UserExceptions.UserNotFoundException> {
+            assertFailsWith<UserNotFoundException> {
                 dataSource.getUserByName("User Name")
             }
         }

@@ -1,7 +1,7 @@
 package domain.usecases.user
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
+import domain.utils.UserNotAdminException
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -61,7 +61,7 @@ class DeleteUserUseCaseTest {
         every { validateAdminRoleUseCase.validate("USER") } returns false
 
         // When & Then
-        assertThrows<UserExceptions.UserNotAdminException> {
+        assertThrows<UserNotAdminException> {
             deleteUserUseCase.deleteUser(requesterId.toString(), targetId.toString())
         }
 

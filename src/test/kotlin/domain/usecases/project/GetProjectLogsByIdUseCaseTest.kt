@@ -1,7 +1,8 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utils.ProjectExceptions
+import domain.utils.NoLogsFoundException
+import domain.utils.ProjectNotFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -44,10 +45,10 @@ class GetProjectLogsByIdUseCaseTest {
         runTest {
             //Given
             val projectId = "not-found"
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectNotFoundException()
 
             //When
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectNotFoundException> {
                 getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }
@@ -62,7 +63,7 @@ class GetProjectLogsByIdUseCaseTest {
             coEvery { projectRepository.getProjectLogsByProjectId(projectId) } returns emptyList()
 
             // When & Then
-            assertThrows<ProjectExceptions.NoLogsFoundException> {
+            assertThrows<NoLogsFoundException> {
                 getProjectLogsByIdUseCase.getProjectLogsByProjectId(projectId)
             }
         }

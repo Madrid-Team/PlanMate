@@ -8,6 +8,7 @@ import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 
 class ProjectRepositoryImpl(
     private val projectExternalDataSource: ProjectExternalDataSource,
@@ -32,12 +33,12 @@ class ProjectRepositoryImpl(
     }
 
     override suspend fun getProjectLogsByProjectId(projectId: String): List<String> = executeProjectOperation {
-        projectExternalDataSource.getProjectLogsById(projectId) ?: throw ProjectExceptions.ProjectNotFoundException()
+        projectExternalDataSource.getProjectLogsById(projectId) ?: throw ProjectNotFoundException()
     }
 
 
     override suspend fun getProjectById(projectId: String): Project = executeProjectOperation {
-        projectExternalDataSource.getProjectById(projectId)?.toDomain() ?: throw ProjectExceptions.ProjectNotFoundException()
+        projectExternalDataSource.getProjectById(projectId)?.toDomain() ?: throw ProjectNotFoundException()
     }
 
     private suspend fun <T> executeProjectOperation(operation: suspend () -> T): T {

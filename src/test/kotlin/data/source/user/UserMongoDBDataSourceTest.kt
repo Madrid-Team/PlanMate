@@ -11,12 +11,12 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.CopyCollectionIfDifferentToTest
 import data.dto.authentication.UserDto
 import data.source.csv.user.UserExternalDataSource
-import data.source.mongoDb.UserMongoDBDataSource
 import data.source.mongoDb.MongoClientProvider
+import data.source.mongoDb.UserMongoDBDataSource
 import data.utils.PASSWORD
 import data.utils.USER_NAME
 import domain.models.authentication.UserRole
-import domain.utils.UserExceptions
+import domain.utils.UserNotFoundException
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -205,7 +205,7 @@ class UserMongoDBDataSourceTest {
             coEvery { firstOrNull() } returns null
         }
         testScope.launch {
-            assertFailsWith<UserExceptions.UserNotFoundException> {
+            assertFailsWith<UserNotFoundException> {
                 dataSource.getUserByName("User Name")
             }
         }

@@ -1,9 +1,6 @@
 package data.utils
 
-import domain.utils.PlanMateExceptions
-import domain.utils.ProjectExceptions
-import domain.utils.TaskExceptions
-import domain.utils.UserExceptions
+import domain.utils.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -28,8 +25,8 @@ fun String.appendHeader(file: File) {
 
 fun Throwable?.toProjectException(): PlanMateExceptions {
     return when (val exception = this) {
-        is FileNotFoundException -> ProjectExceptions.ProjectsFileNotExistsException()
-        is IOException -> ProjectExceptions.ProjectsReadWriteException()
+        is FileNotFoundException -> ProjectsFileNotExistsException()
+        is IOException -> ProjectsReadWriteException()
         is ProjectExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {
@@ -41,8 +38,8 @@ fun Throwable?.toProjectException(): PlanMateExceptions {
 
 fun Throwable?.toTaskException(): PlanMateExceptions {
     return when (val exception = this) {
-        is FileNotFoundException -> TaskExceptions.TaskNotFoundException()
-        is IOException -> TaskExceptions.TaskNotFoundException()
+        is FileNotFoundException -> TaskNotFoundException()
+        is IOException -> TaskNotFoundException()
         is TaskExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {
@@ -54,8 +51,8 @@ fun Throwable?.toTaskException(): PlanMateExceptions {
 
 fun Throwable.toUserException(): PlanMateExceptions {
     return when (val exception = this) {
-        is FileNotFoundException -> UserExceptions.UserNotFoundException()
-        is IOException -> UserExceptions.UserReadWriteException()
+        is FileNotFoundException -> UserNotFoundException()
+        is IOException -> UserReadWriteException()
         is UserExceptions -> exception
         is PlanMateExceptions -> exception
         else -> {

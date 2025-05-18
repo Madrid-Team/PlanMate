@@ -1,7 +1,7 @@
 package domain.usecases.project
 
 import domain.repository.ProjectRepository
-import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -47,10 +47,10 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val projectId = "not-found"
-            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectExceptions.ProjectNotFoundException()
+            coEvery { getProjectByIdUseCase.getProjectById(projectId) } throws ProjectNotFoundException()
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectNotFoundException> {
                 deleteProjectUseCase.deleteProjectByProjectId(projectId)
             }
 
@@ -65,10 +65,10 @@ class DeleteProjectUseCaseTest {
         runTest {
             // Given
             val blankId = ""
-            coEvery { getProjectByIdUseCase.getProjectById(blankId) } throws ProjectExceptions.ProjectNotFoundException("Project ID cannot be empty")
+            coEvery { getProjectByIdUseCase.getProjectById(blankId) } throws ProjectNotFoundException("Project ID cannot be empty")
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectNotFoundException> {
+            assertThrows<ProjectNotFoundException> {
                 deleteProjectUseCase.deleteProjectByProjectId(blankId)
             }
 

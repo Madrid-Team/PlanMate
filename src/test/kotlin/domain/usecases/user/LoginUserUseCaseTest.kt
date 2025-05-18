@@ -3,13 +3,17 @@ package domain.usecases.user
 import data.utils.PasswordHasher
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
-import io.mockk.*
+import domain.utils.InvalidPasswordError
+import domain.utils.InvalidUserName
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import java.util.*
 import kotlin.test.assertEquals
 
 class LoginUserUseCaseTest {
@@ -35,10 +39,10 @@ class LoginUserUseCaseTest {
     fun `throws InvalidUserName when name is invalid`() = runTest {
         // Given
         val invalidName = "ab"
-        every { validateNameUseCase.validateName(invalidName) } throws UserExceptions.InvalidUserName()
+        every { validateNameUseCase.validateName(invalidName) } throws InvalidUserName()
 
         // When & Then
-        assertThrows<UserExceptions.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             loginUserUseCase.login(invalidName, "123456")
         }
     }
@@ -49,10 +53,10 @@ class LoginUserUseCaseTest {
         val name = "mohamed"
         val invalidPassword = "123"
         every { validateNameUseCase.validateName(name) } returns Unit
-        every { validatePasswordUseCase.validatePassword(invalidPassword) } throws UserExceptions.InvalidPasswordError()
+        every { validatePasswordUseCase.validatePassword(invalidPassword) } throws InvalidPasswordError()
 
         // When & Then
-        assertThrows<UserExceptions.InvalidPasswordError> {
+        assertThrows<InvalidPasswordError> {
             loginUserUseCase.login(name, invalidPassword)
         }
     }

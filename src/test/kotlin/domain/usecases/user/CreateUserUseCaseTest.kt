@@ -1,7 +1,8 @@
 package domain.usecases.user
 
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
+import domain.utils.InvalidPasswordError
+import domain.utils.InvalidUserName
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
@@ -64,10 +65,10 @@ class CreateUserUseCaseTest {
         val username = ""
         val password = "ValidPassword123"
 
-        every { validateNameUseCase.validateName(username) } throws UserExceptions.InvalidUserName()
+        every { validateNameUseCase.validateName(username) } throws InvalidUserName()
 
         // When & Then
-        assertThrows<UserExceptions.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             createUserUseCase.createUser(username, password)
         }
 
@@ -81,10 +82,10 @@ class CreateUserUseCaseTest {
         val password = ""
 
         every { validateNameUseCase.validateName(username) } returns Unit
-        every { validatePasswordUseCase.validatePassword(password) } throws UserExceptions.InvalidPasswordError()
+        every { validatePasswordUseCase.validatePassword(password) } throws InvalidPasswordError()
 
         // When & Then
-        assertThrows<UserExceptions.InvalidPasswordError> {
+        assertThrows<InvalidPasswordError> {
             createUserUseCase.createUser(username, password)
         }
 

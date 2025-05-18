@@ -1,7 +1,9 @@
 package presentation.feature.user
 
 import domain.usecases.user.CreateUserUseCase
-import domain.utils.UserExceptions
+import domain.utils.PasswordLessThan6CharsException
+import domain.utils.UserExist
+import domain.utils.UserReadWriteException
 import io.mockk.*
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -40,7 +42,7 @@ class CreateUserCLITest {
             "handleUserReadWriteError",
             String::class.java,
             String::class.java,
-            UserExceptions.UserReadWriteException::class.java,
+            UserReadWriteException::class.java,
             Continuation::class.java
         ).apply { isAccessible = true }
 
@@ -75,7 +77,7 @@ class CreateUserCLITest {
         val username = "testuser"
         val password = "password123"
         val errorMessage = "User read write error"
-        val exception = UserExceptions.UserReadWriteException("User read write error")
+        val exception = UserReadWriteException("User read write error")
 
         coEvery { useCase.createUser(username, password) } throws exception
         every { inputReader.readInput() } returns "3" // any key other than 1 or 2 to exit
@@ -97,7 +99,7 @@ class CreateUserCLITest {
         // Given
         val username = "testuser"
         val password = "password123"
-        val exception = UserExceptions.UserReadWriteException("Failed to write user data")
+        val exception = UserReadWriteException("Failed to write user data")
 
         every { inputReader.readInput() } returns "1"
         coEvery { useCase.createUser(username, password) } returns Unit
@@ -118,7 +120,7 @@ class CreateUserCLITest {
         val password = "password123"
         val newUsername = "newuser"
         val newPassword = "newpass"
-        val exception = UserExceptions.UserReadWriteException("Failed to write user data")
+        val exception = UserReadWriteException("Failed to write user data")
 
         every { inputReader.readInput() } returns "2" // option 2 - enter new data
         every { inputReader.readInput(String.enterUserName) } returns newUsername
@@ -168,7 +170,7 @@ class CreateUserCLITest {
         every { inputReader.readInput(String.enterUserName) } returns username
         every { inputReader.readInput("Enter password (minimum 6 characters):") } returns password
         every { inputReader.readInput() } returns "2"
-        coEvery { useCase.createUser(username, password) } throws UserExceptions.UserExist("User already Exist")
+        coEvery { useCase.createUser(username, password) } throws UserExist("User already Exist")
 
         // When
         cli.show()
@@ -194,7 +196,7 @@ class CreateUserCLITest {
         every { inputReader.readInput(String.enterUserName) } returns username
         every { inputReader.readInput("Enter password (minimum 6 characters):") } returns password
         every { inputReader.readInput() } returns "2"
-        coEvery { useCase.createUser(username, password) } throws UserExceptions.PasswordLessThan6CharsException("Password cannot be less than 6 chars length")
+        coEvery { useCase.createUser(username, password) } throws PasswordLessThan6CharsException("Password cannot be less than 6 chars length")
 
         // When
         cli.show()
