@@ -2,7 +2,6 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.utils.TaskDescriptionIsEmptyException
-import domain.utils.TaskExceptions
 import domain.utils.TaskStateIsEmptyException
 import domain.utils.TaskTitleIsEmptyException
 

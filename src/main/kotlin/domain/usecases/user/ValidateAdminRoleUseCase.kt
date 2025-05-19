@@ -1,9 +1,7 @@
 package domain.usecases.user
 
+
 import domain.models.authentication.UserRole
-
-
-import domain.utils.UserExceptions
 import domain.utils.UserNotAdminException
 
 

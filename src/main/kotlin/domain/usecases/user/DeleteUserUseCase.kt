@@ -1,7 +1,6 @@
 package domain.usecases.user
 
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
 import domain.utils.UserNotAdminException
 
 class DeleteUserUseCase(

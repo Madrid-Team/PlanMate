@@ -2,7 +2,6 @@ package domain.usecases.task
 
 import domain.models.task.Task
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
 import domain.utils.TaskNotFoundException
 
 class GetTasksByProjectIdUseCase(

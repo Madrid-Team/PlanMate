@@ -2,7 +2,6 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.utils.NoLogsFoundException
-import domain.utils.ProjectExceptions
 
 class GetProjectLogsByIdUseCase(
     private val projectRepository: ProjectRepository,

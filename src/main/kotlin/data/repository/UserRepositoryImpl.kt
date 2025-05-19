@@ -7,7 +7,6 @@ import data.source.csv.user.UserExternalDataSource
 import data.utils.toUserException
 import domain.models.authentication.User
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
 import domain.utils.UserNotFoundException
 
 class UserRepositoryImpl(

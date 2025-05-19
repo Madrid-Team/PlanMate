@@ -1,7 +1,6 @@
 package domain.usecases.user
 
 import domain.utils.InvalidUserName
-import domain.utils.UserExceptions
 import domain.utils.UserNameLessThan3CharsException
 
 class ValidateNameUseCase {

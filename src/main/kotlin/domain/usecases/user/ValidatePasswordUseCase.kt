@@ -2,7 +2,6 @@ package domain.usecases.user
 
 import domain.utils.EmptyPasswordException
 import domain.utils.PasswordLessThan6CharsException
-import domain.utils.UserExceptions
 
 class ValidatePasswordUseCase {
 

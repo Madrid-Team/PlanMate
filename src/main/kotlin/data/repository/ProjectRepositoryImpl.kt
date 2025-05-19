@@ -7,7 +7,6 @@ import data.source.csv.user.CurrentUserProvider
 import data.utils.toProjectException
 import domain.models.project.Project
 import domain.repository.ProjectRepository
-import domain.utils.ProjectExceptions
 import domain.utils.ProjectNotFoundException
 
 class ProjectRepositoryImpl(
