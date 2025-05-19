@@ -1,8 +1,8 @@
 package domain.usecases.user
 
 
-import domain.utils.UserExceptions
 import domain.models.authentication.UserRole
+import domain.utils.UserNotAdminException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -23,7 +23,7 @@ class ValidateAdminRoleUseCaseTest {
 
     @Test
     fun `throws UserNotAdminException when role is not ADMIN`() {
-        assertThrows<UserExceptions.UserNotAdminException> {
+        assertThrows<UserNotAdminException> {
             validateAdminRoleuseCase.validate(UserRole.MATE.name)
         }
     }

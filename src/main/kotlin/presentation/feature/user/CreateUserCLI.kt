@@ -2,6 +2,7 @@ package presentation.feature.user
 
 import domain.usecases.user.CreateUserUseCase
 import domain.utils.UserExceptions
+import domain.utils.UserReadWriteException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
@@ -26,7 +27,7 @@ class CreateUserCLI(
             outputPrinter.printMessage("Creating user...")
             createUserUseCase.createUser(userName, password)
             outputPrinter.printMessage("User created successfully")
-        } catch (e: UserExceptions.UserReadWriteException) {
+        } catch (e: UserReadWriteException) {
             handleUserReadWriteError(userName, password, e)
         } catch (e: UserExceptions) {
             outputPrinter.printError("Error: ${e.message}")
@@ -37,7 +38,7 @@ class CreateUserCLI(
     private suspend fun handleUserReadWriteError(
         userName: String,
         password: String,
-        e: UserExceptions.UserReadWriteException
+        e: UserReadWriteException
     ) {
         outputPrinter.printError(e.message.toString())
         outputPrinter.printMessage("1 - Try again with same data\n2 - Enter new data\nAny other key - Exit")

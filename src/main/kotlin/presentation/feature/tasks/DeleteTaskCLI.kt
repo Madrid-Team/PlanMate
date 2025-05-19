@@ -6,7 +6,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import presentation.components.InputReader
 import presentation.components.OutputPrinter
-import presentation.utils.*
+import presentation.utils.deleteTaskException
+import presentation.utils.deleteTaskHeader
+import presentation.utils.deleteTaskSuccess
+import presentation.utils.enterTaskIdToDelete
 
 class DeleteTaskCLI(
     private val inputReader: InputReader,

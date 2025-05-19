@@ -1,7 +1,7 @@
 package domain.usecases.project
 
 import domain.usecases.createProject
-import domain.utils.ProjectExceptions
+import domain.utils.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,7 +24,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+        assertThrows<ProjectNameInvalidException> {
             validator.validate(project)
         }
     }
@@ -38,7 +38,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+        assertThrows<ProjectNameInvalidException> {
             validator.validate(project)
         }
     }
@@ -52,7 +52,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
+        assertThrows<ProjectDescriptionIsEmptyException> {
             validator.validate(project)
         }
     }
@@ -66,7 +66,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectDescriptionInvalidException> {
+        assertThrows<ProjectDescriptionInvalidException> {
             validator.validate(project)
         }
     }
@@ -80,7 +80,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectDescriptionTooShortException> {
+        assertThrows<ProjectDescriptionTooShortException> {
             validator.validate(project)
         }
     }
@@ -94,7 +94,7 @@ class ProjectValidatorTest {
             projectStates = emptyList()
         )
 
-        assertThrows<ProjectExceptions.ProjectStatesIsEmptyException> {
+        assertThrows<ProjectStatesIsEmptyException> {
             validator.validate(project)
         }
     }
@@ -108,7 +108,7 @@ class ProjectValidatorTest {
             projectStates = listOf("Planning")
         )
 
-        assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {
+        assertThrows<ProjectTaskStatesIsEmptyException> {
             validator.validate(project)
         }
     }

@@ -1,7 +1,7 @@
 package domain.usecases.user
 
 import domain.repository.UserRepository
-import domain.utils.UserExceptions
+import domain.utils.UserNotAdminException
 
 class DeleteUserUseCase(
     private val userRepository: UserRepository,
@@ -13,7 +13,7 @@ class DeleteUserUseCase(
         if (isAdmin) {
             userRepository.deleteUserByUserId(userToDeleteId)
         } else {
-            throw UserExceptions.UserNotAdminException()
+            throw UserNotAdminException()
         }
     }
 }

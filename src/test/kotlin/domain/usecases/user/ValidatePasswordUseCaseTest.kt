@@ -1,7 +1,8 @@
 package domain.usecases.user
 
 
-import domain.utils.UserExceptions
+import domain.utils.EmptyPasswordException
+import domain.utils.PasswordLessThan6CharsException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -17,14 +18,14 @@ class ValidatePasswordUseCaseTest {
 
     @Test
     fun `throws EmptyPasswordException when password is empty`() {
-        assertThrows<UserExceptions.EmptyPasswordException> {
+        assertThrows<EmptyPasswordException> {
             useCase.validatePassword("")
         }
     }
 
     @Test
     fun `throws PasswordLessThan6CharsException when password is too short`() {
-        assertThrows<UserExceptions.PasswordLessThan6CharsException> {
+        assertThrows<PasswordLessThan6CharsException> {
             useCase.validatePassword("1234")
         }
     }

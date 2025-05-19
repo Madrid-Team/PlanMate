@@ -1,7 +1,7 @@
 package domain.Validation
 
 import domain.usecases.project.ProjectValidator
-import domain.utils.ProjectExceptions
+import domain.utils.ProjectNameInvalidException
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,7 +24,7 @@ class ValidateProjectNameTest {
 
     @Test
     fun `should throw exception project name is invalid`() {
-        assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+        assertThrows<ProjectNameInvalidException> {
             projectValidator.validateName(inValidProjectName)
         }
     }

@@ -1,7 +1,7 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
+import domain.utils.TaskNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -41,11 +41,12 @@ class DeleteTaskUseCaseTest {
     fun `should throw TaskNotFoundException when task does not exist`() {
         testScope.runTest {
             val taskId = UUID.randomUUID().toString()
-            val expectedException = TaskExceptions.TaskNotFoundException("Task not found")
+            val expectedException =
+                TaskNotFoundException("Task not found")
 
             coEvery { taskRepository.deleteTaskByTaskId(taskId) } throws expectedException
 
-            val thrown = assertThrows<TaskExceptions.TaskNotFoundException> {
+            val thrown = assertThrows<TaskNotFoundException> {
                 deleteTaskUseCase.deleteTaskByTaskId(taskId)
             }
 

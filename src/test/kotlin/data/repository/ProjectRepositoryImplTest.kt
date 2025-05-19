@@ -9,7 +9,7 @@ import data.source.csv.project.ProjectManager
 import data.source.csv.user.CurrentUserProvider
 import domain.models.project.Project
 import domain.utils.PlanMateExceptions
-import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -130,7 +130,7 @@ class ProjectRepositoryImplTest {
     @Test
     fun `getProjectById should throw exception when ID does not match`() {
         runTest {
-            every { projectManager.getProjects() } throws ProjectExceptions.ProjectNotFoundException()
+            every { projectManager.getProjects() } throws ProjectNotFoundException()
             assertThrows<PlanMateExceptions> { repository.getProjectById(projectDto.id) }
         }
     }

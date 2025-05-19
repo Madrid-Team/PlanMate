@@ -1,16 +1,17 @@
 package domain.usecases.user
 
-import domain.utils.UserExceptions
+import domain.utils.EmptyPasswordException
+import domain.utils.PasswordLessThan6CharsException
 
 class ValidatePasswordUseCase {
 
 
     fun validatePassword(password: String) {
         if (password.isEmpty()) {
-            throw UserExceptions.EmptyPasswordException()
+            throw EmptyPasswordException()
         }
         if (password.length < 6) {
-            throw UserExceptions.PasswordLessThan6CharsException()
+            throw PasswordLessThan6CharsException()
         }
 
     }

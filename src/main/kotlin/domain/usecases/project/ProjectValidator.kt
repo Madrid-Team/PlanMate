@@ -1,7 +1,7 @@
 package domain.usecases.project
 
 import domain.models.project.Project
-import domain.utils.ProjectExceptions
+import domain.utils.*
 
 class ProjectValidator() {
     fun validate(project: Project) {
@@ -13,32 +13,32 @@ class ProjectValidator() {
 
     private fun validateStates(project: Project) {
         if (project.projectStates.isEmpty()) {
-            throw ProjectExceptions.ProjectStatesIsEmptyException()
+            throw ProjectStatesIsEmptyException()
         }
     }
 
     private fun validateTaskStates(project: Project) {
         if (project.taskStates.isEmpty()) {
-            throw ProjectExceptions.ProjectTaskStatesIsEmptyException()
+            throw ProjectTaskStatesIsEmptyException()
         }
     }
 
     fun validateName(project: Project) {
         if (project.name.isBlank()) {
-            throw ProjectExceptions.ProjectNameInvalidException()
+            throw ProjectNameInvalidException()
         }
 
         if (!project.name.matches(Regex("^[A-Za-z ]+$"))) {
-            throw ProjectExceptions.ProjectNameInvalidException()
+            throw ProjectNameInvalidException()
         }
     }
 
     fun validateDescription(project: Project) {
         with(project.description) {
             when {
-                isBlank() -> throw ProjectExceptions.ProjectDescriptionIsEmptyException()
-                !matches(Regex("^[A-Za-z ]+$")) -> throw ProjectExceptions.ProjectDescriptionInvalidException()
-                length < 10 -> throw ProjectExceptions.ProjectDescriptionTooShortException()
+                isBlank() -> throw ProjectDescriptionIsEmptyException()
+                !matches(Regex("^[A-Za-z ]+$")) -> throw ProjectDescriptionInvalidException()
+                length < 10 -> throw ProjectDescriptionTooShortException()
             }
 
         }

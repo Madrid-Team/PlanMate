@@ -1,7 +1,9 @@
 package domain.usecases.task
 
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
+import domain.utils.TaskCannotEditException
+import domain.utils.TaskDescriptionIsEmptyException
+import domain.utils.TaskTitleIsEmptyException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -49,10 +51,10 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "")
-            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskTitleIsEmptyException()
+            coEvery { taskValidator.validateBasic(task) } throws TaskTitleIsEmptyException()
 
             // When & Then
-            assertThrows<TaskExceptions.TaskTitleIsEmptyException> {
+            assertThrows<TaskTitleIsEmptyException> {
                 editTaskUseCase.editTask(task)
             }
 
@@ -66,10 +68,10 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(description = "")
-            coEvery { taskValidator.validateBasic(task) } throws TaskExceptions.TaskDescriptionIsEmptyException()
+            coEvery { taskValidator.validateBasic(task) } throws TaskDescriptionIsEmptyException()
 
             // When & Then
-            assertThrows<TaskExceptions.TaskDescriptionIsEmptyException> {
+            assertThrows<TaskDescriptionIsEmptyException> {
                 editTaskUseCase.editTask(task)
             }
 
@@ -83,13 +85,13 @@ class EditTaskUseCaseTest {
         testScope.runTest {
             // Given
             val task = createTask(title = "Some title", description = "Some description")
-            val expectedException = TaskExceptions.TaskCannotEditException("Failed to edit task")
+            val expectedException = TaskCannotEditException("Failed to edit task")
 
             coEvery { taskValidator.validateBasic(task) } returns Unit
             coEvery { taskRepository.editTask(task) } throws expectedException
 
             // When & Then
-            val thrown = assertThrows<TaskExceptions.TaskCannotEditException> {
+            val thrown = assertThrows<TaskCannotEditException> {
                 editTaskUseCase.editTask(task)
             }
 

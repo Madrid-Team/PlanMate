@@ -8,6 +8,8 @@ import data.utils.FileCsvWriter
 import domain.models.authentication.User
 import domain.models.authentication.UserRole
 import domain.utils.UserExceptions
+import domain.utils.UserExist
+import domain.utils.UserNotFoundException
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -53,7 +55,7 @@ class UserCsvDataSourceTest {
             val row = userCsvParser.parseUserToRow(user.toDto())
             every { fileCsvWriter.writeToCsvFile(row) } returns Unit
 
-            coEvery { dataSource.getUserByName(user.username) } throws UserExceptions.UserNotFoundException()
+            coEvery { dataSource.getUserByName(user.username) } throws UserNotFoundException()
             // When & Then
             assertDoesNotThrow {
                 dataSource.createNewUser(user.toDto())
@@ -72,7 +74,7 @@ class UserCsvDataSourceTest {
             every { userCsvParser.parseRowToUser(row1) } returns user1
 
             // When
-            assertThrows<UserExceptions.UserExist> {
+            assertThrows<UserExist> {
                 dataSource.createNewUser(user.toDto())
             }
             // Then
@@ -236,7 +238,7 @@ class UserCsvDataSourceTest {
         runTest {
             coEvery { externalUserDataSource.getAllUsers() } returns emptyList()
 
-            assertThrows<UserExceptions.UserNotFoundException> {
+            assertThrows<UserNotFoundException> {
                 dataSource.deleteUser("non-existent-user-id")
             }
             verify(exactly = 0) { fileCsvWriter.updateCsvFile(any()) }
@@ -253,5 +255,4 @@ class UserCsvDataSourceTest {
             assertThrows<IOException> { dataSource.deleteUser("1") }
         }
     }
-    // endregion
 }

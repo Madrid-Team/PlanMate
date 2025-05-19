@@ -2,7 +2,9 @@ package domain.usecases.project
 
 import domain.repository.ProjectRepository
 import domain.usecases.createProject
-import domain.utils.ProjectExceptions
+import domain.utils.ProjectDescriptionIsEmptyException
+import domain.utils.ProjectNameInvalidException
+import domain.utils.ProjectTaskStatesIsEmptyException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -62,10 +64,10 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf("TaskState1")
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectNameInvalidException()
+            coEvery { projectValidator.validate(project) } throws ProjectNameInvalidException()
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectNameInvalidException> {
+            assertThrows<ProjectNameInvalidException> {
                 createProjectUseCase.createProject(project)
             }
 
@@ -84,10 +86,10 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf("TaskState1")
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectDescriptionIsEmptyException()
+            coEvery { projectValidator.validate(project) } throws ProjectDescriptionIsEmptyException()
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectDescriptionIsEmptyException> {
+            assertThrows<ProjectDescriptionIsEmptyException> {
                 createProjectUseCase.createProject(project)
             }
 
@@ -107,10 +109,10 @@ class CreateProjectUseCaseTest {
                 taskStates = listOf()
             )
 
-            coEvery { projectValidator.validate(project) } throws ProjectExceptions.ProjectTaskStatesIsEmptyException()
+            coEvery { projectValidator.validate(project) } throws ProjectTaskStatesIsEmptyException()
 
             // When & Then
-            assertThrows<ProjectExceptions.ProjectTaskStatesIsEmptyException> {
+            assertThrows<ProjectTaskStatesIsEmptyException> {
                 createProjectUseCase.createProject(project)
             }
 

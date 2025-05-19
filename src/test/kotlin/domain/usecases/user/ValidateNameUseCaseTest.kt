@@ -1,6 +1,7 @@
 package domain.usecases.user
 
-import domain.utils.UserExceptions
+import domain.utils.InvalidUserName
+import domain.utils.UserNameLessThan3CharsException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -16,14 +17,14 @@ class ValidateNameUseCaseTest {
 
     @Test
     fun `throws InvalidUserName when name is blank`() {
-        assertThrows<UserExceptions.InvalidUserName> {
+        assertThrows<InvalidUserName> {
             useCase.validateName("")
         }
     }
 
     @Test
     fun `throws UserNameLessThan3CharsException when name is too short`() {
-        assertThrows<UserExceptions.UserNameLessThan3CharsException> {
+        assertThrows<UserNameLessThan3CharsException> {
             useCase.validateName("ab")
         }
     }

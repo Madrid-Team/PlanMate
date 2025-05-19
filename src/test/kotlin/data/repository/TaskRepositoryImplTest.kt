@@ -5,7 +5,7 @@ import data.source.csv.task.TaskExternalDataSource
 import data.source.csv.task.TaskManager
 import data.source.csv.task.helperTaskDto
 import domain.repository.TaskRepository
-import domain.utils.TaskExceptions
+import domain.utils.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -39,9 +39,9 @@ class TaskRepositoryImplTest {
     fun `editTask should throw exception when failed to edit task`() {
         runTest {
             coEvery { taskManager.editTask(taskDto) } returns listOf(taskDto)
-            coEvery { taskExternalDataSource.editTask(taskDto) } throws TaskExceptions.TaskCannotEditException("Failed to edit task")
+            coEvery { taskExternalDataSource.editTask(taskDto) } throws TaskCannotEditException("Failed to edit task")
 
-            assertThrows<TaskExceptions.TaskCannotEditException> {
+            assertThrows<TaskCannotEditException> {
                 taskRepository.editTask(taskDto.toDomain())
             }
         }
@@ -56,11 +56,11 @@ class TaskRepositoryImplTest {
 
     @Test
     fun `getTaskByProjectID should throw exception tasks return from data source is empty`() {
-        coEvery { taskExternalDataSource.getTasksByProjectId(taskDto.projectId) } throws TaskExceptions.TaskNotFoundException(
+        coEvery { taskExternalDataSource.getTasksByProjectId(taskDto.projectId) } throws TaskNotFoundException(
             "Failed to get tasks by project id"
         )
         runTest {
-            assertThrows<TaskExceptions.TaskNotFoundException> { taskRepository.getTasksByProjectId(taskDto.projectId) }
+            assertThrows< TaskNotFoundException> { taskRepository.getTasksByProjectId(taskDto.projectId) }
         }
     }
 
@@ -93,10 +93,10 @@ class TaskRepositoryImplTest {
     @Test
     fun `deleteTask should throw exception when data source fails to delete`() {
         runTest {
-            coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } throws TaskExceptions.TaskCannotDeleteException(
+            coEvery { taskExternalDataSource.deleteTask(taskId = taskDto.id) } throws TaskCannotDeleteException(
                 "Failed to delete task"
             )
-            assertThrows<TaskExceptions.TaskCannotDeleteException> { taskRepository.deleteTaskByTaskId(taskDto.id) }
+            assertThrows<TaskCannotDeleteException> { taskRepository.deleteTaskByTaskId(taskDto.id) }
         }
     }
 
@@ -111,10 +111,10 @@ class TaskRepositoryImplTest {
     @Test
     fun `getTaskLogsByID throw Task not found exception when task  does not exist in tasks list`() {
         runTest {
-            coEvery { taskExternalDataSource.getTaskLogsByID(taskId = taskDto.id) } throws TaskExceptions.NoLogsFoundException(
+            coEvery { taskExternalDataSource.getTaskLogsByID(taskId = taskDto.id) } throws NoLogsFoundException(
                 "Failed to get task logs"
             )
-            assertThrows<TaskExceptions.NoLogsFoundException> { taskRepository.getTaskLogsByTaskId(taskDto.id) }
+            assertThrows<NoLogsFoundException> { taskRepository.getTaskLogsByTaskId(taskDto.id) }
         }
     }
 }

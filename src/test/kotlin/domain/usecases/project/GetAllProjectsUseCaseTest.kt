@@ -3,6 +3,7 @@ package domain.usecases.project
 import domain.models.project.Project
 import domain.repository.ProjectRepository
 import domain.utils.ProjectExceptions
+import domain.utils.ProjectNotFoundException
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -57,7 +58,7 @@ class GetAllProjectsUseCaseTest {
         coEvery { projectRepository.getAllProjects() } returns emptyList()
 
         // When & Then
-        assertThrows<ProjectExceptions.ProjectNotFoundException> {
+        assertThrows<ProjectNotFoundException> {
             getAllProjectsUseCase.getProjects()
         }
     }
